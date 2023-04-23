@@ -1,0 +1,32 @@
+name: budget_app
+description: A Budget app.
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=2.19.0 <3.0.0"
+
+dependencies:
+  bloc: ^8.1.0
+  equatable: ^2.0.3
+  firebase_core: ^2.1.0
+  flow_builder: ^0.0.9
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.1
+  font_awesome_flutter: ^10.1.0
+  formz: ^0.4.0
+  google_fonts: ^3.0.1
+  meta: ^1.7.0
+
+dev_dependencies:
+  bloc_test: ^9.0.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^0.3.0
+  very_good_analysis: ^3.1.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
