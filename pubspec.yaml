@@ -18,6 +18,11 @@ dependencies:
   formz: ^0.4.0
   google_fonts: ^3.0.1
   meta: ^1.7.0
+  flutter_gif: any
+  authentication_repository:
+    path: packages/authentication_repository
+  form_inputs:
+    path: packages/form_inputs
 
 dev_dependencies:
   bloc_test: ^9.0.0

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "299009765894",
+    "project_id": "qruto-budget",
+    "storage_bucket": "qruto-budget.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299009765894:android:0517590a63bdfe67b0c987",
+        "android_client_info": {
+          "package_name": "xyz.qruto.budget_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "299009765894-on6lc8p0h1udam2vao4rc09v3ltpghhe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuc1EEc8LPQPviQKbsak9n8BPb5b1SL0U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "299009765894-on6lc8p0h1udam2vao4rc09v3ltpghhe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
