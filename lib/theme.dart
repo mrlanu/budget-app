@@ -7,7 +7,7 @@ final theme = ThemeData(
   primaryColorLight: const Color(0xF2FFB2EB),
   primaryColor: const Color(0xFF266B01),
   colorScheme: const ColorScheme.light(secondary: Color(0xFF266B01)),
-  scaffoldBackgroundColor: const Color(0xFFFFF5C1),
+  scaffoldBackgroundColor: Color.fromRGBO(17, 17, 31, 1.0),
   inputDecorationTheme: InputDecorationTheme(
     focusColor: Colors.lime,
     border: OutlineInputBorder(

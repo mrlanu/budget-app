@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../app/bloc/app_bloc.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -7,10 +10,11 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.select((AppBloc bloc) => bloc.add(SplashStart()));
     return Scaffold(
       body: Center(
         child: Container(
-          child: Image.asset('assets/images/anim_logo.gif', width: 200,),
+          child: Image.asset('assets/images/anim_logo.gif',),
         ),
       ),
     );

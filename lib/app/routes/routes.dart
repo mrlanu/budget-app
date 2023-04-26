@@ -3,6 +3,8 @@ import 'package:budget_app/app/app.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/login/login.dart';
 
+import '../../splash/splash.dart';
+
 List<Page<dynamic>> onGenerateAppViewPages(
     AppStatus state,
     List<Page<dynamic>> pages,
@@ -12,5 +14,7 @@ List<Page<dynamic>> onGenerateAppViewPages(
       return [HomePage.page()];
     case AppStatus.unauthenticated:
       return [LoginPage.page()];
+    case AppStatus.splash:
+      return [SplashPage.page()];
   }
 }

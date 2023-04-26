@@ -31,9 +31,10 @@ class LoginForm extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: 20,),
               Image.asset(
-                'assets/images/logo.png',
-                height: 120,
+                'assets/images/icon_logo.png',
+                height: 80,
               ),
               SizedBox(height: 40,),
               Card(
