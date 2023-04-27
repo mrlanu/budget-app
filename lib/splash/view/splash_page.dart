@@ -12,6 +12,7 @@ class SplashPage extends StatelessWidget {
   Widget build(BuildContext context) {
     context.select((AppBloc bloc) => bloc.add(SplashStart()));
     return Scaffold(
+      backgroundColor: Color.fromRGBO(17, 17, 31, 1),
       body: Center(
         child: Container(
           child: Image.asset('assets/images/anim_logo.gif',),

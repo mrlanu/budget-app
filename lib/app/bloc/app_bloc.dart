@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 part 'app_event.dart';
-
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
@@ -29,7 +28,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription<User> _userSubscription;
 
   void _onSplashStart(SplashStart event, Emitter<AppState> emit){
-    Timer(const Duration(milliseconds: 6000), () => add(_SplashDone()));
+    Timer(const Duration(milliseconds: 500), () => add(_SplashDone()));
   }
 
   void _onSplashDone(_SplashDone event, Emitter<AppState> emit){
