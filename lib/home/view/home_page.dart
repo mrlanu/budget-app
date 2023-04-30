@@ -28,6 +28,12 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        child: const Icon(Icons.navigation),
+      ),
       body: Align(
         alignment: const Alignment(0, -1 / 3),
         child: Column(

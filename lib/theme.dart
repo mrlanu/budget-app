@@ -1,17 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'dart:ui';
 
-final theme = ThemeData(
-  textTheme: GoogleFonts.openSansTextTheme(),
-  primaryColorDark: const Color(0xFF000000),
-  primaryColorLight: const Color(0xF2000000),
-  primaryColor: const Color(0xFF266B01),
-  colorScheme: const ColorScheme.light(secondary: Color(0xFF266B01)),
-  scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
-  inputDecorationTheme: InputDecorationTheme(
-    focusColor: Colors.orange,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-  ),
-);
+import 'package:flutter/material.dart';
+
+enum ColorSeed {
+  baseColor('M3 Baseline', Color(0xff6750a4)),
+  indigo('Indigo', Colors.indigo),
+  blue('Blue', Colors.blue),
+  teal('Teal', Colors.teal),
+  green('Green', Colors.green),
+  yellow('Yellow', Colors.yellow),
+  orange('Orange', Colors.orange),
+  deepOrange('Deep Orange', Colors.deepOrange),
+  pink('Pink', Colors.pink);
+
+  const ColorSeed(this.label, this.color);
+
+  final String label;
+  final Color color;
+}

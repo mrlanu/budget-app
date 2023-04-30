@@ -175,7 +175,7 @@ class _LoginButton extends StatelessWidget {
             height: size.height / 13,
             decoration: BoxDecoration(
                 color: state.status.isValidated
-                    ? BudgetColors.buttonColor
+                    ? theme.colorScheme.primary
                     : BudgetColors.gray60,
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: state.status.isValidated
