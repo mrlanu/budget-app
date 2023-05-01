@@ -1,3 +1,4 @@
+import 'package:budget_app/overview/view/overview_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/home/home.dart';
@@ -11,7 +12,8 @@ List<Page<dynamic>> onGenerateAppViewPages(
     ) {
   switch (state) {
     case AppStatus.authenticated:
-      return [HomePage.page()];
+      //return [HomePage.page()];
+      return[OverviewPage.page()];
     case AppStatus.unauthenticated:
       return [LoginPage.page()];
     case AppStatus.splash:

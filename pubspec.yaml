@@ -10,6 +10,7 @@ dependencies:
   bloc: ^8.1.0
   equatable: ^2.0.3
   flutter_screenutil: ^5.7.0
+  animations: ^2.0.7
   firebase_core: ^2.1.0
   flow_builder: ^0.0.9
   flutter:
