@@ -21,6 +21,9 @@ dependencies:
   google_fonts: ^3.0.1
   meta: ^1.7.0
   flutter_gif: any
+  uuid: ^3.0.0
+  json_annotation: ^4.8.0
+  http: ^0.13.5
   authentication_repository:
     path: packages/authentication_repository
   form_inputs:
@@ -32,6 +35,8 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^0.3.0
   very_good_analysis: ^3.1.0
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.1
 
 flutter:
   uses-material-design: true

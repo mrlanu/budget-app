@@ -6,7 +6,9 @@ import 'package:budget_app/login/login.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  static Page<void> page() => const MaterialPage<void>(child: LoginPage());
+  static Route<void> route() {
+    return MaterialPageRoute<void>(builder: (_) => const LoginPage());
+  }
 
   @override
   Widget build(BuildContext context) {

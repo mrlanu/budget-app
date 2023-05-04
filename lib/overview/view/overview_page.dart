@@ -1,17 +1,21 @@
 import 'package:budget_app/overview/bloc/overview_bloc.dart';
 import 'package:budget_app/overview/repository/repository.dart';
+import 'package:budget_app/shared/widgets/entity_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
-import '../widgets/widgets.dart';
 
 class OverviewPage extends StatelessWidget {
   const OverviewPage({Key? key}) : super(key: key);
 
   final DummyRepository _repository = const DummyRepository();
 
-  static Page<void> page() => const MaterialPage<void>(child: OverviewPage());
+  static const routeName = '/overview';
+
+  static Route<void> route() {
+    return MaterialPageRoute<void>(builder: (_) => const OverviewPage());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +37,6 @@ class OverviewPage extends StatelessWidget {
               )
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Add your onPressed code here!
-            },
-            child: const Icon(Icons.add),
-          ),
           drawer: Drawer(),
           body: BlocBuilder<OverviewBloc, OverviewState>(
             builder: (context, state) {
@@ -48,10 +46,11 @@ class OverviewPage extends StatelessWidget {
                       itemCount: state.categoryList.length,
                       itemBuilder: (context, index) {
                         final category = state.categoryList[index];
-                        return CategoryView(
+                        return EntityView(
                           icon: Icon(IconData(category.iconCodePoint,
                               fontFamily: 'MaterialIcons')),
                           title: category.name,
+                          routeName: category.routeName,
                           //subtitle: 'subtitle',
                           semanticsLabel: 'semanticsLabel',
                           amount: category.amount,

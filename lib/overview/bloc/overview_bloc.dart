@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../accounts/repository/models/account_model.dart';
+import '../../accounts/repository/spring_accounts_api.dart';
 import '../repository/repository.dart';
 
 part 'overview_event.dart';
@@ -25,8 +27,9 @@ class OverviewBloc extends Bloc<OverviewEvent, OverviewState> {
   Future<void> _onLoadCategoriesEvent(
       LoadCategoriesEvent event, Emitter<OverviewState> emit) async {
     emit(OverviewState.loading());
-    await Future.delayed(const Duration(milliseconds: 500), () {
+    /*await Future.delayed(const Duration(milliseconds: 500), () {
       add(CategoriesLoadedEvent());
-    },);
+    },);*/
+    add(CategoriesLoadedEvent());
   }
 }

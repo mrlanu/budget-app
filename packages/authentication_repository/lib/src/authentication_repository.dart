@@ -179,8 +179,11 @@ class AuthenticationRepository {
   /// the authentication state changes.
   ///
   /// Emits [User.empty] if the user is not authenticated.
-  Stream<User> get user {
-    return _firebaseAuth.authStateChanges().map((firebaseUser) {
+  Stream<User> get user async* {
+    // delay for Splash screen
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    yield* _firebaseAuth.authStateChanges().map((firebaseUser) {
       final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
       _cache.write(key: userCacheKey, value: user);
       return user;
@@ -275,6 +278,11 @@ class AuthenticationRepository {
 
 extension on firebase_auth.User {
   User get toUser {
-    return User(id: uid, email: email, name: displayName, photo: photoURL);
+    return User(
+        id: uid,
+        token: getIdToken(),
+        email: email,
+        name: displayName,
+        photo: photoURL);
   }
 }

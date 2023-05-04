@@ -1,6 +1,9 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
-import 'package:flow_builder/flow_builder.dart';
+import 'package:budget_app/login/login.dart';
+import 'package:budget_app/overview/view/overview_page.dart';
+import 'package:budget_app/splash/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,13 +11,27 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme.dart';
 
-class App extends StatelessWidget {
-  const App({
-    super.key,
-    required AuthenticationRepository authenticationRepository,
-  }) : _authenticationRepository = authenticationRepository;
+class App extends StatefulWidget {
+  const App({super.key});
 
-  final AuthenticationRepository _authenticationRepository;
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final AuthenticationRepository _authenticationRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticationRepository = AuthenticationRepository();
+  }
+
+  @override
+  void dispose() {
+   // _authenticationRepository.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +57,8 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   ThemeMode themeMode = ThemeMode.system;
   ColorSeed colorSelected = ColorSeed.orange;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  NavigatorState get _navigator => _navigatorKey.currentState!;
 
   @override
   Widget build(BuildContext context) {
@@ -48,22 +67,64 @@ class _AppViewState extends State<AppView> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            textTheme: GoogleFonts.robotoCondensedTextTheme(),
-            useMaterial3: true,
+        return MaterialApp(
+          navigatorKey: _navigatorKey,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              textTheme: GoogleFonts.montserratTextTheme(),
+              useMaterial3: true,
+              colorSchemeSeed: colorSelected.color,
+              brightness: Brightness.light),
+          darkTheme: ThemeData(
             colorSchemeSeed: colorSelected.color,
-            brightness: Brightness.light),
-        darkTheme: ThemeData(
-          colorSchemeSeed: colorSelected.color,
-          useMaterial3: true,
-          brightness: Brightness.dark,
-        ),
-        home: child,);
+            useMaterial3: true,
+            brightness: Brightness.dark,
+          ),
+          routes: {
+            AccountsPage.routeName: (context) => AccountsPage(),
+          },
+          builder: (context, child) {
+            return BlocListener<AppBloc, AppState>(
+              listener: (context, state) {
+                switch (state.status) {
+                  case AppStatus.authenticated:
+                    _navigator.pushAndRemoveUntil<void>(
+                      OverviewPage.route(),
+                          (route) => false,
+                    );
+                    break;
+                  case AppStatus.unauthenticated:
+                    _navigator.pushAndRemoveUntil<void>(
+                      LoginPage.route(),
+                          (route) => false,
+                    );
+                    break;
+                  case AppStatus.unknown:
+                    break;
+                }
+              },
+              child: child,
+            );
+          },
+          onGenerateRoute: (_) => SplashPage.route(),
+          /*home: BlocBuilder<AppBloc, AppState>(
+            builder: (context, state) {
+              switch (state.status) {
+                case AppStatus.authenticated:
+                  return OverviewPage();
+                case AppStatus.unauthenticated:
+                  return LoginPage();
+                case AppStatus.splash:
+                  return SplashPage();
+              }
+            },
+          ),
+          routes: {
+            OverviewPage.routeName: (context) => OverviewPage(),
+            AccountsPage.routeName: (context) => AccountsPage(),
+          },*/
+        );
       },
-        child: FlowBuilder<AppStatus>(
-    state: context.select((AppBloc bloc) => bloc.state.status),
-    onGeneratePages: onGenerateAppViewPages,));
+    );
   }
 }

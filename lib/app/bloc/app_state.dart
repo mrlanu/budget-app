@@ -1,7 +1,7 @@
 part of 'app_bloc.dart';
 
 enum AppStatus {
-  splash,
+  unknown,
   authenticated,
   unauthenticated,
 }
@@ -12,7 +12,7 @@ class AppState extends Equatable {
     this.user = User.empty,
   });
 
-  const AppState.splash(): this._(status: AppStatus.splash);
+  const AppState.unknown(): this._(status: AppStatus.unknown);
 
   const AppState.authenticated(User user)
       : this._(status: AppStatus.authenticated, user: user);

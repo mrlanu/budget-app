@@ -11,13 +11,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc({required AuthenticationRepository authenticationRepository})
       : _authenticationRepository = authenticationRepository,
         super(
-          AppState.splash(),
+          AppState.unknown(),
         ) {
     on<_AppUserChanged>(_onUserChanged);
     on<AppLogoutRequested>(_onLogoutRequested);
-    on<SplashStart>(_onSplashStart);
-    on<_SplashDone>(_onSplashDone);
-    _userSubscription = _authenticationRepository.user.skip(1).listen(
+    _userSubscription = _authenticationRepository.user.listen(
           (user) {
         add(_AppUserChanged(user));
       },
@@ -27,17 +25,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final AuthenticationRepository _authenticationRepository;
   late final StreamSubscription<User> _userSubscription;
 
-  void _onSplashStart(SplashStart event, Emitter<AppState> emit){
-    Timer(const Duration(milliseconds: 500), () => add(_SplashDone()));
-  }
-
-  void _onSplashDone(_SplashDone event, Emitter<AppState> emit){
-    emit(_authenticationRepository.currentUser.isNotEmpty
-        ? AppState.authenticated(_authenticationRepository.currentUser)
-        : const AppState.unauthenticated());
-  }
-
-  void _onUserChanged(_AppUserChanged event, Emitter<AppState> emit) {
+  Future<void> _onUserChanged(_AppUserChanged event, Emitter<AppState> emit) async {
     emit(
       event.user.isNotEmpty
           ? AppState.authenticated(event.user)
