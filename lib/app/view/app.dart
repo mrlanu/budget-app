@@ -3,6 +3,7 @@ import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/overview/view/overview_page.dart';
+import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +30,7 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
-   // _authenticationRepository.dispose();
+    // _authenticationRepository.dispose();
     super.dispose();
   }
 
@@ -58,6 +59,7 @@ class _AppViewState extends State<AppView> {
   ThemeMode themeMode = ThemeMode.system;
   ColorSeed colorSelected = ColorSeed.orange;
   final _navigatorKey = GlobalKey<NavigatorState>();
+
   NavigatorState get _navigator => _navigatorKey.currentState!;
 
   @override
@@ -82,20 +84,23 @@ class _AppViewState extends State<AppView> {
           ),
           routes: {
             AccountsPage.routeName: (context) => AccountsPage(),
+            SignUpPage.routeName: (context) => SignUpPage(),
+            LoginPage.routeName: (context) => LoginPage(),
+            OverviewPage.routeName: (context) => OverviewPage(),
           },
           builder: (context, child) {
             return BlocListener<AppBloc, AppState>(
               listener: (context, state) {
                 switch (state.status) {
                   case AppStatus.authenticated:
-                    _navigator.pushAndRemoveUntil<void>(
-                      OverviewPage.route(),
+                    _navigator.pushNamedAndRemoveUntil<void>(
+                      OverviewPage.routeName,
                           (route) => false,
                     );
                     break;
                   case AppStatus.unauthenticated:
-                    _navigator.pushAndRemoveUntil<void>(
-                      LoginPage.route(),
+                    _navigator.pushNamedAndRemoveUntil<void>(
+                      LoginPage.routeName,
                           (route) => false,
                     );
                     break;

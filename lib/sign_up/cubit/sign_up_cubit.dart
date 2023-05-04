@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
+import 'package:http/http.dart' as http;
 
 part 'sign_up_state.dart';
 
@@ -65,10 +66,11 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (!state.status.isValidated) return;
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     try {
-      await _authenticationRepository.signUp(
+      final token = await _authenticationRepository.signUp(
         email: state.email.value,
         password: state.password.value,
       );
+      _createBudget(token);
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       emit(
@@ -79,6 +81,20 @@ class SignUpCubit extends Cubit<SignUpState> {
       );
     } catch (_) {
       emit(state.copyWith(status: FormzStatus.submissionFailure));
+    }
+  }
+
+  Future<void> _createBudget(String token) async {
+    try {
+      final url = 'http://10.0.2.2:8080/api/budgets';
+      await http.post(
+          Uri.parse(url),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization":
+            "Bearer $token"});
+    } catch (e) {
+      print('ERROR - ${e}');
     }
   }
 }

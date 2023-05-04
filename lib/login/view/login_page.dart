@@ -6,6 +6,8 @@ import 'package:budget_app/login/login.dart';
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
+  static const routeName = '/login';
+
   static Route<void> route() {
     return MaterialPageRoute<void>(builder: (_) => const LoginPage());
   }
