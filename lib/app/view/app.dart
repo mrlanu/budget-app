@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
+import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
@@ -87,6 +88,7 @@ class _AppViewState extends State<AppView> {
             SignUpPage.routeName: (context) => SignUpPage(),
             LoginPage.routeName: (context) => LoginPage(),
             SectionsPage.routeName: (context) => SectionsPage(),
+            CategoriesPage.routeName: (context) => CategoriesPage()
           },
           builder: (context, child) {
             return BlocListener<AppBloc, AppState>(

@@ -8,26 +8,24 @@ class EntityView extends StatelessWidget {
     required this.title,
     required this.routeName,
     this.subtitle,
-    required this.semanticsLabel,
     required this.amount,
     required this.suffix,
+    required this.onTap,
   });
 
   final Widget? icon;
   final String title;
   final String routeName;
   final String? subtitle;
-  final String semanticsLabel;
   final String amount;
   final Widget suffix;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed(routeName);
-        },
+        onTap: onTap,
         child: Column(
           children: [
             Container(

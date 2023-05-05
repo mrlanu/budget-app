@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
+import '../../categories/view/categories_page.dart';
 
 class SectionsPage extends StatelessWidget {
   const SectionsPage({Key? key}) : super(key: key);
@@ -52,9 +53,10 @@ class SectionsPage extends StatelessWidget {
                           title: section.name,
                           routeName: section.name,
                           //subtitle: 'subtitle',
-                          semanticsLabel: 'semanticsLabel',
                           amount: section.amount,
                           suffix: Icon(Icons.chevron_right),
+                          onTap: () => Navigator.of(context)
+                              .pushNamed(CategoriesPage.routeName, arguments: {"section": section.name,}),
                         );
                       });
             },

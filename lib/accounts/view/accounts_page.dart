@@ -42,9 +42,9 @@ class AccountsPage extends StatelessWidget {
                           title: acc.name,
                           routeName: acc.name,
                           //subtitle: 'subtitle',
-                          semanticsLabel: 'semanticsLabel',
                           amount: acc.balance.toString(),
                           suffix: Icon(Icons.chevron_right),
+                          onTap: (){},
                         );
                       });
             },
