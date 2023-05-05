@@ -1,8 +1,8 @@
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
+import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../app/bloc/app_bloc.dart';
 import '../../shared/shared.dart';
 import '../../shared/widgets/entity_view_widget.dart';
 
@@ -13,7 +13,6 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
     final section =
         ModalRoute.of(context)?.settings.arguments as Map<String, String>;
     return Scaffold(
@@ -22,7 +21,9 @@ class CategoriesPage extends StatelessWidget {
         title: Text('Categories'),
       ),
       body: BlocProvider(
-        create: (context) => CategoriesCubit(user)..fetchAllCategories(section['section']!),
+        create: (context) =>
+            CategoriesCubit(context.read<SharedRepositoryImpl>())
+              ..fetchAllCategories(section['section']!),
         child: BlocBuilder<CategoriesCubit, CategoriesState>(
           builder: (context, state) {
             return state.status == DataStatus.loading
@@ -39,7 +40,7 @@ class CategoriesPage extends StatelessWidget {
                         //subtitle: 'subtitle',
                         amount: cat.amount,
                         suffix: Icon(Icons.chevron_right),
-                        onTap: (){},
+                        onTap: () {},
                       );
                     });
           },

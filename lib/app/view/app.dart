@@ -3,6 +3,7 @@ import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/login/login.dart';
+import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +41,10 @@ class _AppState extends State<App> {
     return RepositoryProvider.value(
       value: _authenticationRepository,
       child: BlocProvider(
-        create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository,
-        ),
+        create: (_) =>
+            AppBloc(
+              authenticationRepository: _authenticationRepository,
+            ),
         child: AppView(),
       ),
     );
@@ -65,55 +67,59 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((AppBloc bloc) => bloc.state.user);
     return ScreenUtilInit(
       designSize: const Size(1080, 2160),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          navigatorKey: _navigatorKey,
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-              textTheme: GoogleFonts.montserratTextTheme(),
-              useMaterial3: true,
+        return RepositoryProvider(
+          create: (context) => SharedRepositoryImpl(user),
+          child: MaterialApp(
+            navigatorKey: _navigatorKey,
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                textTheme: GoogleFonts.montserratTextTheme(),
+                useMaterial3: true,
+                colorSchemeSeed: colorSelected.color,
+                brightness: Brightness.light),
+            darkTheme: ThemeData(
               colorSchemeSeed: colorSelected.color,
-              brightness: Brightness.light),
-          darkTheme: ThemeData(
-            colorSchemeSeed: colorSelected.color,
-            useMaterial3: true,
-            brightness: Brightness.dark,
+              useMaterial3: true,
+              brightness: Brightness.dark,
+            ),
+            routes: {
+              AccountsPage.routeName: (context) => AccountsPage(),
+              SignUpPage.routeName: (context) => SignUpPage(),
+              LoginPage.routeName: (context) => LoginPage(),
+              SectionsPage.routeName: (context) => SectionsPage(),
+              CategoriesPage.routeName: (context) => CategoriesPage()
+            },
+            builder: (context, child) {
+              return BlocListener<AppBloc, AppState>(
+                listener: (context, state) {
+                  switch (state.status) {
+                    case AppStatus.authenticated:
+                      _navigator.pushNamedAndRemoveUntil<void>(
+                        SectionsPage.routeName,
+                            (route) => false,
+                      );
+                      break;
+                    case AppStatus.unauthenticated:
+                      _navigator.pushNamedAndRemoveUntil<void>(
+                        LoginPage.routeName,
+                            (route) => false,
+                      );
+                      break;
+                    case AppStatus.unknown:
+                      break;
+                  }
+                },
+                child: child,
+              );
+            },
+            onGenerateRoute: (_) => SplashPage.route(),
           ),
-          routes: {
-            AccountsPage.routeName: (context) => AccountsPage(),
-            SignUpPage.routeName: (context) => SignUpPage(),
-            LoginPage.routeName: (context) => LoginPage(),
-            SectionsPage.routeName: (context) => SectionsPage(),
-            CategoriesPage.routeName: (context) => CategoriesPage()
-          },
-          builder: (context, child) {
-            return BlocListener<AppBloc, AppState>(
-              listener: (context, state) {
-                switch (state.status) {
-                  case AppStatus.authenticated:
-                    _navigator.pushNamedAndRemoveUntil<void>(
-                      SectionsPage.routeName,
-                          (route) => false,
-                    );
-                    break;
-                  case AppStatus.unauthenticated:
-                    _navigator.pushNamedAndRemoveUntil<void>(
-                      LoginPage.routeName,
-                          (route) => false,
-                    );
-                    break;
-                  case AppStatus.unknown:
-                    break;
-                }
-              },
-              child: child,
-            );
-          },
-          onGenerateRoute: (_) => SplashPage.route(),
         );
       },
     );

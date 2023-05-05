@@ -1,10 +1,7 @@
-import 'dart:convert';
-
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/categories/models/category_summary.dart';
+import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:http/http.dart' as http;
 
 import '../../shared/shared.dart';
 
@@ -12,13 +9,15 @@ part 'categories_state.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
 
-  final User user;
+  final SharedRepository _sharedRepository;
 
-  CategoriesCubit(this.user) : super(CategoriesState());
+  CategoriesCubit(SharedRepository sharedRepository) :
+        this._sharedRepository = sharedRepository,
+        super(CategoriesState());
 
   Future<void> fetchAllCategories(String section) async {
     try {
-      final categories = await _fetchCategories(section);
+      final categories = await _sharedRepository.fetchAllCategories(section);
       emit(state.copyWith(
           status: DataStatus.success, categorySummaryList: categories));
     } catch (e) {
@@ -27,24 +26,4 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     }
   }
 
-  Future<List<CategorySummary>> _fetchCategories(String section) async {
-    final url = 'http://10.0.2.2:8080/api/budgets/categories?section=$section';
-
-    final token = await user.token;
-    final response = await http.get(Uri.parse(url), headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
-    });
-
-    print('CATEGORIES: ${response.body}');
-
-    final result = List<Map<dynamic, dynamic>>.from(
-      json.decode(response.body) as List,
-    )
-        .map((jsonMap) =>
-        CategorySummary.fromJson(Map<String, dynamic>.from(jsonMap)))
-        .toList();
-
-    return result;
-  }
 }

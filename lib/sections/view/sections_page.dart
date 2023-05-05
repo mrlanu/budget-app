@@ -1,4 +1,5 @@
 import 'package:budget_app/sections/cubit/sections_cubit.dart';
+import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/shared/widgets/entity_view_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,10 @@ class SectionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
     return BlocProvider(
       create: (context) {
-        return SectionsCubit(user)..fetchAllSections();
+        return SectionsCubit(context.read<SharedRepositoryImpl>())
+          ..fetchAllSections();
       },
       child: Scaffold(
           appBar: AppBar(
@@ -56,7 +57,9 @@ class SectionsPage extends StatelessWidget {
                           amount: section.amount,
                           suffix: Icon(Icons.chevron_right),
                           onTap: () => Navigator.of(context)
-                              .pushNamed(CategoriesPage.routeName, arguments: {"section": section.name,}),
+                              .pushNamed(CategoriesPage.routeName, arguments: {
+                            "section": section.name,
+                          }),
                         );
                       });
             },
