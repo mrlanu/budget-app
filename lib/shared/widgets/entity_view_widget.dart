@@ -1,9 +1,5 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../app/app.dart';
 
 class EntityView extends StatelessWidget {
   const EntityView({
@@ -55,7 +51,7 @@ class EntityView extends StatelessWidget {
                           Text(
                             title,
                             style: TextStyle(
-                              fontSize: textTheme.titleLarge!.fontSize,
+                              fontSize: textTheme.titleMedium!.fontSize,
                             ),
                           ),
                           if (subtitle != null)
@@ -72,7 +68,7 @@ class EntityView extends StatelessWidget {
                           style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
-                                  .titleLarge!
+                                  .titleMedium!
                                   .fontSize,
                               fontWeight: FontWeight.bold),
                         ),

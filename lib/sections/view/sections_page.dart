@@ -1,27 +1,26 @@
-import 'package:budget_app/overview/bloc/overview_bloc.dart';
-import 'package:budget_app/overview/repository/repository.dart';
+import 'package:budget_app/sections/cubit/sections_cubit.dart';
+import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/shared/widgets/entity_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
 
-class OverviewPage extends StatelessWidget {
-  const OverviewPage({Key? key}) : super(key: key);
+class SectionsPage extends StatelessWidget {
+  const SectionsPage({Key? key}) : super(key: key);
 
-  final DummyRepository _repository = const DummyRepository();
-
-  static const routeName = '/overview';
+  static const routeName = '/sections';
 
   static Route<void> route() {
-    return MaterialPageRoute<void>(builder: (_) => const OverviewPage());
+    return MaterialPageRoute<void>(builder: (_) => const SectionsPage());
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((AppBloc bloc) => bloc.state.user);
     return BlocProvider(
       create: (context) {
-        return OverviewBloc(repository: _repository)..add(LoadCategoriesEvent());
+        return SectionsCubit(user)..fetchAllSections();
       },
       child: Scaffold(
           appBar: AppBar(
@@ -38,22 +37,23 @@ class OverviewPage extends StatelessWidget {
             ],
           ),
           drawer: Drawer(),
-          body: BlocBuilder<OverviewBloc, OverviewState>(
+          body: BlocBuilder<SectionsCubit, SectionsState>(
             builder: (context, state) {
-              return state.status == OverviewStatus.loading
+              return state.status == DataStatus.loading
                   ? Center(child: CircularProgressIndicator())
                   : ListView.builder(
-                      itemCount: state.categoryList.length,
+                      itemCount: state.sectionSummaryList.length,
                       itemBuilder: (context, index) {
-                        final category = state.categoryList[index];
+                        print('ICON CODE: ${Icons.wallet.codePoint}');
+                        final section = state.sectionSummaryList[index];
                         return EntityView(
-                          icon: Icon(IconData(category.iconCodePoint,
+                          icon: Icon(IconData(section.iconCodePoint,
                               fontFamily: 'MaterialIcons')),
-                          title: category.name,
-                          routeName: category.routeName,
+                          title: section.name,
+                          routeName: section.name,
                           //subtitle: 'subtitle',
                           semanticsLabel: 'semanticsLabel',
-                          amount: category.amount,
+                          amount: section.amount,
                           suffix: Icon(Icons.chevron_right),
                         );
                       });

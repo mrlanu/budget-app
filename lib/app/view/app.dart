@@ -2,7 +2,6 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/login/login.dart';
-import 'package:budget_app/overview/view/overview_page.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../sections/view/sections_page.dart';
 import '../../theme.dart';
 
 class App extends StatefulWidget {
@@ -86,7 +86,7 @@ class _AppViewState extends State<AppView> {
             AccountsPage.routeName: (context) => AccountsPage(),
             SignUpPage.routeName: (context) => SignUpPage(),
             LoginPage.routeName: (context) => LoginPage(),
-            OverviewPage.routeName: (context) => OverviewPage(),
+            SectionsPage.routeName: (context) => SectionsPage(),
           },
           builder: (context, child) {
             return BlocListener<AppBloc, AppState>(
@@ -94,7 +94,7 @@ class _AppViewState extends State<AppView> {
                 switch (state.status) {
                   case AppStatus.authenticated:
                     _navigator.pushNamedAndRemoveUntil<void>(
-                      OverviewPage.routeName,
+                      SectionsPage.routeName,
                           (route) => false,
                     );
                     break;
@@ -112,22 +112,6 @@ class _AppViewState extends State<AppView> {
             );
           },
           onGenerateRoute: (_) => SplashPage.route(),
-          /*home: BlocBuilder<AppBloc, AppState>(
-            builder: (context, state) {
-              switch (state.status) {
-                case AppStatus.authenticated:
-                  return OverviewPage();
-                case AppStatus.unauthenticated:
-                  return LoginPage();
-                case AppStatus.splash:
-                  return SplashPage();
-              }
-            },
-          ),
-          routes: {
-            OverviewPage.routeName: (context) => OverviewPage(),
-            AccountsPage.routeName: (context) => AccountsPage(),
-          },*/
         );
       },
     );
