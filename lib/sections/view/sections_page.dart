@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
 import '../../categories/view/categories_page.dart';
+import '../../shared/widgets/expandable_fab.dart';
 
 class SectionsPage extends StatelessWidget {
   const SectionsPage({Key? key}) : super(key: key);
@@ -39,6 +40,29 @@ class SectionsPage extends StatelessWidget {
             ],
           ),
           drawer: Drawer(),
+          floatingActionButton: ExpandableFab(
+            distance: 112.0,
+            children: [
+              ActionButton(
+                onPressed: () {
+
+                },
+                icon: const Icon(Icons.account_balance),
+              ),
+              ActionButton(
+                onPressed: () {
+
+                },
+                icon: const Icon(Icons.monetization_on_outlined),
+              ),
+              ActionButton(
+                onPressed: () {
+
+                },
+                icon: const Icon(Icons.key),
+              ),
+            ],
+          ),
           body: BlocBuilder<SectionsCubit, SectionsState>(
             builder: (context, state) {
               return state.status == DataStatus.loading
