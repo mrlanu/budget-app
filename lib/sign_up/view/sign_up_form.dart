@@ -2,6 +2,7 @@ import 'package:budget_app/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 class SignUpForm extends StatelessWidget {
@@ -22,18 +23,51 @@ class SignUpForm extends StatelessWidget {
         }
       },
       child: Align(
-        alignment: const Alignment(0, -1 / 3),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _EmailInput(),
-            const SizedBox(height: 8),
-            _PasswordInput(),
-            const SizedBox(height: 8),
-            _ConfirmPasswordInput(),
-            const SizedBox(height: 8),
-            _SignUpButton(),
-          ],
+        alignment: const Alignment(0, -1),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _FilledCard(),
+                SizedBox(height: 130.h),
+                _EmailInput(),
+                const SizedBox(height: 8),
+                _PasswordInput(),
+                const SizedBox(height: 8),
+                _ConfirmPasswordInput(),
+                const SizedBox(height: 8),
+                _SignUpButton(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FilledCard extends StatelessWidget {
+  const _FilledCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    print('Color - ${Theme.of(context).colorScheme.primary}');
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(60.r)),
+      ),
+      color: Theme.of(context).colorScheme.primaryContainer,
+      child: SizedBox(
+        width: 300.w,
+        height: 300.h,
+        child: Padding(
+          padding: EdgeInsets.all(30.h),
+          child: Image.asset(
+            'assets/images/icon_logo.png',
+          ),
         ),
       ),
     );
@@ -51,8 +85,10 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<SignUpCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            labelText: 'email',
+            icon: Icon(Icons.email, color: Colors.orangeAccent,),
+            labelText: 'Email',
             helperText: '',
+            border: OutlineInputBorder(),
             errorText: state.email.invalid ? 'invalid email' : null,
           ),
         );
@@ -73,7 +109,9 @@ class _PasswordInput extends StatelessWidget {
               context.read<SignUpCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            labelText: 'password',
+            icon: Icon(Icons.password, color: Colors.orangeAccent,),
+            border: OutlineInputBorder(),
+            labelText: 'Password',
             helperText: '',
             errorText: state.password.invalid ? 'invalid password' : null,
           ),
@@ -98,7 +136,9 @@ class _ConfirmPasswordInput extends StatelessWidget {
               .confirmedPasswordChanged(confirmPassword),
           obscureText: true,
           decoration: InputDecoration(
-            labelText: 'confirm password',
+            icon: Icon(Icons.key, color: Colors.orangeAccent,),
+            border: OutlineInputBorder(),
+            labelText: 'Confirm password',
             helperText: '',
             errorText: state.confirmedPassword.invalid
                 ? 'passwords do not match'
