@@ -8,10 +8,6 @@ class LoginPage extends StatelessWidget {
 
   static const routeName = '/login';
 
-  static Route<void> route() {
-    return MaterialPageRoute<void>(builder: (_) => const LoginPage());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

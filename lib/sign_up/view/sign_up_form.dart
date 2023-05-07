@@ -25,19 +25,19 @@ class SignUpForm extends StatelessWidget {
       child: Align(
         alignment: const Alignment(0, -1),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(70.w),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _FilledCard(),
-                SizedBox(height: 130.h),
+                FilledCard(),
+                SizedBox(height: 100.h),
                 _EmailInput(),
-                const SizedBox(height: 8),
+                SizedBox(height: 20.h),
                 _PasswordInput(),
-                const SizedBox(height: 8),
+                SizedBox(height: 20.h),
                 _ConfirmPasswordInput(),
-                const SizedBox(height: 8),
+                SizedBox(height: 20.h),
                 _SignUpButton(),
               ],
             ),
@@ -48,8 +48,8 @@ class SignUpForm extends StatelessWidget {
   }
 }
 
-class _FilledCard extends StatelessWidget {
-  const _FilledCard({super.key});
+class FilledCard extends StatelessWidget {
+  const FilledCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +57,14 @@ class _FilledCard extends StatelessWidget {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(60.r)),
+        borderRadius: BorderRadius.all(Radius.circular(200.r)),
       ),
       color: Theme.of(context).colorScheme.primaryContainer,
       child: SizedBox(
-        width: 300.w,
-        height: 300.h,
+        width: 800.w,
+        height: 500.w,
         child: Padding(
-          padding: EdgeInsets.all(30.h),
+          padding: EdgeInsets.all(100.h),
           child: Image.asset(
             'assets/images/icon_logo.png',
           ),
@@ -164,7 +164,7 @@ class _SignUpButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            backgroundColor: Colors.orangeAccent,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
           onPressed: state.status.isValidated
               ? () => context.read<SignUpCubit>().signUpFormSubmitted()
