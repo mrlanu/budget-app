@@ -68,8 +68,10 @@ class _EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-
-            icon: Icon(Icons.email, color: Colors.orangeAccent,),
+            icon: Icon(
+              Icons.email,
+              color: Colors.orangeAccent,
+            ),
             border: OutlineInputBorder(),
             labelText: 'Email',
             helperText: '',
@@ -93,7 +95,10 @@ class _PasswordInput extends StatelessWidget {
               context.read<LoginCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.key, color: Colors.orangeAccent,),
+            icon: Icon(
+              Icons.key,
+              color: Colors.orangeAccent,
+            ),
             border: OutlineInputBorder(),
             labelText: 'Password',
             helperText: '',
@@ -114,23 +119,23 @@ class _LoginButton extends StatelessWidget {
         return state.status.isSubmissionInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
-          key: const Key('loginForm_continue_raisedButton'),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          ),
-          onPressed: state.status.isValidated
-              ? () => context.read<LoginCubit>().logInWithCredentials()
-              : null,
-          child: const Text('LOGIN'),
-        );
+                key: const Key('loginForm_continue_raisedButton'),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                ),
+                onPressed: state.status.isValidated
+                    ? () => context.read<LoginCubit>().logInWithCredentials()
+                    : null,
+                child: const Text('LOGIN'),
+              );
       },
     );
   }
 }
-
 
 class _GoogleLoginButton extends StatelessWidget {
   @override

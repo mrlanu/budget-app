@@ -1,11 +1,11 @@
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/section.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
-import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/transaction/cubit/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:formz/formz.dart';
 import 'package:intl/intl.dart';
 
 import '../../shared/repositories/shared_repository.dart';
@@ -16,11 +16,14 @@ class TransactionForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(50.w),
+      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 50.w),
       child: SingleChildScrollView(
         child: Column(
           children: [
             _AmountInput(),
+            SizedBox(
+              height: 30.h,
+            ),
             _DateInput(),
             SizedBox(
               height: 75.h,
@@ -52,19 +55,24 @@ class TransactionForm extends StatelessWidget {
 class _AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      onChanged: (amount) =>
-          context.read<TransactionCubit>().amountChanged(amount),
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        icon: Icon(
-          Icons.attach_money,
-          color: Colors.orangeAccent,
-        ),
-        border: OutlineInputBorder(),
-        labelText: 'Amount',
-        helperText: '',
-      ),
+    return BlocBuilder<TransactionCubit, TransactionState>(
+      builder: (context, state) {
+        return TextField(
+          onChanged: (amount) =>
+              context.read<TransactionCubit>().amountChanged(amount),
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            icon: Icon(
+              Icons.attach_money,
+              color: Colors.orangeAccent,
+            ),
+            border: OutlineInputBorder(),
+            labelText: 'Amount',
+            helperText: '',
+            errorText: state.amount.invalid ? 'invalid amount' : null,
+          ),
+        );
+      },
     );
   }
 }
@@ -242,7 +250,7 @@ class _SubmitButton extends StatelessWidget {
     return BlocBuilder<TransactionCubit, TransactionState>(
       //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        return state.status == DataStatus.loading
+        return state.status.isSubmissionInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -252,8 +260,12 @@ class _SubmitButton extends StatelessWidget {
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
                 ),
-                onPressed: () =>
-                    context.read<TransactionCubit>().submit(),
+                onPressed: state.status.isValidated &&
+                        state.selectedCategory != null &&
+                        state.selectedSubcategory != null &&
+                        state.selectedAccount != null
+                    ? () => context.read<TransactionCubit>().submit()
+                    : null,
                 child: const Text('ADD'),
               );
       },

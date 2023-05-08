@@ -2,7 +2,7 @@ part of 'transaction_cubit.dart';
 
 class TransactionState extends Equatable {
   TransactionState({
-    this.amount = 0.0,
+    this.amount = const Amount.pure(),
     this.date,
     this.categories = const [],
     this.selectedCategory,
@@ -10,11 +10,11 @@ class TransactionState extends Equatable {
     this.selectedSubcategory,
     this.selectedAccount,
     this.notes = '',
-    this.status = DataStatus.pure,
+    this.status = FormzStatus.pure,
     this.errorMessage,
   });
 
-  final double amount;
+  final Amount amount;
   final DateTime? date;
   final List<Category> categories;
   final Category? selectedCategory;
@@ -22,7 +22,7 @@ class TransactionState extends Equatable {
   final Subcategory? selectedSubcategory;
   final Category? selectedAccount;
   final String notes;
-  final DataStatus status;
+  final FormzStatus status;
   final String? errorMessage;
 
   @override
@@ -40,7 +40,7 @@ class TransactionState extends Equatable {
       ];
 
   TransactionState copyWith({
-    double? amount,
+    Amount? amount,
     DateTime? date,
     List<Category>? categories,
     Category? selectedCategory,
@@ -48,7 +48,7 @@ class TransactionState extends Equatable {
     Subcategory? selectedSubcategory,
     Category? selectedAccount,
     String? notes,
-    DataStatus? status,
+    FormzStatus? status,
     String? errorMessage,
   }) {
     return TransactionState(
@@ -66,7 +66,7 @@ class TransactionState extends Equatable {
   }
 
   TransactionState copyWithResetSubcategory({
-    double? amount,
+    Amount? amount,
     DateTime? date,
     List<Category>? categories,
     Category? selectedCategory,
@@ -74,7 +74,7 @@ class TransactionState extends Equatable {
     Subcategory? selectedSubcategory,
     Category? selectedAccount,
     String? notes,
-    DataStatus? status,
+    FormzStatus? status,
     String? errorMessage,
   }) {
     return TransactionState(

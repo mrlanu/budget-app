@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
-import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/transaction/models/transaction.dart';
 import 'package:budget_app/transaction/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:form_inputs/form_inputs.dart';
+import 'package:formz/formz.dart';
 
 import '../../categories/models/section.dart';
 import '../../shared/repositories/shared_repository.dart';
@@ -28,9 +29,11 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   void amountChanged(String value) {
+    final amount = Amount.dirty(value);
     emit(
       state.copyWith(
-        amount: double.parse(value),
+        amount: amount,
+        status: Formz.validate([amount]),
       ),
     );
   }
@@ -63,14 +66,20 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   Future<void> submit() async {
+    emit(state.copyWith(status: FormzStatus.submissionInProgress));
     final transaction = Transaction(
         budgetId: _sharedRepository.budget!.id,
         date: state.date ?? DateTime.now(),
         type: TransactionType.EXPENSE,
-        amount: state.amount.toString(),
+        amount: state.amount.value,
         categoryId: state.selectedCategory!.id,
         subcategoryId: state.selectedSubcategory!.id,
         accountId: state.selectedAccount!.id);
-    _transactionsRepository.createTransaction(transaction);
+    try {
+      await _transactionsRepository.createTransaction(transaction);
+      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+    } catch (e) {
+      emit(state.copyWith(status: FormzStatus.submissionFailure));
+    }
   }
 }

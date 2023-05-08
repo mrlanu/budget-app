@@ -60,7 +60,7 @@ class SectionsPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushNamed(TransactionPage.routeName);
                 },
-                icon: const Icon(Icons.key),
+                icon: const Icon(Icons.account_balance_wallet),
               ),
             ],
           ),
