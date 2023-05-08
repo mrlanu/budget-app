@@ -18,6 +18,7 @@ class SectionsCubit extends Cubit<SectionsState> {
   Future<void> fetchAllSections() async {
     try {
       final sections = await _sharedRepository.fetchAllSections();
+      _sharedRepository.fetchBudget();
       emit(state.copyWith(
           status: DataStatus.success, sectionSummaryList: sections));
     } catch (e) {

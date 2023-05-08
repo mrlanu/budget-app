@@ -6,6 +6,9 @@ import 'package:budget_app/login/login.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
+import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/view/transaction_form.dart';
+import 'package:budget_app/transaction/view/transaction_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,8 +76,10 @@ class _AppViewState extends State<AppView> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return RepositoryProvider(
-          create: (context) => SharedRepositoryImpl(user),
+        return MultiRepositoryProvider(providers: [
+          RepositoryProvider(create: (context) => SharedRepositoryImpl(user: user)),
+          RepositoryProvider(create: (context) => TransactionRepositoryImpl(user: user)),
+        ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
@@ -93,7 +98,8 @@ class _AppViewState extends State<AppView> {
               SignUpPage.routeName: (context) => SignUpPage(),
               LoginPage.routeName: (context) => LoginPage(),
               SectionsPage.routeName: (context) => SectionsPage(),
-              CategoriesPage.routeName: (context) => CategoriesPage()
+              CategoriesPage.routeName: (context) => CategoriesPage(),
+              TransactionPage.routeName: (context) => TransactionPage(),
             },
             builder: (context, child) {
               return BlocListener<AppBloc, AppState>(

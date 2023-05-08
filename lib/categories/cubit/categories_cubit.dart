@@ -17,7 +17,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   Future<void> fetchAllCategories(String section) async {
     try {
-      final categories = await _sharedRepository.fetchAllCategories(section);
+      final categories = await _sharedRepository.fetchSummaryByCategory(section);
       emit(state.copyWith(
           status: DataStatus.success, categorySummaryList: categories));
     } catch (e) {
