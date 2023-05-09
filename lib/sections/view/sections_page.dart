@@ -15,10 +15,6 @@ class SectionsPage extends StatelessWidget {
 
   static const routeName = '/sections';
 
-  static Route<void> route() {
-    return MaterialPageRoute<void>(builder: (_) => const SectionsPage());
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -41,28 +37,32 @@ class SectionsPage extends StatelessWidget {
             ],
           ),
           drawer: Drawer(),
-          floatingActionButton: ExpandableFab(
-            distance: 112.0,
-            children: [
-              ActionButton(
-                onPressed: () {
-
-                },
-                icon: const Icon(Icons.account_balance),
-              ),
-              ActionButton(
-                onPressed: () {
-
-                },
-                icon: const Icon(Icons.monetization_on_outlined),
-              ),
-              ActionButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(TransactionPage.routeName);
-                },
-                icon: const Icon(Icons.account_balance_wallet),
-              ),
-            ],
+          floatingActionButton: BlocBuilder<SectionsCubit, SectionsState>(
+            builder: (context, state) {
+              return ExpandableFab(
+                distance: 112.0,
+                children: [
+                  ActionButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.account_balance),
+                  ),
+                  ActionButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.monetization_on_outlined),
+                  ),
+                  ActionButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(TransactionPage.routeName)
+                          .then((_) {
+                        context.read<SectionsCubit>().fetchAllSections();
+                      });
+                    },
+                    icon: const Icon(Icons.account_balance_wallet),
+                  ),
+                ],
+              );
+            },
           ),
           body: BlocBuilder<SectionsCubit, SectionsState>(
             builder: (context, state) {

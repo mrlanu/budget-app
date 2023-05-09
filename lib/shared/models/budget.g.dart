@@ -15,6 +15,9 @@ Budget _$BudgetFromJson(Map<String, dynamic> json) => Budget(
       subcategoryList: (json['subcategoryList'] as List<dynamic>)
           .map((e) => Subcategory.fromJson(e as Map<String, dynamic>))
           .toList(),
+      accountBriefList: (json['accountBriefList'] as List<dynamic>)
+          .map((e) => AccountBrief.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$BudgetToJson(Budget instance) => <String, dynamic>{
@@ -22,4 +25,5 @@ Map<String, dynamic> _$BudgetToJson(Budget instance) => <String, dynamic>{
       'userId': instance.userId,
       'categoryList': instance.categoryList,
       'subcategoryList': instance.subcategoryList,
+      'accountBriefList': instance.accountBriefList,
     };

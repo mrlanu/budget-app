@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
 import 'package:budget_app/transaction/models/transaction.dart';
 import 'package:budget_app/transaction/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
@@ -57,15 +59,15 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(selectedSubcategory: subcategory));
   }
 
-  void accountSelected(Category category) {
-    emit(state.copyWith(selectedAccount: category));
+  void accountSelected(AccountBrief accountBrief) {
+    emit(state.copyWith(selectedAccount: accountBrief));
   }
 
   void notesChanged(String notes) {
     emit(state.copyWith(notes: notes));
   }
 
-  Future<void> submit() async {
+  Future<void> submit(BuildContext context) async {
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     final transaction = Transaction(
         budgetId: _sharedRepository.budget!.id,
@@ -78,6 +80,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      Navigator.of(context).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzStatus.submissionFailure));
     }

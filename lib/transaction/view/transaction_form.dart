@@ -1,5 +1,5 @@
+import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/categories/models/section.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
 import 'package:budget_app/transaction/cubit/transaction_cubit.dart';
 import 'package:flutter/material.dart';
@@ -192,18 +192,17 @@ class _AccountInput extends StatelessWidget {
             items: context
                 .read<SharedRepositoryImpl>()
                 .budget
-                ?.categoryList
-                .where((cat) => cat.section == Section.ACCOUNTS)
-                .map((Category category) {
+                ?.accountBriefList
+                .map((AccountBrief accountBrief) {
               return DropdownMenuItem(
-                value: category,
-                child: Text(category.name),
+                value: accountBrief,
+                child: Text(accountBrief.name),
               );
             }).toList(),
             onChanged: (newValue) {
               context
                   .read<TransactionCubit>()
-                  .accountSelected(newValue as Category);
+                  .accountSelected(newValue as AccountBrief);
               //setState(() => selectedValue = newValue);
             },
             value: state.selectedAccount,
@@ -264,7 +263,7 @@ class _SubmitButton extends StatelessWidget {
                         state.selectedCategory != null &&
                         state.selectedSubcategory != null &&
                         state.selectedAccount != null
-                    ? () => context.read<TransactionCubit>().submit()
+                    ? () => context.read<TransactionCubit>().submit(context)
                     : null,
                 child: const Text('ADD'),
               );

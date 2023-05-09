@@ -20,7 +20,7 @@ class TransactionState extends Equatable {
   final Category? selectedCategory;
   final List<Subcategory> subcategories;
   final Subcategory? selectedSubcategory;
-  final Category? selectedAccount;
+  final AccountBrief? selectedAccount;
   final String notes;
   final FormzStatus status;
   final String? errorMessage;
@@ -46,7 +46,7 @@ class TransactionState extends Equatable {
     Category? selectedCategory,
     List<Subcategory>? subcategories,
     Subcategory? selectedSubcategory,
-    Category? selectedAccount,
+    AccountBrief? selectedAccount,
     String? notes,
     FormzStatus? status,
     String? errorMessage,
@@ -72,7 +72,7 @@ class TransactionState extends Equatable {
     Category? selectedCategory,
     List<Subcategory>? subcategories,
     Subcategory? selectedSubcategory,
-    Category? selectedAccount,
+    AccountBrief? selectedAccount,
     String? notes,
     FormzStatus? status,
     String? errorMessage,

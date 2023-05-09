@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 
+import '../../accounts/models/account_brief.dart';
 import '../../categories/models/category.dart';
 import '../../categories/models/category_summary.dart';
 import '../../categories/models/subcategory.dart';
@@ -48,11 +49,19 @@ class SharedRepositoryImpl extends SharedRepository {
                 Subcategory.fromJson(Map<String, dynamic>.from(jsonMap)))
             .toList();
 
+    final accountList =
+        List<Map<dynamic, dynamic>>.from(budgetMap['accountBriefList'])
+            .map((jsonMap) =>
+                AccountBrief.fromJson(Map<String, dynamic>.from(jsonMap)))
+            .toList();
+
     final budget = Budget(
-        id: budgetMap['id'],
-        userId: budgetMap['userId'],
-        categoryList: categoryList,
-        subcategoryList: subcategoryList);
+      id: budgetMap['id'],
+      userId: budgetMap['userId'],
+      categoryList: categoryList,
+      subcategoryList: subcategoryList,
+      accountBriefList: accountList,
+    );
 
     this.budget = budget;
   }
