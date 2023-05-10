@@ -1,14 +1,14 @@
 import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
-import 'package:budget_app/transaction/cubit/transaction_cubit.dart';
+import 'package:budget_app/transactions/transaction/cubit/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 import 'package:intl/intl.dart';
 
-import '../../shared/repositories/shared_repository.dart';
+import '../../../shared/repositories/shared_repository.dart';
 
 class TransactionForm extends StatelessWidget {
   const TransactionForm({Key? key}) : super(key: key);

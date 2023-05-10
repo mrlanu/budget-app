@@ -2,16 +2,16 @@ import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
-import 'package:budget_app/transaction/models/transaction.dart';
-import 'package:budget_app/transaction/models/transaction_type.dart';
+import 'package:budget_app/transactions/models/transaction.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../categories/models/section.dart';
-import '../../shared/repositories/shared_repository.dart';
-import '../repository/transactions_repository.dart';
+import '../../../categories/models/section.dart';
+import '../../../shared/repositories/shared_repository.dart';
+import '../../repository/transactions_repository.dart';
 
 part 'transaction_state.dart';
 

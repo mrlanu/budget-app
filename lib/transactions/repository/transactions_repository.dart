@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/transaction/models/transaction.dart';
+import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:http/http.dart' as http;
 
 abstract class TransactionsRepository {
@@ -11,6 +11,7 @@ abstract class TransactionsRepository {
   const TransactionsRepository({required this.user});
 
   Future<void> createTransaction(Transaction transaction);
+  Future<List<Transaction>> fetchAllTransaction(String budgetId);
 }
 
 class TransactionRepositoryImpl extends TransactionsRepository {
@@ -24,21 +25,26 @@ class TransactionRepositoryImpl extends TransactionsRepository {
     final url = '$baseURL/transactions';
 
     final token = await user.token;
-    final response = await http.post(Uri.parse(url), headers: {
+    await http.post(Uri.parse(url), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     }, body: json.encode(transaction.toJson()));
-
-    print('Trans: ${response.body}');
-
-    /*final result = List<Map<dynamic, dynamic>>.from(
-      json.decode(response.body) as List,
-    )
-        .map((jsonMap) =>
-        CategorySummary.fromJson(Map<String, dynamic>.from(jsonMap)))
-        .toList();
-
-    return result;*/
   }
+
+  @override
+  Future<List<Transaction>> fetchAllTransaction(String budgetId) async {
+    final url = '$baseURL/transactions?budgetId=$budgetId,date=${DateTime.now()}';
+
+    final token = await user.token;
+    final response = await http.get(Uri.parse(url), headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    });
+
+    print('Transactions: ${response.body}');
+    return [];
+  }
+
+
 
 }

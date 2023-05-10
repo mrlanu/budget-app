@@ -1,10 +1,13 @@
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
+import 'package:budget_app/paginator/month_paginator.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
+import 'package:budget_app/transactions/view/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../shared/shared.dart';
 import '../../shared/widgets/entity_view_widget.dart';
+import '../../transactions/transaction/view/transaction_page.dart';
 
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({Key? key}) : super(key: key);
@@ -18,7 +21,18 @@ class CategoriesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Categories'),
+        title: MonthPaginator(
+          onLeft: (value) => print('On left: $value'),
+          onRight: (value) => print('On right: $value'),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushNamed(TransactionPage.routeName);
+            },
+          )
+        ],
       ),
       body: BlocProvider(
         create: (context) =>
@@ -40,7 +54,10 @@ class CategoriesPage extends StatelessWidget {
                         //subtitle: 'subtitle',
                         amount: cat.amount,
                         suffix: Icon(Icons.chevron_right),
-                        onTap: () {},
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(TransactionsPage.routeName, arguments: {
+                          "category": cat.category,
+                        }),
                       );
                     });
           },

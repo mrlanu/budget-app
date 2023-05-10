@@ -6,9 +6,8 @@ import 'package:budget_app/login/login.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
-import 'package:budget_app/transaction/view/transaction_form.dart';
-import 'package:budget_app/transaction/view/transaction_page.dart';
+import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/transactions/view/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../sections/view/sections_page.dart';
 import '../../theme.dart';
+import '../../transactions/transaction/view/transaction_page.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -100,6 +100,7 @@ class _AppViewState extends State<AppView> {
               SectionsPage.routeName: (context) => SectionsPage(),
               CategoriesPage.routeName: (context) => CategoriesPage(),
               TransactionPage.routeName: (context) => TransactionPage(),
+              TransactionsPage.routeName: (context) => TransactionsPage(),
             },
             builder: (context, child) {
               return BlocListener<AppBloc, AppState>(

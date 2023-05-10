@@ -1,4 +1,4 @@
-import 'package:budget_app/transaction/models/transaction_type.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction.g.dart';

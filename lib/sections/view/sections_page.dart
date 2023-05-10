@@ -2,7 +2,7 @@ import 'package:budget_app/sections/cubit/sections_cubit.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/shared/widgets/entity_view_widget.dart';
-import 'package:budget_app/transaction/view/transaction_page.dart';
+import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
