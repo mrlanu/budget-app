@@ -7,7 +7,6 @@ import '../../accounts/models/account_brief.dart';
 import '../../categories/models/category.dart';
 import '../../categories/models/category_summary.dart';
 import '../../categories/models/subcategory.dart';
-import '../../sections/models/section_summary.dart';
 import '../models/budget.dart';
 
 abstract class SharedRepository {
@@ -18,7 +17,7 @@ abstract class SharedRepository {
 
   Future<void> fetchBudget();
 
-  Future<List<SectionSummary>> fetchAllSections();
+  Future<Map<String, double>> fetchAllSections();
 
   Future<List<CategorySummary>> fetchSummaryByCategory(String section);
 }
@@ -67,7 +66,7 @@ class SharedRepositoryImpl extends SharedRepository {
   }
 
   @override
-  Future<List<SectionSummary>> fetchAllSections() async {
+  Future<Map<String, double>> fetchAllSections() async {
     final url = '$baseURL/budgets/sections';
 
     final token = await user.token;
@@ -75,15 +74,13 @@ class SharedRepositoryImpl extends SharedRepository {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     });
-
-    final sections = List<Map<dynamic, dynamic>>.from(
-      json.decode(response.body) as List,
-    )
-        .map((jsonMap) =>
-            SectionSummary.fromJson(Map<String, dynamic>.from(jsonMap)))
-        .toList();
-
-    return sections;
+    final decodedResponse = jsonDecode(response.body);
+    final Map<String, double> result = {
+      'EXPENSES': decodedResponse['EXPENSES'],
+      'INCOME': decodedResponse['INCOME'],
+      'ACCOUNTS': decodedResponse['ACCOUNTS']
+    };
+    return result;
   }
 
   @override
@@ -103,6 +100,7 @@ class SharedRepositoryImpl extends SharedRepository {
             CategorySummary.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
 
+    print('Result: $result');
     return result;
   }
 }

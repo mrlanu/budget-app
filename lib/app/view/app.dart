@@ -1,7 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
-import 'package:budget_app/categories/view/categories_page.dart';
+import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
@@ -13,7 +13,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../sections/view/sections_page.dart';
 import '../../theme.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
 
@@ -94,11 +93,10 @@ class _AppViewState extends State<AppView> {
               brightness: Brightness.dark,
             ),
             routes: {
+              HomePage.routeName: (context) => HomePage(),
               AccountsPage.routeName: (context) => AccountsPage(),
               SignUpPage.routeName: (context) => SignUpPage(),
               LoginPage.routeName: (context) => LoginPage(),
-              SectionsPage.routeName: (context) => SectionsPage(),
-              CategoriesPage.routeName: (context) => CategoriesPage(),
               TransactionPage.routeName: (context) => TransactionPage(),
               TransactionsPage.routeName: (context) => TransactionsPage(),
             },
@@ -108,8 +106,7 @@ class _AppViewState extends State<AppView> {
                   switch (state.status) {
                     case AppStatus.authenticated:
                       _navigator.pushNamedAndRemoveUntil<void>(
-                        SectionsPage.routeName,
-                            (route) => false,
+                        HomePage.routeName, (route) => false,
                       );
                       break;
                     case AppStatus.unauthenticated:
