@@ -41,7 +41,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   void dateChanged(DateTime pickedDate) {
-    //String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+    /*String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);*/
     emit(
       state.copyWith(date: pickedDate),
     );
@@ -70,13 +70,14 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future<void> submit(BuildContext context) async {
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     final transaction = Transaction(
+        id: '',
         budgetId: _sharedRepository.budget!.id,
         date: state.date ?? DateTime.now(),
         type: TransactionType.EXPENSE,
         amount: state.amount.value,
         categoryId: state.selectedCategory!.id,
         subcategoryId: state.selectedSubcategory!.id,
-        accountId: state.selectedAccount!.id);
+        accountId: state.selectedAccount!.id,);
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzStatus.submissionSuccess));

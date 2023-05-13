@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class EntityView extends StatelessWidget {
   const EntityView({
@@ -8,6 +9,7 @@ class EntityView extends StatelessWidget {
     required this.title,
     required this.routeName,
     this.subtitle,
+    this.subtitlePrefix,
     required this.amount,
     required this.suffix,
     required this.onTap,
@@ -17,6 +19,7 @@ class EntityView extends StatelessWidget {
   final String title;
   final String routeName;
   final String? subtitle;
+  final String? subtitlePrefix;
   final String amount;
   final Widget suffix;
   final VoidCallback onTap;
@@ -30,7 +33,7 @@ class EntityView extends StatelessWidget {
           children: [
             Container(
               padding: EdgeInsets.only(left: 30.w, right: 30.w),
-              height: 250.h,
+              height: 220.h,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,39 +43,45 @@ class EntityView extends StatelessWidget {
                     child: icon,
                   ),
                   Expanded(
-                      child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: textTheme.titleMedium!.fontSize,
-                            ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: textTheme.titleLarge!.fontSize,
                           ),
-                          if (subtitle != null)
-                            Text(
+                        ),
+                        Row(
+                          children: [
+                            if (subtitlePrefix != null) Row(
+                              children: [
+                                Text(
+                                  subtitlePrefix!,
+                                  style: TextStyle(
+                                      fontSize: textTheme.titleSmall!.fontSize),
+                                ),
+                                SizedBox(width: 20.w,),
+                              ],
+                            ),
+                            if (subtitle != null)  Text(
                               subtitle!,
                               style: TextStyle(
                                   fontSize: textTheme.titleSmall!.fontSize),
                             ),
-                        ],
-                      ),
-                      Container(
-                        child: Text(
-                          '\$ $amount',
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .fontSize,
-                              fontWeight: FontWeight.bold),
+                          ],
                         ),
-                      ),
-                    ],
-                  )),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '\$ $amount',
+                    style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.titleLarge!.fontSize,
+                        fontWeight: FontWeight.bold),
+                  ),
                   Container(
                     margin: EdgeInsets.all(40.w),
                     child: suffix,

@@ -7,7 +7,7 @@ part of 'transaction.dart';
 // **************************************************************************
 
 Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
-      id: json['id'] as String?,
+      id: json['id'] as String,
       budgetId: json['budgetId'] as String,
       date: DateTime.parse(json['date'] as String),
       type: $enumDecode(_$TransactionTypeEnumMap, json['type']),

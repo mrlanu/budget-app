@@ -17,18 +17,18 @@ class CategoriesPage extends StatelessWidget {
           : ListView.builder(
               itemCount: state.categorySummaryList.length,
               itemBuilder: (context, index) {
-                final cat = state.categorySummaryList[index];
+                final catSection = state.categorySummaryList[index];
                 return EntityView(
                   icon: Icon(
-                      IconData(cat.iconCodePoint, fontFamily: 'MaterialIcons')),
-                  title: cat.category.name,
-                  routeName: cat.category.name,
+                      IconData(catSection.iconCodePoint, fontFamily: 'MaterialIcons')),
+                  title: catSection.category.name,
+                  routeName: catSection.category.name,
                   //subtitle: 'subtitle',
-                  amount: cat.amount,
+                  amount: catSection.amount,
                   suffix: Icon(Icons.chevron_right),
                   onTap: () => Navigator.of(context)
                       .pushNamed(TransactionsPage.routeName, arguments: {
-                    "category": cat.category,
+                    'category': catSection.category, 'date': state.selectedDate ?? DateTime.now(),
                   }),
                 );
               });

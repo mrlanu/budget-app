@@ -16,6 +16,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   void setTab(int tabIndex) => emit(state.copyWith(tab: HomeTab.values[tabIndex]));
 
+  void setDate(DateTime dateTime) => emit(state.copyWith(selectedDate: dateTime));
+
   Future<void> fetchAllSections() async {
     try {
       final sections = await _sharedRepository.fetchAllSections();

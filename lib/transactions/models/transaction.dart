@@ -5,7 +5,7 @@ part 'transaction.g.dart';
 
 @JsonSerializable()
 class Transaction {
-  final String? id;
+  final String id;
   final String budgetId;
   final DateTime date;
   final TransactionType type;
@@ -16,7 +16,7 @@ class Transaction {
   final String accountId;
 
   const Transaction(
-      {this.id,
+      {required this.id,
       required this.budgetId,
       required this.date,
       required this.type,

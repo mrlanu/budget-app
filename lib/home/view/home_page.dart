@@ -39,7 +39,12 @@ class HomeView extends StatelessWidget {
           child: SafeArea(
             child: Scaffold(
                 appBar: AppBar(
-                  title: MonthPaginator(onLeft: (){}, onRight: (){}),
+                  title: MonthPaginator(
+                    onLeft: (date) => context
+                        .read<HomeCubit>().setDate(date),
+                    onRight: (date) => context
+                        .read<HomeCubit>().setDate(date),
+                  ),
                   centerTitle: true,
                   actions: <Widget>[
                     IconButton(
@@ -54,9 +59,8 @@ class HomeView extends StatelessWidget {
                 drawer: Drawer(),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(TransactionPage.routeName);
-                        /*.then((_) {
+                    Navigator.of(context).pushNamed(TransactionPage.routeName);
+                    /*.then((_) {
                       context.read<HomeCubit>().fetchAllSections();
                     });*/
                   },
@@ -65,7 +69,6 @@ class HomeView extends StatelessWidget {
                 body: CategoriesPage(),
                 bottomNavigationBar: Container(
                   height: 230.h,
-                  width: 500.w,
                   decoration: BoxDecoration(
                       color: scheme.primary,
                       borderRadius: BorderRadius.only(

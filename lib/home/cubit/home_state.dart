@@ -17,6 +17,7 @@ class HomeState extends Equatable {
   final HomeTab tab;
   final Map<String, double> sectionSummary;
   final List<CategorySummary> categorySummaryList;
+  final DateTime? selectedDate;
   final String? errorMessage;
 
   const HomeState(
@@ -28,12 +29,14 @@ class HomeState extends Equatable {
         'INCOME': 0.0
       },
       this.categorySummaryList = const [],
+      this.selectedDate,
       this.errorMessage});
 
   HomeState copyWith({
     HomeStatus? status,
     Map<String, double>? sectionSummary,
     List<CategorySummary>? categorySummaryList,
+    DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,
   }) {
@@ -41,6 +44,7 @@ class HomeState extends Equatable {
       status: status ?? this.status,
       sectionSummary: sectionSummary ?? this.sectionSummary,
       categorySummaryList: categorySummaryList ?? this.categorySummaryList,
+      selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
       errorMessage: errorMessage ?? this.errorMessage,
     );
@@ -48,5 +52,5 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [status, tab, sectionSummary, categorySummaryList, errorMessage];
+      [status, tab, sectionSummary, categorySummaryList, selectedDate, errorMessage];
 }
