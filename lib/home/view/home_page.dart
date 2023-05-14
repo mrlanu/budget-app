@@ -18,8 +18,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => HomeCubit(context.read<SharedRepositoryImpl>())
-        ..fetchAllSections()
-        ..fetchAllCategories(HomeTab.expenses.name),
+        ..init(),
       child: HomeView(),
     );
   }
@@ -40,10 +39,8 @@ class HomeView extends StatelessWidget {
             child: Scaffold(
                 appBar: AppBar(
                   title: MonthPaginator(
-                    onLeft: (date) => context
-                        .read<HomeCubit>().setDate(date),
-                    onRight: (date) => context
-                        .read<HomeCubit>().setDate(date),
+                    onLeft: (date) => context.read<HomeCubit>().setDate(date),
+                    onRight: (date) => context.read<HomeCubit>().setDate(date),
                   ),
                   centerTitle: true,
                   actions: <Widget>[

@@ -67,7 +67,7 @@ class SharedRepositoryImpl extends SharedRepository {
 
   @override
   Future<Map<String, double>> fetchAllSections() async {
-    final url = '$baseURL/budgets/sections';
+    final url = '$baseURL/budgets/sections?budgetId=${budget?.id}';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {
@@ -85,7 +85,7 @@ class SharedRepositoryImpl extends SharedRepository {
 
   @override
   Future<List<CategorySummary>> fetchSummaryByCategory(String section) async {
-    final url = '$baseURL/budgets/categories?section=$section';
+    final url = '$baseURL/budgets/categories?budgetId=${budget?.id}&section=$section';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {
