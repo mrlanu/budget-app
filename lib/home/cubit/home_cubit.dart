@@ -35,8 +35,13 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void setTab(int tabIndex) =>
-      emit(state.copyWith(tab: HomeTab.values[tabIndex]));
+  void setTab(int tabIndex) {
+    emit(state.copyWith(tab: HomeTab.values[tabIndex]));
+    fetchSectionCategorySummary(
+        budgetId: state.budget!.id,
+        section: state.tab.name,
+        dateTime: state.selectedDate ?? DateTime.now());
+  }
 
   void dateChanged(DateTime dateTime) {
     fetchSectionCategorySummary(

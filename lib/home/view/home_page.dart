@@ -30,11 +30,9 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*final selectedTab = context.select((HomeCubit cubit) => cubit.state.tab);*/
     final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final homeCubit = BlocProvider.of<HomeCubit>(context);
         return Container(
           color: scheme.background,
           child: SafeArea(
@@ -58,108 +56,99 @@ class HomeView extends StatelessWidget {
                   ],
                 ),
                 drawer: Drawer(),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<TransactionPage>(
-                        builder: (context) {
-                          return BlocProvider.value(
-                            value: homeCubit,
-                            child: TransactionPage(),
-                          );
-                        },
-                      ),
-                    ).then((_) => context
-                        .read<HomeCubit>()
-                        .fetchSectionCategorySummary(
-                            budgetId: state.budget!.id,
-                            section: state.tab.name,
-                            dateTime: state.selectedDate ?? DateTime.now()));
-                  },
-                  child: const Icon(Icons.add),
-                ),
+                floatingActionButton: _buildFAB(context, state),
                 body: state.budget == null
                     ? Center(child: CircularProgressIndicator())
                     : CategoriesSummary(
                         categorySummaryList:
                             state.sectionCategorySummary!.categorySummaryList,
                         dateTime: state.selectedDate),
-                bottomNavigationBar: Container(
-                  height: 230.h,
-                  decoration: BoxDecoration(
-                      color: scheme.primary,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40.h),
-                          topRight: Radius.circular(40.h)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 1,
-                        )
-                      ]),
-                  child: BottomNavigationBar(
-                    currentIndex: state.tab.index,
-                    onTap: (value) {
-                      context.read<HomeCubit>()..setTab(value);
-                    },
-                    elevation: 0,
-                    showSelectedLabels: false,
-                    showUnselectedLabels: false,
-                    selectedItemColor: scheme.primary,
-                    unselectedItemColor: scheme.tertiary,
-                    items: [
-                      BottomNavigationBarItem(
-                        label: 'expenses',
-                        icon: Column(
-                          children: [
-                            Icon(Icons.account_balance_wallet),
-                            Text(
-                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.EXPENSES] ?? '0.0'}',
-                              style: TextStyle(
-                                  fontWeight: state.tab == HomeTab.expenses
-                                      ? FontWeight.bold
-                                      : FontWeight.normal),
-                            )
-                          ],
-                        ),
-                      ),
-                      BottomNavigationBarItem(
-                        label: 'income',
-                        icon: Column(
-                          children: [
-                            Icon(Icons.monetization_on_outlined),
-                            Text(
-                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.INCOME] ?? '0.0'}',
-                              style: TextStyle(
-                                  fontWeight: state.tab == HomeTab.income
-                                      ? FontWeight.bold
-                                      : FontWeight.normal),
-                            ),
-                          ],
-                        ),
-                      ),
-                      BottomNavigationBarItem(
-                        label: 'accounts',
-                        icon: Column(
-                          children: [
-                            Icon(Icons.account_balance_outlined),
-                            Text(
-                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.ACCOUNTS] ?? '0.0'}',
-                              style: TextStyle(
-                                  fontWeight: state.tab == HomeTab.accounts
-                                      ? FontWeight.bold
-                                      : FontWeight.normal),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )),
+                bottomNavigationBar: _buildBottomNavigationBar(context, state)),
           ),
         );
       },
     );
   }
+}
+
+FloatingActionButton _buildFAB(BuildContext context, HomeState state){
+  final homeCubit = BlocProvider.of<HomeCubit>(context);
+  return FloatingActionButton(
+    onPressed: () {
+      Navigator.of(context).push(
+        MaterialPageRoute<TransactionPage>(
+          builder: (context) {
+            return BlocProvider.value(
+              value: homeCubit,
+              child: TransactionPage(),
+            );
+          },
+        ),
+      ).then((_) => context
+          .read<HomeCubit>()
+          .fetchSectionCategorySummary(
+          budgetId: state.budget!.id,
+          section: state.tab.name,
+          dateTime: state.selectedDate ?? DateTime.now()));
+    },
+    child: const Icon(Icons.add),
+  );
+}
+
+Widget _buildBottomNavigationBar(BuildContext context, HomeState state){
+  final scheme = Theme.of(context).colorScheme;
+  return Container(
+    height: 230.h,
+    decoration: BoxDecoration(
+        color: scheme.primary,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40.h),
+            topRight: Radius.circular(40.h)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 1,
+          )
+        ]),
+    child: BottomNavigationBar(
+      currentIndex: state.tab.index,
+      onTap: (value) {
+        context.read<HomeCubit>().setTab(value);
+      },
+      elevation: 0,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      selectedItemColor: scheme.primary,
+      unselectedItemColor: scheme.tertiary,
+      items: [
+        _buildBottomNavigationBarItem(label: 'expenses', icon: Icons.account_balance_wallet, section: Section.EXPENSES, state: state, tab: HomeTab.expenses),
+        _buildBottomNavigationBarItem(label: 'income', icon: Icons.monetization_on_outlined, section: Section.INCOME, state: state, tab: HomeTab.income),
+        _buildBottomNavigationBarItem(label: 'accounts', icon: Icons.account_balance_outlined, section: Section.ACCOUNTS, state: state, tab: HomeTab.accounts),
+      ],
+    ),
+  );
+}
+
+BottomNavigationBarItem _buildBottomNavigationBarItem(
+    {required String label,
+    required IconData icon,
+    required Section section,
+    required HomeState state,
+    required HomeTab tab}) {
+  return BottomNavigationBarItem(
+    label: label,
+    icon: Column(
+      children: [
+        Icon(icon),
+        Text(
+          '\$ ${state.sectionCategorySummary?.sectionMap[section] ?? '0.0'}',
+          style: TextStyle(
+              fontWeight: state.tab == tab
+                  ? FontWeight.bold
+                  : FontWeight.normal),
+        )
+      ],
+    ),
+  );
 }
