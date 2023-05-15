@@ -1,4 +1,5 @@
-import 'package:budget_app/categories/view/categories_page.dart';
+import 'package:budget_app/shared/models/section.dart';
+import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +40,8 @@ class HomeView extends StatelessWidget {
             child: Scaffold(
                 appBar: AppBar(
                   title: MonthPaginator(
-                    onLeft: (date) => context.read<HomeCubit>().setDate(date),
-                    onRight: (date) => context.read<HomeCubit>().setDate(date),
+                    onLeft: (date) => context.read<HomeCubit>().dateChanged(date),
+                    onRight: (date) => context.read<HomeCubit>().dateChanged(date),
                   ),
                   centerTitle: true,
                   actions: <Widget>[
@@ -64,10 +65,11 @@ class HomeView extends StatelessWidget {
                   child: const Icon(Icons.add),
                 ),
                 body: state.budget == null
-                    ? CircularProgressIndicator()
-                    : CategoriesPage(
-                        budgetId: state.budget!.id,
-                        section: HomeTab.values[state.tab.index].name),
+                    ? Center(child: CircularProgressIndicator())
+                    : CategoriesSummary(
+                        categorySummaryList:
+                            state.sectionCategorySummary!.categorySummaryList,
+                        dateTime: state.selectedDate),
                 bottomNavigationBar: Container(
                   height: 230.h,
                   decoration: BoxDecoration(
@@ -85,11 +87,7 @@ class HomeView extends StatelessWidget {
                   child: BottomNavigationBar(
                     currentIndex: state.tab.index,
                     onTap: (value) {
-                      context.read<HomeCubit>()
-                        ..fetchAllCategories(
-                            budgetId: state.budget!.id,
-                            section: HomeTab.values[value].name)
-                        ..setTab(value);
+                      context.read<HomeCubit>()..setTab(value);
                     },
                     elevation: 0,
                     showSelectedLabels: false,
@@ -103,7 +101,7 @@ class HomeView extends StatelessWidget {
                           children: [
                             Icon(Icons.account_balance_wallet),
                             Text(
-                              '\$ ${state.sectionSummary['EXPENSES']}',
+                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.EXPENSES] ?? '0.0'}',
                               style: TextStyle(
                                   fontWeight: state.tab == HomeTab.expenses
                                       ? FontWeight.bold
@@ -118,7 +116,7 @@ class HomeView extends StatelessWidget {
                           children: [
                             Icon(Icons.monetization_on_outlined),
                             Text(
-                              '\$ ${state.sectionSummary['INCOME']}',
+                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.INCOME] ?? '0.0'}',
                               style: TextStyle(
                                   fontWeight: state.tab == HomeTab.income
                                       ? FontWeight.bold
@@ -133,7 +131,7 @@ class HomeView extends StatelessWidget {
                           children: [
                             Icon(Icons.account_balance_outlined),
                             Text(
-                              '\$ ${state.sectionSummary['ACCOUNTS']}',
+                              '\$ ${state.sectionCategorySummary?.sectionMap[Section.ACCOUNTS] ?? '0.0'}',
                               style: TextStyle(
                                   fontWeight: state.tab == HomeTab.accounts
                                       ? FontWeight.bold

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/account_brief.dart';
-import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/categories/models/subcategory.dart';
+import 'package:budget_app/shared/models/category.dart';
+import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/shared/models/budget.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../../categories/models/section.dart';
+import '../../../shared/models/section.dart';
 import '../../../shared/repositories/shared_repository.dart';
 import '../../repository/transactions_repository.dart';
 

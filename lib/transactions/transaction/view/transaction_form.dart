@@ -1,6 +1,6 @@
 import 'package:budget_app/accounts/models/account_brief.dart';
-import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/categories/models/subcategory.dart';
+import 'package:budget_app/shared/models/category.dart';
+import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/transaction/cubit/transaction_cubit.dart';
 import 'package:flutter/material.dart';

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
-import '../../categories/models/category.dart';
+import '../../shared/models/category.dart';
 import '../../shared/widgets/entity_view_widget.dart';
 import '../cubit/transactions_cubit.dart';
 

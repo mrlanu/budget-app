@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../accounts/models/account_brief.dart';
-import '../../categories/models/category.dart';
-import '../../categories/models/subcategory.dart';
+import 'category.dart';
+import 'subcategory.dart';
 
 part 'budget.g.dart';
 

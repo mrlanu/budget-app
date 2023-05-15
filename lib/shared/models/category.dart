@@ -1,4 +1,4 @@
-import 'package:budget_app/categories/models/section.dart';
+import 'package:budget_app/shared/models/section.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'category.g.dart';
