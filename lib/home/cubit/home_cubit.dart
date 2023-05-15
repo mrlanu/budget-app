@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/shared/models/budget.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category_summary.dart';
@@ -22,11 +23,13 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> init() async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
-      //Budget will be stored in sharedRepository
-      await fetchBudget();
-      await fetchAllSections();
-      await fetchAllCategories(HomeTab.expenses.name);
-      emit(state.copyWith(status: HomeStatus.success));
+      final budget = await fetchBudget();
+      final sections = await fetchAllSections(budget.id);
+      fetchAllCategories(budgetId: budget.id, section: 'EXPENSES');
+      emit(state.copyWith(
+          status: HomeStatus.success,
+          budget: budget,
+          sectionSummary: sections));
     } catch (e) {
       emit(state.copyWith(
           status: HomeStatus.failure,
@@ -34,44 +37,25 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-
-  Future<void> fetchBudget() async {
-    try {
-      emit(state.copyWith(status: HomeStatus.loading));
-      await _sharedRepository.fetchBudget();
-      await fetchAllSections();
-      emit(state.copyWith(status: HomeStatus.success));
-    } catch (e) {
-      emit(state.copyWith(
-          status: HomeStatus.failure,
-          errorMessage: 'Fetching budget error. ${e.toString()}'));
-    }
+  Future<Budget> fetchBudget() async {
+    return await _sharedRepository.fetchBudget();
   }
 
-  Future<void> fetchAllSections() async {
-    try {
-      emit(state.copyWith(status: HomeStatus.loading));
-      final sections = await _sharedRepository.fetchAllSections();
-      emit(
-          state.copyWith(status: HomeStatus.success, sectionSummary: sections));
-    } catch (e) {
-      emit(state.copyWith(
-          status: HomeStatus.failure,
-          errorMessage: 'Fetching sections error. ${e.toString()}'));
-    }
+  Future<Map<String, double>> fetchAllSections(String budgetId) async {
+      return await _sharedRepository.fetchAllSections(budgetId);
   }
 
-  Future<void> fetchAllCategories(String section) async {
+  Future<void> fetchAllCategories(
+      {required String budgetId, required String section}) async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
-      final categories =
-          await _sharedRepository.fetchSummaryByCategory(section);
+      final categories = await _sharedRepository.fetchSummaryByCategory(
+          budgetId: budgetId, section: section);
       emit(state.copyWith(
           status: HomeStatus.success, categorySummaryList: categories));
     } catch (e) {
       emit(state.copyWith(
-          status: HomeStatus.failure,
-          errorMessage: 'Fetching categories error. ${e.toString()}'));
+          status: HomeStatus.failure, errorMessage: e.toString()));
     }
   }
 }

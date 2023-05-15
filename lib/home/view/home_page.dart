@@ -17,8 +17,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit(context.read<SharedRepositoryImpl>())
-        ..init(),
+      create: (context) =>
+          HomeCubit(context.read<SharedRepositoryImpl>())..init(),
       child: HomeView(),
     );
   }
@@ -63,7 +63,11 @@ class HomeView extends StatelessWidget {
                   },
                   child: const Icon(Icons.add),
                 ),
-                body: CategoriesPage(),
+                body: state.budget == null
+                    ? CircularProgressIndicator()
+                    : CategoriesPage(
+                        budgetId: state.budget!.id,
+                        section: HomeTab.values[state.tab.index].name),
                 bottomNavigationBar: Container(
                   height: 230.h,
                   decoration: BoxDecoration(
@@ -82,7 +86,9 @@ class HomeView extends StatelessWidget {
                     currentIndex: state.tab.index,
                     onTap: (value) {
                       context.read<HomeCubit>()
-                        ..fetchAllCategories(HomeTab.values[value].name)
+                        ..fetchAllCategories(
+                            budgetId: state.budget!.id,
+                            section: HomeTab.values[value].name)
                         ..setTab(value);
                     },
                     elevation: 0,

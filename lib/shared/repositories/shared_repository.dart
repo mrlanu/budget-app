@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
 
 import '../../accounts/models/account_brief.dart';
 import '../../categories/models/category.dart';
@@ -11,15 +12,17 @@ import '../models/budget.dart';
 
 abstract class SharedRepository {
   final User user;
-  Budget? budget;
 
-  SharedRepository({required this.user, this.budget});
+  Stream<List<CategorySummary>> getCategorySummary();
 
-  Future<void> fetchBudget();
+  SharedRepository({required this.user});
 
-  Future<Map<String, double>> fetchAllSections();
+  Future<Budget> fetchBudget();
 
-  Future<List<CategorySummary>> fetchSummaryByCategory(String section);
+  Future<Map<String, double>> fetchAllSections(String budgetId);
+
+  Future<List<CategorySummary>> fetchSummaryByCategory(
+      {required String budgetId, required String section});
 }
 
 class SharedRepositoryImpl extends SharedRepository {
@@ -27,7 +30,10 @@ class SharedRepositoryImpl extends SharedRepository {
 
   static const baseURL = 'http://10.0.2.2:8080/api';
 
-  Future<void> fetchBudget() async {
+  final _categorySummaryStreamController =
+      BehaviorSubject<List<CategorySummary>>.seeded(const []);
+
+  Future<Budget> fetchBudget() async {
     final url = '$baseURL/budgets';
 
     final token = await user.token;
@@ -62,12 +68,12 @@ class SharedRepositoryImpl extends SharedRepository {
       accountBriefList: accountList,
     );
 
-    this.budget = budget;
+    return budget;
   }
 
   @override
-  Future<Map<String, double>> fetchAllSections() async {
-    final url = '$baseURL/budgets/sections?budgetId=${budget?.id}';
+  Future<Map<String, double>> fetchAllSections(String budgetId) async {
+    final url = '$baseURL/budgets/sections?budgetId=$budgetId';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {
@@ -84,8 +90,14 @@ class SharedRepositoryImpl extends SharedRepository {
   }
 
   @override
-  Future<List<CategorySummary>> fetchSummaryByCategory(String section) async {
-    final url = '$baseURL/budgets/categories?budgetId=${budget?.id}&section=$section';
+  Stream<List<CategorySummary>> getCategorySummary() =>
+      _categorySummaryStreamController.asBroadcastStream();
+
+  @override
+  Future<List<CategorySummary>> fetchSummaryByCategory(
+      {required String budgetId, required String section}) async {
+    final url =
+        '$baseURL/budgets/categories?budgetId=$budgetId&section=$section';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {
@@ -101,6 +113,7 @@ class SharedRepositoryImpl extends SharedRepository {
         .toList();
 
     print('Result: $result');
+    _categorySummaryStreamController.add(result);
     return result;
   }
 }

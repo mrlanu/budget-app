@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/models/subcategory.dart';
+import 'package:budget_app/shared/models/budget.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
@@ -16,15 +17,17 @@ import '../../repository/transactions_repository.dart';
 part 'transaction_state.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
+  final Budget _budget;
   final SharedRepository _sharedRepository;
   final TransactionsRepository _transactionsRepository;
 
-  TransactionCubit(SharedRepository sharedRepository,
+  TransactionCubit(Budget budget, SharedRepository sharedRepository,
       TransactionsRepository transactionsRepository)
-      : this._sharedRepository = sharedRepository,
+      : this._budget = budget,
+        this._sharedRepository = sharedRepository,
         this._transactionsRepository = transactionsRepository,
         super(TransactionState()) {
-    final categories = _sharedRepository.budget?.categoryList
+    final categories = _budget.categoryList
         .where((cat) => cat.section == Section.EXPENSES)
         .toList();
     emit(state.copyWith(categories: categories));
@@ -48,7 +51,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   void categorySelected(Category category) {
-    final subcategories = _sharedRepository.budget?.subcategoryList
+    final subcategories = _budget.subcategoryList
         .where((cat) => cat.categoryId == category.id)
         .toList();
     emit(state.copyWithResetSubcategory(
@@ -70,14 +73,15 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future<void> submit(BuildContext context) async {
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     final transaction = Transaction(
-        id: '',
-        budgetId: _sharedRepository.budget!.id,
-        date: state.date ?? DateTime.now(),
-        type: TransactionType.EXPENSE,
-        amount: state.amount.value,
-        categoryId: state.selectedCategory!.id,
-        subcategoryId: state.selectedSubcategory!.id,
-        accountId: state.selectedAccount!.id,);
+      id: '',
+      budgetId: _budget.id,
+      date: state.date ?? DateTime.now(),
+      type: TransactionType.EXPENSE,
+      amount: state.amount.value,
+      categoryId: state.selectedCategory!.id,
+      subcategoryId: state.selectedSubcategory!.id,
+      accountId: state.selectedAccount!.id,
+    );
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
