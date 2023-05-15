@@ -34,14 +34,17 @@ class HomeView extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
+        final homeCubit = BlocProvider.of<HomeCubit>(context);
         return Container(
           color: scheme.background,
           child: SafeArea(
             child: Scaffold(
                 appBar: AppBar(
                   title: MonthPaginator(
-                    onLeft: (date) => context.read<HomeCubit>().dateChanged(date),
-                    onRight: (date) => context.read<HomeCubit>().dateChanged(date),
+                    onLeft: (date) =>
+                        context.read<HomeCubit>().dateChanged(date),
+                    onRight: (date) =>
+                        context.read<HomeCubit>().dateChanged(date),
                   ),
                   centerTitle: true,
                   actions: <Widget>[
@@ -57,10 +60,21 @@ class HomeView extends StatelessWidget {
                 drawer: Drawer(),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed(TransactionPage.routeName);
-                    /*.then((_) {
-                      context.read<HomeCubit>().fetchAllSections();
-                    });*/
+                    Navigator.of(context).push(
+                      MaterialPageRoute<TransactionPage>(
+                        builder: (context) {
+                          return BlocProvider.value(
+                            value: homeCubit,
+                            child: TransactionPage(),
+                          );
+                        },
+                      ),
+                    ).then((_) => context
+                        .read<HomeCubit>()
+                        .fetchSectionCategorySummary(
+                            budgetId: state.budget!.id,
+                            section: state.tab.name,
+                            dateTime: state.selectedDate ?? DateTime.now()));
                   },
                   child: const Icon(Icons.add),
                 ),

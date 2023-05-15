@@ -20,7 +20,7 @@ class TransactionPage extends StatelessWidget {
       ),
       body: BlocProvider(
         create: (context) => TransactionCubit(
-            context.select((HomeCubit cubit) => cubit.state.budget!),
+            context.read<HomeCubit>().state.budget!,
             context.read<SharedRepositoryImpl>(),
             context.read<TransactionRepositoryImpl>()),
         child: TransactionForm(),
