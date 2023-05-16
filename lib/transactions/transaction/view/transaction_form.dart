@@ -1,4 +1,5 @@
 import 'package:budget_app/accounts/models/account_brief.dart';
+import 'package:budget_app/app/app.dart';
 import 'package:budget_app/shared/models/category.dart';
 import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
@@ -189,7 +190,7 @@ class _AccountInput extends StatelessWidget {
       builder: (context, state) {
         return DropdownButtonFormField(
             items: context
-                .read<HomeCubit>()
+                .read<AppBloc>()
                 .state
                 .budget
                 ?.accountBriefList

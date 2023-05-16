@@ -1,37 +1,40 @@
-import 'package:budget_app/transactions/view/transactions_page.dart';
+import 'package:budget_app/accounts/view/accounts_page.dart';
+import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/shared/models/summary_by.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../shared/widgets/entity_view_widget.dart';
-import '../../../shared/models/category_summary.dart';
+import '../../../transactions/view/transactions_page.dart';
 
 class CategoriesSummary extends StatelessWidget {
-  final List<CategorySummary> categorySummaryList;
+  final List<SummaryBy> summaryList;
   final DateTime? dateTime;
 
-  const CategoriesSummary(
-      {Key? key, required this.categorySummaryList, this.dateTime})
+  const CategoriesSummary({Key? key, required this.summaryList, this.dateTime})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = BlocProvider.of<HomeCubit>(context);
     return ListView.builder(
-        itemCount: categorySummaryList.length,
+        itemCount: summaryList.length,
         itemBuilder: (context, index) {
-          final catSection = categorySummaryList[index];
+          final summaryItem = summaryList[index];
           return EntityView(
-            icon: Icon(IconData(catSection.iconCodePoint,
-                fontFamily: 'MaterialIcons')),
-            title: catSection.category.name,
-            routeName: catSection.category.name,
-            //subtitle: 'subtitle',
-            amount: catSection.amount,
-            suffix: Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context)
-                .pushNamed(TransactionsPage.routeName, arguments: {
-              'category': catSection.category,
-              'date': dateTime ?? DateTime.now(),
-            }),
-          );
+              icon: Icon(IconData(summaryItem.iconCodePoint,
+                  fontFamily: 'MaterialIcons')),
+              title: summaryItem.name,
+              routeName: summaryItem.name,
+              amount: summaryItem.total.toString(),
+              suffix: Icon(Icons.chevron_right),
+              onTap: homeCubit.state.tab == HomeTab.accounts
+                  ? () => Navigator.of(context).push(AccountsPage.route(
+                      categoryId: summaryItem.id,
+                      dateTime: dateTime ?? DateTime.now()))
+                  : () => Navigator.of(context).push(TransactionsPage.route(
+                      categoryId: summaryItem.id,
+                      dateTime: dateTime ?? DateTime.now())));
         });
   }
 }

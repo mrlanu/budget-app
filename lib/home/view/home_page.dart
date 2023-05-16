@@ -17,9 +17,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appBloc = BlocProvider.of<AppBloc>(context);
     return BlocProvider(
-      create: (context) =>
-          HomeCubit(context.read<SharedRepositoryImpl>())..init(),
+      create: (context) => HomeCubit(
+          sharedRepository: context.read<SharedRepositoryImpl>(),
+          budgetId: appBloc.state.budget!.id)
+        ..init(),
       child: HomeView(),
     );
   }
@@ -38,12 +41,14 @@ class HomeView extends StatelessWidget {
           child: SafeArea(
             child: Scaffold(
                 appBar: AppBar(
-                  title: MonthPaginator(
-                    onLeft: (date) =>
-                        context.read<HomeCubit>().dateChanged(date),
-                    onRight: (date) =>
-                        context.read<HomeCubit>().dateChanged(date),
-                  ),
+                  title: state.tab != HomeTab.accounts
+                      ? MonthPaginator(
+                          onLeft: (date) =>
+                              context.read<HomeCubit>().dateChanged(date),
+                          onRight: (date) =>
+                              context.read<HomeCubit>().dateChanged(date),
+                        )
+                      : Text('Accounts'),
                   centerTitle: true,
                   actions: <Widget>[
                     IconButton(
@@ -57,11 +62,8 @@ class HomeView extends StatelessWidget {
                 ),
                 drawer: Drawer(),
                 floatingActionButton: _buildFAB(context, state),
-                body: state.budget == null
-                    ? Center(child: CircularProgressIndicator())
-                    : CategoriesSummary(
-                        categorySummaryList:
-                            state.sectionCategorySummary!.categorySummaryList,
+                body: CategoriesSummary(
+                        summaryList: state.summaryList,
                         dateTime: state.selectedDate),
                 bottomNavigationBar: _buildBottomNavigationBar(context, state)),
           ),
@@ -71,7 +73,7 @@ class HomeView extends StatelessWidget {
   }
 }
 
-FloatingActionButton _buildFAB(BuildContext context, HomeState state){
+FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
   final homeCubit = BlocProvider.of<HomeCubit>(context);
   return FloatingActionButton(
     onPressed: () {
@@ -84,26 +86,25 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state){
             );
           },
         ),
-      ).then((_) => context
+      ); /*.then((_) => context
           .read<HomeCubit>()
           .fetchSectionCategorySummary(
           budgetId: state.budget!.id,
           section: state.tab.name,
-          dateTime: state.selectedDate ?? DateTime.now()));
+          dateTime: state.selectedDate ?? DateTime.now()));*/
     },
     child: const Icon(Icons.add),
   );
 }
 
-Widget _buildBottomNavigationBar(BuildContext context, HomeState state){
+Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     height: 230.h,
     decoration: BoxDecoration(
         color: scheme.primary,
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40.h),
-            topRight: Radius.circular(40.h)),
+            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -122,9 +123,24 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state){
       selectedItemColor: scheme.primary,
       unselectedItemColor: scheme.tertiary,
       items: [
-        _buildBottomNavigationBarItem(label: 'expenses', icon: Icons.account_balance_wallet, section: Section.EXPENSES, state: state, tab: HomeTab.expenses),
-        _buildBottomNavigationBarItem(label: 'income', icon: Icons.monetization_on_outlined, section: Section.INCOME, state: state, tab: HomeTab.income),
-        _buildBottomNavigationBarItem(label: 'accounts', icon: Icons.account_balance_outlined, section: Section.ACCOUNTS, state: state, tab: HomeTab.accounts),
+        _buildBottomNavigationBarItem(
+            label: 'expenses',
+            icon: Icons.account_balance_wallet,
+            section: Section.EXPENSES,
+            state: state,
+            tab: HomeTab.expenses),
+        _buildBottomNavigationBarItem(
+            label: 'income',
+            icon: Icons.monetization_on_outlined,
+            section: Section.INCOME,
+            state: state,
+            tab: HomeTab.income),
+        _buildBottomNavigationBarItem(
+            label: 'accounts',
+            icon: Icons.account_balance_outlined,
+            section: Section.ACCOUNTS,
+            state: state,
+            tab: HomeTab.accounts),
       ],
     ),
   );
@@ -142,11 +158,10 @@ BottomNavigationBarItem _buildBottomNavigationBarItem(
       children: [
         Icon(icon),
         Text(
-          '\$ ${state.sectionCategorySummary?.sectionMap[section] ?? '0.0'}',
+          '\$ ${state.sectionSummary[section.name] ?? '0.0'}',
           style: TextStyle(
-              fontWeight: state.tab == tab
-                  ? FontWeight.bold
-                  : FontWeight.normal),
+              fontWeight:
+                  state.tab == tab ? FontWeight.bold : FontWeight.normal),
         )
       ],
     ),

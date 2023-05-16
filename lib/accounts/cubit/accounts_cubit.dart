@@ -10,11 +10,14 @@ part 'accounts_state.dart';
 class AccountsCubit extends Cubit<AccountsState> {
   final AccountsRepository _accountsRepository;
 
-  AccountsCubit(this._accountsRepository) : super(AccountsState());
+  AccountsCubit({required AccountsRepository accountsRepository})
+      : _accountsRepository = accountsRepository,
+        super(AccountsState());
 
-  Future<void> fetchAllAccounts() async {
+  Future<void> fetchAllAccounts({required String budgetId, required String categoryId}) async {
     try {
-      final accountList = await _accountsRepository.getAccounts();
+      final accountList =
+          await _accountsRepository.getAccounts(budgetId: budgetId,categoryId: categoryId);
       emit(
           state.copyWith(status: DataStatus.success, accountList: accountList));
     } catch (e) {

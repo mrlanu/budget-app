@@ -1,33 +1,29 @@
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/shared/models/budget.dart';
+import 'package:budget_app/shared/models/summary_by.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../shared/models/category_summary.dart';
 import '../../shared/models/section.dart';
-import '../../shared/models/section_category_summary.dart';
 import '../../shared/repositories/shared_repository.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final SharedRepository _sharedRepository;
+  final String budgetId;
 
-  HomeCubit(SharedRepository sharedRepository)
+  HomeCubit({required SharedRepository sharedRepository, required this.budgetId})
       : this._sharedRepository = sharedRepository,
         super(HomeState(selectedDate: DateTime.now()));
 
   Future<void> init() async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
-      final budget = await fetchBudget();
-      await fetchSectionCategorySummary(
-          budgetId: budget.id,
+      await fetchHomePageData(
+          budgetId: budgetId,
           section: Section.EXPENSES.name,
           dateTime: DateTime.now());
-      emit(state.copyWith(
-        status: HomeStatus.success,
-        budget: budget,
-      ));
+      emit(state.copyWith(status: HomeStatus.success,));
     } catch (e) {
       emit(state.copyWith(
           status: HomeStatus.failure,
@@ -37,36 +33,48 @@ class HomeCubit extends Cubit<HomeState> {
 
   void setTab(int tabIndex) {
     emit(state.copyWith(tab: HomeTab.values[tabIndex]));
-    fetchSectionCategorySummary(
-        budgetId: state.budget!.id,
+    fetchHomePageData(
+        budgetId: budgetId,
         section: state.tab.name,
         dateTime: state.selectedDate ?? DateTime.now());
   }
 
   void dateChanged(DateTime dateTime) {
-    fetchSectionCategorySummary(
-        budgetId: state.budget!.id,
+    fetchHomePageData(
+        budgetId: budgetId,
         section: state.tab.name,
         dateTime: dateTime);
   }
 
-  Future<Budget> fetchBudget() async {
-    return await _sharedRepository.fetchBudget();
-  }
 
-  Future<void> fetchSectionCategorySummary(
-      {required String budgetId,
-      required String section,
-      required DateTime dateTime}) async {
+  Future<void> fetchHomePageData({required String budgetId,
+    required String section,
+    required DateTime dateTime}) async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
-      final result = await _sharedRepository.fetchSectionCategorySummary(
-          budgetId, section, dateTime);
+      final sections = await _fetchAllSections(budgetId, dateTime);
+      final summaryList = await _fetchSummaryList(
+          budgetId: budgetId, section: section, dateTime: dateTime);
       emit(state.copyWith(
-          status: HomeStatus.success, sectionCategorySummary: result, selectedDate: dateTime));
+          status: HomeStatus.success,
+          sectionSummary: sections,
+          summaryList: summaryList,
+          selectedDate: dateTime));
     } catch (e) {
       emit(state.copyWith(
           status: HomeStatus.failure, errorMessage: e.toString()));
     }
+  }
+
+  Future<Map<String, double>> _fetchAllSections(String budgetId,
+      DateTime dateTime) async {
+    return await _sharedRepository.fetchAllSections(budgetId, dateTime);
+  }
+
+  Future<List<SummaryBy>> _fetchSummaryList({required String budgetId,
+    required String section,
+    required DateTime dateTime}) async {
+    return await _sharedRepository.fetchSummaryList(
+        budgetId: budgetId, section: section, dateTime: dateTime);
   }
 }

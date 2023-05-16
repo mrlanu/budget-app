@@ -13,34 +13,39 @@ enum HomeTab {
 }
 
 class HomeState extends Equatable {
-  final SectionCategorySummary? sectionCategorySummary;
+  final List<SummaryBy> summaryList;
+  final Map<String, double> sectionSummary;
   final HomeStatus status;
   final HomeTab tab;
-  final Budget? budget;
   final DateTime? selectedDate;
   final String? errorMessage;
 
   const HomeState(
-      {this.sectionCategorySummary,
-        this.status = HomeStatus.initial,
+      {this.summaryList = const [],
+        this.sectionSummary = const {
+          'ACCOUNTS': 0.0,
+          'EXPENSES': 0.0,
+          'INCOME': 0.0
+        },
+      this.status = HomeStatus.initial,
       this.tab = HomeTab.expenses,
-        this.budget,
       this.selectedDate,
       this.errorMessage});
 
   HomeState copyWith({
-    SectionCategorySummary? sectionCategorySummary,
+    List<SummaryBy>? summaryList,
+    Map<String, double>? sectionSummary,
     HomeStatus? status,
     Budget? budget,
-    List<CategorySummary>? categorySummaryList,
     DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,
   }) {
     return HomeState(
-      sectionCategorySummary: sectionCategorySummary ?? this.sectionCategorySummary,
+      summaryList:
+          summaryList ?? this.summaryList,
+      sectionSummary: sectionSummary ?? this.sectionSummary,
       status: status ?? this.status,
-      budget: budget ?? this.budget,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -49,5 +54,5 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [sectionCategorySummary, status, tab, budget, selectedDate, errorMessage];
+      [summaryList, sectionSummary, status, tab, selectedDate, errorMessage];
 }

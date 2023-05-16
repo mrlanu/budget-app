@@ -10,7 +10,7 @@ part 'transactions_state.dart';
 class TransactionsCubit extends Cubit<TransactionsState> {
   final TransactionsRepository _transactionsRepository;
 
-  TransactionsCubit(TransactionsRepository transactionsRepository)
+  TransactionsCubit({required TransactionsRepository transactionsRepository, })
       : _transactionsRepository = transactionsRepository,
         super(TransactionsState());
 

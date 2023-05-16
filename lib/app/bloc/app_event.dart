@@ -22,3 +22,5 @@ class _AppUserChanged extends AppEvent {
 
   final User user;
 }
+
+class _FetchBudget extends AppEvent {}

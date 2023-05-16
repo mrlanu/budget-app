@@ -1,6 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
@@ -16,37 +17,27 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
 
-class App extends StatefulWidget {
-  const App({super.key});
-
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  late final AuthenticationRepository _authenticationRepository;
-
-  @override
-  void initState() {
-    super.initState();
-    _authenticationRepository = AuthenticationRepository();
-  }
-
-  @override
-  void dispose() {
-    // _authenticationRepository.dispose();
-    super.dispose();
-  }
+class App extends StatelessWidget {
+  final AuthenticationRepository _authenticationRepository =
+      AuthenticationRepository();
+  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authenticationRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => _authenticationRepository,
+        ),
+        RepositoryProvider(
+          create: (context) => _budgetRepository,
+        )
+      ],
       child: BlocProvider(
-        create: (_) =>
-            AppBloc(
-              authenticationRepository: _authenticationRepository,
-            ),
+        create: (_) => AppBloc(
+          authenticationRepository: _authenticationRepository,
+          budgetRepository: _budgetRepository,
+        ),
         child: AppView(),
       ),
     );
@@ -75,10 +66,13 @@ class _AppViewState extends State<AppView> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MultiRepositoryProvider(providers: [
-          RepositoryProvider(create: (context) => SharedRepositoryImpl(user: user)),
-          RepositoryProvider(create: (context) => TransactionRepositoryImpl(user: user)),
-        ],
+        return MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider(
+                create: (context) => SharedRepositoryImpl(user: user)),
+            RepositoryProvider(
+                create: (context) => TransactionRepositoryImpl(user: user)),
+          ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
@@ -106,13 +100,14 @@ class _AppViewState extends State<AppView> {
                   switch (state.status) {
                     case AppStatus.authenticated:
                       _navigator.pushNamedAndRemoveUntil<void>(
-                        HomePage.routeName, (route) => false,
+                        HomePage.routeName,
+                        (route) => false,
                       );
                       break;
                     case AppStatus.unauthenticated:
                       _navigator.pushNamedAndRemoveUntil<void>(
                         LoginPage.routeName,
-                            (route) => false,
+                        (route) => false,
                       );
                       break;
                     case AppStatus.unknown:
