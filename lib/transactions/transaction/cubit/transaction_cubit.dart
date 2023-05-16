@@ -21,8 +21,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   final SharedRepository _sharedRepository;
   final TransactionsRepository _transactionsRepository;
 
-  TransactionCubit(Budget budget, SharedRepository sharedRepository,
-      TransactionsRepository transactionsRepository)
+  TransactionCubit({required Budget budget, required SharedRepository sharedRepository,
+      required TransactionsRepository transactionsRepository})
       : this._budget = budget,
         this._sharedRepository = sharedRepository,
         this._transactionsRepository = transactionsRepository,
