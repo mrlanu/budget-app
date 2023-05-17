@@ -71,7 +71,7 @@ class _AppViewState extends State<AppView> {
             RepositoryProvider(
                 create: (context) => SharedRepositoryImpl(user: user)),
             RepositoryProvider(
-                create: (context) => TransactionRepositoryImpl(user: user)),
+                create: (context) => TransactionsRepositoryImpl(user: user)),
           ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,

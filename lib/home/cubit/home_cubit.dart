@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/shared/models/budget.dart';
 import 'package:budget_app/shared/models/summary_by.dart';
+import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../shared/models/section.dart';
@@ -9,21 +10,32 @@ import '../../shared/repositories/shared_repository.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final TransactionsRepository _transactionsRepository;
   final SharedRepository _sharedRepository;
   final String budgetId;
 
-  HomeCubit({required SharedRepository sharedRepository, required this.budgetId})
-      : this._sharedRepository = sharedRepository,
+  HomeCubit(
+      {required TransactionsRepository transactionsRepository,
+      required SharedRepository sharedRepository,
+      required this.budgetId})
+      : this._transactionsRepository = transactionsRepository,
+        this._sharedRepository = sharedRepository,
         super(HomeState(selectedDate: DateTime.now()));
 
   Future<void> init() async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
-      await fetchHomePageData(
-          budgetId: budgetId,
-          section: Section.EXPENSES.name,
-          dateTime: DateTime.now());
-      emit(state.copyWith(status: HomeStatus.success,));
+      await _transactionsRepository.getTransactions().listen(
+            (_) {
+          fetchHomePageData(
+              budgetId: budgetId,
+              section: state.tab.name,
+              dateTime: state.selectedDate ?? DateTime.now());
+        },
+      );
+      emit(state.copyWith(
+        status: HomeStatus.success,
+      ));
     } catch (e) {
       emit(state.copyWith(
           status: HomeStatus.failure,
@@ -41,15 +53,13 @@ class HomeCubit extends Cubit<HomeState> {
 
   void dateChanged(DateTime dateTime) {
     fetchHomePageData(
-        budgetId: budgetId,
-        section: state.tab.name,
-        dateTime: dateTime);
+        budgetId: budgetId, section: state.tab.name, dateTime: dateTime);
   }
 
-
-  Future<void> fetchHomePageData({required String budgetId,
-    required String section,
-    required DateTime dateTime}) async {
+  Future<void> fetchHomePageData(
+      {required String budgetId,
+      required String section,
+      required DateTime dateTime}) async {
     try {
       emit(state.copyWith(status: HomeStatus.loading));
       final sections = await _fetchAllSections(budgetId, dateTime);
@@ -66,14 +76,15 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<Map<String, double>> _fetchAllSections(String budgetId,
-      DateTime dateTime) async {
+  Future<Map<String, double>> _fetchAllSections(
+      String budgetId, DateTime dateTime) async {
     return await _sharedRepository.fetchAllSections(budgetId, dateTime);
   }
 
-  Future<List<SummaryBy>> _fetchSummaryList({required String budgetId,
-    required String section,
-    required DateTime dateTime}) async {
+  Future<List<SummaryBy>> _fetchSummaryList(
+      {required String budgetId,
+      required String section,
+      required DateTime dateTime}) async {
     return await _sharedRepository.fetchSummaryList(
         budgetId: budgetId, section: section, dateTime: dateTime);
   }

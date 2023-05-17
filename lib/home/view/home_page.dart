@@ -20,12 +20,20 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
-    return RepositoryProvider(
-      create: (context) => TransactionRepositoryImpl(user: appBloc.state.user),
-      child: MultiBlocProvider(
+    return BlocProvider(
+        create: (context) => HomeCubit(
+            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+            sharedRepository: context.read<SharedRepositoryImpl>(),
+            budgetId: appBloc.state.budget!.id)
+          ..init(),
+        child: HomeView(),
+      );
+      /*MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (context) => HomeCubit(
+                transactionsRepository:
+                    context.read<TransactionRepositoryImpl>(),
                 sharedRepository: context.read<SharedRepositoryImpl>(),
                 budgetId: appBloc.state.budget!.id)
               ..init(),
@@ -39,8 +47,7 @@ class HomePage extends StatelessWidget {
           )
         ],
         child: HomeView(),
-      ),
-    );
+      ),*/
   }
 }
 
@@ -50,68 +57,53 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // listening the TransactionCubit in order to recalculate HomeCubit
-    // whenever any transaction added
-    return BlocListener<TransactionCubit, TransactionState>(
-      listener: (context, state) {
-        //when a transaction added,
-        // call dateChange just for return MonthPaginator to this month
-        context.read<HomeCubit>().dateChanged(DateTime.now());
-      },
-      child: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
-          return Container(
-            color: scheme.background,
-            child: SafeArea(
-              child: Scaffold(
-                  appBar: AppBar(
-                    title: state.tab != HomeTab.accounts
-                        ? MonthPaginator(
-                            onLeft: (date) =>
-                                context.read<HomeCubit>().dateChanged(date),
-                            onRight: (date) =>
-                                context.read<HomeCubit>().dateChanged(date),
-                          )
-                        : Text('Accounts'),
-                    centerTitle: true,
-                    actions: <Widget>[
-                      IconButton(
-                        key: const Key('homePage_logout_iconButton'),
-                        icon: const Icon(Icons.exit_to_app),
-                        onPressed: () {
-                          context
-                              .read<AppBloc>()
-                              .add(const AppLogoutRequested());
-                        },
+    return BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+      return Container(
+        color: scheme.background,
+        child: SafeArea(
+          child: Scaffold(
+              appBar: AppBar(
+                title: state.tab != HomeTab.accounts
+                    ? MonthPaginator(
+                        onLeft: (date) =>
+                            context.read<HomeCubit>().dateChanged(date),
+                        onRight: (date) =>
+                            context.read<HomeCubit>().dateChanged(date),
                       )
-                    ],
-                  ),
-                  drawer: Drawer(),
-                  floatingActionButton: _buildFAB(context, state),
-                  body: CategoriesSummary(
-                      summaryList: state.summaryList,
-                      dateTime: state.selectedDate),
-                  bottomNavigationBar:
-                      _buildBottomNavigationBar(context, state)),
-            ),
-          );
-        },
-      ),
-    );
+                    : Text('Accounts'),
+                centerTitle: true,
+                actions: <Widget>[
+                  IconButton(
+                    key: const Key('homePage_logout_iconButton'),
+                    icon: const Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      context.read<AppBloc>().add(const AppLogoutRequested());
+                    },
+                  )
+                ],
+              ),
+              drawer: Drawer(),
+              floatingActionButton: _buildFAB(context, state),
+              body: CategoriesSummary(
+                  summaryList: state.summaryList, dateTime: state.selectedDate),
+              bottomNavigationBar: _buildBottomNavigationBar(context, state)),
+        ),
+      );
+    });
   }
 }
 
 FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
   final homeCubit = BlocProvider.of<HomeCubit>(context);
-  final transactionCubit = BlocProvider.of<TransactionCubit>(context);
   return FloatingActionButton(
     onPressed: () {
       Navigator.of(context)
           .push(MaterialPageRoute<TransactionPage>(builder: (context) {
-        return MultiBlocProvider(providers: [
+        return BlocProvider.value(value: homeCubit, child: TransactionPage());
+        /*MultiBlocProvider(providers: [
           BlocProvider.value(value: homeCubit),
           BlocProvider.value(value: transactionCubit),
-        ], child: TransactionPage());
+        ], child: TransactionPage());*/
       }));
     },
     child: const Icon(Icons.add),

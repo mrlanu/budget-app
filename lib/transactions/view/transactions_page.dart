@@ -16,9 +16,7 @@ class TransactionsPage extends StatelessWidget {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionsCubit(budgetId: appBloc.state.budget!.id,
-            transactionsRepository: TransactionRepositoryImpl(
-          user: appBloc.state.user
-        ))
+            transactionsRepository: context.read<TransactionsRepositoryImpl>())
           ..fetchTransactions(categoryId: categoryId, date: dateTime),
         child: TransactionsPage(),
       );
