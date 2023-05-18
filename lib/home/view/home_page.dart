@@ -1,3 +1,4 @@
+import 'package:budget_app/new_car/view/new_car_page.dart';
 import 'package:budget_app/shared/models/section.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
@@ -78,6 +79,13 @@ class HomeView extends StatelessWidget {
                     icon: const Icon(Icons.exit_to_app),
                     onPressed: () {
                       context.read<AppBloc>().add(const AppLogoutRequested());
+                    },
+                  ),
+                  IconButton(
+                    key: const Key('homePage_logout_iconButton2'),
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute<NewCarPage>(builder: (context) => NewCarPage()),);
                     },
                   )
                 ],
