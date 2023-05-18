@@ -38,7 +38,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(
       state.copyWith(
         amount: amount,
-        status: Formz.validate([amount]),
+        isValid: Formz.validate([amount]),
       ),
     );
   }
@@ -71,7 +71,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   Future<void> submit(BuildContext context) async {
-    emit(state.copyWith(status: FormzStatus.submissionInProgress));
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: '',
       budgetId: _budget.id,
@@ -84,10 +84,10 @@ class TransactionCubit extends Cubit<TransactionState> {
     );
     try {
       await _transactionsRepository.createTransaction(transaction);
-      emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      emit(state.copyWith(status: FormzSubmissionStatus.success));
       Navigator.of(context).pop();
     } catch (e) {
-      emit(state.copyWith(status: FormzStatus.submissionFailure));
+      emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   }
 }

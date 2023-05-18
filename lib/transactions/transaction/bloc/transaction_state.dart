@@ -9,7 +9,7 @@ class TransactionState extends Equatable {
   final Subcategory? subcategory;
   final AccountBrief? account;
   final String notes;
-  final FormzStatus status;
+  final FormzSubmissionStatus status;
   final String? errorMessage;
 
   const TransactionState._(
@@ -21,7 +21,7 @@ class TransactionState extends Equatable {
       this.subcategory,
       this.account,
       this.notes = '',
-      this.status = FormzStatus.pure,
+      this.status = FormzSubmissionStatus.initial,
       this.errorMessage});
 
   const TransactionState.initial() : this._();
@@ -54,7 +54,7 @@ class TransactionState extends Equatable {
     Subcategory? subcategory,
     AccountBrief? account,
     String? notes,
-    FormzStatus? status,
+    FormzSubmissionStatus? status,
     String? errorMessage,
   }) {
     return TransactionState._(

@@ -4,7 +4,6 @@ import 'package:budget_app/shared/models/summary_by.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../shared/models/section.dart';
 import '../../shared/repositories/shared_repository.dart';
 
 part 'home_state.dart';

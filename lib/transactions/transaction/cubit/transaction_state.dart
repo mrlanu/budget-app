@@ -10,7 +10,8 @@ class TransactionState extends Equatable {
     this.selectedSubcategory,
     this.selectedAccount,
     this.notes = '',
-    this.status = FormzStatus.pure,
+    this.status = FormzSubmissionStatus.initial,
+    this.isValid = false,
     this.errorMessage,
   });
 
@@ -22,7 +23,8 @@ class TransactionState extends Equatable {
   final Subcategory? selectedSubcategory;
   final AccountBrief? selectedAccount;
   final String notes;
-  final FormzStatus status;
+  final FormzSubmissionStatus status;
+  final bool isValid;
   final String? errorMessage;
 
   @override
@@ -36,6 +38,7 @@ class TransactionState extends Equatable {
         selectedAccount,
         notes,
         status,
+        isValid,
         errorMessage
       ];
 
@@ -48,7 +51,8 @@ class TransactionState extends Equatable {
     Subcategory? selectedSubcategory,
     AccountBrief? selectedAccount,
     String? notes,
-    FormzStatus? status,
+    FormzSubmissionStatus? status,
+    bool? isValid,
     String? errorMessage,
   }) {
     return TransactionState(
@@ -61,6 +65,7 @@ class TransactionState extends Equatable {
       selectedAccount: selectedAccount ?? this.selectedAccount,
       notes: notes ?? this.notes,
       status: status ?? this.status,
+      isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -74,7 +79,8 @@ class TransactionState extends Equatable {
     Subcategory? selectedSubcategory,
     AccountBrief? selectedAccount,
     String? notes,
-    FormzStatus? status,
+    FormzSubmissionStatus? status,
+    bool? isValid,
     String? errorMessage,
   }) {
     return TransactionState(
@@ -87,8 +93,8 @@ class TransactionState extends Equatable {
       selectedAccount: selectedAccount ?? this.selectedAccount,
       notes: notes ?? this.notes,
       status: status ?? this.status,
+      isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
-
 }

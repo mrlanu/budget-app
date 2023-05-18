@@ -69,7 +69,7 @@ class _AmountInput extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'Amount',
             helperText: '',
-            errorText: state.amount.invalid ? 'invalid amount' : null,
+            errorText: state.amount.isValid ? 'invalid amount' : null,
           ),
         );
       },
@@ -250,7 +250,7 @@ class _SubmitButton extends StatelessWidget {
     return BlocBuilder<TransactionCubit, TransactionState>(
       //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        return state.status.isSubmissionInProgress
+        return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -260,7 +260,7 @@ class _SubmitButton extends StatelessWidget {
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
                 ),
-                onPressed: state.status.isValidated &&
+                onPressed: state.isValid &&
                         state.selectedCategory != null &&
                         state.selectedSubcategory != null &&
                         state.selectedAccount != null

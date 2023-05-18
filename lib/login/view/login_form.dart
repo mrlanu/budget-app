@@ -14,7 +14,7 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
-        if (state.status.isSubmissionFailure) {
+        if (state.status.isFailure) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -27,7 +27,7 @@ class LoginForm extends StatelessWidget {
       child: Align(
         alignment: const Alignment(0, 0),
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(70.w),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -75,7 +75,7 @@ class _EmailInput extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'Email',
             helperText: '',
-            errorText: state.email.invalid ? 'invalid email' : null,
+            errorText: state.email.displayError != null ? 'invalid email' : null,
           ),
         );
       },
@@ -102,7 +102,8 @@ class _PasswordInput extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'Password',
             helperText: '',
-            errorText: state.password.invalid ? 'invalid password' : null,
+            errorText:
+            state.password.displayError != null ? 'invalid password' : null,
           ),
         );
       },
@@ -114,9 +115,8 @@ class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
-      buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        return state.status.isSubmissionInProgress
+        return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
                 key: const Key('loginForm_continue_raisedButton'),
@@ -127,7 +127,7 @@ class _LoginButton extends StatelessWidget {
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
                 ),
-                onPressed: state.status.isValidated
+                onPressed: state.isValid
                     ? () => context.read<LoginCubit>().logInWithCredentials()
                     : null,
                 child: const Text('LOGIN'),
