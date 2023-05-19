@@ -25,6 +25,7 @@ dependencies:
     path: packages/authentication_repository
   form_inputs:
     path: packages/form_inputs
+  bloc_concurrency: ^0.2.1
 
 dev_dependencies:
   bloc_test: ^9.0.0

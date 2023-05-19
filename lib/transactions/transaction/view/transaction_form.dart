@@ -2,8 +2,7 @@ import 'package:budget_app/accounts/models/account_brief.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/shared/models/category.dart';
 import 'package:budget_app/shared/models/subcategory.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
-import 'package:budget_app/transactions/transaction/cubit/transaction_cubit.dart';
+import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,11 +54,12 @@ class TransactionForm extends StatelessWidget {
 class _AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return TextField(
-          onChanged: (amount) =>
-              context.read<TransactionCubit>().amountChanged(amount),
+          onChanged: (amount) => context
+              .read<TransactionBloc>()
+              .add(TransactionAmountChanged(amount: amount)),
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             icon: Icon(
@@ -69,7 +69,8 @@ class _AmountInput extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'Amount',
             helperText: '',
-            errorText: state.amount.isValid ? 'invalid amount' : null,
+            errorText:
+                state.amount.displayError != null ? 'invalid amount' : null,
           ),
         );
       },
@@ -80,7 +81,7 @@ class _AmountInput extends StatelessWidget {
 class _DateInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       buildWhen: (previous, current) => previous.date != current.date,
       builder: (context, state) {
         return TextFormField(
@@ -96,9 +97,6 @@ class _DateInput extends StatelessWidget {
                 ),
                 labelText: "Date"),
             readOnly: true,
-            onChanged: (value) {
-              print('object');
-            },
             onTap: () async {
               DateTime? pickedDate = await showDatePicker(
                   context: context,
@@ -106,7 +104,9 @@ class _DateInput extends StatelessWidget {
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2101));
               if (pickedDate != null) {
-                context.read<TransactionCubit>().dateChanged(pickedDate);
+                context
+                    .read<TransactionBloc>()
+                    .add(TransactionDateChanged(dateTime: pickedDate));
               } else {
                 print("Date is not selected");
               }
@@ -119,9 +119,9 @@ class _DateInput extends StatelessWidget {
 class _CategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        return DropdownButtonFormField(
+        return DropdownButtonFormField<Category>(
             items: state.categories.map((Category category) {
               return DropdownMenuItem(
                 value: category,
@@ -130,11 +130,11 @@ class _CategoryInput extends StatelessWidget {
             }).toList(),
             onChanged: (newValue) {
               context
-                  .read<TransactionCubit>()
-                  .categorySelected(newValue as Category);
+                  .read<TransactionBloc>()
+                  .add(TransactionCategoryChanged(category: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.selectedCategory,
+            value: state.category,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,
@@ -152,10 +152,10 @@ class _CategoryInput extends StatelessWidget {
 class _SubcategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       //buildWhen: (previous, current) => previous.selectedSubcategory != current.selectedSubcategory,
       builder: (context, state) {
-        return DropdownButtonFormField(
+        return DropdownButtonFormField<Subcategory>(
             items: state.subcategories.map((Subcategory subcategory) {
               return DropdownMenuItem(
                 value: subcategory,
@@ -164,11 +164,11 @@ class _SubcategoryInput extends StatelessWidget {
             }).toList(),
             onChanged: (newValue) {
               context
-                  .read<TransactionCubit>()
-                  .subcategorySelected(newValue as Subcategory);
+                  .read<TransactionBloc>()
+                  .add(TransactionSubcategoryChanged(subcategory: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.selectedSubcategory,
+            value: state.subcategory,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,
@@ -186,9 +186,9 @@ class _SubcategoryInput extends StatelessWidget {
 class _AccountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        return DropdownButtonFormField(
+        return DropdownButtonFormField<AccountBrief>(
             items: context
                 .read<AppBloc>()
                 .state
@@ -202,11 +202,11 @@ class _AccountInput extends StatelessWidget {
             }).toList(),
             onChanged: (newValue) {
               context
-                  .read<TransactionCubit>()
-                  .accountSelected(newValue as AccountBrief);
+                  .read<TransactionBloc>()
+                  .add(TransactionAccountChanged(account: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.selectedAccount,
+            value: state.account,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
@@ -224,21 +224,21 @@ class _AccountInput extends StatelessWidget {
 class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       buildWhen: (previous, current) => previous.notes != current.notes,
       builder: (context, state) {
         return TextField(
-          onChanged: (notes) =>
-              context.read<TransactionCubit>().notesChanged(notes),
-          decoration: InputDecoration(
-            icon: Icon(
-              Icons.notes,
-              color: Colors.orangeAccent,
+            decoration: InputDecoration(
+              icon: Icon(
+                Icons.notes,
+                color: Colors.orangeAccent,
+              ),
+              border: OutlineInputBorder(),
+              labelText: 'Notes',
             ),
-            border: OutlineInputBorder(),
-            labelText: 'Notes',
-          ),
-        );
+            onChanged: (notes) => context.read<TransactionBloc>().add(
+                  TransactionNotesChanged(notes: notes),
+                ));
       },
     );
   }
@@ -247,7 +247,7 @@ class _NotesInput extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionBloc, TransactionState>(
       //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         return state.status.isInProgress
@@ -261,10 +261,12 @@ class _SubmitButton extends StatelessWidget {
                       Theme.of(context).colorScheme.primaryContainer,
                 ),
                 onPressed: state.isValid &&
-                        state.selectedCategory != null &&
-                        state.selectedSubcategory != null &&
-                        state.selectedAccount != null
-                    ? () => context.read<TransactionCubit>().submit(context)
+                        state.category != null &&
+                        state.subcategory != null &&
+                        state.account != null
+                    ? () => context
+                        .read<TransactionBloc>()
+                        .add(TransactionFormSubmitted(context: context))
                     : null,
                 child: const Text('ADD'),
               );

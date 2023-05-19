@@ -42,8 +42,6 @@ class SharedRepositoryImpl extends SharedRepository {
         .map((jsonMap) =>
         SummaryBy.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
-
-    print('SummaryBy: ${response.body}');
     return summaryByList;
   }
 

@@ -1,10 +1,8 @@
-import 'package:budget_app/new_car/view/new_car_page.dart';
-import 'package:budget_app/shared/models/section.dart';
-import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/home/view/widgets/categories_summary.dart';
+import 'package:budget_app/shared/models/section.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
-import 'package:budget_app/transactions/transaction/cubit/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,26 +27,6 @@ class HomePage extends StatelessWidget {
           ..init(),
         child: HomeView(),
       );
-      /*MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => HomeCubit(
-                transactionsRepository:
-                    context.read<TransactionRepositoryImpl>(),
-                sharedRepository: context.read<SharedRepositoryImpl>(),
-                budgetId: appBloc.state.budget!.id)
-              ..init(),
-          ),
-          BlocProvider(
-            create: (context) => TransactionCubit(
-              sharedRepository: context.read<SharedRepositoryImpl>(),
-              budget: appBloc.state.budget!,
-              transactionsRepository: context.read<TransactionRepositoryImpl>(),
-            ),
-          )
-        ],
-        child: HomeView(),
-      ),*/
   }
 }
 
@@ -81,13 +59,6 @@ class HomeView extends StatelessWidget {
                       context.read<AppBloc>().add(const AppLogoutRequested());
                     },
                   ),
-                  IconButton(
-                    key: const Key('homePage_logout_iconButton2'),
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute<NewCarPage>(builder: (context) => NewCarPage()),);
-                    },
-                  )
                 ],
               ),
               drawer: Drawer(),
@@ -108,10 +79,6 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
       Navigator.of(context)
           .push(MaterialPageRoute<TransactionPage>(builder: (context) {
         return BlocProvider.value(value: homeCubit, child: TransactionPage());
-        /*MultiBlocProvider(providers: [
-          BlocProvider.value(value: homeCubit),
-          BlocProvider.value(value: transactionCubit),
-        ], child: TransactionPage());*/
       }));
     },
     child: const Icon(Icons.add),

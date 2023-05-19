@@ -10,6 +10,7 @@ class TransactionState extends Equatable {
   final AccountBrief? account;
   final String notes;
   final FormzSubmissionStatus status;
+  final bool isValid;
   final String? errorMessage;
 
   const TransactionState._(
@@ -22,28 +23,35 @@ class TransactionState extends Equatable {
       this.account,
       this.notes = '',
       this.status = FormzSubmissionStatus.initial,
+      this.isValid = false,
       this.errorMessage});
 
   const TransactionState.initial() : this._();
 
-  const TransactionState.categoriesLoadInProgress() : this._();
+  /*const TransactionState.categoriesLoadInProgress() : this._();*/
 
-  const TransactionState.categoriesLoadSuccess(
+  /*const TransactionState.categoriesLoadSuccess(
       {required List<Category> categories})
-      : this._(categories: categories);
+      : this._(categories: categories);*/
 
   const TransactionState.subcategoriesLoadInProgress(
-      {required List<Category> categories, Category? category})
-      : this._(categories: categories, category: category);
-
-  const TransactionState.subcategoriesLoadSuccess(
       {required List<Category> categories,
-      required Category? category,
-      required List<Subcategory> subcategories})
+        required Amount amount,
+      Category? category,
+      DateTime? dateTime,
+      AccountBrief? account,
+      String? notes,
+      required FormzSubmissionStatus status,
+      required bool isValid})
       : this._(
+            date: dateTime,
             categories: categories,
+            amount: amount,
             category: category,
-            subcategories: subcategories);
+            account: account,
+            notes: notes ?? '',
+            isValid: isValid,
+            status: status);
 
   TransactionState copyWith({
     Amount? amount,
@@ -55,6 +63,7 @@ class TransactionState extends Equatable {
     AccountBrief? account,
     String? notes,
     FormzSubmissionStatus? status,
+    bool? isValid,
     String? errorMessage,
   }) {
     return TransactionState._(
@@ -67,22 +76,23 @@ class TransactionState extends Equatable {
       account: account ?? this.account,
       notes: notes ?? this.notes,
       status: status ?? this.status,
+      isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
-
   @override
   List<Object?> get props => [
-    amount,
-    date,
-    categories,
-    category,
-    subcategories,
-    subcategory,
-    account,
-    notes,
-    status,
-    errorMessage
-  ];
+        amount,
+        date,
+        categories,
+        category,
+        subcategories,
+        subcategory,
+        account,
+        notes,
+        status,
+        isValid,
+        errorMessage
+      ];
 }

@@ -26,6 +26,13 @@ class Transaction {
       required this.subcategoryId,
       required this.accountId});
 
-  factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
+
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
+
+  @override
+  String toString() {
+    return 'Transaction {id: $id, budgetId: $budgetId, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
+  }
 }
