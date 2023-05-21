@@ -2,6 +2,7 @@ part of 'transaction_bloc.dart';
 
 sealed class TransactionEvent extends Equatable {
   const TransactionEvent();
+
   @override
   List<Object?> get props => [];
 }
@@ -10,7 +11,14 @@ final class TransactionFormLoaded extends TransactionEvent {
   const TransactionFormLoaded();
 }
 
-final class TransactionCategoryChanged extends TransactionEvent{
+final class TransactionFormFetchRequested extends TransactionEvent {
+  final String transactionId;
+  const TransactionFormFetchRequested({required this.transactionId});
+  @override
+  List<Object?> get props => [transactionId];
+}
+
+final class TransactionCategoryChanged extends TransactionEvent {
   final Category? category;
   const TransactionCategoryChanged({this.category});
   @override

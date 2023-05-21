@@ -10,19 +10,33 @@ class TransactionPage extends StatelessWidget {
 
   static const routeName = '/transaction';
 
+  static Route<void> route({String? transactionId}) {
+    return MaterialPageRoute(builder: (context) {
+      final appBloc = BlocProvider.of<AppBloc>(context);
+      return BlocProvider(
+        create: (context) => TransactionBloc(
+            budget: appBloc.state.budget!,
+            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+            transactionId: transactionId),
+        child: TransactionPage(),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appCubit = BlocProvider.of<AppBloc>(context);
-    final transRepo = context.read<TransactionsRepositoryImpl>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Add new transaction'),
       ),
-      body: BlocProvider(
-        create: (context) => TransactionBloc(
-            budget: appCubit.state.budget!, transactionsRepository: transRepo)
-          ..add(const TransactionFormLoaded()),
-        child: TransactionForm(),
+      body: BlocBuilder<TransactionBloc, TransactionState>(
+        builder: (context, state) {
+          return state.isNewTransaction
+              ? TransactionForm()
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
+        },
       ),
     );
   }

@@ -12,7 +12,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       date: DateTime.parse(json['date'] as String),
       type: $enumDecode(_$TransactionTypeEnumMap, json['type']),
       description: json['description'] as String? ?? '',
-      amount: json['amount'] as String,
+      amount: json['amount'] as double,
       categoryId: json['categoryId'] as String,
       subcategoryId: json['subcategoryId'] as String,
       accountId: json['accountId'] as String,

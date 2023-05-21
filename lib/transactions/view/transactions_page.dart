@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../app/bloc/app_bloc.dart';
 import '../../shared/widgets/entity_view_widget.dart';
 import '../cubit/transactions_cubit.dart';
+import '../transaction/view/transaction_page.dart';
 
 class TransactionsPage extends StatelessWidget {
   static const routeName = '/transactions';
@@ -15,7 +16,8 @@ class TransactionsPage extends StatelessWidget {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
-        create: (context) => TransactionsCubit(budgetId: appBloc.state.budget!.id,
+        create: (context) => TransactionsCubit(
+            budgetId: appBloc.state.budget!.id,
             transactionsRepository: context.read<TransactionsRepositoryImpl>())
           ..fetchTransactions(categoryId: categoryId, date: dateTime),
         child: TransactionsPage(),
@@ -48,7 +50,11 @@ class TransactionsPage extends StatelessWidget {
                           routeName: '',
                           amount: tr.amount.toString(),
                           suffix: Icon(Icons.chevron_right),
-                          onTap: () => {});
+                          onTap: () => {
+                                Navigator.of(context).push(
+                                  TransactionPage.route(transactionId: tr.id),
+                                )
+                              });
                     }));
       },
     );

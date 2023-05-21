@@ -26,17 +26,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   TransactionBloc(
       {required Budget budget,
-      required TransactionsRepository transactionsRepository})
+      required TransactionsRepository transactionsRepository,
+      required String? transactionId})
       : _budget = budget,
         _transactionsRepository = transactionsRepository,
-        super(TransactionState.initial()) {
+        super(transactionId == null
+            ? TransactionState.initial()
+            : TransactionState.loading()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
+    if (transactionId == null) {
+      add(TransactionFormLoaded());
+    } else {
+      add(TransactionFormFetchRequested(transactionId: transactionId));
+    }
   }
 
   Future<void> _onEvent(
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
       final TransactionFormLoaded e => _onFormLoaded(e, emit),
+      final TransactionFormFetchRequested e => _fetchTransaction(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
@@ -51,18 +60,29 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
-    final categories = _budget.categoryList
+    final categories = _filterCategories();
+    final accounts = _getAccounts();
+    emit(state.copyWith(categories: categories, accounts: accounts));
+  }
+
+  List<Category> _filterCategories() {
+    return _budget.categoryList
         .where((cat) => cat.section == Section.EXPENSES)
         .toList();
-    emit(state.copyWith(categories: categories));
+  }
+
+  List<AccountBrief> _getAccounts() {
+    return _budget.accountBriefList;
   }
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
     emit(TransactionState.subcategoriesLoadInProgress(
+        transactionId: state.transactionId,
         amount: state.amount,
         categories: state.categories,
         category: event.category,
+        accounts: state.accounts,
         account: state.account,
         status: state.status,
         isValid: state.isValid));
@@ -110,11 +130,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-      id: '',
+      id: state.transactionId,
       budgetId: _budget.id,
       date: state.date ?? DateTime.now(),
-      type: TransactionType.EXPENSE,
-      amount: state.amount.value,
+      type: state.transactionType,
+      amount: double.parse(state.amount.value),
       categoryId: state.category!.id,
       subcategoryId: state.subcategory!.id,
       accountId: state.account!.id,
@@ -126,5 +146,34 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
+  }
+
+  Future<void> _fetchTransaction(TransactionFormFetchRequested event,
+      Emitter<TransactionState> emit) async {
+    emit(TransactionState.loading());
+    final tr =
+        await _transactionsRepository.fetchTransactionById(event.transactionId);
+    final category = _filterCategories()
+        .where((element) => element.id == tr.categoryId)
+        .first;
+    final subcategories = _budget.subcategoryList
+        .where((sCat) => sCat.categoryId == category.id)
+        .toList();
+    final subcategory =
+        subcategories.where((element) => element.id == tr.subcategoryId).first;
+    final accounts = _getAccounts();
+    final account =
+        accounts.where((element) => element.id == tr.accountId).first;
+    emit(TransactionState.edit(
+        transactionId: tr.id,
+        amount: tr.amount.toString(),
+        dateTime: tr.date,
+        categories: _filterCategories(),
+        category: category,
+        subcategories: subcategories,
+        subcategory: subcategory,
+        notes: tr.description,
+        accounts: accounts,
+        accountBrief: account));
   }
 }

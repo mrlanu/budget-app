@@ -5,12 +5,12 @@ part 'transaction.g.dart';
 
 @JsonSerializable()
 class Transaction {
-  final String id;
+  final String? id;
   final String budgetId;
   final DateTime date;
   final TransactionType type;
   final String description;
-  final String amount;
+  final double amount;
   final String categoryId;
   final String subcategoryId;
   final String accountId;

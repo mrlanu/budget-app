@@ -56,7 +56,8 @@ class _AmountInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        return TextField(
+        return TextFormField(
+          initialValue: state.amount.value,
           onChanged: (amount) => context
               .read<TransactionBloc>()
               .add(TransactionAmountChanged(amount: amount)),
@@ -189,12 +190,7 @@ class _AccountInput extends StatelessWidget {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return DropdownButtonFormField<AccountBrief>(
-            items: context
-                .read<AppBloc>()
-                .state
-                .budget
-                ?.accountBriefList
-                .map((AccountBrief accountBrief) {
+            items: state.accounts.map((AccountBrief accountBrief) {
               return DropdownMenuItem(
                 value: accountBrief,
                 child: Text(accountBrief.name),

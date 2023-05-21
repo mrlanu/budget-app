@@ -20,13 +20,13 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appBloc = BlocProvider.of<AppBloc>(context);
     return BlocProvider(
-        create: (context) => HomeCubit(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            sharedRepository: context.read<SharedRepositoryImpl>(),
-            budgetId: appBloc.state.budget!.id)
-          ..init(),
-        child: HomeView(),
-      );
+      create: (context) => HomeCubit(
+          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+          sharedRepository: context.read<SharedRepositoryImpl>(),
+          budgetId: appBloc.state.budget!.id)
+        ..init(),
+      child: HomeView(),
+    );
   }
 }
 
@@ -73,13 +73,11 @@ class HomeView extends StatelessWidget {
 }
 
 FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
-  final homeCubit = BlocProvider.of<HomeCubit>(context);
   return FloatingActionButton(
-    onPressed: () {
-      Navigator.of(context)
-          .push(MaterialPageRoute<TransactionPage>(builder: (context) {
-        return BlocProvider.value(value: homeCubit, child: TransactionPage());
-      }));
+    onPressed: () => {
+      Navigator.of(context).push(
+        TransactionPage.route(),
+      )
     },
     child: const Icon(Icons.add),
   );

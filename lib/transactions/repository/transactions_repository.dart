@@ -15,6 +15,7 @@ abstract class TransactionsRepository {
   Future<void> createTransaction(Transaction transaction);
   Future<List<TransactionView>> fetchAllTransactionView(
   {required String budgetId, required DateTime dateTime, required String categoryId});
+  Future<Transaction> fetchTransactionById(String transactionId);
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
@@ -59,6 +60,22 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
         .map((jsonMap) =>
         TransactionView.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
+
+    return result;
+  }
+
+  @override
+  Future<Transaction> fetchTransactionById(String transactionId) async {
+    final url =
+        '$baseURL/transactions/$transactionId';
+
+    final token = await user.token;
+    final response = await http.get(Uri.parse(url), headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    });
+
+    final result = Transaction.fromJson(json.decode(response.body));
 
     return result;
   }
