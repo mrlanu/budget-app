@@ -37,7 +37,7 @@ class TransactionsPage extends StatelessWidget {
               title: Text('Transactions'),
             ),
             body: state.status == TransactionsStatus.loading
-                ? CircularProgressIndicator()
+                ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: state.transactionList.length,
                     itemBuilder: (context, index) {

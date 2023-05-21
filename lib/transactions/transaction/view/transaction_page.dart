@@ -25,19 +25,18 @@ class TransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add new transaction'),
-      ),
-      body: BlocBuilder<TransactionBloc, TransactionState>(
-        builder: (context, state) {
-          return state.isNewTransaction
-              ? TransactionForm()
-              : Center(
-                  child: CircularProgressIndicator(),
-                );
-        },
-      ),
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        return Scaffold(
+            appBar: AppBar(
+              title: Text(state.transactionId == null ? 'Add new transaction' : 'Edit transaction'),
+            ),
+            body: state.isNewTransaction
+                ? TransactionForm()
+                : Center(
+                    child: CircularProgressIndicator(),
+                  ));
+      },
     );
   }
 }

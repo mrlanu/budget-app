@@ -204,12 +204,24 @@ class _AccountInput extends StatelessWidget {
             },
             value: state.account,
             decoration: InputDecoration(
-              icon: Icon(
-                Icons.account_balance,
-                color: Colors.orangeAccent,
-              ),
+              icon: Icon(Icons.account_balance,
+                  color: Colors.orangeAccent,),
               border: OutlineInputBorder(),
               labelText: 'Account',
+              suffixIcon: Padding(
+                padding: EdgeInsets.all(8.w),
+                child: IconButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    backgroundColor:
+                    Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  onPressed: () => null,
+                  icon: Icon(Icons.add),
+                ),
+              ),
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
             ));
       },
@@ -264,7 +276,7 @@ class _SubmitButton extends StatelessWidget {
                         .read<TransactionBloc>()
                         .add(TransactionFormSubmitted(context: context))
                     : null,
-                child: const Text('ADD'),
+                child: Text(state.transactionId == null ? 'ADD' : 'SAVE'),
               );
       },
     );

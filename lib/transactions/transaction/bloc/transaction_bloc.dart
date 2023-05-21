@@ -80,6 +80,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(TransactionState.subcategoriesLoadInProgress(
         transactionId: state.transactionId,
         amount: state.amount,
+        dateTime: state.date,
         categories: state.categories,
         category: event.category,
         accounts: state.accounts,
