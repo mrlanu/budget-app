@@ -5,19 +5,21 @@ import 'package:budget_app/transactions/transaction/view/transaction_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/transaction.dart';
+
 class TransactionPage extends StatelessWidget {
   const TransactionPage({Key? key}) : super(key: key);
 
   static const routeName = '/transaction';
 
-  static Route<void> route({String? transactionId}) {
+  static Route<void> route({Transaction? transaction}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionBloc(
             budget: appBloc.state.budget!,
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            transactionId: transactionId),
+            transaction: transaction),
         child: TransactionPage(),
       );
     });
@@ -29,9 +31,9 @@ class TransactionPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text(state.transactionId == null ? 'Add new transaction' : 'Edit transaction'),
+              title: Text('Transaction'),
             ),
-            body: state.isNewTransaction
+            body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
                 : Center(
                     child: CircularProgressIndicator(),

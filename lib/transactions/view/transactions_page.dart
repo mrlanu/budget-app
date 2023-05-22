@@ -43,16 +43,16 @@ class TransactionsPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final tr = state.transactionList[index];
                       return EntityView(
-                          title: tr.subcategory,
-                          subtitle: tr.account,
+                          title: tr.subcategoryName!,
+                          subtitle: tr.accountName!,
                           subtitlePrefix:
-                              DateFormat('MM-dd-yyyy').format(tr.date),
+                              DateFormat('MM-dd-yyyy').format(tr.date!),
                           routeName: '',
                           amount: tr.amount.toString(),
                           suffix: Icon(Icons.chevron_right),
                           onTap: () => {
                                 Navigator.of(context).push(
-                                  TransactionPage.route(transactionId: tr.id),
+                                  TransactionPage.route(transaction: tr),
                                 )
                               });
                     }));

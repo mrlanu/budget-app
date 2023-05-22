@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../models/transaction.dart';
 import '../models/transaction_view.dart';
 import '../repository/transactions_repository.dart';
 

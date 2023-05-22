@@ -5,7 +5,7 @@ enum TransactionsStatus { initial, loading, success, failure }
 class TransactionsState extends Equatable {
 
   final TransactionsStatus status;
-  final List<TransactionView> transactionList;
+  final List<Transaction> transactionList;
   final String? errorMessage;
 
   const TransactionsState({
@@ -16,7 +16,7 @@ class TransactionsState extends Equatable {
 
   TransactionsState copyWith({
     TransactionsStatus? status,
-    List<TransactionView>? transactionList,
+    List<Transaction>? transactionList,
     String? errorMessage,
   }) {
     return TransactionsState(

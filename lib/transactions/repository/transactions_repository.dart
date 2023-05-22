@@ -13,7 +13,7 @@ abstract class TransactionsRepository {
 
   Stream<List<TransactionView>> getTransactions();
   Future<void> createTransaction(Transaction transaction);
-  Future<List<TransactionView>> fetchAllTransactionView(
+  Future<List<Transaction>> fetchAllTransactionView(
   {required String budgetId, required DateTime dateTime, required String categoryId});
   Future<Transaction> fetchTransactionById(String transactionId);
 }
@@ -43,7 +43,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<List<TransactionView>> fetchAllTransactionView(
+  Future<List<Transaction>> fetchAllTransactionView(
   {required String budgetId, required DateTime dateTime, required String categoryId}) async {
     final url =
         '$baseURL/transactions?budgetId=$budgetId&categoryId=$categoryId&date=${dateTime}';
@@ -58,7 +58,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       json.decode(response.body) as List,
     )
         .map((jsonMap) =>
-        TransactionView.fromJson(Map<String, dynamic>.from(jsonMap)))
+        Transaction.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
 
     return result;

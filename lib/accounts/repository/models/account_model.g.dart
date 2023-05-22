@@ -10,7 +10,7 @@ AccountModel _$AccountModelFromJson(Map<String, dynamic> json) => AccountModel(
       id: json['id'] as String,
       name: json['name'] as String,
       categoryId: json['categoryId'] as String,
-      currency: json['currency'] as String ?? 'USD',
+      currency: json['currency'] as String? ?? 'USD',
       balance: (json['balance'] as num?)?.toDouble() ?? 0,
       initialBalance: (json['initialBalance'] as num?)?.toDouble() ?? 0,
       includeInTotal: json['includeInTotal'] as bool? ?? true,

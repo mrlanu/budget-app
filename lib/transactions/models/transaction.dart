@@ -7,32 +7,68 @@ part 'transaction.g.dart';
 class Transaction {
   final String? id;
   final String budgetId;
-  final DateTime date;
+  final DateTime? date;
   final TransactionType type;
   final String description;
-  final double amount;
-  final String categoryId;
-  final String subcategoryId;
-  final String accountId;
+  final double? amount;
+  final String? categoryId;
+  final String? categoryName;
+  final String? subcategoryId;
+  final String? subcategoryName;
+  final String? accountId;
+  final String? accountName;
 
-  const Transaction(
-      {required this.id,
+  Transaction(
+      {this.id,
       required this.budgetId,
-      required this.date,
+      this.date,
       required this.type,
       this.description = '',
-      required this.amount,
-      required this.categoryId,
-      required this.subcategoryId,
-      required this.accountId});
+      this.amount,
+      this.categoryId,
+      this.categoryName,
+      this.subcategoryId,
+      this.subcategoryName,
+      this.accountName,
+      this.accountId});
+
+  Transaction.empty(
+      {required String budgetId,
+      required TransactionType type})
+      : this(budgetId: budgetId, date: DateTime.now(), type: type);
+
+  Transaction.create(
+      {required String budgetId,
+      required DateTime date,
+      required TransactionType type,
+      required String description,
+      required double amount,
+      required String categoryId,
+      required String categoryName,
+      required String subcategoryId,
+      required String subcategoryName,
+      required String accountName,
+      required String accountId})
+      : this(
+            budgetId: budgetId,
+            date: date,
+            type: type,
+            description: description,
+            amount: amount,
+            categoryId: categoryId,
+            categoryName: categoryName,
+            subcategoryId: subcategoryId,
+            subcategoryName: subcategoryName,
+            accountId: accountId,
+            accountName: accountName);
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
-  @override
+/*@override
   String toString() {
     return 'Transaction {id: $id, budgetId: $budgetId, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
-  }
+  }*/
 }

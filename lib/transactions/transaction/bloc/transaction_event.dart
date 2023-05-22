@@ -12,10 +12,10 @@ final class TransactionFormLoaded extends TransactionEvent {
 }
 
 final class TransactionFormFetchRequested extends TransactionEvent {
-  final String transactionId;
-  const TransactionFormFetchRequested({required this.transactionId});
+  final Transaction transaction;
+  const TransactionFormFetchRequested({required this.transaction});
   @override
-  List<Object?> get props => [transactionId];
+  List<Object?> get props => [transaction];
 }
 
 final class TransactionCategoryChanged extends TransactionEvent {
@@ -54,10 +54,10 @@ final class TransactionAmountChanged extends TransactionEvent {
 }
 
 final class TransactionNotesChanged extends TransactionEvent {
-  final String? notes;
-  const TransactionNotesChanged({this.notes});
+  final String? description;
+  const TransactionNotesChanged({this.description});
   @override
-  List<Object?> get props => [notes];
+  List<Object?> get props => [description];
 }
 
 final class TransactionFormSubmitted extends TransactionEvent {

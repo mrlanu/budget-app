@@ -1,9 +1,10 @@
 part of 'transaction_bloc.dart';
 
+enum TransactionStatus { loading, success, failure }
+
 class TransactionState extends Equatable {
-  final bool isNewTransaction;
-  final String? transactionId;
-  final TransactionType transactionType;
+  final TransactionStatus trStatus;
+  final Transaction? transaction;
   final Amount amount;
   final DateTime? date;
   final List<Category> categories;
@@ -12,15 +13,14 @@ class TransactionState extends Equatable {
   final Subcategory? subcategory;
   final List<AccountBrief> accounts;
   final AccountBrief? account;
-  final String notes;
+  final String description;
   final FormzSubmissionStatus status;
   final bool isValid;
   final String? errorMessage;
 
   TransactionState._(
-      {this.isNewTransaction = true,
-      this.transactionId,
-      this.transactionType = TransactionType.EXPENSE,
+      {this.trStatus = TransactionStatus.loading,
+      this.transaction,
       this.amount = const Amount.pure(),
       this.date,
       this.categories = const <Category>[],
@@ -29,18 +29,19 @@ class TransactionState extends Equatable {
       this.subcategory,
       this.accounts = const <AccountBrief>[],
       this.account,
-      this.notes = '',
+      this.description = '',
       this.status = FormzSubmissionStatus.initial,
       this.isValid = false,
       this.errorMessage});
 
-  TransactionState.initial() : this._();
+  TransactionState.init() : this._();
 
-  TransactionState.loading() : this._(isNewTransaction: false);
+  TransactionState.create({required Transaction emptyTransaction})
+      : this._(transaction: emptyTransaction);
 
   TransactionState.edit(
-      {required String? transactionId,
-      required String amount,
+      {required Transaction transaction,
+      required double amount,
       required DateTime dateTime,
       required List<Category> categories,
       required Category category,
@@ -50,9 +51,9 @@ class TransactionState extends Equatable {
       required AccountBrief? accountBrief,
       required String notes})
       : this._(
-            transactionId: transactionId,
-            isNewTransaction: true,
-            amount: Amount.dirty(amount),
+            trStatus: TransactionStatus.success,
+            transaction: transaction,
+            amount: Amount.dirty(amount.toString()),
             date: dateTime,
             categories: categories,
             category: category,
@@ -60,33 +61,35 @@ class TransactionState extends Equatable {
             subcategory: subcategory,
             accounts: accounts,
             account: accountBrief,
-            notes: notes);
+            description: notes);
 
   TransactionState.subcategoriesLoadInProgress(
-      {required String? transactionId,
+      {required Transaction transaction,
       required List<Category> categories,
       required Amount amount,
       Category? category,
       DateTime? dateTime,
       required List<AccountBrief> accounts,
       AccountBrief? account,
-      String? notes,
+      String? description,
       required FormzSubmissionStatus status,
       required bool isValid})
       : this._(
-            transactionId: transactionId,
+            trStatus: TransactionStatus.success,
+            transaction: transaction,
             date: dateTime,
             categories: categories,
             amount: amount,
             category: category,
             accounts: accounts,
             account: account,
-            notes: notes ?? '',
+            description: description ?? '',
             isValid: isValid,
             status: status);
 
   TransactionState copyWith({
-    String? transactionId,
+    TransactionStatus? trStatus,
+    Transaction? transaction,
     TransactionType? transactionType,
     Amount? amount,
     DateTime? date,
@@ -96,14 +99,14 @@ class TransactionState extends Equatable {
     Subcategory? subcategory,
     List<AccountBrief>? accounts,
     AccountBrief? account,
-    String? notes,
+    String? description,
     FormzSubmissionStatus? status,
     bool? isValid,
     String? errorMessage,
   }) {
     return TransactionState._(
-      transactionId: transactionId ?? this.transactionId,
-      transactionType: transactionType ?? this.transactionType,
+      trStatus: trStatus ?? this.trStatus,
+      transaction: transaction ?? this.transaction,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       categories: categories ?? this.categories,
@@ -112,7 +115,7 @@ class TransactionState extends Equatable {
       subcategory: subcategory ?? this.subcategory,
       accounts: accounts ?? this.accounts,
       account: account ?? this.account,
-      notes: notes ?? this.notes,
+      description: description ?? this.description,
       status: status ?? this.status,
       isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -121,8 +124,8 @@ class TransactionState extends Equatable {
 
   @override
   List<Object?> get props => [
-        transactionId,
-        isNewTransaction,
+        trStatus,
+        transaction,
         amount,
         date,
         categories,
@@ -131,7 +134,7 @@ class TransactionState extends Equatable {
         subcategory,
         accounts,
         account,
-        notes,
+        description,
         status,
         isValid,
         errorMessage

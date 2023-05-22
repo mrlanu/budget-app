@@ -1,5 +1,4 @@
 import 'package:budget_app/accounts/models/account_brief.dart';
-import 'package:budget_app/app/app.dart';
 import 'package:budget_app/shared/models/category.dart';
 import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
@@ -233,7 +232,7 @@ class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
-      buildWhen: (previous, current) => previous.notes != current.notes,
+      buildWhen: (previous, current) => previous.description != current.description,
       builder: (context, state) {
         return TextField(
             decoration: InputDecoration(
@@ -244,8 +243,8 @@ class _NotesInput extends StatelessWidget {
               border: OutlineInputBorder(),
               labelText: 'Notes',
             ),
-            onChanged: (notes) => context.read<TransactionBloc>().add(
-                  TransactionNotesChanged(notes: notes),
+            onChanged: (description) => context.read<TransactionBloc>().add(
+                  TransactionNotesChanged(description: description),
                 ));
       },
     );
@@ -276,7 +275,7 @@ class _SubmitButton extends StatelessWidget {
                         .read<TransactionBloc>()
                         .add(TransactionFormSubmitted(context: context))
                     : null,
-                child: Text(state.transactionId == null ? 'ADD' : 'SAVE'),
+                child: Text('SAVE'),
               );
       },
     );
