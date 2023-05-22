@@ -24,10 +24,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final Budget _budget;
   final TransactionsRepository _transactionsRepository;
 
-  TransactionBloc(
-      {required Budget budget,
-      required TransactionsRepository transactionsRepository})
-      : _budget = budget,
+  TransactionBloc({
+    required Budget budget,
+    required TransactionsRepository transactionsRepository,
+  })  : _budget = budget,
         _transactionsRepository = transactionsRepository,
         super(TransactionState()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
@@ -37,7 +37,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
       final TransactionFormLoaded e => _onFormLoaded(e, emit),
-      //final TransactionEditRequested e => _onEditTransaction(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
@@ -52,7 +51,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
-    final categories = _filterCategories();
+    final categories =
+        _filterCategories(transactionType: event.transactionType);
     final accounts = _getAccounts();
     var subcategories = <Subcategory>[];
     var category;
@@ -60,8 +60,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     var account;
     final tr = event.transaction;
     if (tr != null) {
-      category =
-          categories.where((element) => element.id == tr.categoryId).first;
+      category = categories.where((cat) => cat.id == tr.categoryId).first;
       subcategories = _budget.subcategoryList
           .where((sCat) => sCat.categoryId == category.id)
           .toList();
@@ -71,11 +70,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       account = accounts.where((element) => element.id == tr.accountId).first;
     }
     emit(TransactionState(
+        transactionType: event.transactionType,
         isEdit: tr != null,
         trStatus: TransactionStatus.success,
         date: tr?.date ?? DateTime.now(),
-        amount:
-            tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
+        amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
         categories: categories,
         category: category,
         subcategories: subcategories,
@@ -87,10 +86,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         isValid: tr == null ? false : true));
   }
 
-  List<Category> _filterCategories() {
-    return _budget.categoryList
-        .where((cat) => cat.section == Section.EXPENSES)
-        .toList();
+  List<Category> _filterCategories({required TransactionType transactionType}) {
+    final section = switch (transactionType) {
+      TransactionType.INCOME => Section.INCOME,
+      TransactionType.EXPENSE => Section.EXPENSES,
+      TransactionType.TRANSFER => Section.ACCOUNTS,
+    };
+    return _budget.categoryList.where((cat) => cat.section == section).toList();
   }
 
   List<AccountBrief> _getAccounts() {
@@ -144,10 +146,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-        id: state.transaction!.id,
+        id: state.transaction?.id ?? null,
         budgetId: _budget.id,
         date: state.date ?? DateTime.now(),
-        type: state.transaction!.type ?? TransactionType.EXPENSE,
+        type: state.transactionType,
         amount: double.parse(state.amount.value),
         categoryId: state.category!.id,
         categoryName: state.category!.name,

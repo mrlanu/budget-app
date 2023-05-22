@@ -52,7 +52,7 @@ class TransactionsPage extends StatelessWidget {
                           suffix: Icon(Icons.chevron_right),
                           onTap: () => {
                                 Navigator.of(context).push(
-                                  TransactionPage.route(transaction: tr),
+                                  TransactionPage.route(transaction: tr, transactionType: tr.type!),
                                 )
                               });
                     }));

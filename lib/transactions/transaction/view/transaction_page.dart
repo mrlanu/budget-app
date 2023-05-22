@@ -6,20 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/transaction.dart';
+import '../../models/transaction_type.dart';
 
 class TransactionPage extends StatelessWidget {
   const TransactionPage({Key? key}) : super(key: key);
 
   static const routeName = '/transaction';
 
-  static Route<void> route({Transaction? transaction}) {
+  static Route<void> route(
+      {Transaction? transaction, required TransactionType transactionType}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionBloc(
           budget: appBloc.state.budget!,
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-        )..add(TransactionFormLoaded(transaction: transaction)),
+        )..add(TransactionFormLoaded(
+            transaction: transaction, transactionType: transactionType)),
         child: TransactionPage(),
       );
     });
@@ -31,8 +34,7 @@ class TransactionPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title:
-                  Text(state.isEdit ? 'Edit Transaction' : 'New Transaction'),
+              title: Text(_buildTitle(state)),
             ),
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
@@ -41,5 +43,15 @@ class TransactionPage extends StatelessWidget {
                   ));
       },
     );
+  }
+
+  String _buildTitle(TransactionState state) {
+    final prefix = state.isEdit ? 'Edit' : 'New';
+    final body = switch (state.transactionType) {
+      TransactionType.EXPENSE => 'Expense',
+      TransactionType.INCOME => 'Income',
+      TransactionType.TRANSFER => 'Transfer'
+    };
+    return '$prefix $body';
   }
 }

@@ -6,6 +6,7 @@ class TransactionState extends Equatable {
   final bool isEdit;
   final TransactionStatus trStatus;
   final Transaction? transaction;
+  final TransactionType transactionType;
   final Amount amount;
   final DateTime? date;
   final List<Category> categories;
@@ -20,7 +21,8 @@ class TransactionState extends Equatable {
   final String? errorMessage;
 
   TransactionState(
-      {this.isEdit = false,
+      {this.transactionType = TransactionType.EXPENSE,
+      this.isEdit = false,
       this.trStatus = TransactionStatus.loading,
       this.transaction,
       this.amount = const Amount.pure(),
@@ -38,6 +40,7 @@ class TransactionState extends Equatable {
 
   TransactionState resetSubcategories() {
     return TransactionState(
+        transactionType: this.transactionType,
         isEdit: this.isEdit,
         trStatus: this.trStatus,
         transaction: this.transaction,
@@ -58,7 +61,6 @@ class TransactionState extends Equatable {
     bool? isEdit,
     TransactionStatus? trStatus,
     Transaction? transaction,
-    TransactionType? transactionType,
     Amount? amount,
     DateTime? date,
     List<Category>? categories,
@@ -73,6 +75,7 @@ class TransactionState extends Equatable {
     String? errorMessage,
   }) {
     return TransactionState(
+      transactionType: transactionType ?? this.transactionType,
       isEdit: isEdit ?? this.isEdit,
       trStatus: trStatus ?? this.trStatus,
       transaction: transaction ?? this.transaction,
