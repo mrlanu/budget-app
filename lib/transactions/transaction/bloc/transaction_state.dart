@@ -19,7 +19,7 @@ class TransactionState extends Equatable {
   final bool isValid;
   final String? errorMessage;
 
-  TransactionState._(
+  TransactionState(
       {this.isEdit = false,
       this.trStatus = TransactionStatus.loading,
       this.transaction,
@@ -36,56 +36,23 @@ class TransactionState extends Equatable {
       this.isValid = false,
       this.errorMessage});
 
-  TransactionState.init() : this._();
-
-  TransactionState.edit(
-      {required Transaction transaction,
-      required List<Category> categories,
-      required Category category,
-      required List<Subcategory> subcategories,
-      required Subcategory subcategory,
-      required List<AccountBrief> accounts,
-      required AccountBrief? accountBrief,
-      required String notes})
-      : this._(
-            isEdit: true,
-            trStatus: TransactionStatus.success,
-            transaction: transaction,
-            amount: Amount.dirty(transaction.amount.toString()),
-            date: transaction.date,
-            categories: categories,
-            category: category,
-            subcategories: subcategories,
-            subcategory: subcategory,
-            accounts: accounts,
-            account: accountBrief,
-            description: notes);
-
-  TransactionState.subcategoriesLoadInProgress(
-      {required bool isEdit,
-      required Transaction transaction,
-      required List<Category> categories,
-      required Amount amount,
-      Category? category,
-      DateTime? dateTime,
-      required List<AccountBrief> accounts,
-      AccountBrief? account,
-      String? description,
-      required FormzSubmissionStatus status,
-      required bool isValid})
-      : this._(
-            isEdit: isEdit,
-            trStatus: TransactionStatus.success,
-            transaction: transaction,
-            date: dateTime,
-            categories: categories,
-            amount: amount,
-            category: category,
-            accounts: accounts,
-            account: account,
-            description: description ?? '',
-            isValid: isValid,
-            status: status);
+  TransactionState resetSubcategories() {
+    return TransactionState(
+        isEdit: this.isEdit,
+        trStatus: this.trStatus,
+        transaction: this.transaction,
+        date: this.date,
+        categories: this.categories,
+        category: this.category,
+        subcategories: <Subcategory>[],
+        subcategory: null,
+        amount: this.amount,
+        accounts: this.accounts,
+        account: this.account,
+        description: this.description,
+        isValid: this.isValid,
+        status: this.status);
+  }
 
   TransactionState copyWith({
     bool? isEdit,
@@ -105,7 +72,7 @@ class TransactionState extends Equatable {
     bool? isValid,
     String? errorMessage,
   }) {
-    return TransactionState._(
+    return TransactionState(
       isEdit: isEdit ?? this.isEdit,
       trStatus: trStatus ?? this.trStatus,
       transaction: transaction ?? this.transaction,

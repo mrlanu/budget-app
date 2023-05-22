@@ -26,24 +26,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   TransactionBloc(
       {required Budget budget,
-      required TransactionsRepository transactionsRepository,
-      required Transaction? transaction})
+      required TransactionsRepository transactionsRepository})
       : _budget = budget,
         _transactionsRepository = transactionsRepository,
-        super(TransactionState.init()) {
+        super(TransactionState()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
-    if (transaction == null) {
-      add(TransactionLoaded());
-    } else {
-      add(TransactionEditRequested(transaction: transaction));
-    }
   }
 
   Future<void> _onEvent(
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
-      final TransactionLoaded e => _onFormLoaded(e, emit),
-      final TransactionEditRequested e => _onEditTransaction(e, emit),
+      final TransactionFormLoaded e => _onFormLoaded(e, emit),
+      //final TransactionEditRequested e => _onEditTransaction(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
@@ -55,16 +49,42 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onFormLoaded(
-    TransactionLoaded event,
+    TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
     final categories = _filterCategories();
     final accounts = _getAccounts();
-    emit(state.copyWith(
+    var subcategories = <Subcategory>[];
+    var category;
+    var subcategory;
+    var account;
+    final tr = event.transaction;
+    if (tr != null) {
+      category =
+          categories.where((element) => element.id == tr.categoryId).first;
+      subcategories = _budget.subcategoryList
+          .where((sCat) => sCat.categoryId == category.id)
+          .toList();
+      subcategory = subcategories
+          .where((element) => element.id == tr.subcategoryId)
+          .first;
+      account = accounts.where((element) => element.id == tr.accountId).first;
+    }
+    emit(TransactionState(
+        isEdit: tr != null,
         trStatus: TransactionStatus.success,
-        transaction: Transaction.empty(),
+        date: tr?.date ?? DateTime.now(),
+        amount:
+            tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
         categories: categories,
-        accounts: accounts));
+        category: category,
+        subcategories: subcategories,
+        subcategory: subcategory,
+        description: tr?.description ?? '',
+        accounts: accounts,
+        account: account,
+        transaction: tr,
+        isValid: tr == null ? false : true));
   }
 
   List<Category> _filterCategories() {
@@ -79,22 +99,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
-    emit(TransactionState.subcategoriesLoadInProgress(
-        isEdit: state.isEdit,
-        transaction: state.transaction!,
-        amount: state.amount,
-        dateTime: state.date,
-        categories: state.categories,
-        category: event.category,
-        accounts: state.accounts,
-        account: state.account,
-        status: state.status,
-        isValid: state.isValid));
+    emit(state.resetSubcategories());
     final subcategories = _budget.subcategoryList
         .where((cat) => cat.categoryId == event.category!.id)
         .toList();
     emit(
-        state.copyWith(category: state.category, subcategories: subcategories));
+        state.copyWith(category: event.category, subcategories: subcategories));
   }
 
   void _onSubcategoryChanged(
@@ -152,30 +162,5 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
-  }
-
-  void _onEditTransaction(
-      TransactionEditRequested event, Emitter<TransactionState> emit) {
-    final tr = event.transaction;
-    final category = _filterCategories()
-        .where((element) => element.id == tr.categoryId)
-        .first;
-    final subcategories = _budget.subcategoryList
-        .where((sCat) => sCat.categoryId == category.id)
-        .toList();
-    final subcategory =
-        subcategories.where((element) => element.id == tr.subcategoryId).first;
-    final accounts = _getAccounts();
-    final account =
-        accounts.where((element) => element.id == tr.accountId).first;
-    emit(TransactionState.edit(
-        categories: _filterCategories(),
-        category: category,
-        subcategories: subcategories,
-        subcategory: subcategory,
-        notes: tr.description!,
-        accounts: accounts,
-        accountBrief: account,
-        transaction: tr));
   }
 }

@@ -7,13 +7,9 @@ sealed class TransactionEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class TransactionLoaded extends TransactionEvent {
-  const TransactionLoaded();
-}
-
-final class TransactionEditRequested extends TransactionEvent {
-  final Transaction transaction;
-  const TransactionEditRequested({required this.transaction});
+final class TransactionFormLoaded extends TransactionEvent {
+  final Transaction? transaction;
+  const TransactionFormLoaded({required this.transaction});
   @override
   List<Object?> get props => [transaction];
 }

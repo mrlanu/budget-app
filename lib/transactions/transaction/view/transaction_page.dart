@@ -17,9 +17,9 @@ class TransactionPage extends StatelessWidget {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionBloc(
-            budget: appBloc.state.budget!,
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            transaction: transaction),
+          budget: appBloc.state.budget!,
+          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+        )..add(TransactionFormLoaded(transaction: transaction)),
         child: TransactionPage(),
       );
     });
@@ -31,7 +31,8 @@ class TransactionPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text(state.isEdit ? 'Edit Transaction' : 'New Transaction'),
+              title:
+                  Text(state.isEdit ? 'Edit Transaction' : 'New Transaction'),
             ),
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()

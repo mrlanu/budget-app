@@ -271,7 +271,8 @@ class _SubmitButton extends StatelessWidget {
                         state.category != null &&
                         state.subcategory != null &&
                         state.account != null
-                    ? () => context
+                    ?
+                    () => context
                         .read<TransactionBloc>()
                         .add(TransactionFormSubmitted(context: context))
                     : null,
