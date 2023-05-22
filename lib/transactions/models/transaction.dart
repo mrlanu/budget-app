@@ -6,10 +6,10 @@ part 'transaction.g.dart';
 @JsonSerializable()
 class Transaction {
   final String? id;
-  final String budgetId;
+  final String? budgetId;
   final DateTime? date;
-  final TransactionType type;
-  final String description;
+  final TransactionType? type;
+  final String? description;
   final double? amount;
   final String? categoryId;
   final String? categoryName;
@@ -20,9 +20,9 @@ class Transaction {
 
   Transaction(
       {this.id,
-      required this.budgetId,
+      this.budgetId,
       this.date,
-      required this.type,
+      this.type,
       this.description = '',
       this.amount,
       this.categoryId,
@@ -32,10 +32,8 @@ class Transaction {
       this.accountName,
       this.accountId});
 
-  Transaction.empty(
-      {required String budgetId,
-      required TransactionType type})
-      : this(budgetId: budgetId, date: DateTime.now(), type: type);
+  Transaction.empty()
+      : this();
 
   Transaction.create(
       {required String budgetId,

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
-import 'package:budget_app/transactions/models/transaction_view.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
@@ -11,22 +10,22 @@ abstract class TransactionsRepository {
 
   const TransactionsRepository({required this.user});
 
-  Stream<List<TransactionView>> getTransactions();
+  Stream<List<Transaction>> getTransactions();
   Future<void> createTransaction(Transaction transaction);
-  Future<List<Transaction>> fetchAllTransactionView(
+  Future<List<Transaction>> fetchAllTransactions(
   {required String budgetId, required DateTime dateTime, required String categoryId});
   Future<Transaction> fetchTransactionById(String transactionId);
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
 
-  final _transactionsStreamController = BehaviorSubject<List<TransactionView>>.seeded(const []);
+  final _transactionsStreamController = BehaviorSubject<List<Transaction>>.seeded(const []);
   static const baseURL = 'http://10.0.2.2:8080/api';
 
   TransactionsRepositoryImpl({required super.user});
 
   @override
-  Stream<List<TransactionView>> getTransactions() => _transactionsStreamController.asBroadcastStream();
+  Stream<List<Transaction>> getTransactions() => _transactionsStreamController.asBroadcastStream();
 
   @override
   Future<void> createTransaction(Transaction transaction) async {
@@ -43,7 +42,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<List<Transaction>> fetchAllTransactionView(
+  Future<List<Transaction>> fetchAllTransactions(
   {required String budgetId, required DateTime dateTime, required String categoryId}) async {
     final url =
         '$baseURL/transactions?budgetId=$budgetId&categoryId=$categoryId&date=${dateTime}';

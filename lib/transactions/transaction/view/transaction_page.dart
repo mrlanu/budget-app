@@ -31,7 +31,7 @@ class TransactionPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text('Transaction'),
+              title: Text(state.isEdit ? 'Edit Transaction' : 'New Transaction'),
             ),
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()

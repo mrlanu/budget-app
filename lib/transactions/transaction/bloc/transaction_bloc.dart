@@ -33,17 +33,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         super(TransactionState.init()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
     if (transaction == null) {
-      add(TransactionFormLoaded());
+      add(TransactionLoaded());
     } else {
-      add(TransactionFormFetchRequested(transaction: transaction));
+      add(TransactionEditRequested(transaction: transaction));
     }
   }
 
   Future<void> _onEvent(
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
-      final TransactionFormLoaded e => _onFormLoaded(e, emit),
-      final TransactionFormFetchRequested e => _fetchTransaction(e, emit),
+      final TransactionLoaded e => _onFormLoaded(e, emit),
+      final TransactionEditRequested e => _onEditTransaction(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
@@ -55,15 +55,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onFormLoaded(
-    TransactionFormLoaded event,
+    TransactionLoaded event,
     Emitter<TransactionState> emit,
   ) async {
     final categories = _filterCategories();
     final accounts = _getAccounts();
     emit(state.copyWith(
         trStatus: TransactionStatus.success,
-        transaction: Transaction.empty(
-            budgetId: _budget.id, type: TransactionType.EXPENSE),
+        transaction: Transaction.empty(),
         categories: categories,
         accounts: accounts));
   }
@@ -81,6 +80,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
     emit(TransactionState.subcategoriesLoadInProgress(
+        isEdit: state.isEdit,
         transaction: state.transaction!,
         amount: state.amount,
         dateTime: state.date,
@@ -134,18 +134,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-      id: state.transaction!.id,
-      budgetId: _budget.id,
-      date: state.date ?? DateTime.now(),
-      type: state.transaction!.type,
-      amount: double.parse(state.amount.value),
-      categoryId: state.category!.id,
-      categoryName: state.category!.name,
-      subcategoryId: state.subcategory!.id,
-      subcategoryName: state.subcategory!.name,
-      accountId: state.account!.id,
-      accountName: state.account!.name
-    );
+        id: state.transaction!.id,
+        budgetId: _budget.id,
+        date: state.date ?? DateTime.now(),
+        type: state.transaction!.type ?? TransactionType.EXPENSE,
+        amount: double.parse(state.amount.value),
+        categoryId: state.category!.id,
+        categoryName: state.category!.name,
+        subcategoryId: state.subcategory!.id,
+        subcategoryName: state.subcategory!.name,
+        accountId: state.account!.id,
+        accountName: state.account!.name);
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
@@ -155,8 +154,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
   }
 
-  void _fetchTransaction(
-      TransactionFormFetchRequested event, Emitter<TransactionState> emit) {
+  void _onEditTransaction(
+      TransactionEditRequested event, Emitter<TransactionState> emit) {
     final tr = event.transaction;
     final category = _filterCategories()
         .where((element) => element.id == tr.categoryId)
@@ -170,13 +169,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     final account =
         accounts.where((element) => element.id == tr.accountId).first;
     emit(TransactionState.edit(
-        amount: tr.amount!,
-        dateTime: tr.date!,
         categories: _filterCategories(),
         category: category,
         subcategories: subcategories,
         subcategory: subcategory,
-        notes: tr.description,
+        notes: tr.description!,
         accounts: accounts,
         accountBrief: account,
         transaction: tr));

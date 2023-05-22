@@ -3,6 +3,7 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
+  final bool isEdit;
   final TransactionStatus trStatus;
   final Transaction? transaction;
   final Amount amount;
@@ -19,7 +20,8 @@ class TransactionState extends Equatable {
   final String? errorMessage;
 
   TransactionState._(
-      {this.trStatus = TransactionStatus.loading,
+      {this.isEdit = false,
+      this.trStatus = TransactionStatus.loading,
       this.transaction,
       this.amount = const Amount.pure(),
       this.date,
@@ -36,13 +38,8 @@ class TransactionState extends Equatable {
 
   TransactionState.init() : this._();
 
-  TransactionState.create({required Transaction emptyTransaction})
-      : this._(transaction: emptyTransaction);
-
   TransactionState.edit(
       {required Transaction transaction,
-      required double amount,
-      required DateTime dateTime,
       required List<Category> categories,
       required Category category,
       required List<Subcategory> subcategories,
@@ -51,10 +48,11 @@ class TransactionState extends Equatable {
       required AccountBrief? accountBrief,
       required String notes})
       : this._(
+            isEdit: true,
             trStatus: TransactionStatus.success,
             transaction: transaction,
-            amount: Amount.dirty(amount.toString()),
-            date: dateTime,
+            amount: Amount.dirty(transaction.amount.toString()),
+            date: transaction.date,
             categories: categories,
             category: category,
             subcategories: subcategories,
@@ -64,7 +62,8 @@ class TransactionState extends Equatable {
             description: notes);
 
   TransactionState.subcategoriesLoadInProgress(
-      {required Transaction transaction,
+      {required bool isEdit,
+      required Transaction transaction,
       required List<Category> categories,
       required Amount amount,
       Category? category,
@@ -75,6 +74,7 @@ class TransactionState extends Equatable {
       required FormzSubmissionStatus status,
       required bool isValid})
       : this._(
+            isEdit: isEdit,
             trStatus: TransactionStatus.success,
             transaction: transaction,
             date: dateTime,
@@ -88,6 +88,7 @@ class TransactionState extends Equatable {
             status: status);
 
   TransactionState copyWith({
+    bool? isEdit,
     TransactionStatus? trStatus,
     Transaction? transaction,
     TransactionType? transactionType,
@@ -105,6 +106,7 @@ class TransactionState extends Equatable {
     String? errorMessage,
   }) {
     return TransactionState._(
+      isEdit: isEdit ?? this.isEdit,
       trStatus: trStatus ?? this.trStatus,
       transaction: transaction ?? this.transaction,
       amount: amount ?? this.amount,
@@ -124,6 +126,7 @@ class TransactionState extends Equatable {
 
   @override
   List<Object?> get props => [
+        isEdit,
         trStatus,
         transaction,
         amount,
