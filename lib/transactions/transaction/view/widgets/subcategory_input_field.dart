@@ -71,7 +71,6 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
                 'Add subcategory to ${context.read<TransactionBloc>().state.category?.name} category'),
             content: TextField(
               controller: _controller,
-              autofocus: true,
               decoration: InputDecoration(hintText: 'Enter name'),
             ),
             actions: [

@@ -2,6 +2,7 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../subcategories/repository/subcategories_repository.dart';
 import '../../theme.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
 
@@ -72,6 +74,10 @@ class _AppViewState extends State<AppView> {
                 create: (context) => SharedRepositoryImpl(user: user)),
             RepositoryProvider(
                 create: (context) => TransactionsRepositoryImpl(user: user)),
+            RepositoryProvider(
+                create: (context) => CategoriesRepositoryImpl(user: user)),
+            RepositoryProvider(
+                create: (context) => SubcategoriesRepositoryImpl(user: user)),
           ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,

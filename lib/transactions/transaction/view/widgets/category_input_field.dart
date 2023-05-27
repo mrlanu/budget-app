@@ -71,7 +71,6 @@ class _CategoryInputState extends State<CategoryInput> {
                 title: Text('Add category'),
                 content: TextField(
                   controller: _controller,
-                  autofocus: true,
                   decoration: InputDecoration(hintText: 'Enter name'),
                 ),
                 actions: [

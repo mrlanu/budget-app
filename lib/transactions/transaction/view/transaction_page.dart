@@ -1,4 +1,6 @@
 import 'package:budget_app/app/app.dart';
+import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/transaction_form.dart';
@@ -21,6 +23,8 @@ class TransactionPage extends StatelessWidget {
         create: (context) => TransactionBloc(
           budget: appBloc.state.budget!,
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+          categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+          subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
         )..add(TransactionFormLoaded(
             transaction: transaction, transactionType: transactionType)),
         child: TransactionPage(),
