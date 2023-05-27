@@ -10,30 +10,17 @@ sealed class TransactionEvent extends Equatable {
 final class TransactionFormLoaded extends TransactionEvent {
   final Transaction? transaction;
   final TransactionType transactionType;
-  const TransactionFormLoaded({required this.transaction, required  this.transactionType});
+  const TransactionFormLoaded(
+      {required this.transaction, required this.transactionType});
   @override
   List<Object?> get props => [transaction, transactionType];
 }
 
-final class TransactionCategoryChanged extends TransactionEvent {
-  final Category? category;
-  const TransactionCategoryChanged({this.category});
+final class TransactionAmountChanged extends TransactionEvent {
+  final String? amount;
+  const TransactionAmountChanged({this.amount});
   @override
-  List<Object?> get props => [category];
-}
-
-final class TransactionSubcategoryChanged extends TransactionEvent {
-  final Subcategory? subcategory;
-  const TransactionSubcategoryChanged({this.subcategory});
-  @override
-  List<Object?> get props => [subcategory];
-}
-
-final class TransactionAccountChanged extends TransactionEvent {
-  final AccountBrief? account;
-  const TransactionAccountChanged({this.account});
-  @override
-  List<Object?> get props => [account];
+  List<Object?> get props => [amount];
 }
 
 final class TransactionDateChanged extends TransactionEvent {
@@ -43,11 +30,53 @@ final class TransactionDateChanged extends TransactionEvent {
   List<Object?> get props => [dateTime];
 }
 
-final class TransactionAmountChanged extends TransactionEvent {
-  final String? amount;
-  const TransactionAmountChanged({this.amount});
+final class TransactionCategoriesChanged extends TransactionEvent {
+  final List<Category> categories;
+  const TransactionCategoriesChanged({required this.categories});
   @override
-  List<Object?> get props => [amount];
+  List<Object?> get props => [categories];
+}
+
+final class TransactionCategoryChanged extends TransactionEvent {
+  final Category? category;
+  const TransactionCategoryChanged({this.category});
+  @override
+  List<Object?> get props => [category];
+}
+
+final class TransactionCategoryCreated extends TransactionEvent {
+  final String name;
+  const TransactionCategoryCreated({required this.name});
+  @override
+  List<Object?> get props => [name];
+}
+
+final class TransactionSubcategoriesChanged extends TransactionEvent {
+  final List<Subcategory> subcategories;
+  const TransactionSubcategoriesChanged({required this.subcategories});
+  @override
+  List<Object?> get props => [subcategories];
+}
+
+final class TransactionSubcategoryChanged extends TransactionEvent {
+  final Subcategory? subcategory;
+  const TransactionSubcategoryChanged({this.subcategory});
+  @override
+  List<Object?> get props => [subcategory];
+}
+
+final class TransactionSubcategoryCreated extends TransactionEvent {
+  final String name;
+  const TransactionSubcategoryCreated({required this.name});
+  @override
+  List<Object?> get props => [name];
+}
+
+final class TransactionAccountChanged extends TransactionEvent {
+  final AccountBrief? account;
+  const TransactionAccountChanged({this.account});
+  @override
+  List<Object?> get props => [account];
 }
 
 final class TransactionNotesChanged extends TransactionEvent {

@@ -17,7 +17,7 @@ class Amount extends FormzInput<String, AmountValidationError> {
   const Amount.dirty([super.value = '']) : super.dirty();
 
   static final RegExp _amountRegExp = RegExp(
-    r'^-?[0-9][0-9,\.]+$',
+    r'^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$',
   );
 
   @override

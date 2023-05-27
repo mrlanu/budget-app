@@ -28,7 +28,7 @@ class SharedRepositoryImpl extends SharedRepository {
       required String section,
       required DateTime dateTime}) async {
     final url =
-        '$baseURL/budgets/$budgetId/summary?date=$dateTime&section=$section';
+        '$baseURL/$budgetId/summary?date=$dateTime&section=$section';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {
@@ -47,7 +47,7 @@ class SharedRepositoryImpl extends SharedRepository {
 
   @override
   Future<Map<String, double>> fetchAllSections(String budgetId, DateTime dateTime) async {
-    final url = '$baseURL/budgets/$budgetId/sections?date=$dateTime';
+    final url = '$baseURL/$budgetId/sections?date=$dateTime';
 
     final token = await user.token;
     final response = await http.get(Uri.parse(url), headers: {

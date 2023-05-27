@@ -17,7 +17,7 @@ class BudgetRepositoryImpl extends BudgetRepository{
 
   @override
   Future<Budget> fetchBudget(String token) async {
-    final url = '$baseURL/budgets';
+    final url = '$baseURL';
 
     final response = await http.get(Uri.parse(url), headers: {
       "Content-Type": "application/json",
