@@ -9,17 +9,20 @@ part of 'category.dart';
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
       id: json['id'] as String,
       name: json['name'] as String,
-      section: $enumDecode(_$SectionEnumMap, json['section']),
+      budgetId: json['budgetId'] as String,
+      transactionType:
+          $enumDecode(_$TransactionTypeEnumMap, json['transactionType']),
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'section': _$SectionEnumMap[instance.section]!,
+      'budgetId': instance.budgetId,
+      'transactionType': _$TransactionTypeEnumMap[instance.transactionType]!,
     };
 
-const _$SectionEnumMap = {
-  Section.ACCOUNTS: 'ACCOUNTS',
-  Section.EXPENSES: 'EXPENSES',
-  Section.INCOME: 'INCOME',
+const _$TransactionTypeEnumMap = {
+  TransactionType.EXPENSE: 'EXPENSE',
+  TransactionType.INCOME: 'INCOME',
+  TransactionType.TRANSFER: 'TRANSFER',
 };

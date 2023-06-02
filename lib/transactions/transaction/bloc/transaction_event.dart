@@ -44,13 +44,6 @@ final class TransactionCategoryChanged extends TransactionEvent {
   List<Object?> get props => [category];
 }
 
-final class TransactionCategoryCreated extends TransactionEvent {
-  final String name;
-  const TransactionCategoryCreated({required this.name});
-  @override
-  List<Object?> get props => [name];
-}
-
 final class TransactionSubcategoriesChanged extends TransactionEvent {
   final List<Subcategory> subcategories;
   const TransactionSubcategoriesChanged({required this.subcategories});

@@ -1,7 +1,8 @@
+import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../shared/models/category.dart';
+import '../../../../categories/models/category.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class CategoryInput extends StatefulWidget {
@@ -30,9 +31,11 @@ class _CategoryInputState extends State<CategoryInput> {
       builder: (context, state) {
         return DropdownButtonFormField<Category>(
             icon: GestureDetector(
-              child: Icon(Icons.add),
-              onTap: (){
-                _openDialog(context);
+              child: Icon(Icons.edit_note),
+              onTap: () {
+                //_openDialog(context);
+                Navigator.of(context).push(CategoriesPage.route(
+                    transactionType: state.transactionType));
               },
             ),
             items: state.categories.map((Category category) {
@@ -59,34 +62,5 @@ class _CategoryInputState extends State<CategoryInput> {
             ));
       },
     );
-  }
-
-  Future<String?> _openDialog(BuildContext context) =>
-      showDialog<String>(
-          context: context,
-          builder: (_) => BlocProvider.value(
-              value: context.read<TransactionBloc>(),
-              child: AlertDialog(
-
-                title: Text('Add category'),
-                content: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(hintText: 'Enter name'),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => _submit(context),
-                    child: Text('SAVE'),
-                  )
-                ],
-              ))
-      );
-
-  void _submit(BuildContext context) {
-    context
-        .read<TransactionBloc>()
-        .add(TransactionCategoryCreated(name: _controller.text));
-    Navigator.of(context).pop(_controller.text);
-    _controller.clear();
   }
 }

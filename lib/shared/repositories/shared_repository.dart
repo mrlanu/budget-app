@@ -20,7 +20,7 @@ abstract class SharedRepository {
 class SharedRepositoryImpl extends SharedRepository {
   SharedRepositoryImpl({required super.user});
 
-  static const baseURL = 'http://10.0.2.2:8080/api';
+  static const baseURL = 'http://10.0.2.2:8080/api/budget';
 
   @override
   Future<List<SummaryBy>> fetchSummaryList(

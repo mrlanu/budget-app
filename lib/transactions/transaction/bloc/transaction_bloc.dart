@@ -10,9 +10,8 @@ import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
 import '../../../accounts/models/account_brief.dart';
+import '../../../categories/models/category.dart';
 import '../../../shared/models/budget.dart';
-import '../../../shared/models/category.dart';
-import '../../../shared/models/section.dart';
 import '../../../shared/models/subcategory.dart';
 import '../../models/transaction.dart';
 import '../../models/transaction_type.dart';
@@ -36,8 +35,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     required SubcategoriesRepository subcategoriesRepository,
   })  : _budget = budget,
         _transactionsRepository = transactionsRepository,
-  _categoriesRepository = categoriesRepository,
-  _subcategoriesRepository = subcategoriesRepository,
+        _categoriesRepository = categoriesRepository,
+        _subcategoriesRepository = subcategoriesRepository,
         super(TransactionState()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
     _categoriesSubscription =
@@ -58,7 +57,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final TransactionDateChanged e => _onDateChanged(e, emit),
       final TransactionCategoriesChanged e => _onCategoriesChanged(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
-      final TransactionCategoryCreated e => _onCategoryCreated(e, emit),
       final TransactionSubcategoriesChanged e =>
         _onSubcategoriesChanged(e, emit),
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
@@ -128,33 +126,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onCategoriesChanged(TransactionCategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    emit(state.copyWith(categories: event.categories));
+    emit(state.resetCategory().copyWith(categories: event.categories));
   }
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
     emit(state.resetSubcategories());
     final subcategories = await _subcategoriesRepository.fetchSubcategories(
-        budgetId: _budget.id, categoryId: event.category!.id);
+        budgetId: _budget.id, categoryId: event.category!.id!);
     emit(
         state.copyWith(category: event.category, subcategories: subcategories));
   }
 
-  void _onCategoryCreated(
-      TransactionCategoryCreated event, Emitter<TransactionState> emit) {
-    final section = switch (state.transactionType) {
-    TransactionType.INCOME => Section.INCOME,
-    TransactionType.EXPENSE => Section.EXPENSES,
-    TransactionType.TRANSFER => Section.ACCOUNTS,
-    };
-    final newCategory = Category(id: '', name: event.name, section: section);
-    _categoriesRepository.saveCategory(
-    budgetId: _budget.id, category: newCategory);
-  }
-
   Future<void> _onSubcategoriesChanged(TransactionSubcategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    emit(state.copyWith(subcategories: event.subcategories));
+    emit(state.resetSubcategory().copyWith(subcategories: event.subcategories));
   }
 
   void _onSubcategoryChanged(
@@ -165,13 +151,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   void _onSubcategoryCreated(
       TransactionSubcategoryCreated event, Emitter<TransactionState> emit) {
     final newSubcategory =
-    Subcategory(id: '', categoryId: state.category!.id, name: event.name);
+        Subcategory(id: '', categoryId: state.category!.id!, name: event.name);
     _subcategoriesRepository.saveSubcategory(
         budgetId: _budget.id, subcategory: newSubcategory);
   }
 
   List<AccountBrief> _getAccounts() {
-    return _budget.accountBriefList;
+    return [];
   }
 
   void _onAccountChanged(

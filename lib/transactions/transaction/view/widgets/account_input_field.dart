@@ -11,7 +11,7 @@ class AccountInput extends StatelessWidget {
       builder: (context, state) {
         return DropdownButtonFormField<AccountBrief>(
             icon: GestureDetector(
-              child: Icon(Icons.add),
+              child: Icon(Icons.edit_note),
               onTap: (){
 
               },

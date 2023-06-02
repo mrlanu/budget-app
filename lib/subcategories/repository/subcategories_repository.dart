@@ -12,55 +12,73 @@ abstract class SubcategoriesRepository {
   const SubcategoriesRepository({required this.user});
 
   Stream<List<Subcategory>> getSubcategories();
-  Future<void> saveSubcategory({required String budgetId, required Subcategory subcategory});
+
+  Future<void> saveSubcategory(
+      {required String budgetId, required Subcategory subcategory});
+
   Future<List<Subcategory>> fetchSubcategories(
-      {required String budgetId,
-        required String categoryId});
+      {required String budgetId, required String categoryId});
+
+  Future<void> delete({required String subcategoryId});
 }
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
-  static const baseURL = 'http://10.0.2.2:8080/api';
+  static const baseURL = '10.0.2.2:8080';
 
   SubcategoriesRepositoryImpl({required super.user});
 
   final _subcategoriesStreamController =
-  BehaviorSubject<List<Subcategory>>.seeded(const []);
+      BehaviorSubject<List<Subcategory>>.seeded(const []);
 
   @override
   Stream<List<Subcategory>> getSubcategories() =>
       _subcategoriesStreamController.asBroadcastStream();
 
   @override
-  Future<void> saveSubcategory({required String budgetId, required Subcategory subcategory}) async {
-    final url = '$baseURL/$budgetId/subcategory';
+  Future<void> saveSubcategory(
+      {required String budgetId, required Subcategory subcategory}) async {
+    final url = Uri.http(baseURL, '/api/subcategories');
 
-    final response = await http.post(Uri.parse(url),
-        headers: await _getHeaders(),
-        body: json.encode(subcategory.toJson()));
+    final response = await http.post(url,
+        headers: await _getHeaders(), body: json.encode(subcategory.toJson()));
 
     final newSubcategory = Subcategory.fromJson(jsonDecode(response.body));
     final subcategories = [..._subcategoriesStreamController.value];
+    subcategories.removeWhere((element) => element.id == subcategory.id);
     subcategories.add(newSubcategory);
     _subcategoriesStreamController.add(subcategories);
   }
 
   @override
   Future<List<Subcategory>> fetchSubcategories(
-      {required String budgetId,
-        required String categoryId}) async {
-    final url = '$baseURL/$budgetId/subcategories';
-    final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      {required String budgetId, required String categoryId}) async {
+    final url = Uri.http(baseURL, '/api/subcategories', {'categoryId': categoryId});
+    final response =
+        await http.get(url, headers: await _getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
     )
-        .map((jsonMap) => Subcategory.fromJson(Map<String, dynamic>.from(jsonMap)))
+        .map((jsonMap) =>
+            Subcategory.fromJson(Map<String, dynamic>.from(jsonMap)))
         .where((scat) => scat.categoryId == categoryId)
         .toList();
 
     _subcategoriesStreamController.add(result);
 
     return result;
+  }
+
+  @override
+  Future<void> delete({required String subcategoryId}) async {
+    final url = Uri.http(baseURL, '/api/subcategories/$subcategoryId');
+
+    await http.delete(url, headers: await _getHeaders());
+    final subcategories = [..._subcategoriesStreamController.value];
+    final index =
+        subcategories.indexWhere((element) => element.id == subcategoryId);
+    subcategories.removeAt(index);
+    _subcategoriesStreamController.add(subcategories);
   }
 
   Future<Map<String, String>> _getHeaders() async {
@@ -70,5 +88,4 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
       "Authorization": "Bearer $token"
     };
   }
-
 }

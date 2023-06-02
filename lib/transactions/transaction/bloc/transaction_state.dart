@@ -38,6 +38,44 @@ class TransactionState extends Equatable {
       this.isValid = false,
       this.errorMessage});
 
+  TransactionState resetCategory() {
+    return TransactionState(
+        transactionType: this.transactionType,
+        isEdit: this.isEdit,
+        trStatus: this.trStatus,
+        transaction: this.transaction,
+        date: this.date,
+        categories: this.categories,
+        category: null,
+        subcategories: <Subcategory>[],
+        subcategory: this.subcategory,
+        amount: this.amount,
+        accounts: this.accounts,
+        account: this.account,
+        description: this.description,
+        isValid: this.isValid,
+        status: this.status);
+  }
+
+  TransactionState resetSubcategory() {
+    return TransactionState(
+        transactionType: this.transactionType,
+        isEdit: this.isEdit,
+        trStatus: this.trStatus,
+        transaction: this.transaction,
+        date: this.date,
+        categories: this.categories,
+        category: this.category,
+        subcategories: <Subcategory>[],
+        subcategory: null,
+        amount: this.amount,
+        accounts: this.accounts,
+        account: this.account,
+        description: this.description,
+        isValid: this.isValid,
+        status: this.status);
+  }
+
   TransactionState resetSubcategories() {
     return TransactionState(
         transactionType: this.transactionType,
@@ -75,7 +113,7 @@ class TransactionState extends Equatable {
     String? errorMessage,
   }) {
     return TransactionState(
-      transactionType: transactionType ?? this.transactionType,
+      transactionType: transactionType,
       isEdit: isEdit ?? this.isEdit,
       trStatus: trStatus ?? this.trStatus,
       transaction: transaction ?? this.transaction,

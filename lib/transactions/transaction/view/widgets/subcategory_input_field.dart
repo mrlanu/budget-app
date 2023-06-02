@@ -1,3 +1,4 @@
+import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,9 +32,9 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
       builder: (context, state) {
         return DropdownButtonFormField<Subcategory>(
             icon: GestureDetector(
-              child: Icon(Icons.add),
+              child: Icon(Icons.edit_note),
               onTap: state.category != null ? () {
-                _openDialog(context);
+                Navigator.of(context).push(SubcategoriesPage.route(category: state.category!));
               } : null,
             ),
             items: state.subcategories.map((Subcategory subcategory) {
@@ -62,7 +63,7 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
     );
   }
 
-  Future<String?> _openDialog(BuildContext context) => showDialog<String>(
+  /*Future<String?> _openDialog(BuildContext context) => showDialog<String>(
       context: context,
       builder: (_) => BlocProvider.value(
           value: context.read<TransactionBloc>(),
@@ -87,5 +88,5 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
         .add(TransactionSubcategoryCreated(name: _controller.text));
     Navigator.of(context).pop(_controller.text);
     _controller.clear();
-  }
+  }*/
 }
