@@ -65,7 +65,7 @@ class SubcategoriesView extends StatelessWidget {
                           icon: Icon(Icons.highlight_remove,
                               color: Theme.of(context).colorScheme.error),
                           onPressed: () {
-                            context.read<SubcategoriesCubit>().onSubcategoryDeleted(subcategory.id!);
+                            context.read<SubcategoriesCubit>().onSubcategoryDeleted(subcategory);
                           },
                         ),
                         trailing: Icon(Icons.chevron_right),

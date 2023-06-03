@@ -15,23 +15,24 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   SubcategoriesCubit(
       {required SubcategoriesRepository subcategoriesRepository,
-        required Category category})
+      required Category category})
       : _subcategoriesRepository = subcategoriesRepository,
-        super(SubcategoriesState(category: category)){
+        super(SubcategoriesState(category: category)) {
     _subcategoriesSubscription =
         _subcategoriesRepository.getSubcategories().listen((subcategories) {
-          _onSubcategoriesChanged(subcategories);
-        });
+      _onSubcategoriesChanged(subcategories);
+    });
   }
 
-  Future<void> onInit({required String budgetId, required Category category}) async {
+  Future<void> onInit(
+      {required String budgetId, required Category category}) async {
     final subcategories = await _subcategoriesRepository.fetchSubcategories(
         budgetId: budgetId, categoryId: category.id!);
     emit(state.copyWith(
         status: SubcategoriesStatus.success, subcategories: subcategories));
   }
 
-  void _onSubcategoriesChanged(List<Subcategory> subcategories){
+  void _onSubcategoriesChanged(List<Subcategory> subcategories) {
     emit(state.copyWith(subcategories: subcategories));
   }
 
@@ -50,15 +51,19 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
   void onSubmit(String budgetId) {
     var subcategory;
     if (state.editSubcategory == null) {
-      subcategory = Subcategory(name: state.name!, categoryId: state.category!.id!);
+      subcategory = Subcategory(
+          name: state.name!,
+          categoryId: state.category!.id!,
+          budgetId: budgetId);
     } else {
       subcategory = state.editSubcategory!.copyWith(name: state.name);
     }
-    _subcategoriesRepository.saveSubcategory(subcategory: subcategory, budgetId: budgetId);
+    _subcategoriesRepository.saveSubcategory(
+        subcategory: subcategory, budgetId: budgetId);
   }
 
-  void onSubcategoryDeleted(String subcategoryId){
-    _subcategoriesRepository.delete(subcategoryId: subcategoryId);
+  void onSubcategoryDeleted(Subcategory subcategory) {
+    _subcategoriesRepository.delete(subcategory: subcategory);
   }
 
   @override

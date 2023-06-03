@@ -1,3 +1,4 @@
+import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
@@ -25,6 +26,7 @@ class TransactionPage extends StatelessWidget {
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
           categoriesRepository: context.read<CategoriesRepositoryImpl>(),
           subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
+          accountsRepository: context.read<AccountsRepositoryImpl>(),
         )..add(TransactionFormLoaded(
             transaction: transaction, transactionType: transactionType)),
         child: TransactionPage(),
@@ -54,7 +56,8 @@ class TransactionPage extends StatelessWidget {
     final body = switch (state.transactionType) {
       TransactionType.EXPENSE => 'Expense',
       TransactionType.INCOME => 'Income',
-      TransactionType.TRANSFER => 'Transfer'
+      TransactionType.TRANSFER => 'Transfer',
+    TransactionType.ACCOUNT => 'Account',
     };
     return '$prefix $body';
   }

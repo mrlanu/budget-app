@@ -51,7 +51,6 @@ class CategoriesView extends StatelessWidget {
                     itemCount: state.categories.length,
                     itemBuilder: (context, index) {
                       final category = state.categories[index];
-                      print('CATEGORY: $category');
                       return ListTile(
                         title: Text(
                           category.name,
@@ -65,7 +64,7 @@ class CategoriesView extends StatelessWidget {
                           icon: Icon(Icons.highlight_remove,
                               color: Theme.of(context).colorScheme.error),
                           onPressed: () {
-                            context.read<CategoriesCubit>().onCategoryDeleted(category.id!);
+                            context.read<CategoriesCubit>().onCategoryDeleted(category);
                           },
                         ),
                         trailing: Icon(Icons.chevron_right),
@@ -140,7 +139,8 @@ class CategoriesView extends StatelessWidget {
     final body = switch (state.transactionType) {
       TransactionType.EXPENSE => 'Expenses categories',
       TransactionType.INCOME => 'Income categories',
-      TransactionType.TRANSFER => 'Transfer'
+      TransactionType.TRANSFER => 'Transfer',
+    TransactionType.ACCOUNT => 'Account',
     };
     return Text(body);
   }

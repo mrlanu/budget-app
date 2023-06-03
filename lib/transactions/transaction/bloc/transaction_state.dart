@@ -9,12 +9,13 @@ class TransactionState extends Equatable {
   final TransactionType transactionType;
   final Amount amount;
   final DateTime? date;
+  final List<Category> accountCategories;
   final List<Category> categories;
   final Category? category;
   final List<Subcategory> subcategories;
   final Subcategory? subcategory;
-  final List<AccountBrief> accounts;
-  final AccountBrief? account;
+  final List<Account> accounts;
+  final Account? account;
   final String description;
   final FormzSubmissionStatus status;
   final bool isValid;
@@ -27,11 +28,12 @@ class TransactionState extends Equatable {
       this.transaction,
       this.amount = const Amount.pure(),
       this.date,
+      this.accountCategories = const <Category>[],
       this.categories = const <Category>[],
       this.category,
       this.subcategories = const <Subcategory>[],
       this.subcategory,
-      this.accounts = const <AccountBrief>[],
+      this.accounts = const <Account>[],
       this.account,
       this.description = '',
       this.status = FormzSubmissionStatus.initial,
@@ -45,6 +47,7 @@ class TransactionState extends Equatable {
         trStatus: this.trStatus,
         transaction: this.transaction,
         date: this.date,
+        accountCategories: this.accountCategories,
         categories: this.categories,
         category: null,
         subcategories: <Subcategory>[],
@@ -64,6 +67,7 @@ class TransactionState extends Equatable {
         trStatus: this.trStatus,
         transaction: this.transaction,
         date: this.date,
+        accountCategories: this.accountCategories,
         categories: this.categories,
         category: this.category,
         subcategories: <Subcategory>[],
@@ -83,6 +87,7 @@ class TransactionState extends Equatable {
         trStatus: this.trStatus,
         transaction: this.transaction,
         date: this.date,
+        accountCategories: this.accountCategories,
         categories: this.categories,
         category: this.category,
         subcategories: <Subcategory>[],
@@ -101,12 +106,13 @@ class TransactionState extends Equatable {
     Transaction? transaction,
     Amount? amount,
     DateTime? date,
+    List<Category>? accountCategories,
     List<Category>? categories,
     Category? category,
     List<Subcategory>? subcategories,
     Subcategory? subcategory,
-    List<AccountBrief>? accounts,
-    AccountBrief? account,
+    List<Account>? accounts,
+    Account? account,
     String? description,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -119,6 +125,7 @@ class TransactionState extends Equatable {
       transaction: transaction ?? this.transaction,
       amount: amount ?? this.amount,
       date: date ?? this.date,
+      accountCategories: accountCategories ?? this.accountCategories,
       categories: categories ?? this.categories,
       category: category ?? this.category,
       subcategories: subcategories ?? this.subcategories,
@@ -139,6 +146,7 @@ class TransactionState extends Equatable {
         transaction,
         amount,
         date,
+        accountCategories,
         categories,
         category,
         subcategories,

@@ -19,7 +19,7 @@ abstract class CategoriesRepository {
 
   Future<void> saveCategory({required Category category});
 
-  Future<void> deleteCategory({required String categoryId});
+  Future<void> deleteCategory({required Category category});
 }
 
 class CategoriesRepositoryImpl extends CategoriesRepository {
@@ -39,7 +39,6 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
       {required String budgetId,
       required TransactionType transactionType}) async {
     final url = Uri.http(baseURL, '/api/categories', {'budgetId': budgetId});
-    print('URL: $url');
 
     final response = await http.get(url, headers: await _getHeaders());
 
@@ -49,8 +48,6 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
         .map((jsonMap) => Category.fromJson(jsonMap))
         .where((cat) => cat.transactionType == transactionType)
         .toList();
-
-    _categoriesStreamController.add(result);
 
     return result;
   }
@@ -63,21 +60,20 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
         headers: await _getHeaders(), body: json.encode(category.toJson()));
 
     final newCategory = Category.fromJson(jsonDecode(response.body));
-    final categories = [..._categoriesStreamController.value];
+    final categories = await fetchCategories(
+        budgetId: newCategory.budgetId,
+        transactionType: newCategory.transactionType);
 
-    categories.removeWhere((element) => element.id == category.id);
-    categories.add(newCategory);
     _categoriesStreamController.add(categories);
   }
 
   @override
-  Future<void> deleteCategory({required String categoryId}) async {
-    final url = Uri.http(baseURL, '/api/categories/$categoryId');
+  Future<void> deleteCategory({required Category category}) async {
+    final url = Uri.http(baseURL, '/api/categories/${category.id}');
 
     await http.delete(url, headers: await _getHeaders());
-    final categories = [..._categoriesStreamController.value];
-    final index = categories.indexWhere((element) => element.id == categoryId);
-    categories.removeAt(index);
+    final categories = await fetchCategories(
+        budgetId: category.budgetId, transactionType: category.transactionType);
     _categoriesStreamController.add(categories);
   }
 

@@ -57,8 +57,8 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     _categoriesRepository.saveCategory(category: category);
   }
 
-  void onCategoryDeleted(String categoryId){
-    _categoriesRepository.deleteCategory(categoryId: categoryId);
+  void onCategoryDeleted(Category category){
+    _categoriesRepository.deleteCategory(category: category);
   }
 
   @override

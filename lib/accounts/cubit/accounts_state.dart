@@ -2,7 +2,7 @@ part of 'accounts_cubit.dart';
 
 class AccountsState extends Equatable {
   final DataStatus status;
-  final List<AccountModel> accountList;
+  final List<Account> accountList;
   final String? errorMessage;
 
   const AccountsState(
@@ -10,7 +10,7 @@ class AccountsState extends Equatable {
 
   AccountsState copyWith({
     DataStatus? status,
-    List<AccountModel>? accountList,
+    List<Account>? accountList,
     String? errorMessage,
   }) {
     return AccountsState(

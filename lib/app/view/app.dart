@@ -1,4 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
@@ -78,6 +79,9 @@ class _AppViewState extends State<AppView> {
                 create: (context) => CategoriesRepositoryImpl(user: user)),
             RepositoryProvider(
                 create: (context) => SubcategoriesRepositoryImpl(user: user)),
+            RepositoryProvider(
+              create: (context) => AccountsRepositoryImpl(user: user),
+            )
           ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,

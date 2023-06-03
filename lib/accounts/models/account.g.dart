@@ -1,24 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'account_model.dart';
+part of 'account.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AccountModel _$AccountModelFromJson(Map<String, dynamic> json) => AccountModel(
-      id: json['id'] as String,
+Account _$AccountFromJson(Map<String, dynamic> json) => Account(
+      id: json['id'] as String?,
       name: json['name'] as String,
       categoryId: json['categoryId'] as String,
       currency: json['currency'] as String? ?? 'USD',
-      balance: (json['balance'] as num?)?.toDouble() ?? 0,
-      initialBalance: (json['initialBalance'] as num?)?.toDouble() ?? 0,
+      balance: (json['balance'] as num).toDouble(),
+      initialBalance: (json['initialBalance'] as num).toDouble(),
       includeInTotal: json['includeInTotal'] as bool? ?? true,
-      budgetId: json['budgetId'] as String?,
+      budgetId: json['budgetId'] as String,
     );
 
-Map<String, dynamic> _$AccountModelToJson(AccountModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'categoryId': instance.categoryId,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../accounts/models/account_brief.dart';
+import '../../../../accounts/models/account.dart';
+import '../../../../categories/models/category.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class AccountInput extends StatelessWidget {
@@ -9,17 +10,17 @@ class AccountInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        return DropdownButtonFormField<AccountBrief>(
+        return DropdownButtonFormField<Account>(
             icon: GestureDetector(
               child: Icon(Icons.edit_note),
               onTap: (){
 
               },
             ),
-            items: state.accounts.map((AccountBrief accountBrief) {
+            items: state.accounts.map((Account account) {
               return DropdownMenuItem(
-                value: accountBrief,
-                child: Text(accountBrief.name),
+                value: account,
+                child: Text(account.extendName(state.accountCategories)),
               );
             }).toList(),
             onChanged: (newValue) {
@@ -40,5 +41,12 @@ class AccountInput extends StatelessWidget {
             ));
       },
     );
+  }
+}
+
+extension on Account {
+  String extendName(List<Category> categories){
+    final category = categories.where((element) => element.id == this.categoryId).first;
+    return '${category.name} / ${this.name}';
   }
 }

@@ -7,7 +7,7 @@ part of 'category.dart';
 // **************************************************************************
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['id'] as String,
+      id: json['id'] as String?,
       name: json['name'] as String,
       budgetId: json['budgetId'] as String,
       transactionType:
@@ -25,4 +25,5 @@ const _$TransactionTypeEnumMap = {
   TransactionType.EXPENSE: 'EXPENSE',
   TransactionType.INCOME: 'INCOME',
   TransactionType.TRANSFER: 'TRANSFER',
+  TransactionType.ACCOUNT: 'ACCOUNT',
 };

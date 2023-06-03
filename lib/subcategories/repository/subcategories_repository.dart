@@ -19,7 +19,7 @@ abstract class SubcategoriesRepository {
   Future<List<Subcategory>> fetchSubcategories(
       {required String budgetId, required String categoryId});
 
-  Future<void> delete({required String subcategoryId});
+  Future<void> delete({required Subcategory subcategory});
 }
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
@@ -43,18 +43,18 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
         headers: await _getHeaders(), body: json.encode(subcategory.toJson()));
 
     final newSubcategory = Subcategory.fromJson(jsonDecode(response.body));
-    final subcategories = [..._subcategoriesStreamController.value];
-    subcategories.removeWhere((element) => element.id == subcategory.id);
-    subcategories.add(newSubcategory);
+    final subcategories = await fetchSubcategories(
+        budgetId: newSubcategory.budgetId,
+        categoryId: newSubcategory.categoryId);
     _subcategoriesStreamController.add(subcategories);
   }
 
   @override
   Future<List<Subcategory>> fetchSubcategories(
       {required String budgetId, required String categoryId}) async {
-    final url = Uri.http(baseURL, '/api/subcategories', {'categoryId': categoryId});
-    final response =
-        await http.get(url, headers: await _getHeaders());
+    final url =
+        Uri.http(baseURL, '/api/subcategories', {'categoryId': categoryId});
+    final response = await http.get(url, headers: await _getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
@@ -64,20 +64,16 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
         .where((scat) => scat.categoryId == categoryId)
         .toList();
 
-    _subcategoriesStreamController.add(result);
-
     return result;
   }
 
   @override
-  Future<void> delete({required String subcategoryId}) async {
-    final url = Uri.http(baseURL, '/api/subcategories/$subcategoryId');
+  Future<void> delete({required Subcategory subcategory}) async {
+    final url = Uri.http(baseURL, '/api/subcategories/${subcategory.id}');
 
     await http.delete(url, headers: await _getHeaders());
-    final subcategories = [..._subcategoriesStreamController.value];
-    final index =
-        subcategories.indexWhere((element) => element.id == subcategoryId);
-    subcategories.removeAt(index);
+    final subcategories = await fetchSubcategories(
+        budgetId: subcategory.budgetId, categoryId: subcategory.categoryId);
     _subcategoriesStreamController.add(subcategories);
   }
 

@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:equatable/equatable.dart';
 
+import '../models/account.dart';
 import '../repository/accounts_repository.dart';
-import '../repository/models/account_model.dart';
 
 part 'accounts_state.dart';
 
@@ -17,7 +17,7 @@ class AccountsCubit extends Cubit<AccountsState> {
   Future<void> fetchAllAccounts({required String budgetId, required String categoryId}) async {
     try {
       final accountList =
-          await _accountsRepository.getAccounts(budgetId: budgetId,categoryId: categoryId);
+          await _accountsRepository.fetchAccounts(budgetId: budgetId);
       emit(
           state.copyWith(status: DataStatus.success, accountList: accountList));
     } catch (e) {

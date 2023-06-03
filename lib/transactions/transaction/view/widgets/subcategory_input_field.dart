@@ -32,10 +32,18 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
       builder: (context, state) {
         return DropdownButtonFormField<Subcategory>(
             icon: GestureDetector(
-              child: Icon(Icons.edit_note),
-              onTap: state.category != null ? () {
-                Navigator.of(context).push(SubcategoriesPage.route(category: state.category!));
-              } : null,
+              child: Icon(
+                Icons.edit_note,
+                color: state.category != null
+                    ? Colors.black.withOpacity(0.6)
+                    : Colors.grey,
+              ),
+              onTap: state.category != null
+                  ? () {
+                      Navigator.of(context).push(
+                          SubcategoriesPage.route(category: state.category!));
+                    }
+                  : null,
             ),
             items: state.subcategories.map((Subcategory subcategory) {
               return DropdownMenuItem(
@@ -63,7 +71,7 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
     );
   }
 
-  /*Future<String?> _openDialog(BuildContext context) => showDialog<String>(
+/*Future<String?> _openDialog(BuildContext context) => showDialog<String>(
       context: context,
       builder: (_) => BlocProvider.value(
           value: context.read<TransactionBloc>(),
