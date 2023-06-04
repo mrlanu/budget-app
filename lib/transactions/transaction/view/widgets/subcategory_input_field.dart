@@ -57,7 +57,7 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
                   .add(TransactionSubcategoryChanged(subcategory: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.subcategory,
+            value: state.subcategories.contains(state.subcategory) ? state.subcategory : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,

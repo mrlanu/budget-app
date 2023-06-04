@@ -12,7 +12,7 @@ abstract class AccountsRepository {
 
   AccountsRepository({required this.user});
 
-  Future<void> deleteAccount({required String accountId});
+  Future<void> deleteAccount({required Account account});
 
   Stream<List<Account>> getAccounts();
 
@@ -49,7 +49,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
         final m = Account.fromJson(Map<String, dynamic>.from(jsonMap));
         return m;
       }).toList();
-      
+
       return accounts;
     } catch (e) {
       print('E R O R from Acc');
@@ -65,10 +65,17 @@ class AccountsRepositoryImpl extends AccountsRepository {
         headers: await _getHeaders(), body: json.encode(account.toJson()));
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
-    final accounts = [..._accountsStreamController.value];
 
-    accounts.removeWhere((element) => element.id == account.id);
-    accounts.add(newAcc);
+    final accounts = await fetchAccounts(budgetId: newAcc.budgetId);
+    _accountsStreamController.add(accounts);
+  }
+
+  @override
+  Future<void> deleteAccount({required Account account}) async {
+    final url = Uri.http(baseURL, '/api/accounts/${account.id}');
+
+    await http.delete(url, headers: await _getHeaders());
+    final accounts = await fetchAccounts(budgetId: account.budgetId);
     _accountsStreamController.add(accounts);
   }
 
@@ -80,15 +87,5 @@ class AccountsRepositoryImpl extends AccountsRepository {
     };
   }
 
-  @override
-  Future<void> deleteAccount({required String accountId}) async {
-    final url = Uri.http(baseURL, '/api/accounts/$accountId');
-
-    await http.delete(url, headers: await _getHeaders());
-    final accounts = [..._accountsStreamController.value];
-    final index = accounts.indexWhere((element) => element.id == accountId);
-    accounts.removeAt(index);
-    _accountsStreamController.add(accounts);
-  }
 }
 

@@ -1,3 +1,4 @@
+import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/shared/models/section.dart';
@@ -23,6 +24,7 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeCubit(
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+          accountsRepository: context.read<AccountsRepositoryImpl>(),
           sharedRepository: context.read<SharedRepositoryImpl>(),
           budgetId: appBloc.state.budget!.id)
         ..init(),

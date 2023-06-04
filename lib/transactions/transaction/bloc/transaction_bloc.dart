@@ -142,7 +142,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onCategoriesChanged(TransactionCategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    emit(state.resetCategory().copyWith(categories: event.categories));
+    /*emit(state.resetCategory().copyWith(categories: event.categories));*/
+    emit(state.copyWith(categories: event.categories));
   }
 
   void _onCategoryChanged(
@@ -156,7 +157,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onSubcategoriesChanged(TransactionSubcategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    emit(state.resetSubcategory().copyWith(subcategories: event.subcategories));
+    /*emit(state.resetSubcategory().copyWith(subcategories: event.subcategories));*/
+    emit(state.copyWith(subcategories: event.subcategories));
   }
 
   void _onSubcategoryChanged(

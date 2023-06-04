@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../accounts/models/account.dart';
-import '../../../../categories/models/category.dart';
+import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class AccountInput extends StatelessWidget {
@@ -13,8 +12,9 @@ class AccountInput extends StatelessWidget {
         return DropdownButtonFormField<Account>(
             icon: GestureDetector(
               child: Icon(Icons.edit_note),
-              onTap: (){
-
+              onTap: () {
+                Navigator.of(context).push(AccountsListPage.route(
+                    accountCategories: state.accountCategories));
               },
             ),
             items: state.accounts.map((Account account) {
@@ -29,7 +29,7 @@ class AccountInput extends StatelessWidget {
                   .add(TransactionAccountChanged(account: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.account,
+            value: state.accounts.contains(state.account) ? state.account : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
@@ -41,12 +41,5 @@ class AccountInput extends StatelessWidget {
             ));
       },
     );
-  }
-}
-
-extension on Account {
-  String extendName(List<Category> categories){
-    final category = categories.where((element) => element.id == this.categoryId).first;
-    return '${category.name} / ${this.name}';
   }
 }

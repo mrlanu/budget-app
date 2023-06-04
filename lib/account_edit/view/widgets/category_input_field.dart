@@ -1,15 +1,16 @@
-import 'package:budget_app/categories/view/categories_page.dart';
+import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../categories/models/category.dart';
-import '../../bloc/transaction_bloc.dart';
+import '../../../categories/models/category.dart';
+import '../../../categories/view/categories_page.dart';
 
-class CategoryInput extends StatelessWidget {
+class CategoryInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
+    return BlocBuilder<AccountEditBloc, AccountEditState>(
       builder: (context, state) {
         return DropdownButtonFormField<Category>(
             icon: GestureDetector(
@@ -17,7 +18,7 @@ class CategoryInput extends StatelessWidget {
               onTap: () {
                 //_openDialog(context);
                 Navigator.of(context).push(CategoriesPage.route(
-                    transactionType: state.transactionType));
+                    transactionType: TransactionType.ACCOUNT));
               },
             ),
             items: state.categories.map((Category category) {
@@ -28,8 +29,8 @@ class CategoryInput extends StatelessWidget {
             }).toList(),
             onChanged: (newValue) {
               context
-                  .read<TransactionBloc>()
-                  .add(TransactionCategoryChanged(category: newValue));
+                  .read<AccountEditBloc>()
+                  .add(AccountCategoryChanged(category: newValue));
               //setState(() => selectedValue = newValue);
             },
             value: state.categories.contains(state.category) ? state.category : null,

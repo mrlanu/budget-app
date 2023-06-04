@@ -140,7 +140,7 @@ class CategoriesView extends StatelessWidget {
       TransactionType.EXPENSE => 'Expenses categories',
       TransactionType.INCOME => 'Income categories',
       TransactionType.TRANSFER => 'Transfer',
-    TransactionType.ACCOUNT => 'Account',
+    TransactionType.ACCOUNT => 'Account categories',
     };
     return Text(body);
   }
