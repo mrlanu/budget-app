@@ -18,7 +18,7 @@ abstract class AccountsRepository {
 
   Future<void> saveAccount({required Account account});
 
-  Future<List<Account>> fetchAccounts({required String budgetId});
+  Future<List<Account>> fetchAccounts({required String budgetId, String? categoryId});
 
 }
 
@@ -35,11 +35,11 @@ class AccountsRepositoryImpl extends AccountsRepository {
       _accountsStreamController.asBroadcastStream();
 
   @override
-  Future<List<Account>> fetchAccounts({required String budgetId}) async {
+  Future<List<Account>> fetchAccounts({required String budgetId, String? categoryId}) async {
     var response;
 
     try {
-      final url = Uri.http(baseURL, '/api/accounts', {'budgetId': budgetId});
+      final url = Uri.http(baseURL, '/api/accounts', {'budgetId': budgetId, 'categoryId': categoryId});
 
       response = await http.get(url, headers: await _getHeaders());
 
