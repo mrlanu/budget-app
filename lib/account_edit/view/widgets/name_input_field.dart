@@ -9,7 +9,8 @@ class NameInputField extends StatelessWidget {
       buildWhen: (previous, current) =>
       previous.name != current.name,
       builder: (context, state) {
-        return TextField(
+        return TextFormField(
+          initialValue: state.name,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,

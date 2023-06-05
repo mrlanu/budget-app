@@ -23,65 +23,76 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   final AccountsRepository _accountsRepository;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  AccountEditBloc({required this.budgetId,
-    required CategoriesRepository categoriesRepository, required AccountsRepository accountsRepository})
+  AccountEditBloc(
+      {required this.budgetId,
+      required CategoriesRepository categoriesRepository,
+      required AccountsRepository accountsRepository})
       : _categoriesRepository = categoriesRepository,
         _accountsRepository = accountsRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
     _categoriesSubscription =
         _categoriesRepository.getCategories().skip(1).listen((categories) {
-          add(AccountCategoriesChanged(categories: categories));
-        });
+      add(AccountCategoriesChanged(categories: categories));
+    });
   }
 
-  Future<void> _onEvent(AccountEditEvent event,
-      Emitter<AccountEditState> emit) async {
+  Future<void> _onEvent(
+      AccountEditEvent event, Emitter<AccountEditState> emit) async {
     return switch (event) {
-    final AccountEditFormLoaded e =>
-        _onFormLoaded(e, emit)
-    ,
-    final AccountNameChanged e => _onNameChanged(e, emit),
-    final AccountCategoriesChanged e => _onCategoriesChanged(e, emit),
-    final AccountCategoryChanged e => _onCategoryChanged(e, emit),
-    final AccountBalanceChanged e => _onBalanceChanged(e, emit),
-    final AccountIncludeInTotalsChanged e =>
-    _onIncludeInTotalsChanged(e, emit),
-    final AccountFormSubmitted e => _onFormSubmitted(
-    e
-    ,
-    emit
-    )
-    ,
-  };
+      final AccountEditFormLoaded e => _onFormLoaded(e, emit),
+      final AccountNameChanged e => _onNameChanged(e, emit),
+      final AccountCategoriesChanged e => _onCategoriesChanged(e, emit),
+      final AccountCategoryChanged e => _onCategoryChanged(e, emit),
+      final AccountBalanceChanged e => _onBalanceChanged(e, emit),
+      final AccountIncludeInTotalsChanged e =>
+        _onIncludeInTotalsChanged(e, emit),
+      final AccountFormSubmitted e => _onFormSubmitted(e, emit),
+    };
   }
 
-  Future<void> _onFormLoaded(AccountEditFormLoaded event,
-      Emitter<AccountEditState> emit) async {
+  Future<void> _onFormLoaded(
+      AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
     final categories = await _categoriesRepository.fetchCategories(
         budgetId: budgetId, transactionType: TransactionType.ACCOUNT);
-    emit(state.copyWith(categories: categories));
+    if (event.account != null) {
+      final account = event.account;
+      final category = categories
+          .where((element) => element.id == account!.categoryId)
+          .first;
+      emit(state.copyWith(
+          id: account!.id,
+          category: category,
+          categories: categories,
+          name: account.name,
+          balance: Amount.dirty(account.balance.toString()),
+          isIncludeInTotals: account.includeInTotal,
+          accStatus: AccountEditStatus.success,
+          isValid: true));
+    } else {
+      emit(state.copyWith(categories: categories, accStatus: AccountEditStatus.success));
+    }
   }
 
-  void _onNameChanged(AccountNameChanged event,
-      Emitter<AccountEditState> emit) {
+  void _onNameChanged(
+      AccountNameChanged event, Emitter<AccountEditState> emit) {
     emit(
       state.copyWith(name: event.name),
     );
   }
 
-  void _onCategoriesChanged(AccountCategoriesChanged event,
-      Emitter<AccountEditState> emit) {
+  void _onCategoriesChanged(
+      AccountCategoriesChanged event, Emitter<AccountEditState> emit) {
     emit(state.copyWith(categories: event.categories));
   }
 
-  void _onCategoryChanged(AccountCategoryChanged event,
-      Emitter<AccountEditState> emit) {
+  void _onCategoryChanged(
+      AccountCategoryChanged event, Emitter<AccountEditState> emit) {
     emit(state.copyWith(category: event.category));
   }
 
-  void _onBalanceChanged(AccountBalanceChanged event,
-      Emitter<AccountEditState> emit) {
+  void _onBalanceChanged(
+      AccountBalanceChanged event, Emitter<AccountEditState> emit) {
     final balance = Amount.dirty(event.balance!);
     emit(
       state.copyWith(
@@ -91,14 +102,15 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     );
   }
 
-  void _onIncludeInTotalsChanged(AccountIncludeInTotalsChanged event,
-      Emitter<AccountEditState> emit) {
+  void _onIncludeInTotalsChanged(
+      AccountIncludeInTotalsChanged event, Emitter<AccountEditState> emit) {
     emit(state.copyWith(isIncludeInTotals: event.value));
   }
 
-  void _onFormSubmitted(AccountFormSubmitted event,
-      Emitter<AccountEditState> emit) {
+  void _onFormSubmitted(
+      AccountFormSubmitted event, Emitter<AccountEditState> emit) {
     final account = Account(
+        id: state.id,
         name: state.name!,
         categoryId: state.category!.id!,
         balance: double.parse(state.balance.value),

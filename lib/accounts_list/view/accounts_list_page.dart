@@ -6,6 +6,7 @@ import 'package:budget_app/categories/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../accounts/models/account.dart';
 import '../../categories/repository/categories_repository.dart';
 import '../cubit/accounts_list_cubit.dart';
 
@@ -75,10 +76,7 @@ class AccountsListView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context
-                              .read<AccountsListCubit>()
-                              .onAccountEdit(account);
-                          _openDialog(context);
+                          _openDialog(context: context, account: account);
                         },
                       );
                     },
@@ -98,7 +96,7 @@ class AccountsListView extends StatelessWidget {
                   ),
                   onTap: () {
                     //context.read<AccountsListCubit>().onNewAccount();
-                    _openDialog(context);
+                    _openDialog(context: context);
                   },
                 ),
               ],
@@ -109,14 +107,14 @@ class AccountsListView extends StatelessWidget {
     );
   }
 
-  Future<String?> _openDialog(BuildContext context) => showDialog<String>(
+  Future<String?> _openDialog({required BuildContext context, Account? account}) => showDialog<String>(
       context: context,
       builder: (_) => BlocProvider(
             create: (context) => AccountEditBloc(
                 budgetId: context.read<AppBloc>().state.budget!.id,
                 categoriesRepository: context.read<CategoriesRepositoryImpl>(),
                 accountsRepository: context.read<AccountsRepositoryImpl>())
-              ..add(AccountEditFormLoaded()),
+              ..add(AccountEditFormLoaded(account: account)),
             child: AccountEditDialog(),
           ));
 }

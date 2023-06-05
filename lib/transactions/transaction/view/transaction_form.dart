@@ -85,7 +85,8 @@ class _NotesInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.description != current.description,
       builder: (context, state) {
-        return TextField(
+        return TextFormField(
+          initialValue: state.description,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
