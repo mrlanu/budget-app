@@ -1,10 +1,9 @@
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../app/bloc/app_bloc.dart';
-import '../../shared/widgets/entity_view_widget.dart';
 import '../cubit/transactions_cubit.dart';
 import '../transaction/view/transaction_page.dart';
 
@@ -12,14 +11,17 @@ class TransactionsPage extends StatelessWidget {
   static const routeName = '/transactions';
 
   static Route<void> route(
-      {required TransactionsFilter filterBy, required String filterId, required DateTime dateTime}) {
+      {required TransactionsFilter filterBy,
+      required String filterId,
+      required DateTime dateTime}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionsCubit(
             budgetId: appBloc.state.budget!.id,
             transactionsRepository: context.read<TransactionsRepositoryImpl>())
-          ..fetchTransactions(filterBy: filterBy, filterId: filterId, date: dateTime),
+          ..fetchTransactions(
+              filterBy: filterBy, filterId: filterId, date: dateTime),
         child: TransactionsPage(),
       );
     });
@@ -29,34 +31,61 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionsCubit, TransactionsState>(
-      builder: (context, state) {
-        return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text('Transactions'),
-            ),
-            body: state.status == TransactionsStatus.loading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: state.transactionList.length,
-                    itemBuilder: (context, index) {
-                      final tr = state.transactionList[index];
-                      return EntityView(
-                          title: tr.subcategoryName!,
-                          subtitle: tr.accountName!,
-                          subtitlePrefix:
-                              DateFormat('MM-dd-yyyy').format(tr.date!),
-                          routeName: '',
-                          amount: tr.amount.toString(),
-                          suffix: Icon(Icons.chevron_right),
-                          onTap: () => {
-                                Navigator.of(context).push(
-                                  TransactionPage.route(transaction: tr, transactionType: tr.type!),
-                                )
-                              });
-                    }));
-      },
-    );
+    return BlocListener<TransactionsCubit, TransactionsState>(
+        listenWhen: (previous, current) =>
+            previous.lastDeletedTransaction != current.lastDeletedTransaction &&
+            current.lastDeletedTransaction != null,
+        listener: (context, state) {
+          final messenger = ScaffoldMessenger.of(context);
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 5),
+                content: Text(
+                  'Transaction deleted',
+                ),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    messenger.hideCurrentSnackBar();
+                    context
+                      .read<TransactionsCubit>()
+                      .undoDelete();
+                  },
+                ),
+              ),
+            );
+        },
+        child: BlocBuilder<TransactionsCubit, TransactionsState>(
+          builder: (context, state) {
+            return Scaffold(
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text('Transactions'),
+                ),
+                body: state.status == TransactionsStatus.loading
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: state.transactionList.length,
+                        itemBuilder: (context, index) {
+                          final tr = state.transactionList[index];
+                          return TransactionListTile(
+                            transaction: tr,
+                            onDismissed: (_) {
+                              context
+                                  .read<TransactionsCubit>()
+                                  .deleteTransaction(transaction: tr);
+                            },
+                            onTap: () => {
+                              Navigator.of(context).push(
+                                TransactionPage.route(
+                                    transaction: tr, transactionType: tr.type!),
+                              )
+                            },
+                          );
+                        }));
+          },
+        ));
   }
 }

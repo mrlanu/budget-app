@@ -3,12 +3,12 @@ part of 'transactions_cubit.dart';
 enum TransactionsStatus { initial, loading, success, failure }
 
 class TransactionsState extends Equatable {
-
   final TransactionsStatus status;
   final List<Transaction> transactionList;
   final String lastFilterId;
   final DateTime? lastDate;
   final String? errorMessage;
+  final Transaction? lastDeletedTransaction;
 
   const TransactionsState({
     this.status = TransactionsStatus.initial,
@@ -16,7 +16,8 @@ class TransactionsState extends Equatable {
     this.lastDate,
     this.lastFilterId = '',
     this.errorMessage,
-});
+    this.lastDeletedTransaction,
+  });
 
   TransactionsState copyWith({
     TransactionsStatus? status,
@@ -24,6 +25,7 @@ class TransactionsState extends Equatable {
     String? lastFilterId,
     DateTime? lastDate,
     String? errorMessage,
+    Transaction? lastDeletedTransaction,
   }) {
     return TransactionsState(
       status: status ?? this.status,
@@ -31,10 +33,18 @@ class TransactionsState extends Equatable {
       lastFilterId: lastFilterId ?? this.lastFilterId,
       lastDate: lastDate ?? this.lastDate,
       errorMessage: errorMessage ?? this.errorMessage,
+      lastDeletedTransaction:
+          lastDeletedTransaction ?? this.lastDeletedTransaction,
     );
   }
 
   @override
-  List<Object?> get props => [status, transactionList, lastFilterId, lastDate, errorMessage];
+  List<Object?> get props => [
+        status,
+        transactionList,
+        lastFilterId,
+        lastDate,
+        errorMessage,
+        lastDeletedTransaction
+      ];
 }
-

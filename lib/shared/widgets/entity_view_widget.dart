@@ -11,6 +11,7 @@ class EntityView extends StatelessWidget {
     this.subtitle,
     this.subtitlePrefix,
     required this.amount,
+    this.prefix,
     required this.suffix,
     required this.onTap,
   });
@@ -22,6 +23,7 @@ class EntityView extends StatelessWidget {
   final String? subtitlePrefix;
   final String amount;
   final Widget suffix;
+  final Widget? prefix;
   final VoidCallback onTap;
 
   @override
@@ -38,6 +40,7 @@ class EntityView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  prefix ?? Container() ,
                   Container(
                     margin: EdgeInsets.all(40.w),
                     child: icon,

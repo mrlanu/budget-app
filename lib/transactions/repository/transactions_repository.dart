@@ -27,6 +27,8 @@ abstract class TransactionsRepository {
   });
 
   Future<Transaction> fetchTransactionById(String transactionId);
+
+  Future<void> deleteTransaction(String transactionId);
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
@@ -45,9 +47,11 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> createTransaction(Transaction transaction) async {
     final url = Uri.http(baseURL, '/api/transactions');
 
-    await http.post(url,
+    final tr = await http.post(url,
         headers: await _getHeaders(), body: json.encode(transaction.toJson()));
-    _transactionsStreamController.add([]);
+    final transactions = [..._transactionsStreamController.value];
+    transactions.add(Transaction.fromJson(jsonDecode(tr.body)));
+    _transactionsStreamController.add(transactions);
   }
 
   @override
@@ -58,15 +62,21 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = switch (filterBy) {
-      TransactionsFilter.account => Uri.http(baseURL, '/api/transactions',
-          {'budgetId': budgetId, 'categoryId': '', 'accountId': filterId, 'date': dateTime.toString()}),
-      TransactionsFilter.category =>
-      Uri.http(baseURL, '/api/transactions',
-      {'budgetId': budgetId, 'categoryId': filterId, 'accountId': '', 'date': dateTime.toString()}),
+      TransactionsFilter.account => Uri.http(baseURL, '/api/transactions', {
+          'budgetId': budgetId,
+          'categoryId': '',
+          'accountId': filterId,
+          'date': dateTime.toString()
+        }),
+      TransactionsFilter.category => Uri.http(baseURL, '/api/transactions', {
+          'budgetId': budgetId,
+          'categoryId': filterId,
+          'accountId': '',
+          'date': dateTime.toString()
+        }),
     };
 
-    final response =
-        await http.get(url, headers: await _getHeaders());
+    final response = await http.get(url, headers: await _getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
@@ -75,6 +85,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
             Transaction.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
 
+    _transactionsStreamController.add(result);
     return result;
   }
 
@@ -82,12 +93,23 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<Transaction> fetchTransactionById(String transactionId) async {
     final url = Uri.http(baseURL, '/api/transactions/$transactionId');
 
-    final response =
-        await http.get(url, headers: await _getHeaders());
+    final response = await http.get(url, headers: await _getHeaders());
 
     final result = Transaction.fromJson(json.decode(response.body));
 
     return result;
+  }
+
+  @override
+  Future<void> deleteTransaction(String transactionId) async {
+    final url = Uri.http(
+        baseURL, '/api/transactions', {'transactionId': transactionId});
+    final transactions = [..._transactionsStreamController.value];
+    final trIndex = transactions.indexWhere((t) => t.id == transactionId);
+
+    transactions.removeAt(trIndex);
+    _transactionsStreamController.add(transactions);
+    await http.delete(url, headers: await _getHeaders());
   }
 
   Future<Map<String, String>> _getHeaders() async {

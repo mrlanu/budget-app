@@ -11,7 +11,7 @@ part 'transactions_state.dart';
 class TransactionsCubit extends Cubit<TransactionsState> {
   final TransactionsRepository _transactionsRepository;
   final String _budgetId;
-  //late final StreamSubscription<List<Transaction>> _transactionsSubscription;
+  late final StreamSubscription<List<Transaction>> _transactionsSubscription;
 
   TransactionsCubit({
     required String budgetId,
@@ -19,14 +19,15 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   })  : _transactionsRepository = transactionsRepository,
         _budgetId = budgetId,
         super(TransactionsState()) {
-    /*_transactionsSubscription = _transactionsRepository
+    _transactionsSubscription = _transactionsRepository
         .getTransactions()
         .skip(1)
         .listen((transactions) {
-      fetchTransactions(
+          emit(state.copyWith(transactionList: transactions));
+      /*fetchTransactions(
           categoryId: state.lastCategoryId,
-          date: state.lastDate ?? DateTime.now());
-    });*/
+          date: state.lastDate ?? DateTime.now());*/
+    });
   }
 
   Future<void> fetchTransactions(
@@ -48,9 +49,18 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     }
   }
 
-  /*@override
+  Future<void> deleteTransaction({required Transaction transaction}) async {
+    emit(state.copyWith(lastDeletedTransaction: transaction));
+    _transactionsRepository.deleteTransaction(transaction.id!);
+  }
+
+  Future<void> undoDelete() async {
+    await _transactionsRepository.createTransaction(state.lastDeletedTransaction!);
+  }
+
+  @override
   Future<void> close() {
     _transactionsSubscription.cancel();
     return super.close();
-  }*/
+  }
 }
