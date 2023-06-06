@@ -1,6 +1,7 @@
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/shared/models/summary_by.dart';
+import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,7 +34,8 @@ class CategoriesSummary extends StatelessWidget {
                       categoryId: summaryItem.id,
                       dateTime: dateTime ?? DateTime.now()))
                   : () => Navigator.of(context).push(TransactionsPage.route(
-                      categoryId: summaryItem.id,
+                filterBy: TransactionsFilter.category,
+                      filterId: summaryItem.id,
                       dateTime: dateTime ?? DateTime.now())));
         });
   }

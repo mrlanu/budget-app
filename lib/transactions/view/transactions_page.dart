@@ -12,14 +12,14 @@ class TransactionsPage extends StatelessWidget {
   static const routeName = '/transactions';
 
   static Route<void> route(
-      {required String categoryId, required DateTime dateTime}) {
+      {required TransactionsFilter filterBy, required String filterId, required DateTime dateTime}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return BlocProvider(
         create: (context) => TransactionsCubit(
             budgetId: appBloc.state.budget!.id,
             transactionsRepository: context.read<TransactionsRepositoryImpl>())
-          ..fetchTransactions(categoryId: categoryId, date: dateTime),
+          ..fetchTransactions(filterBy: filterBy, filterId: filterId, date: dateTime),
         child: TransactionsPage(),
       );
     });

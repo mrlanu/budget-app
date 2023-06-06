@@ -6,7 +6,7 @@ class TransactionsState extends Equatable {
 
   final TransactionsStatus status;
   final List<Transaction> transactionList;
-  final String lastCategoryId;
+  final String lastFilterId;
   final DateTime? lastDate;
   final String? errorMessage;
 
@@ -14,27 +14,27 @@ class TransactionsState extends Equatable {
     this.status = TransactionsStatus.initial,
     this.transactionList = const [],
     this.lastDate,
-    this.lastCategoryId = '',
+    this.lastFilterId = '',
     this.errorMessage,
 });
 
   TransactionsState copyWith({
     TransactionsStatus? status,
     List<Transaction>? transactionList,
-    String? lastCategoryId,
+    String? lastFilterId,
     DateTime? lastDate,
     String? errorMessage,
   }) {
     return TransactionsState(
       status: status ?? this.status,
       transactionList: transactionList ?? this.transactionList,
-      lastCategoryId: lastCategoryId ?? this.lastCategoryId,
+      lastFilterId: lastFilterId ?? this.lastFilterId,
       lastDate: lastDate ?? this.lastDate,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, transactionList, lastCategoryId, lastDate, errorMessage];
+  List<Object?> get props => [status, transactionList, lastFilterId, lastDate, errorMessage];
 }
 

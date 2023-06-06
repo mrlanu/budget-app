@@ -3,8 +3,11 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/shared/widgets/entity_view_widget.dart';
+import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../transactions/view/transactions_page.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({Key? key}) : super(key: key);
@@ -52,7 +55,10 @@ class AccountsPage extends StatelessWidget {
                       //subtitle: 'subtitle',
                       amount: acc.balance.toString(),
                       suffix: Icon(Icons.chevron_right),
-                      onTap: () {},
+                      onTap: () => Navigator.of(context).push(TransactionsPage.route(
+                        filterBy: TransactionsFilter.account,
+                          filterId: acc.id!,
+                          dateTime: DateTime.now())),
                     );
                   });
         }));
