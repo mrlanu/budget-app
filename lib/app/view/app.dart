@@ -1,6 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
@@ -10,7 +9,6 @@ import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
-import 'package:budget_app/transactions/view/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -98,11 +96,11 @@ class _AppViewState extends State<AppView> {
             ),
             routes: {
               HomePage.routeName: (context) => HomePage(),
-              AccountsPage.routeName: (context) => AccountsPage(),
+              //AccountsPage.routeName: (context) => AccountsPage(),
               SignUpPage.routeName: (context) => SignUpPage(),
               LoginPage.routeName: (context) => LoginPage(),
               TransactionPage.routeName: (context) => TransactionPage(),
-              TransactionsPage.routeName: (context) => TransactionsPage(),
+              //TransactionsPage.routeName: (context) => TransactionsPage(),
             },
             builder: (context, child) {
               return BlocListener<AppBloc, AppState>(

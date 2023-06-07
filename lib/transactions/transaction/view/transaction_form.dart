@@ -1,3 +1,4 @@
+import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/category_input_field.dart';
@@ -86,7 +87,7 @@ class _NotesInput extends StatelessWidget {
           previous.description != current.description,
       builder: (context, state) {
         return TextFormField(
-          initialValue: state.description,
+            initialValue: state.description,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
@@ -106,8 +107,12 @@ class _NotesInput extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      //buildWhen: (previous, current) => previous.status != current.status,
+    return BlocConsumer<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        if (state.status.isSuccess) {
+          context.read<HomeCubit>().init();
+        }
+      },
       builder: (context, state) {
         return state.status.isInProgress
             ? const CircularProgressIndicator()

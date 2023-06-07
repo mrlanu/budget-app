@@ -1,10 +1,8 @@
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/shared/models/section.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,11 +21,8 @@ class HomePage extends StatelessWidget {
     final appBloc = BlocProvider.of<AppBloc>(context);
     return BlocProvider(
       create: (context) => HomeCubit(
-          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-          accountsRepository: context.read<AccountsRepositoryImpl>(),
           sharedRepository: context.read<SharedRepositoryImpl>(),
-          budgetId: appBloc.state.budget!.id)
-        ..init(),
+          budgetId: appBloc.state.budget!.id)..init(),
       child: HomeView(),
     );
   }
@@ -48,9 +43,9 @@ class HomeView extends StatelessWidget {
                 title: state.tab != HomeTab.accounts
                     ? MonthPaginator(
                         onLeft: (date) =>
-                            context.read<HomeCubit>().dateChanged(date),
+                            context.read<HomeCubit>().changeDate(date),
                         onRight: (date) =>
-                            context.read<HomeCubit>().dateChanged(date),
+                            context.read<HomeCubit>().changeDate(date),
                       )
                     : Text('Accounts'),
                 centerTitle: true,
@@ -84,7 +79,7 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
         HomeTab.accounts => TransactionType.TRANSFER,
       };
       Navigator.of(context).push(
-        TransactionPage.route(transactionType: transactionType),
+        TransactionPage.route(homeCubit: context.read<HomeCubit>(), transactionType: transactionType),
       );
     },
     child: const Icon(Icons.add),

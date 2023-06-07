@@ -30,10 +30,10 @@ class CategoriesSummary extends StatelessWidget {
               amount: summaryItem.total.toString(),
               suffix: Icon(Icons.chevron_right),
               onTap: homeCubit.state.tab == HomeTab.accounts
-                  ? () => Navigator.of(context).push(AccountsPage.route(
+                  ? () => Navigator.of(context).push(AccountsPage.route(homeCubit: homeCubit,
                       categoryId: summaryItem.id,
                       dateTime: dateTime ?? DateTime.now()))
-                  : () => Navigator.of(context).push(TransactionsPage.route(
+                  : () => Navigator.of(context).push(TransactionsPage.route(homeCubit: homeCubit,
                 filterBy: TransactionsFilter.category,
                       filterId: summaryItem.id,
                       dateTime: dateTime ?? DateTime.now())));

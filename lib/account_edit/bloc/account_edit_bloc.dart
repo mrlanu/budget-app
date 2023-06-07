@@ -107,8 +107,9 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     emit(state.copyWith(isIncludeInTotals: event.value));
   }
 
-  void _onFormSubmitted(
-      AccountFormSubmitted event, Emitter<AccountEditState> emit) {
+  Future<void> _onFormSubmitted(
+      AccountFormSubmitted event, Emitter<AccountEditState> emit) async {
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final account = Account(
         id: state.id,
         name: state.name!,

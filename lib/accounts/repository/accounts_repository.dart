@@ -7,7 +7,6 @@ import 'package:rxdart/rxdart.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
-
   final User user;
 
   AccountsRepository({required this.user});
@@ -18,15 +17,22 @@ abstract class AccountsRepository {
 
   Future<void> saveAccount({required Account account});
 
-  Future<List<Account>> fetchAccounts({required String budgetId, String? categoryId});
+  Future<List<Account>> fetchAccounts(
+      {required String budgetId, String? categoryId});
+}
 
+class AccountFailure implements Exception {
+  final String message;
+
+  const AccountFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
 }
 
 class AccountsRepositoryImpl extends AccountsRepository {
-
   static const baseURL = '10.0.2.2:8080';
   final _accountsStreamController =
-  BehaviorSubject<List<Account>>.seeded(const []);
+      BehaviorSubject<List<Account>>.seeded(const []);
 
   AccountsRepositoryImpl({required super.user});
 
@@ -35,11 +41,13 @@ class AccountsRepositoryImpl extends AccountsRepository {
       _accountsStreamController.asBroadcastStream();
 
   @override
-  Future<List<Account>> fetchAccounts({required String budgetId, String? categoryId}) async {
+  Future<List<Account>> fetchAccounts(
+      {required String budgetId, String? categoryId}) async {
     var response;
 
     try {
-      final url = Uri.http(baseURL, '/api/accounts', {'budgetId': budgetId, 'categoryId': categoryId});
+      final url = Uri.http(baseURL, '/api/accounts',
+          {'budgetId': budgetId, 'categoryId': categoryId});
 
       response = await http.get(url, headers: await _getHeaders());
 
@@ -52,7 +60,6 @@ class AccountsRepositoryImpl extends AccountsRepository {
 
       return accounts;
     } catch (e) {
-      print('E R O R from Acc');
       return [];
     }
   }
@@ -74,7 +81,10 @@ class AccountsRepositoryImpl extends AccountsRepository {
   Future<void> deleteAccount({required Account account}) async {
     final url = Uri.http(baseURL, '/api/accounts/${account.id}');
 
-    await http.delete(url, headers: await _getHeaders());
+    final resp = await http.delete(url, headers: await _getHeaders());
+    if(resp.statusCode !=200){
+      throw AccountFailure(jsonDecode(resp.body)['message']);
+    }
     final accounts = await fetchAccounts(budgetId: account.budgetId);
     _accountsStreamController.add(accounts);
   }
@@ -86,6 +96,4 @@ class AccountsRepositoryImpl extends AccountsRepository {
       "Authorization": "Bearer $token"
     };
   }
-
 }
-

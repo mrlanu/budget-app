@@ -33,26 +33,15 @@ class AccountsListCubit extends Cubit<AccountsListState> {
     emit(state.copyWith(accounts: accounts));
   }
 
-  /*void onNewCategory() {
-    emit(state.resetCategory());
-  }*/
-
-  void onAccountEdit(Account account) {
-    emit(state.copyWith(editedAccount: account));
-  }
-
-  void onSubmit(String budgetId) {
-    var account;
-    if (state.editedAccount == null) {
-      //category = Category(name: state.name!, budgetId: budgetId, transactionType: state.transactionType);
-    } else {
-      //category = state.editCategory!.copyWith(name: state.name);
+  Future<void> onAccountDeleted(Account account) async {
+    emit(state.copyWith(status: AccountsListStatus.loading));
+    try {
+      await _accountsRepository.deleteAccount(account: account);
+    } on AccountFailure catch (e) {
+      emit(state.copyWith(status: AccountsListStatus.failure, errorMessage: e.message));
+    } catch (e){
+      emit(state.copyWith(status: AccountsListStatus.failure, errorMessage: 'Unknown error'));
     }
-    _accountsRepository.saveAccount(account: account);
-  }
-
-  void onAccountDeleted(Account account){
-    _accountsRepository.deleteAccount(account: account);
   }
 
   @override
