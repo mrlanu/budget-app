@@ -24,9 +24,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         .skip(1)
         .listen((transactions) {
           emit(state.copyWith(transactionList: transactions));
-      /*fetchTransactions(
-          categoryId: state.lastCategoryId,
-          date: state.lastDate ?? DateTime.now());*/
     });
   }
 
@@ -50,8 +47,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   Future<void> deleteTransaction({required Transaction transaction}) async {
+    await _transactionsRepository.deleteTransaction(transaction.id!);
     emit(state.copyWith(lastDeletedTransaction: transaction));
-    _transactionsRepository.deleteTransaction(transaction.id!);
   }
 
   Future<void> undoDelete() async {

@@ -104,12 +104,12 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> deleteTransaction(String transactionId) async {
     final url = Uri.http(
         baseURL, '/api/transactions', {'transactionId': transactionId});
+    await http.delete(url, headers: await _getHeaders());
     final transactions = [..._transactionsStreamController.value];
     final trIndex = transactions.indexWhere((t) => t.id == transactionId);
 
     transactions.removeAt(trIndex);
     _transactionsStreamController.add(transactions);
-    await http.delete(url, headers: await _getHeaders());
   }
 
   Future<Map<String, String>> _getHeaders() async {
