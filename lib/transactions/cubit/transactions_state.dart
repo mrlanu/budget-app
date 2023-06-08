@@ -5,16 +5,18 @@ enum TransactionsStatus { initial, loading, success, failure }
 class TransactionsState extends Equatable {
   final TransactionsStatus status;
   final List<Transaction> transactionList;
-  final String lastFilterId;
-  final DateTime? lastDate;
+  final TransactionsFilter filterBy;
+  final String filterId;
+  final DateTime? filterDate;
   final String? errorMessage;
   final Transaction? lastDeletedTransaction;
 
   const TransactionsState({
     this.status = TransactionsStatus.initial,
     this.transactionList = const [],
-    this.lastDate,
-    this.lastFilterId = '',
+    required this.filterBy,
+    required this.filterId,
+    required this.filterDate,
     this.errorMessage,
     this.lastDeletedTransaction,
   });
@@ -22,19 +24,21 @@ class TransactionsState extends Equatable {
   TransactionsState copyWith({
     TransactionsStatus? status,
     List<Transaction>? transactionList,
-    String? lastFilterId,
-    DateTime? lastDate,
+    TransactionsFilter? filterBy,
+    String? filterId,
+    DateTime? filterDate,
     String? errorMessage,
-    Transaction? lastDeletedTransaction,
+    Transaction? Function()? lastDeletedTransaction,
   }) {
     return TransactionsState(
       status: status ?? this.status,
       transactionList: transactionList ?? this.transactionList,
-      lastFilterId: lastFilterId ?? this.lastFilterId,
-      lastDate: lastDate ?? this.lastDate,
+      filterBy: filterBy ?? this.filterBy,
+      filterId: filterId ?? this.filterId,
+      filterDate: filterDate ?? this.filterDate,
       errorMessage: errorMessage ?? this.errorMessage,
       lastDeletedTransaction:
-          lastDeletedTransaction ?? this.lastDeletedTransaction,
+      lastDeletedTransaction != null ? lastDeletedTransaction() : this.lastDeletedTransaction,
     );
   }
 
@@ -42,8 +46,9 @@ class TransactionsState extends Equatable {
   List<Object?> get props => [
         status,
         transactionList,
-        lastFilterId,
-        lastDate,
+        filterBy,
+        filterId,
+        filterDate,
         errorMessage,
         lastDeletedTransaction
       ];

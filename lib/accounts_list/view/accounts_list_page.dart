@@ -68,7 +68,7 @@ class AccountsListView extends StatelessWidget {
             listenWhen: (previous, current) =>
                 previous.accounts.length != current.accounts.length,
             listener: (context, state) {
-              context.read<HomeCubit>().init();
+              context.read<HomeCubit>().getData();
             },
           ),
         ],

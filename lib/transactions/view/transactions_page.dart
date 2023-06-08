@@ -15,7 +15,7 @@ class TransactionsPage extends StatelessWidget {
       {required HomeCubit homeCubit,
       required TransactionsFilter filterBy,
       required String filterId,
-      required DateTime dateTime}) {
+      required DateTime filterDate}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
@@ -24,9 +24,11 @@ class TransactionsPage extends StatelessWidget {
             create: (context) => TransactionsCubit(
                 budgetId: appBloc.state.budget!.id,
                 transactionsRepository:
-                    context.read<TransactionsRepositoryImpl>())
-              ..fetchTransactions(
-                  filterBy: filterBy, filterId: filterId, date: dateTime),
+                    context.read<TransactionsRepositoryImpl>(),
+                filterBy: filterBy,
+                filterId: filterId,
+                filterDate: filterDate)
+              ..fetchTransactions(),
           ),
           BlocProvider.value(value: homeCubit),
         ],
@@ -49,7 +51,7 @@ class TransactionsPage extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
-                duration: Duration(seconds: 5),
+                duration: Duration(seconds: 3),
                 content: Text(
                   'Transaction deleted',
                 ),
@@ -67,7 +69,7 @@ class TransactionsPage extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.transactionList != current.transactionList,
           listener: (context, state) {
-            context.read<HomeCubit>().init();
+            context.read<HomeCubit>().getData();
           },
           builder: (context, state) {
             return Scaffold(

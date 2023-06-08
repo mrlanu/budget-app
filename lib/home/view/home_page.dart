@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeCubit(
           sharedRepository: context.read<SharedRepositoryImpl>(),
-          budgetId: appBloc.state.budget!.id)..init(),
+          budgetId: appBloc.state.budget!.id)..getData(),
       child: HomeView(),
     );
   }

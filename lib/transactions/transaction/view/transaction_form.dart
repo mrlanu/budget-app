@@ -110,7 +110,7 @@ class _SubmitButton extends StatelessWidget {
     return BlocConsumer<TransactionBloc, TransactionState>(
       listener: (context, state) {
         if (state.status.isSuccess) {
-          context.read<HomeCubit>().init();
+          context.read<HomeCubit>().getData();
         }
       },
       builder: (context, state) {

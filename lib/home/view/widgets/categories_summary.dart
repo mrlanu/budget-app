@@ -36,7 +36,7 @@ class CategoriesSummary extends StatelessWidget {
                   : () => Navigator.of(context).push(TransactionsPage.route(homeCubit: homeCubit,
                 filterBy: TransactionsFilter.category,
                       filterId: summaryItem.id,
-                      dateTime: dateTime ?? DateTime.now())));
+                      filterDate: dateTime ?? DateTime.now())));
         });
   }
 }

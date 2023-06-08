@@ -16,29 +16,35 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     required String budgetId,
     required TransactionsRepository transactionsRepository,
+    required TransactionsFilter filterBy,
+    required String filterId,
+    required DateTime filterDate,
   })  : _transactionsRepository = transactionsRepository,
         _budgetId = budgetId,
-        super(TransactionsState()) {
+        super(TransactionsState(
+            filterBy: filterBy, filterId: filterId, filterDate: filterDate)) {
     _transactionsSubscription = _transactionsRepository
         .getTransactions()
         .skip(1)
         .listen((transactions) {
-          emit(state.copyWith(transactionList: transactions));
+          fetchTransactions();
     });
   }
 
-  Future<void> fetchTransactions(
-      {required TransactionsFilter filterBy, required String filterId, required DateTime date}) async {
+  Future<void> fetchTransactions() async {
     emit(state.copyWith(status: TransactionsStatus.loading));
     try {
+      emit(state.copyWith(status: TransactionsStatus.loading));
       final result = await _transactionsRepository.fetchAllTransactions(
-          budgetId: _budgetId, filterBy: filterBy, filterId: filterId ,dateTime: date);
+          budgetId: _budgetId,
+          filterBy: state.filterBy,
+          filterId: state.filterId,
+          dateTime: state.filterDate!);
       emit(
         state.copyWith(
-            status: TransactionsStatus.success,
-            transactionList: result,
-            lastFilterId: filterId,
-            lastDate: date),
+          status: TransactionsStatus.success,
+          transactionList: result,
+        ),
       );
     } catch (e) {
       emit(state.copyWith(
@@ -48,11 +54,16 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> deleteTransaction({required Transaction transaction}) async {
     await _transactionsRepository.deleteTransaction(transaction.id!);
-    emit(state.copyWith(lastDeletedTransaction: transaction));
+    fetchTransactions();
+    emit(state.copyWith(lastDeletedTransaction: () => transaction));
   }
 
   Future<void> undoDelete() async {
-    await _transactionsRepository.createTransaction(state.lastDeletedTransaction!);
+    final tr = state.lastDeletedTransaction!;
+    emit(state.copyWith(lastDeletedTransaction: () => null));
+    await _transactionsRepository
+        .createTransaction(tr);
+    fetchTransactions();
   }
 
   @override

@@ -69,7 +69,7 @@ class AccountsPage extends StatelessWidget {
                               homeCubit: context.read<HomeCubit>(),
                               filterBy: TransactionsFilter.account,
                               filterId: acc.id!,
-                              dateTime: DateTime.now())),
+                              filterDate: DateTime.now())),
                     );
                   });
             }));

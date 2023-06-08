@@ -18,7 +18,7 @@ class HomeCubit extends Cubit<HomeState> {
       : this._sharedRepository = sharedRepository,
         super(HomeState(selectedDate: DateTime.now()));
 
-  Future<void> init() async {
+  Future<void> getData() async {
     emit(state.copyWith(status: HomeStatus.loading));
     final data = await _fetchHomePageData();
     emit(state.copyWith(status: HomeStatus.success,

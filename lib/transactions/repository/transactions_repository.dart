@@ -46,12 +46,9 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   @override
   Future<void> createTransaction(Transaction transaction) async {
     final url = Uri.http(baseURL, '/api/transactions');
-
-    final tr = await http.post(url,
+    await http.post(url,
         headers: await _getHeaders(), body: json.encode(transaction.toJson()));
-    final transactions = [..._transactionsStreamController.value];
-    transactions.add(Transaction.fromJson(jsonDecode(tr.body)));
-    _transactionsStreamController.add(transactions);
+    _transactionsStreamController.add([]);
   }
 
   @override
@@ -85,7 +82,6 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
             Transaction.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
 
-    _transactionsStreamController.add(result);
     return result;
   }
 
@@ -105,11 +101,6 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     final url = Uri.http(
         baseURL, '/api/transactions', {'transactionId': transactionId});
     await http.delete(url, headers: await _getHeaders());
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.id == transactionId);
-
-    transactions.removeAt(trIndex);
-    _transactionsStreamController.add(transactions);
   }
 
   Future<Map<String, String>> _getHeaders() async {
