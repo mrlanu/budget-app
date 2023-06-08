@@ -107,7 +107,7 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
         context.read<HomeCubit>().setTab(value);
       },
       elevation: 0,
-      showSelectedLabels: false,
+      showSelectedLabels: true,
       showUnselectedLabels: false,
       selectedItemColor: scheme.primary,
       unselectedItemColor: scheme.tertiary,

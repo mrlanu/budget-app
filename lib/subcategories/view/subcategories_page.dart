@@ -52,29 +52,32 @@ class SubcategoriesView extends StatelessWidget {
                     itemCount: state.subcategories.length,
                     itemBuilder: (context, index) {
                       final subcategory = state.subcategories[index];
-                      return ListTile(
-                        title: Text(
-                          subcategory.name,
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .fontSize),
-                        ),
-                        leading: IconButton(
-                          icon: Icon(Icons.highlight_remove,
-                              color: Theme.of(context).colorScheme.error),
-                          onPressed: () {
-                            context.read<SubcategoriesCubit>().onSubcategoryDeleted(subcategory);
+                      return Card(
+                        elevation: Theme.of(context).cardTheme.elevation,
+                        child: ListTile(
+                          title: Text(
+                            subcategory.name,
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .fontSize),
+                          ),
+                          leading: IconButton(
+                            icon: Icon(Icons.highlight_remove,
+                                color: Theme.of(context).colorScheme.error),
+                            onPressed: () {
+                              context.read<SubcategoriesCubit>().onSubcategoryDeleted(subcategory);
+                            },
+                          ),
+                          trailing: Icon(Icons.chevron_right),
+                          onTap: () {
+                            context
+                                .read<SubcategoriesCubit>()
+                                .onSubcategoryEdit(subcategory);
+                            _openDialog(context);
                           },
                         ),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          context
-                              .read<SubcategoriesCubit>()
-                              .onSubcategoryEdit(subcategory);
-                          _openDialog(context);
-                        },
                       );
                     },
                   ),

@@ -86,10 +86,12 @@ class _AppViewState extends State<AppView> {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
                 textTheme: GoogleFonts.montserratTextTheme(),
+                cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 2),
                 useMaterial3: true,
                 colorSchemeSeed: colorSelected.color,
                 brightness: Brightness.light),
             darkTheme: ThemeData(
+              cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 2),
               colorSchemeSeed: colorSelected.color,
               useMaterial3: true,
               brightness: Brightness.dark,

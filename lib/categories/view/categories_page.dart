@@ -51,29 +51,32 @@ class CategoriesView extends StatelessWidget {
                     itemCount: state.categories.length,
                     itemBuilder: (context, index) {
                       final category = state.categories[index];
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .fontSize),
-                        ),
-                        leading: IconButton(
-                          icon: Icon(Icons.highlight_remove,
-                              color: Theme.of(context).colorScheme.error),
-                          onPressed: () {
-                            context.read<CategoriesCubit>().onCategoryDeleted(category);
+                      return Card(
+                        elevation: Theme.of(context).cardTheme.elevation,
+                        child: ListTile(
+                          title: Text(
+                            category.name,
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .fontSize),
+                          ),
+                          leading: IconButton(
+                            icon: Icon(Icons.highlight_remove,
+                                color: Theme.of(context).colorScheme.error),
+                            onPressed: () {
+                              context.read<CategoriesCubit>().onCategoryDeleted(category);
+                            },
+                          ),
+                          trailing: Icon(Icons.chevron_right),
+                          onTap: () {
+                            context
+                                .read<CategoriesCubit>()
+                                .onCategoryEdit(category);
+                            _openDialog(context);
                           },
                         ),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          context
-                              .read<CategoriesCubit>()
-                              .onCategoryEdit(category);
-                          _openDialog(context);
-                        },
                       );
                     },
                   ),
