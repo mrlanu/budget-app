@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/shared/models/summary_by.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 abstract class SharedRepository {
@@ -35,7 +36,6 @@ class SharedRepositoryImpl extends SharedRepository {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     });
-
     final summaryByList = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
     )

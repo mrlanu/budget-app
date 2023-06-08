@@ -5,21 +5,32 @@ import 'package:json_annotation/json_annotation.dart';
 part 'category.g.dart';
 
 @JsonSerializable()
-class Category extends Equatable{
+class Category extends Equatable {
   final String? id;
   final String name;
   final String budgetId;
   final TransactionType transactionType;
+  final int? iconCode;
 
   const Category(
-      {this.id, required this.name, required this.budgetId, required this.transactionType});
+      {this.id,
+      required this.name,
+      required this.budgetId,
+      required this.transactionType,
+      this.iconCode});
 
-  Category copyWith({String? id, String? name, String? budgetId, TransactionType? transactionType}) {
+  Category copyWith(
+      {String? id,
+      String? name,
+      String? budgetId,
+      TransactionType? transactionType,
+      int? iconCode}) {
     return Category(
         id: id ?? this.id,
         name: name ?? this.name,
         budgetId: budgetId ?? this.budgetId,
-        transactionType: transactionType ?? this.transactionType);
+        transactionType: transactionType ?? this.transactionType,
+        iconCode: iconCode ?? this.iconCode);
   }
 
   factory Category.fromJson(Map<String, dynamic> json) =>

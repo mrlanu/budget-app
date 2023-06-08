@@ -42,4 +42,5 @@ const _$TransactionTypeEnumMap = {
   TransactionType.EXPENSE: 'EXPENSE',
   TransactionType.INCOME: 'INCOME',
   TransactionType.TRANSFER: 'TRANSFER',
+  TransactionType.ACCOUNT: 'ACCOUNT',
 };

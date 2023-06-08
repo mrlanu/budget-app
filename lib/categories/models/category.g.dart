@@ -12,6 +12,7 @@ Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
       budgetId: json['budgetId'] as String,
       transactionType:
           $enumDecode(_$TransactionTypeEnumMap, json['transactionType']),
+      iconCode: json['iconCode'] as int?,
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
@@ -19,6 +20,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'name': instance.name,
       'budgetId': instance.budgetId,
       'transactionType': _$TransactionTypeEnumMap[instance.transactionType]!,
+      'iconCode': instance.iconCode,
     };
 
 const _$TransactionTypeEnumMap = {
