@@ -1,6 +1,7 @@
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
+import 'package:budget_app/transactions/transaction/view/widgets/amount_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/category_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/date_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/subcategory_input_field.dart';
@@ -19,7 +20,7 @@ class TransactionForm extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            _AmountInput(),
+            AmountInput(),
             SizedBox(
               height: 30.h,
             ),
@@ -47,34 +48,6 @@ class TransactionForm extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AmountInput extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        return TextFormField(
-          initialValue: state.amount.value,
-          onChanged: (amount) => context
-              .read<TransactionBloc>()
-              .add(TransactionAmountChanged(amount: amount)),
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            icon: Icon(
-              Icons.attach_money,
-              color: Colors.orangeAccent,
-            ),
-            border: OutlineInputBorder(),
-            labelText: 'Amount',
-            helperText: '',
-            errorText:
-                state.amount.displayError != null ? 'invalid amount' : null,
-          ),
-        );
-      },
     );
   }
 }

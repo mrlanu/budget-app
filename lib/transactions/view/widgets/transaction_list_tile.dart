@@ -68,8 +68,8 @@ class TransactionListTile extends StatelessWidget {
                     '\$ ${transaction.amount.toString()}',
                     style: TextStyle(
                         color: transaction.type == TransactionType.EXPENSE
-                            ? theme.onErrorContainer
-                            : theme.onTertiaryContainer,
+                            ? theme.error
+                            : theme.tertiary,
                         fontSize: textTheme.titleLarge!.fontSize,
                         fontWeight: FontWeight.bold),
                   ),

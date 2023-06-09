@@ -3,6 +3,7 @@ import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/shared/models/section.dart';
 import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,14 +74,25 @@ class HomeView extends StatelessWidget {
 FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
   return FloatingActionButton(
     onPressed: () {
-      final transactionType = switch (state.tab) {
-        HomeTab.expenses => TransactionType.EXPENSE,
-        HomeTab.income => TransactionType.INCOME,
-        HomeTab.accounts => TransactionType.TRANSFER,
-      };
-      Navigator.of(context).push(
-        TransactionPage.route(homeCubit: context.read<HomeCubit>(), transactionType: transactionType),
-      );
+      switch (state.tab) {
+        case HomeTab.expenses:
+          Navigator.of(context).push(
+            TransactionPage.route(
+                homeCubit: context.read<HomeCubit>(),
+                transactionType: TransactionType.EXPENSE),
+          );
+        case HomeTab.income:
+          Navigator.of(context).push(
+            TransactionPage.route(
+                homeCubit: context.read<HomeCubit>(),
+                transactionType: TransactionType.INCOME),
+          );
+        case HomeTab.accounts:
+          Navigator.of(context).push(
+            TransferPage.route(),
+          );
+      }
+      ;
     },
     child: const Icon(Icons.add),
   );
