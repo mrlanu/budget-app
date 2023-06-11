@@ -25,11 +25,13 @@ class AccountsPage extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AccountsCubit(
+                budgetId: appBloc.state.budget!.id,
+                categoryId: categoryId,
+                transactionsRepository:
+                    context.read<TransactionsRepositoryImpl>(),
                 accountsRepository: AccountsRepositoryImpl(
-              user: appBloc.state.user,
-            ))
-              ..fetchAllAccounts(
-                  budgetId: appBloc.state.budget!.id, categoryId: categoryId),
+                  user: appBloc.state.user,))
+              ..fetchAllAccounts(),
           ),
           BlocProvider.value(value: homeCubit),
         ],
@@ -46,12 +48,6 @@ class AccountsPage extends StatelessWidget {
           title: Text('Accounts'),
           centerTitle: true,
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Add your onPressed code here!
-          },
-          child: const Icon(Icons.add),
-        ),
         body: BlocBuilder<AccountsCubit, AccountsState>(
             builder: (context, state) {
           return state.status == DataStatus.loading
@@ -61,7 +57,8 @@ class AccountsPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final acc = state.accountList[index];
                     return Card(
-                      margin: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.h),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 30.w, vertical: 15.h),
                       elevation: Theme.of(context).cardTheme.elevation,
                       child: ListTile(
                           trailing: Row(

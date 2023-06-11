@@ -3,13 +3,15 @@ part of 'transfer_bloc.dart';
 enum TransferStatus { loading, success, failure }
 
 class TransferState extends Equatable {
+
   final String? id;
   final TransferStatus trStatus;
   final Amount amount;
   final DateTime? date;
   final List<Account> accounts;
   final List<Category> accountCategories;
-  final Account? account;
+  final Account? fromAccount;
+  final Account? toAccount;
   final String notes;
   final FormzSubmissionStatus status;
   final bool isValid;
@@ -22,7 +24,8 @@ class TransferState extends Equatable {
         this.date,
         this.accounts = const <Account>[],
         this.accountCategories = const <Category>[],
-        this.account,
+        this.fromAccount,
+        this.toAccount,
         this.notes = '',
         this.status = FormzSubmissionStatus.initial,
         this.isValid = false,
@@ -35,7 +38,8 @@ class TransferState extends Equatable {
     DateTime? date,
     List<Account>? accounts,
     List<Category>? accountCategories,
-    Account? account,
+    Account? fromAccount,
+    Account? toAccount,
     String? notes,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -48,7 +52,8 @@ class TransferState extends Equatable {
       date: date ?? this.date,
       accounts: accounts ?? this.accounts,
       accountCategories: accountCategories ?? this.accountCategories,
-      account: account ?? this.account,
+      fromAccount: fromAccount ?? this.fromAccount,
+      toAccount: toAccount ?? this.toAccount,
       notes: notes ?? this.notes,
       status: status ?? this.status,
       isValid: isValid ?? this.isValid,
@@ -64,7 +69,8 @@ class TransferState extends Equatable {
     date,
     accounts,
     accountCategories,
-    account,
+    fromAccount,
+    toAccount,
     notes,
     status,
     isValid,

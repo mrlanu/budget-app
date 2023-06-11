@@ -23,7 +23,7 @@ class AccountEditDialog extends StatelessWidget {
                   alignment: Alignment.center,
                   children: <Widget>[
                     Container(
-                      height: 1440.h,
+                      height: 1500.h,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),

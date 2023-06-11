@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
+import '../../home/cubit/home_cubit.dart';
+import '../widgets/to_account_input_field.dart';
+
 class TransferForm extends StatelessWidget {
   const TransferForm({Key? key}) : super(key: key);
 
@@ -22,7 +25,11 @@ class TransferForm extends StatelessWidget {
             SizedBox(
               height: 75.h,
             ),
-            AccountInputField(),
+            FromAccountInputField(),
+            SizedBox(
+              height: 75.h,
+            ),
+            ToAccountInputField(),
             SizedBox(
               height: 75.h,
             ),
@@ -41,7 +48,12 @@ class TransferForm extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransferBloc, TransferState>(
+    return BlocConsumer<TransferBloc, TransferState>(
+      listener: (context, state) {
+        if (state.status.isSuccess) {
+          context.read<HomeCubit>().getData();
+        }
+      },
       builder: (context, state) {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
@@ -53,7 +65,9 @@ class _SubmitButton extends StatelessWidget {
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
                 ),
-                onPressed: state.isValid && state.account != null
+                onPressed: state.isValid &&
+                        state.fromAccount != null &&
+                        state.toAccount != null
                     ? () => context
                         .read<TransferBloc>()
                         .add(TransferFormSubmitted(context: context))

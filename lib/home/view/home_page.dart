@@ -89,7 +89,7 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
           );
         case HomeTab.accounts:
           Navigator.of(context).push(
-            TransferPage.route(),
+            TransferPage.route(homeCubit: context.read<HomeCubit>()),
           );
       }
       ;

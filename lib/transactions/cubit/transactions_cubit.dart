@@ -58,6 +58,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     emit(state.copyWith(lastDeletedTransaction: () => transaction));
   }
 
+  Future<void> deleteTransfer({required Transaction transfer}) async {
+    await _transactionsRepository.deleteTransfer(transfer.id!);
+    fetchTransactions();
+    emit(state.copyWith(lastDeletedTransaction: () => null));
+  }
+
   Future<void> undoDelete() async {
     final tr = state.lastDeletedTransaction!;
     emit(state.copyWith(lastDeletedTransaction: () => null));

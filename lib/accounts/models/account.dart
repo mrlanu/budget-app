@@ -36,5 +36,5 @@ class Account extends Equatable{
   Map<String, dynamic> toJson() => _$AccountToJson(this);
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, balance];
 }

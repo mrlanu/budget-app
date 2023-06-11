@@ -5,7 +5,7 @@ import '../../../../accounts/models/account.dart';
 import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../bloc/transfer_bloc.dart';
 
-class AccountInputField extends StatelessWidget {
+class FromAccountInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransferBloc, TransferState>(
@@ -19,7 +19,9 @@ class AccountInputField extends StatelessWidget {
                     accountCategories: state.accountCategories));
               },
             ),
-            items: state.accounts.map((Account account) {
+            items: state.accounts
+                .where((toAcc) => toAcc.id != state.toAccount?.id)
+                .map((Account account) {
               return DropdownMenuItem(
                 value: account,
                 child: Text(account.extendName(state.accountCategories)),
@@ -28,17 +30,19 @@ class AccountInputField extends StatelessWidget {
             onChanged: (newValue) {
               context
                   .read<TransferBloc>()
-                  .add(TransferAccountChanged(account: newValue));
+                  .add(TransferFromAccountChanged(account: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.accounts.contains(state.account) ? state.account : null,
+            value: state.accounts.contains(state.fromAccount)
+                ? state.fromAccount
+                : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
                 color: Colors.orangeAccent,
               ),
               border: OutlineInputBorder(),
-              labelText: 'Account',
+              labelText: 'From Account',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
             ));
       },

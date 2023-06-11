@@ -9,6 +9,7 @@ import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/transfer/repository/transfer_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -79,7 +80,8 @@ class _AppViewState extends State<AppView> {
                 create: (context) => SubcategoriesRepositoryImpl(user: user)),
             RepositoryProvider(
               create: (context) => AccountsRepositoryImpl(user: user),
-            )
+            ),
+            RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,

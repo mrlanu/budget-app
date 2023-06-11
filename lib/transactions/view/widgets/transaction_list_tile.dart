@@ -48,7 +48,7 @@ class TransactionListTile extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                    color: transaction.type == TransactionType.EXPENSE
+                    color: (transaction.type == TransactionType.EXPENSE || transaction.subcategoryName == 'Transfer out')
                         ? Theme
                         .of(context)
                         .colorScheme
@@ -67,7 +67,7 @@ class TransactionListTile extends StatelessWidget {
                   Text(
                     '\$ ${transaction.amount.toString()}',
                     style: TextStyle(
-                        color: transaction.type == TransactionType.EXPENSE
+                        color: (transaction.type == TransactionType.EXPENSE || transaction.subcategoryName == 'Transfer out')
                             ? theme.error
                             : theme.tertiary,
                         fontSize: textTheme.titleLarge!.fontSize,
@@ -90,7 +90,8 @@ class TransactionListTile extends StatelessWidget {
               ),
               subtitle: Text(
                   '${DateFormat('MM-dd-yyyy').format(
-                      transaction.date!)} ${transaction.accountName!}'),
+                      transaction.date!)} ${transaction.accountName!}   ${transaction.description}'),
+              isThreeLine: true,
               onTap: onTap,
             ),
           ),

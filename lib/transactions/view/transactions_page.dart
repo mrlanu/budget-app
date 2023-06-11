@@ -1,10 +1,12 @@
 import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
+import '../../transfer/view/transfer_page.dart';
 import '../cubit/transactions_cubit.dart';
 import '../transaction/view/transaction_page.dart';
 
@@ -59,7 +61,11 @@ class TransactionsPage extends StatelessWidget {
                   label: 'UNDO',
                   onPressed: () {
                     messenger.hideCurrentSnackBar();
-                    context.read<TransactionsCubit>().undoDelete();
+                    try{
+                      context.read<TransactionsCubit>().undoDelete();
+                    }catch(e){
+
+                    }
                   },
                 ),
               ),
@@ -86,17 +92,26 @@ class TransactionsPage extends StatelessWidget {
                           return TransactionListTile(
                             transaction: tr,
                             onDismissed: (_) {
-                              context
-                                  .read<TransactionsCubit>()
-                                  .deleteTransaction(transaction: tr);
+                              final trCub = context.read<TransactionsCubit>();
+                              tr.type == TransactionType.TRANSFER ? trCub.deleteTransfer(transfer: tr) :
+                                  trCub.deleteTransaction(transaction: tr);
                             },
                             onTap: () => {
-                              Navigator.of(context).push(
-                                TransactionPage.route(
-                                    homeCubit: context.read<HomeCubit>(),
-                                    transaction: tr,
-                                    transactionType: tr.type!),
-                              )
+                              if (tr.type == TransactionType.TRANSFER)
+                                {
+                                  Navigator.of(context).push(
+                                    TransferPage.route(homeCubit: context.read<HomeCubit>(), transferId: tr.id),
+                                  )
+                                }
+                              else
+                                {
+                                  Navigator.of(context).push(
+                                    TransactionPage.route(
+                                        homeCubit: context.read<HomeCubit>(),
+                                        transaction: tr,
+                                        transactionType: tr.type!),
+                                  )
+                                }
                             },
                           );
                         }));
