@@ -8,27 +8,30 @@ class CategoriesState extends Equatable {
   final TransactionType transactionType;
   final String? name;
   final Category? editCategory;
+  final String? errorMessage;
 
-  const CategoriesState({
-    this.status = CategoriesStatus.loading,
-    this.categories = const [],
-    this.transactionType = TransactionType.EXPENSE,
-    this.name,
-    this.editCategory,
-  });
+  const CategoriesState(
+      {this.status = CategoriesStatus.loading,
+      this.categories = const [],
+      this.transactionType = TransactionType.EXPENSE,
+      this.name,
+      this.editCategory,
+      this.errorMessage});
 
   CategoriesState copyWith(
       {CategoriesStatus? status,
       List<Category>? categories,
       TransactionType? transactionType,
       String? name,
-      Category? editCategory}) {
+      Category? editCategory,
+      String? errorMessage}) {
     return CategoriesState(
         status: status ?? this.status,
         categories: categories ?? this.categories,
         transactionType: transactionType ?? this.transactionType,
         name: name ?? this.name,
-        editCategory: editCategory ?? this.editCategory);
+        editCategory: editCategory ?? this.editCategory,
+        errorMessage: errorMessage ?? this.errorMessage);
   }
 
   CategoriesState resetCategory() {
@@ -42,5 +45,5 @@ class CategoriesState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [status, categories, transactionType, name, editCategory];
+      [status, categories, transactionType, name, editCategory, errorMessage];
 }

@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category.dart';
+import '../../categories/repository/categories_repository.dart';
 import '../../shared/models/subcategory.dart';
 import '../repository/subcategories_repository.dart';
 
@@ -62,8 +63,17 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
         subcategory: subcategory, budgetId: budgetId);
   }
 
-  void onSubcategoryDeleted(Subcategory subcategory) {
-    _subcategoriesRepository.delete(subcategory: subcategory);
+  Future<void> onSubcategoryDeleted(Subcategory subcategory) async {
+    emit(state.copyWith(status: SubcategoriesStatus.loading));
+    try {
+      await _subcategoriesRepository.delete(subcategory: subcategory);
+    } on CategoryFailure catch (e) {
+      emit(state.copyWith(
+          status: SubcategoriesStatus.failure, errorMessage: e.message));
+    } catch (e) {
+      emit(state.copyWith(
+          status: SubcategoriesStatus.failure, errorMessage: 'Unknown error'));
+    }
   }
 
   @override

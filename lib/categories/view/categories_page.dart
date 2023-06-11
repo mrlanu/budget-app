@@ -34,7 +34,20 @@ class CategoriesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return BlocBuilder<CategoriesCubit, CategoriesState>(
+    return BlocConsumer<CategoriesCubit, CategoriesState>(
+      listenWhen: (previous, current) =>
+      previous.status != current.status,
+      listener: (context, state) {
+        if (state.status == CategoriesStatus.failure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+              ),
+            );
+        }
+      },
       builder: (context, state) {
         return Container(
           color: scheme.background,

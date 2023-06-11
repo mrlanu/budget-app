@@ -57,9 +57,19 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     _categoriesRepository.saveCategory(category: category);
   }
 
-  void onCategoryDeleted(Category category){
-    _categoriesRepository.deleteCategory(category: category);
+  Future<void> onCategoryDeleted(Category category) async {
+    emit(state.copyWith(status: CategoriesStatus.loading));
+    try {
+      await _categoriesRepository.deleteCategory(category: category);
+    } on CategoryFailure catch (e) {
+      emit(state.copyWith(
+          status: CategoriesStatus.failure, errorMessage: e.message));
+    } catch (e) {
+      emit(state.copyWith(
+          status: CategoriesStatus.failure, errorMessage: 'Unknown error'));
+    }
   }
+
 
   @override
   Future<void> close() {

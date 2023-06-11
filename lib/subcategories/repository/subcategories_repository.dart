@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../categories/repository/categories_repository.dart';
 import '../../shared/models/subcategory.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,7 +72,12 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   Future<void> delete({required Subcategory subcategory}) async {
     final url = Uri.http(baseURL, '/api/subcategories/${subcategory.id}');
 
-    await http.delete(url, headers: await _getHeaders());
+    final resp = await http.delete(url, headers: await _getHeaders());
+
+    if(resp.statusCode !=200){
+      throw CategoryFailure(jsonDecode(resp.body)['message']);
+    }
+
     final subcategories = await fetchSubcategories(
         budgetId: subcategory.budgetId, categoryId: subcategory.categoryId);
     _subcategoriesStreamController.add(subcategories);

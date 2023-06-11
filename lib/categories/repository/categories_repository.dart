@@ -22,6 +22,14 @@ abstract class CategoriesRepository {
   Future<void> deleteCategory({required Category category});
 }
 
+class CategoryFailure implements Exception {
+  final String message;
+
+  const CategoryFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+}
+
 class CategoriesRepositoryImpl extends CategoriesRepository {
   static const baseURL = '10.0.2.2:8080';
 
@@ -71,7 +79,12 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
   Future<void> deleteCategory({required Category category}) async {
     final url = Uri.http(baseURL, '/api/categories/${category.id}');
 
-    await http.delete(url, headers: await _getHeaders());
+    final resp = await http.delete(url, headers: await _getHeaders());
+
+    if(resp.statusCode !=200){
+      throw CategoryFailure(jsonDecode(resp.body)['message']);
+    }
+
     final categories = await fetchCategories(
         budgetId: category.budgetId, transactionType: category.transactionType);
     _categoriesStreamController.add(categories);

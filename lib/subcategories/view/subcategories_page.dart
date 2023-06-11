@@ -35,7 +35,20 @@ class SubcategoriesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return BlocBuilder<SubcategoriesCubit, SubcategoriesState>(
+    return BlocConsumer<SubcategoriesCubit, SubcategoriesState>(
+      listenWhen: (previous, current) =>
+      previous.status != current.status,
+      listener: (context, state) {
+        if (state.status == SubcategoriesStatus.failure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+              ),
+            );
+        }
+      },
       builder: (context, state) {
         return Container(
           color: scheme.background,

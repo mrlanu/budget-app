@@ -8,6 +8,7 @@ class SubcategoriesState extends Equatable {
   final Category? category;
   final String? name;
   final Subcategory? editSubcategory;
+  final String? errorMessage;
 
   const SubcategoriesState({
     this.status = SubcategoriesStatus.loading,
@@ -15,20 +16,24 @@ class SubcategoriesState extends Equatable {
     this.category,
     this.name,
     this.editSubcategory,
+    this.errorMessage,
   });
 
-  SubcategoriesState copyWith(
-      {SubcategoriesStatus? status,
-        List<Subcategory>? subcategories,
-        Category? category,
-        String? name,
-        Subcategory? editSubcategory}) {
+  SubcategoriesState copyWith({
+    SubcategoriesStatus? status,
+    List<Subcategory>? subcategories,
+    Category? category,
+    String? name,
+    Subcategory? editSubcategory,
+    String? errorMessage,
+  }) {
     return SubcategoriesState(
         status: status ?? this.status,
         subcategories: subcategories ?? this.subcategories,
         category: category ?? this.category,
         name: name ?? this.name,
-        editSubcategory: editSubcategory ?? this.editSubcategory);
+        editSubcategory: editSubcategory ?? this.editSubcategory,
+        errorMessage: errorMessage ?? this.errorMessage);
   }
 
   SubcategoriesState resetSubcategory() {
@@ -42,5 +47,5 @@ class SubcategoriesState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [status, subcategories, category, name, editSubcategory];
+      [status, subcategories, category, name, editSubcategory, errorMessage];
 }
