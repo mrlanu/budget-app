@@ -61,7 +61,7 @@ class HomeView extends StatelessWidget {
                   ),
                 ],
               ),
-              drawer: Drawer(),
+              //drawer: Drawer(),
               floatingActionButton: _buildFAB(context, state),
               body: state.status == HomeStatus.loading
                   ? Center(child: CircularProgressIndicator())
