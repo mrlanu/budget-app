@@ -23,7 +23,8 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeCubit(
           sharedRepository: context.read<SharedRepositoryImpl>(),
-          budgetId: appBloc.state.budget!.id)..getData(),
+          budgetId: appBloc.state.budget!.id)
+        ..getData(),
       child: HomeView(),
     );
   }
@@ -62,8 +63,11 @@ class HomeView extends StatelessWidget {
               ),
               drawer: Drawer(),
               floatingActionButton: _buildFAB(context, state),
-              body: CategoriesSummary(
-                  summaryList: state.summaryList, dateTime: state.selectedDate),
+              body: state.status == HomeStatus.loading
+                  ? Center(child: CircularProgressIndicator())
+                  : CategoriesSummary(
+                      summaryList: state.summaryList,
+                      dateTime: state.selectedDate),
               bottomNavigationBar: _buildBottomNavigationBar(context, state)),
         ),
       );
