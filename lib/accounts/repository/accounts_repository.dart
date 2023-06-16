@@ -4,12 +4,14 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../shared/models/budget.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
   final User user;
+  final Budget budget;
 
-  AccountsRepository({required this.user});
+  AccountsRepository({required this.user, required this.budget});
 
   Future<void> deleteAccount({required Account account});
 
@@ -19,6 +21,8 @@ abstract class AccountsRepository {
 
   Future<List<Account>> fetchAccounts(
       {required String budgetId, String? categoryId});
+
+  Future<void> fetchAllAccounts();
 }
 
 class AccountFailure implements Exception {
@@ -34,7 +38,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
-  AccountsRepositoryImpl({required super.user});
+  AccountsRepositoryImpl({required super.user, required super.budget});
 
   @override
   Stream<List<Account>> getAccounts() =>
@@ -65,6 +69,25 @@ class AccountsRepositoryImpl extends AccountsRepository {
   }
 
   @override
+  Future<void> fetchAllAccounts() async {
+    var response;
+
+    final url = Uri.http(
+        baseURL, '/api/accounts', {'budgetId': budget.id, 'categoryId': ''});
+
+    response = await http.get(url, headers: await _getHeaders());
+
+    final accounts = List<Map<dynamic, dynamic>>.from(
+      json.decode(response.body) as List,
+    ).map((jsonMap) {
+      final m = Account.fromJson(Map<String, dynamic>.from(jsonMap));
+      return m;
+    }).toList();
+
+    _accountsStreamController.add(accounts);
+  }
+
+  @override
   Future<void> saveAccount({required Account account}) async {
     final url = Uri.http(baseURL, '/api/accounts');
 
@@ -82,7 +105,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
     final url = Uri.http(baseURL, '/api/accounts/${account.id}');
 
     final resp = await http.delete(url, headers: await _getHeaders());
-    if(resp.statusCode !=200){
+    if (resp.statusCode != 200) {
       throw AccountFailure(jsonDecode(resp.body)['message']);
     }
     final accounts = await fetchAccounts(budgetId: account.budgetId);

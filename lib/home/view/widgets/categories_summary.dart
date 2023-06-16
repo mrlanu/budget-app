@@ -26,13 +26,13 @@ class CategoriesSummary extends StatelessWidget {
         final showHeader = state.tab.index != 2;
         return Column(
           children: [
-            showHeader
+            (showHeader && summaryList.length > 0)
                 ? HeaderTile(data: summaryList[0], dateTime: dateTime!)
                 : Container(),
             Expanded(
               child: ListView.builder(
                   itemCount:
-                      showHeader ? summaryList.length - 1 : summaryList.length,
+                      showHeader && summaryList.length > 0 ? summaryList.length - 1 : summaryList.length,
                   itemBuilder: (context, index) {
                     final summaryItem = showHeader
                         ? summaryList[index + 1]

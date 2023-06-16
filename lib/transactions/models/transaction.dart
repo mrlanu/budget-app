@@ -32,8 +32,7 @@ class Transaction {
       this.accountName,
       this.accountId});
 
-  Transaction.empty()
-      : this();
+  Transaction.empty() : this();
 
   Transaction.create(
       {required String budgetId,
@@ -65,8 +64,8 @@ class Transaction {
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
-/*@override
+  @override
   String toString() {
-    return 'Transaction {id: $id, budgetId: $budgetId, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
-  }*/
+    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
+  }
 }

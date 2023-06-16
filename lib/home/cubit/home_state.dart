@@ -3,7 +3,7 @@ part of 'home_cubit.dart';
 enum HomeStatus { initial, loading, success, failure }
 
 enum HomeTab {
-  expenses(name: 'EXPENSES'),
+  expenses(name: 'EXPENSE'),
   income(name: 'INCOME'),
   accounts(name: 'ACCOUNTS');
 
@@ -13,28 +13,36 @@ enum HomeTab {
 }
 
 class HomeState extends Equatable {
+  final List<Transaction> transactions;
+  final List<Category> categories;
+  final double expensesSum;
+  final double incomesSum;
+  final double accountsSum;
   final List<SummaryBy> summaryList;
-  final Map<String, double> sectionSummary;
   final HomeStatus status;
   final HomeTab tab;
   final DateTime? selectedDate;
   final String? errorMessage;
 
   const HomeState(
-      {this.summaryList = const [],
-        this.sectionSummary = const {
-          'ACCOUNTS': 0.0,
-          'EXPENSES': 0.0,
-          'INCOME': 0.0
-        },
+      {this.transactions = const [],
+      this.categories = const [],
+      this.expensesSum = 0,
+      this.incomesSum = 0,
+      this.accountsSum = 0,
+      this.summaryList = const [],
       this.status = HomeStatus.initial,
       this.tab = HomeTab.expenses,
       this.selectedDate,
       this.errorMessage});
 
   HomeState copyWith({
+    List<Transaction>? transactions,
+    List<Category>? categories,
+    double? expensesSum,
+    double? incomesSum,
+    double? accountsSum,
     List<SummaryBy>? summaryList,
-    Map<String, double>? sectionSummary,
     HomeStatus? status,
     Budget? budget,
     DateTime? selectedDate,
@@ -42,9 +50,12 @@ class HomeState extends Equatable {
     String? errorMessage,
   }) {
     return HomeState(
-      summaryList:
-          summaryList ?? this.summaryList,
-      sectionSummary: sectionSummary ?? this.sectionSummary,
+      transactions: transactions ?? this.transactions,
+      categories: categories ?? this.categories,
+      expensesSum: expensesSum ?? this.expensesSum,
+      incomesSum: incomesSum ?? this.incomesSum,
+      accountsSum: accountsSum ?? this.accountsSum,
+      summaryList: summaryList ?? this.summaryList,
       status: status ?? this.status,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
@@ -53,6 +64,16 @@ class HomeState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [summaryList, sectionSummary, status, tab, selectedDate, errorMessage];
+  List<Object?> get props => [
+        transactions,
+        categories,
+        expensesSum,
+        incomesSum,
+        accountsSum,
+        summaryList,
+        status,
+        tab,
+        selectedDate,
+        errorMessage
+      ];
 }

@@ -71,12 +71,7 @@ class TransactionsPage extends StatelessWidget {
               ),
             );
         },
-        child: BlocConsumer<TransactionsCubit, TransactionsState>(
-          listenWhen: (previous, current) =>
-              previous.transactionList != current.transactionList,
-          listener: (context, state) {
-            context.read<HomeCubit>().getData();
-          },
+        child: BlocBuilder<TransactionsCubit, TransactionsState>(
           builder: (context, state) {
             return Scaffold(
                 appBar: AppBar(

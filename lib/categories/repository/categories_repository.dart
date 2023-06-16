@@ -4,18 +4,22 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../shared/models/budget.dart';
 import '../models/category.dart';
 import '../../transactions/models/transaction_type.dart';
 
 abstract class CategoriesRepository {
   final User user;
+  final Budget budget;
 
-  const CategoriesRepository({required this.user});
+  const CategoriesRepository({required this.user, required this.budget});
 
   Stream<List<Category>> getCategories();
 
   Future<List<Category>> fetchCategories(
       {required String budgetId, required TransactionType transactionType});
+
+  Future<void> fetchAllCategories();
 
   Future<void> saveCategory({required Category category});
 
@@ -36,7 +40,8 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
   final _categoriesStreamController =
       BehaviorSubject<List<Category>>.seeded(const []);
 
-  CategoriesRepositoryImpl({required super.user});
+  CategoriesRepositoryImpl({required super.user, required super.budget});
+
 
   @override
   Stream<List<Category>> getCategories() =>
@@ -61,18 +66,24 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
   }
 
   @override
+  Future<void> fetchAllCategories() async {
+    final url = Uri.http(baseURL, '/api/categories', {'budgetId': budget.id});
+
+    final response = await http.get(url, headers: await _getHeaders());
+
+    final result = List<Map<String, dynamic>>.from(
+      json.decode(response.body) as List,
+    ).map((jsonMap) => Category.fromJson(jsonMap)).toList();
+    _categoriesStreamController.add(result);
+  }
+
+  @override
   Future<void> saveCategory({required Category category}) async {
     final url = Uri.http(baseURL, '/api/categories');
-
-    final response = await http.post(url,
+    await http.post(url,
         headers: await _getHeaders(), body: json.encode(category.toJson()));
 
-    final newCategory = Category.fromJson(jsonDecode(response.body));
-    final categories = await fetchCategories(
-        budgetId: newCategory.budgetId,
-        transactionType: newCategory.transactionType);
-
-    _categoriesStreamController.add(categories);
+    fetchAllCategories();
   }
 
   @override
@@ -81,7 +92,7 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
 
     final resp = await http.delete(url, headers: await _getHeaders());
 
-    if(resp.statusCode !=200){
+    if (resp.statusCode != 200) {
       throw CategoryFailure(jsonDecode(resp.body)['message']);
     }
 

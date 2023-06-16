@@ -64,13 +64,6 @@ class AccountsListView extends StatelessWidget {
               }
             },
           ),
-          BlocListener<AccountsListCubit, AccountsListState>(
-            listenWhen: (previous, current) =>
-                previous.accounts.length != current.accounts.length,
-            listener: (context, state) {
-              context.read<HomeCubit>().getData();
-            },
-          ),
         ],
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {

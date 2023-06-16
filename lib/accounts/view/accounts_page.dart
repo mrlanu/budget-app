@@ -29,8 +29,7 @@ class AccountsPage extends StatelessWidget {
                 categoryId: categoryId,
                 transactionsRepository:
                     context.read<TransactionsRepositoryImpl>(),
-                accountsRepository: AccountsRepositoryImpl(
-                  user: appBloc.state.user,))
+                accountsRepository:context.read<AccountsRepositoryImpl>())
               ..fetchAllAccounts(),
           ),
           BlocProvider.value(value: homeCubit),

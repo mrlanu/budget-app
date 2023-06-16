@@ -63,6 +63,7 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final user = context.select((AppBloc bloc) => bloc.state.user);
+    final budget = context.select((AppBloc bloc) => bloc.state.budget);
     return ScreenUtilInit(
       designSize: const Size(1080, 2160),
       minTextAdapt: true,
@@ -73,14 +74,14 @@ class _AppViewState extends State<AppView> {
             RepositoryProvider(
                 create: (context) => SharedRepositoryImpl(user: user)),
             RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl(user: user)),
+                create: (context) => CategoriesRepositoryImpl(user: user, budget: budget!)),
             RepositoryProvider(
-                create: (context) => CategoriesRepositoryImpl(user: user)),
+              create: (context) => AccountsRepositoryImpl(user: user,  budget: budget!),
+            ),
+            RepositoryProvider(
+                create: (context) => TransactionsRepositoryImpl(user: user, budget: budget!)),
             RepositoryProvider(
                 create: (context) => SubcategoriesRepositoryImpl(user: user)),
-            RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(user: user),
-            ),
             RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(
