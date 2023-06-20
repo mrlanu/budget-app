@@ -39,41 +39,39 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    print('ICON: ${Icons.payments_outlined.codePoint}');
     return BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-      return Container(
-        color: scheme.background,
-        child: SafeArea(
-          child: Scaffold(
-              appBar: AppBar(
-                title: state.tab != HomeTab.accounts
-                    ? MonthPaginator(
-                        onLeft: (date) =>
-                            context.read<HomeCubit>().changeDate(date),
-                        onRight: (date) =>
-                            context.read<HomeCubit>().changeDate(date),
-                      )
-                    : Text('Accounts'),
-                centerTitle: true,
-                actions: <Widget>[
-                  IconButton(
-                    key: const Key('homePage_logout_iconButton'),
-                    icon: const Icon(Icons.exit_to_app),
-                    onPressed: () {
-                      context.read<AppBloc>().add(const AppLogoutRequested());
-                    },
-                  ),
-                ],
+      return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          appBar: AppBar(
+            backgroundColor: scheme.primaryContainer,
+            title: state.tab != HomeTab.accounts
+                ? MonthPaginator(
+                    onLeft: (date) =>
+                        context.read<HomeCubit>().changeDate(date),
+                    onRight: (date) =>
+                        context.read<HomeCubit>().changeDate(date),
+                  )
+                : Text('Accounts'),
+            centerTitle: true,
+            actions: <Widget>[
+              IconButton(
+                key: const Key('homePage_logout_iconButton'),
+                icon: const Icon(Icons.exit_to_app),
+                onPressed: () {
+                  context.read<AppBloc>().add(const AppLogoutRequested());
+                },
               ),
-              //drawer: Drawer(),
-              floatingActionButton: _buildFAB(context, state),
-              body: state.status == HomeStatus.loading
-                  ? Center(child: CircularProgressIndicator())
-                  : CategoriesSummary(
-                      summaryList: state.summaryList,
-                      dateTime: state.selectedDate),
-              bottomNavigationBar: _buildBottomNavigationBar(context, state)),
-        ),
-      );
+            ],
+          ),
+          drawer: Drawer(),
+          floatingActionButton: _buildFAB(context, state),
+          body: state.status == HomeStatus.loading
+              ? Center(child: CircularProgressIndicator())
+              : CategoriesSummary(
+                  summaryList: state.summaryList,
+                  dateTime: state.selectedDate),
+          bottomNavigationBar: _buildBottomNavigationBar(context, state));
     });
   }
 }
@@ -111,8 +109,8 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
     height: 230.h,
     decoration: BoxDecoration(
         color: scheme.primary,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),
+        /*borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),*/
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -121,6 +119,7 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
           )
         ]),
     child: BottomNavigationBar(
+      backgroundColor: scheme.primaryContainer,
       currentIndex: state.tab.index,
       onTap: (value) {
         context.read<HomeCubit>().setTab(value);
@@ -136,20 +135,20 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
             icon: Icons.account_balance_wallet,
             section: Section.EXPENSES,
             state: state,
-            amount: state.expensesSum,
+            amount: state.sectionsSum['expenses']!,
             tab: HomeTab.expenses),
         _buildBottomNavigationBarItem(
             label: 'income',
             icon: Icons.monetization_on_outlined,
             section: Section.INCOME,
             state: state,
-            amount: state.incomesSum,
+            amount: state.sectionsSum['incomes']!,
             tab: HomeTab.income),
         _buildBottomNavigationBarItem(
             label: 'accounts',
             icon: Icons.account_balance_outlined,
             section: Section.ACCOUNTS,
-            amount: state.accountsSum,
+            amount: state.sectionsSum['accounts']!,
             state: state,
             tab: HomeTab.accounts),
       ],

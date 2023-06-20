@@ -1,32 +1,28 @@
-import 'package:budget_app/transactions/models/transaction.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final Transaction transaction;
+  final TransactionTile transactionTile;
   final DismissDirectionCallback? onDismissed;
   final VoidCallback? onTap;
 
   const TransactionListTile(
-      {Key? key, required this.transaction, this.onTap, this.onDismissed})
+      {Key? key, required this.transactionTile, this.onTap, this.onDismissed})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
+    final theme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Dismissible(
-      key: Key('transaction_dismissible_${transaction.id}'),
+      key: Key('transaction_dismissible_${transactionTile.id}'),
       onDismissed: onDismissed,
       direction: DismissDirection.startToEnd,
       background: Container(
-        alignment: Alignment.centerRight,
+        //alignment: Alignment.centerRight,
         color: theme.error,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: const Icon(
@@ -36,10 +32,7 @@ class TransactionListTile extends StatelessWidget {
       ),
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.h),
-        elevation: Theme
-            .of(context)
-            .cardTheme
-            .elevation,
+        elevation: Theme.of(context).cardTheme.elevation,
         child: ClipPath(
           clipper: ShapeBorderClipper(
               shape: RoundedRectangleBorder(
@@ -48,15 +41,10 @@ class TransactionListTile extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                    color: (transaction.type == TransactionType.EXPENSE || transaction.subcategoryName == 'Transfer out')
-                        ? Theme
-                        .of(context)
-                        .colorScheme
-                        .error
-                        : Theme
-                        .of(context)
-                        .colorScheme
-                        .tertiary, width: 20.w),
+                    color: (transactionTile.type == TransactionType.EXPENSE)
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.tertiary,
+                    width: 20.w),
               ),
             ),
             child: ListTile(
@@ -65,11 +53,14 @@ class TransactionListTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '\$ ${transaction.amount.toString()}',
+                    '\$ ${transactionTile.amount.toString()}',
                     style: TextStyle(
-                        color: (transaction.type == TransactionType.EXPENSE || transaction.subcategoryName == 'Transfer out')
-                            ? theme.error
-                            : theme.tertiary,
+                        color:
+                            (transactionTile.type == TransactionType.EXPENSE ||
+                                    transactionTile.title ==
+                                        'Transfer out')
+                                ? theme.error
+                                : theme.tertiary,
                         fontSize: textTheme.titleLarge!.fontSize,
                         fontWeight: FontWeight.bold),
                   ),
@@ -80,18 +71,17 @@ class TransactionListTile extends StatelessWidget {
                 ],
               ),
               title: Text(
-                transaction.subcategoryName!,
+                transactionTile.title,
                 style: TextStyle(
                   fontSize: textTheme.titleLarge!.fontSize,
-                  color: transaction.type == TransactionType.EXPENSE
+                  color: transactionTile.type == TransactionType.EXPENSE
                       ? theme.onErrorContainer
                       : theme.onTertiaryContainer,
                 ),
               ),
               subtitle: Text(
-                  '${DateFormat('MM-dd-yyyy').format(
-                      transaction.date!)} ${transaction.accountName!}   ${transaction.description}'),
-              isThreeLine: true,
+                  '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}'),
+              isThreeLine: false,
               onTap: onTap,
             ),
           ),

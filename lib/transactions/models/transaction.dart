@@ -1,4 +1,6 @@
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/transfer/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction.g.dart';
@@ -32,37 +34,21 @@ class Transaction {
       this.accountName,
       this.accountId});
 
-  Transaction.empty() : this();
-
-  Transaction.create(
-      {required String budgetId,
-      required DateTime date,
-      required TransactionType type,
-      required String description,
-      required double amount,
-      required String categoryId,
-      required String categoryName,
-      required String subcategoryId,
-      required String subcategoryName,
-      required String accountName,
-      required String accountId})
-      : this(
-            budgetId: budgetId,
-            date: date,
-            type: type,
-            description: description,
-            amount: amount,
-            categoryId: categoryId,
-            categoryName: categoryName,
-            subcategoryId: subcategoryId,
-            subcategoryName: subcategoryName,
-            accountId: accountId,
-            accountName: accountName);
-
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
+
+  TransactionTile toTile() {
+    return TransactionTile(
+        id: this.id!,
+        type: this.type!,
+        amount: this.amount!,
+        title: this.subcategoryName!,
+        subtitle: this.accountName!,
+        dateTime: this.date!,
+        description: this.description!);
+  }
 
   @override
   String toString() {

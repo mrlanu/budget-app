@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../transactions/models/transaction_tile.dart';
+import '../../transactions/models/transaction_type.dart';
+
 part 'transfer.g.dart';
 
 @JsonSerializable()
@@ -49,4 +52,18 @@ class Transfer extends Equatable{
 
   @override
   List<Object?> get props => [id, budgetId];
+
+  TransactionTile toTile({required String accountId}) {
+    return TransactionTile(id: this.id!,
+        type: TransactionType.TRANSFER,
+        amount: this.amount,
+        title: accountId == this.fromAccountId
+            ? 'Transfer out'
+            : 'Transfer in',
+        subtitle: accountId == this.fromAccountId
+            ? 'to ${this.toAccountId}'
+            : 'from ${this.fromAccountId}',
+        dateTime: date,
+        description: this.notes!);
+  }
 }

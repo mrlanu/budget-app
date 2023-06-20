@@ -1,21 +1,21 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'summary_by.g.dart';
+part 'summary_tile.g.dart';
 
 @JsonSerializable()
-class SummaryBy {
+class SummaryTile {
   final String id;
   final String name;
   final double total;
   final int iconCodePoint;
 
-  const SummaryBy({
+  const SummaryTile({
     required this.id,
     required this.name,
     required this.total,
     required this.iconCodePoint,
   });
 
-  factory SummaryBy.fromJson(Map<String, dynamic> json) => _$SummaryByFromJson(json);
-  Map<String, dynamic> toJson() => _$SummaryByToJson(this);
+  factory SummaryTile.fromJson(Map<String, dynamic> json) => _$SummaryTileFromJson(json);
+  Map<String, dynamic> toJson() => _$SummaryTileToJson(this);
 }

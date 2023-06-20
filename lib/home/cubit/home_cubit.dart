@@ -6,7 +6,7 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
-import 'package:budget_app/shared/models/summary_by.dart';
+import 'package:budget_app/shared/models/summary_tile.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
@@ -39,9 +39,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _init() async {
-    _categoriesRepository.fetchAllCategories();
-    _accountsRepository.fetchAllAccounts();
-    _transactionsRepository.fetchTransactions(budgetId: budgetId, dateTime: DateTime.now());
+    emit(state.copyWith(status: HomeStatus.loading));
+    await Future.wait([
+      _categoriesRepository.fetchAllCategories(),
+      _accountsRepository.fetchAllAccounts(),
+    ]);
+    _transactionsRepository.fetchTransactions(
+        budgetId: budgetId, dateTime: DateTime.now());
+    _transactionsRepository.fetchTransfers(budgetId: budgetId, dateTime: DateTime.now());
   }
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
@@ -52,15 +57,14 @@ class HomeCubit extends Cubit<HomeState> {
 
     final summaries = _getSummariesByCategory(
         transactions: transactions, categories: categories);
-    final sumsOfSections =
+    final sectionsSum =
         _recalculateSections(transactions: transactions, accounts: accounts);
 
     emit(state.copyWith(
       transactions: transactions,
       categories: categories,
-      incomesSum: sumsOfSections['incomes'],
-      expensesSum: sumsOfSections['expenses'],
-      accountsSum: sumsOfSections['accounts'],
+      accounts: accounts,
+      sectionsSum: sectionsSum,
       summaryList: summaries,
       status: HomeStatus.success,
     ));
@@ -86,13 +90,13 @@ class HomeCubit extends Cubit<HomeState> {
     return {'expenses': expSum, 'incomes': incSum, 'accounts': accSum};
   }
 
-  List<SummaryBy> _getSummariesByCategory(
+  List<SummaryTile> _getSummariesByCategory(
       {required List<Transaction> transactions,
       required List<Category> categories}) {
     final groupedTrByCat =
         groupBy(transactions, (Transaction tr) => tr.categoryId);
 
-    List<SummaryBy> summaries = [];
+    List<SummaryTile> summaries = [];
     double allTotal = 0;
 
     if (categories.isNotEmpty) {
@@ -102,35 +106,62 @@ class HomeCubit extends Cubit<HomeState> {
             0.0, (previousValue, element) => previousValue + element.amount!);
         if (cat.transactionType.name == state.tab.name) {
           allTotal = allTotal + sum;
-          summaries.add(SummaryBy(
-              id: '',
+          summaries.add(SummaryTile(
+              id: cat.id!,
               name: cat.name,
               total: sum,
               iconCodePoint: cat.iconCode!));
         }
       });
     }
-    summaries.insert(0, SummaryBy(id: '', name: 'All', total: allTotal, iconCodePoint: 62335));
+    summaries.insert(
+        0,
+        SummaryTile(
+            id: state.tab.name == 'EXPENSE' ? 'all_expenses' : 'all_incomes',
+            name: 'All',
+            total: allTotal,
+            iconCodePoint: 62335));
+    return summaries;
+  }
+
+  List<SummaryTile> _getSummariesByAccounts(
+      {required List<Account> accounts, required List<Category> categories}) {
+    final groupedAccByCat = groupBy(accounts, (Account acc) => acc.categoryId);
+
+    List<SummaryTile> summaries = [];
+    if (categories.isNotEmpty) {
+      groupedAccByCat.forEach((key, value) {
+        final cat = categories.where((element) => element.id == key).first;
+        final double sum = value.fold<double>(
+            0.0, (previousValue, element) => previousValue + element.balance);
+
+        summaries.add(SummaryTile(
+            id: cat.id!,
+            name: cat.name,
+            total: sum,
+            iconCodePoint: cat.iconCode!));
+      });
+    }
+
     return summaries;
   }
 
   Future<void> setTab(int tabIndex) async {
     emit(state.copyWith(
         status: HomeStatus.loading, tab: HomeTab.values[tabIndex]));
-    final summaries = _getSummariesByCategory(
-        transactions: state.transactions, categories: state.categories);
+    final summaries = tabIndex == HomeTab.accounts.index
+        ? _getSummariesByAccounts(
+            accounts: state.accounts, categories: state.categories)
+        : _getSummariesByCategory(
+            transactions: state.transactions, categories: state.categories);
     emit(state.copyWith(status: HomeStatus.success, summaryList: summaries));
   }
 
   Future<void> changeDate(DateTime dateTime) async {
     emit(state.copyWith(status: HomeStatus.loading));
-    /*final data = await _fetchHomePageData(dateTime: dateTime);
-    emit(state.copyWith(
-        status: HomeStatus.success,
-        summaryList: data['summaryList'],
-        selectedDate: dateTime));*/
+    _transactionsRepository.fetchTransactions(
+        budgetId: budgetId, dateTime: dateTime);
   }
-
 
   @override
   Future<void> close() {

@@ -1,11 +1,15 @@
+import 'package:budget_app/accounts/repository/accounts_repository.dart';
+import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/transactions/models/transactions_filter.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bloc/app_bloc.dart';
+import '../../subcategories/repository/subcategories_repository.dart';
 import '../../transfer/view/transfer_page.dart';
 import '../cubit/transactions_cubit.dart';
 import '../transaction/view/transaction_page.dart';
@@ -15,8 +19,7 @@ class TransactionsPage extends StatelessWidget {
 
   static Route<void> route(
       {required HomeCubit homeCubit,
-      required TransactionsFilter filterBy,
-      required String filterId,
+      required TransactionsFilter filter,
       required DateTime filterDate}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
@@ -27,10 +30,11 @@ class TransactionsPage extends StatelessWidget {
                 budgetId: appBloc.state.budget!.id,
                 transactionsRepository:
                     context.read<TransactionsRepositoryImpl>(),
-                filterBy: filterBy,
-                filterId: filterId,
-                filterDate: filterDate)
-              ..fetchTransactions(),
+                categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+                subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
+                accountsRepository: context.read<AccountsRepositoryImpl>(),
+                filter: filter,
+                filterDate: filterDate),
           ),
           BlocProvider.value(value: homeCubit),
         ],
@@ -85,11 +89,11 @@ class TransactionsPage extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final tr = state.transactionList[index];
                           return TransactionListTile(
-                            transaction: tr,
+                            transactionTile: tr,
                             onDismissed: (_) {
                               final trCub = context.read<TransactionsCubit>();
-                              tr.type == TransactionType.TRANSFER ? trCub.deleteTransfer(transfer: tr) :
-                                  trCub.deleteTransaction(transaction: tr);
+                              tr.type == TransactionType.TRANSFER ? trCub.deleteTransfer(transferId: tr.id) :
+                                  trCub.deleteTransaction(transactionId: tr.id);
                             },
                             onTap: () => {
                               if (tr.type == TransactionType.TRANSFER)
@@ -100,12 +104,12 @@ class TransactionsPage extends StatelessWidget {
                                 }
                               else
                                 {
-                                  Navigator.of(context).push(
+                                  /*Navigator.of(context).push(
                                     TransactionPage.route(
                                         homeCubit: context.read<HomeCubit>(),
                                         transaction: tr,
                                         transactionType: tr.type!),
-                                  )
+                                  )*/
                                 }
                             },
                           );

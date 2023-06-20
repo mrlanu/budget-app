@@ -205,8 +205,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         categoryName: state.category!.name,
         subcategoryId: state.subcategory!.id,
         subcategoryName: state.subcategory!.name,
-        accountId: state.account!.id,
-        accountName: state.account!.name);
+        accountId: state.account!.id,accountName: state.account!.name);
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));

@@ -5,7 +5,6 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
-import 'package:budget_app/shared/repositories/shared_repository.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
@@ -55,7 +54,7 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   ThemeMode themeMode = ThemeMode.system;
-  ColorSeed colorSelected = ColorSeed.orange;
+  ColorSeed colorSelected = ColorSeed.yellow;
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   NavigatorState get _navigator => _navigatorKey.currentState!;
@@ -72,8 +71,6 @@ class _AppViewState extends State<AppView> {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(
-                create: (context) => SharedRepositoryImpl(user: user)),
-            RepositoryProvider(
                 create: (context) => CategoriesRepositoryImpl(user: user, budget: budget!)),
             RepositoryProvider(
               create: (context) => AccountsRepositoryImpl(user: user,  budget: budget!),
@@ -88,13 +85,13 @@ class _AppViewState extends State<AppView> {
             navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-                textTheme: GoogleFonts.montserratTextTheme(),
-                cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 2),
+                textTheme: GoogleFonts.latoTextTheme(),
+                cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
                 useMaterial3: true,
                 colorSchemeSeed: colorSelected.color,
                 brightness: Brightness.light),
             darkTheme: ThemeData(
-              cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 2),
+              cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
               colorSchemeSeed: colorSelected.color,
               useMaterial3: true,
               brightness: Brightness.dark,

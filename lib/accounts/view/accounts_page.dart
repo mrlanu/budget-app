@@ -3,6 +3,7 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/shared/shared.dart';
+import 'package:budget_app/transactions/models/transactions_filter.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,8 +84,7 @@ class AccountsPage extends StatelessWidget {
                           onTap: () => Navigator.of(context).push(
                               TransactionsPage.route(
                                   homeCubit: context.read<HomeCubit>(),
-                                  filterBy: TransactionsFilter.account,
-                                  filterId: acc.id!,
+                                  filter: TransactionsFilter(filterBy: FilterBy.accountId, id: acc.id!),
                                   filterDate: DateTime.now()))),
                     );
                   });
