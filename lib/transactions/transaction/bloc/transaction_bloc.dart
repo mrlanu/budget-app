@@ -5,6 +5,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -84,40 +85,44 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
-    final categories = await _categoriesRepository.fetchCategories(
-        budgetId: _budget.id, transactionType: event.transactionType);
-    final accounts =
-        await _accountsRepository.fetchAccounts(budgetId: _budget.id);
-    final accCategories = await _categoriesRepository.fetchCategories(
-        budgetId: _budget.id, transactionType: TransactionType.ACCOUNT);
+    emit(state.copyWith(trStatus: TransactionStatus.loading));
+    final allCategories = await _categoriesRepository.getCategories().first;
+    final filteredCategories = allCategories.where(
+        (cat) => cat.transactionType == event.transactionType,
+      ).toList();
+    final accounts = await _accountsRepository.getAccounts().first;
+    final accCategories = await _categoriesRepository.getCategories().first
+      ..where((cat) => cat.transactionType == TransactionType.ACCOUNT);
     var subcategories = <Subcategory>[];
     var category;
     var subcategory;
     var account;
+    var id;
     final tr = event.transaction;
     if (tr != null) {
-      category = categories.where((cat) => cat.id == tr.categoryId).first;
+      id = tr.id;
+      category = filteredCategories.where((cat) => cat.id == tr.category!.id).first;
       subcategories = await _subcategoriesRepository.getSubcategories().first;
       subcategory = subcategories
-          .where((element) => element.id == tr.subcategoryId)
+          .where((element) => element.id == tr.subcategory!.id)
           .first;
-      account = accounts.where((element) => element.id == tr.accountId).first;
+      account = accounts.where((element) => element.id == tr.fromAccount!.id).first;
     }
     emit(TransactionState(
+      budgetId: _budget.id,
+        id: id,
         transactionType: event.transactionType,
-        isEdit: tr != null,
-        trStatus: TransactionStatus.success,
-        date: tr?.date ?? DateTime.now(),
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
-        accountCategories: accCategories,
-        categories: categories,
+        date: tr?.dateTime ?? DateTime.now(),
         category: category,
-        subcategories: subcategories,
         subcategory: subcategory,
-        description: tr?.description ?? '',
-        accounts: accounts,
         account: account,
-        transaction: tr,
+        description: tr?.description ?? '',
+        accountCategories: accCategories,
+        categories: filteredCategories,
+        subcategories: subcategories,
+        accounts: accounts,
+        trStatus: TransactionStatus.success,
         isValid: tr == null ? false : true));
   }
 
@@ -141,27 +146,28 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onCategoriesChanged(TransactionCategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    /*emit(state.resetCategory().copyWith(categories: event.categories));*/
-    emit(state.copyWith(categories: event.categories));
+    final categories = event.categories.where((cat) => cat.transactionType == state.transactionType).toList();
+    emit(state.copyWith(category: () => null, categories: () => categories));
   }
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
-    emit(state.resetSubcategories());
-    final subcategories = await _subcategoriesRepository.getSubcategories().first;
+    final subcategories =
+        await _subcategoriesRepository.getSubcategories().first;
+    final filteredScs = subcategories.where((sc) => sc.categoryId == event.category!.id).toList();
     emit(
-        state.copyWith(category: event.category, subcategories: subcategories));
+        state.copyWith(category: () => event.category, subcategory: () => null, subcategories: () => filteredScs));
   }
 
   Future<void> _onSubcategoriesChanged(TransactionSubcategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    /*emit(state.resetSubcategory().copyWith(subcategories: event.subcategories));*/
-    emit(state.copyWith(subcategories: event.subcategories));
+    final subcategories = event.subcategories.where((sc) => sc.categoryId == state.category!.id).toList();
+    emit(state.copyWith(subcategory: () => null, subcategories: () => subcategories));
   }
 
   void _onSubcategoryChanged(
       TransactionSubcategoryChanged event, Emitter<TransactionState> emit) {
-    emit(state.copyWith(subcategory: event.subcategory));
+    emit(state.copyWith(subcategory: () => event.subcategory));
   }
 
   void _onSubcategoryCreated(
@@ -177,7 +183,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   void _onAccountsChanged(
       TransactionAccountsChanged event, Emitter<TransactionState> emit) {
-    emit(state.copyWith(accounts: event.accounts));
+    emit(state.copyWith(accounts: () => event.accounts));
   }
 
   void _onAccountChanged(
@@ -194,14 +200,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-        id: state.transaction?.id ?? null,
-        budgetId: _budget.id,
-        date: state.date ?? DateTime.now(),
-        type: state.transactionType,
-        amount: double.parse(state.amount.value),
-        categoryId: state.category!.id,
-        subcategoryId: state.subcategory!.id,
-        accountId: state.account!.id,);
+      id: state.id,
+      budgetId: _budget.id,
+      date: state.date ?? DateTime.now(),
+      type: state.transactionType,
+      amount: double.parse(state.amount.value),
+      categoryId: state.category!.id,
+      subcategoryId: state.subcategory!.id,
+      accountId: state.account!.id,
+    );
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));

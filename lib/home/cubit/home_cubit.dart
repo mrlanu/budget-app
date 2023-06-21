@@ -59,6 +59,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: HomeStatus.loading));
 
     final categories = await _categoriesRepository.getCategories().first;
+    await _accountsRepository.fetchAllAccounts();
     final accounts = await _accountsRepository.getAccounts().first;
 
     final summaries = _getSummariesByCategory(

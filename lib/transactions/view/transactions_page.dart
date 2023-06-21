@@ -12,6 +12,7 @@ import '../../app/bloc/app_bloc.dart';
 import '../../subcategories/repository/subcategories_repository.dart';
 import '../../transfer/view/transfer_page.dart';
 import '../cubit/transactions_cubit.dart';
+import '../transaction/view/transaction_page.dart';
 
 class TransactionsPage extends StatelessWidget {
   static const routeName = '/transactions';
@@ -101,12 +102,11 @@ class TransactionsPage extends StatelessWidget {
                                 }
                               else
                                 {
-                                  /*Navigator.of(context).push(
-                                    TransactionPage.route(
+                                  Navigator.of(context).push(
+                                    TransactionPage.route(transaction: tr,
                                         homeCubit: context.read<HomeCubit>(),
-                                        transaction: tr,
-                                        transactionType: tr.type!),
-                                  )*/
+                                        transactionType: tr.type),
+                                  )
                                 }
                             },
                           );

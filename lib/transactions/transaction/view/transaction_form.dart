@@ -100,7 +100,7 @@ class _SubmitButton extends StatelessWidget {
                         .read<TransactionBloc>()
                         .add(TransactionFormSubmitted(context: context))
                     : null,
-                child: Text(state.isEdit ? 'SAVE' : 'ADD'),
+                child: Text('SAVE'),
               );
       },
     );

@@ -2,6 +2,7 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/transaction_form.dart';
@@ -18,7 +19,8 @@ class TransactionPage extends StatelessWidget {
   static const routeName = '/transaction';
 
   static Route<void> route(
-      {required HomeCubit homeCubit, Transaction? transaction, required TransactionType transactionType}) {
+      {required HomeCubit homeCubit, TransactionTile? transaction,
+        required TransactionType transactionType}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
@@ -54,15 +56,15 @@ class TransactionPage extends StatelessWidget {
             ),
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
-                : Center(
-              child: CircularProgressIndicator(),
+                : Center(child: CircularProgressIndicator(),
             ));
       },
     );
   }
 
   String _buildTitle(TransactionState state) {
-    final prefix = state.isEdit ? 'Edit' : 'New';
+    //final prefix = state.isEdit ? 'Edit' : 'New';
+    final prefix = 'New';
     final body = switch (state.transactionType) {
       TransactionType.EXPENSE => 'Expense',
       TransactionType.INCOME => 'Income',
