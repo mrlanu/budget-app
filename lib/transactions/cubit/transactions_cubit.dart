@@ -83,14 +83,20 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   Future<void> deleteTransfer({required String transferId}) async {
-    await _transactionsRepository.deleteTransfer(transferId);
-    emit(state.copyWith(lastDeletedTransaction: () => null));
+    final deletedTransfer = await _transactionsRepository.deleteTransfer(transferId);
+    emit(state.copyWith(lastDeletedTransfer: () => deletedTransfer));
   }
 
   Future<void> undoDelete() async {
-    final tr = state.lastDeletedTransaction!;
-    emit(state.copyWith(lastDeletedTransaction: () => null));
-    await _transactionsRepository.createTransaction(tr);
+    final transaction = state.lastDeletedTransaction;
+    final transfer = state.lastDeletedTransfer;
+    if(transaction == null){
+      emit(state.copyWith(lastDeletedTransfer: () => null));
+      await _transactionsRepository.createTransfer(transfer!);
+    }else {
+      emit(state.copyWith(lastDeletedTransaction: () => null));
+      await _transactionsRepository.createTransaction(transaction!);
+    }
   }
 
   @override
