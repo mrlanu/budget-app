@@ -31,5 +31,5 @@ class TransactionTile extends Equatable {
       required this.description});
 
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [id, amount, fromAccount, toAccount, dateTime];
 }

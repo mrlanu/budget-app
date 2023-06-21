@@ -97,7 +97,7 @@ class TransactionsPage extends StatelessWidget {
                               if (tr.type == TransactionType.TRANSFER)
                                 {
                                   Navigator.of(context).push(
-                                    TransferPage.route(homeCubit: context.read<HomeCubit>(), transferId: tr.id),
+                                    TransferPage.route(homeCubit: context.read<HomeCubit>(), transactionTile: tr),
                                   )
                                 }
                               else

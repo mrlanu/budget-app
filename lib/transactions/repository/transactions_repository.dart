@@ -69,7 +69,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     final transactionResponse = await http.post(url,
         headers: await _getHeaders(), body: json.encode(transaction.toJson()));
     final newTransaction = Transaction.fromJson(jsonDecode(transactionResponse.body));
-    final transactions = _transactionsStreamController.value;
+    final transactions = [..._transactionsStreamController.value];
     transactions.add(newTransaction);
     _transactionsStreamController.add(transactions);
   }
@@ -77,17 +77,29 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   @override
   Future<void> createTransfer(Transfer transfer) async {
     final url = Uri.http(baseURL, '/api/transfers');
-    await http.post(url,
+    final transferResponse = await http.post(url,
         headers: await _getHeaders(), body: json.encode(transfer.toJson()));
-    fetchTransactions(budgetId: _budget.id, dateTime: transfer.date!);
+    final newTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
+    final transfers = [..._transfersStreamController.value];
+    transfers.add(newTransfer);
+    _transfersStreamController.add(transfers);
   }
 
   @override
   Future<void> editTransfer(Transfer transfer) async {
     final url = Uri.http(baseURL, '/api/transfers');
-    await http.put(url,
+    final transferResponse = await http.put(url,
         headers: await _getHeaders(), body: json.encode(transfer.toJson()));
-    _transactionsStreamController.add([]);
+    final editedTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
+    final transfers = [..._transfersStreamController.value];
+    final trIndex = transfers.indexWhere((t) => t.id == editedTransfer.id);
+    if (trIndex == -1) {
+      //throw TodoNotFoundException();
+    } else {
+      transfers.removeAt(trIndex);
+      transfers.insert(trIndex, editedTransfer);
+      _transfersStreamController.add(transfers);
+    }
   }
 
   @override

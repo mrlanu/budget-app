@@ -1,4 +1,5 @@
 import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import '../../categories/repository/categories_repository.dart';
 class TransferPage extends StatelessWidget {
   const TransferPage({Key? key}) : super(key: key);
 
-  static Route<void> route({required HomeCubit homeCubit, String? transferId}) {
+  static Route<void> route({required HomeCubit homeCubit, TransactionTile? transactionTile}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
@@ -24,7 +25,7 @@ class TransferPage extends StatelessWidget {
               categoriesRepository: context.read<CategoriesRepositoryImpl>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
             )
-              ..add(TransferFormLoaded(transferId: transferId)),
+              ..add(TransferFormLoaded(transactionTile: transactionTile)),
           ),
           BlocProvider.value(value: homeCubit),
         ],

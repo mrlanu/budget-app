@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:equatable/equatable.dart';
@@ -44,9 +45,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onEvent(TransferEvent event,
       Emitter<TransferState> emit) async {
     return switch (event) {
-    final TransferFormLoaded e =>
-        _onFormLoaded(e, emit)
-    ,
+    final TransferFormLoaded e => _onFormLoaded(e, emit),
     final TransferAmountChanged e => _onAmountChanged(e, emit),
     final TransferDateChanged e => _onDateChanged(e, emit),
     final TransferAccountsChanged e => _onAccountsChanged(e, emit),
@@ -60,30 +59,30 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onFormLoaded(TransferFormLoaded event,
       Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
-    final accounts =
-    await _accountsRepository.fetchAccounts(budgetId: budgetId);
-    final accCategories = await _categoriesRepository.fetchCategories(
-        budgetId: budgetId, transactionType: TransactionType.ACCOUNT);
-    if (event.transferId != null) {
-      final transfer = await _transactionsRepository.fetchTransferById(
-          event.transferId!);
+    final accounts = await _accountsRepository.getAccounts().first;
+    final accCategories = await _categoriesRepository.getCategories().first;
+    final filteredCategories = accCategories.where((aC) => aC.transactionType == TransactionType.ACCOUNT).toList();
+    final transactionTile = event.transactionTile;
+    if (transactionTile != null) {
       emit(state.copyWith(
-        id: transfer.id,
-        amount: Amount.dirty(transfer.amount.toString()),
+        budgetId: this.budgetId,
+        id: transactionTile.id,
+        amount: Amount.dirty(transactionTile.amount.toString()),
         fromAccount: accounts
-            .where((element) => element.id == transfer.fromAccountId)
+            .where((acc) => acc.id == transactionTile.fromAccount!.id)
             .first,
         toAccount: accounts
-            .where((element) => element.id == transfer.toAccountId)
+            .where((acc) => acc.id == transactionTile.toAccount!.id)
             .first,
-        date: transfer.date,
-        notes: transfer.notes,
+        date: transactionTile.dateTime,
+        notes: transactionTile.description,
         accountCategories: accCategories,
         accounts: accounts,
         isValid: true,
         trStatus: TransferStatus.success,));
     } else {
       emit(state.copyWith(trStatus: TransferStatus.success,
+          budgetId: this.budgetId,
           accountCategories: accCategories,
           accounts: accounts));
     }
@@ -131,7 +130,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transfer = Transfer(
       id: state.id,
-      budgetId: budgetId,
+      budgetId: state.budgetId!,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),
       fromAccountId: state.fromAccount!.id!,
