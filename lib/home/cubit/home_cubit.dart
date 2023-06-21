@@ -7,6 +7,7 @@ import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
 import 'package:budget_app/shared/models/summary_tile.dart';
+import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
@@ -19,6 +20,7 @@ class HomeCubit extends Cubit<HomeState> {
   final TransactionsRepository _transactionsRepository;
   final AccountsRepository _accountsRepository;
   final CategoriesRepository _categoriesRepository;
+  final SubcategoriesRepository _subcategoriesRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
   final String budgetId;
 
@@ -26,10 +28,12 @@ class HomeCubit extends Cubit<HomeState> {
       {required TransactionsRepository transactionsRepository,
       required AccountsRepository accountsRepository,
       required CategoriesRepository categoriesRepository,
+      required SubcategoriesRepository subcategoriesRepository,
       required this.budgetId})
       : _transactionsRepository = transactionsRepository,
         _accountsRepository = accountsRepository,
         _categoriesRepository = categoriesRepository,
+        _subcategoriesRepository = subcategoriesRepository,
         super(HomeState(selectedDate: DateTime.now())) {
     _transactionsSubscription =
         _transactionsRepository.getTransactions().listen((transactions) {
@@ -43,10 +47,12 @@ class HomeCubit extends Cubit<HomeState> {
     await Future.wait([
       _categoriesRepository.fetchAllCategories(),
       _accountsRepository.fetchAllAccounts(),
+      _subcategoriesRepository.fetchSubcategories(),
     ]);
     _transactionsRepository.fetchTransactions(
         budgetId: budgetId, dateTime: DateTime.now());
-    _transactionsRepository.fetchTransfers(budgetId: budgetId, dateTime: DateTime.now());
+    _transactionsRepository.fetchTransfers(
+        budgetId: budgetId, dateTime: DateTime.now());
   }
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {

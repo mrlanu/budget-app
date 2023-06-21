@@ -1,3 +1,6 @@
+import 'package:budget_app/accounts/models/account.dart';
+import 'package:budget_app/categories/models/category.dart';
+import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transfer/models/models.dart';
@@ -14,11 +17,8 @@ class Transaction {
   final String? description;
   final double? amount;
   final String? categoryId;
-  final String? categoryName;
   final String? subcategoryId;
-  final String? subcategoryName;
   final String? accountId;
-  final String? accountName;
 
   Transaction(
       {this.id,
@@ -28,10 +28,7 @@ class Transaction {
       this.description = '',
       this.amount,
       this.categoryId,
-      this.categoryName,
       this.subcategoryId,
-      this.subcategoryName,
-      this.accountName,
       this.accountId});
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
@@ -39,15 +36,19 @@ class Transaction {
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
-  TransactionTile toTile() {
+  TransactionTile toTile(
+      {required Category category, required Account account, required Subcategory subcategory}) {
     return TransactionTile(
         id: this.id!,
         type: this.type!,
         amount: this.amount!,
-        title: this.subcategoryName!,
-        subtitle: this.accountName!,
+        title: subcategory.name,
+        subtitle: account.name,
         dateTime: this.date!,
-        description: this.description!);
+        description: this.description!,
+        category: category,
+        subcategory: subcategory,
+        fromAccount: account);
   }
 
   @override

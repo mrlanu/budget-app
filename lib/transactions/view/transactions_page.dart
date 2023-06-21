@@ -2,7 +2,7 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/models/transactions_filter.dart';
+import 'package:budget_app/transactions/models/transactions_view_filter.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +12,13 @@ import '../../app/bloc/app_bloc.dart';
 import '../../subcategories/repository/subcategories_repository.dart';
 import '../../transfer/view/transfer_page.dart';
 import '../cubit/transactions_cubit.dart';
-import '../transaction/view/transaction_page.dart';
 
 class TransactionsPage extends StatelessWidget {
   static const routeName = '/transactions';
 
   static Route<void> route(
       {required HomeCubit homeCubit,
-      required TransactionsFilter filter,
-      required DateTime filterDate}) {
+      required TransactionsViewFilter filter}) {
     return MaterialPageRoute(builder: (context) {
       final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
@@ -33,8 +31,7 @@ class TransactionsPage extends StatelessWidget {
                 categoriesRepository: context.read<CategoriesRepositoryImpl>(),
                 subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
                 accountsRepository: context.read<AccountsRepositoryImpl>(),
-                filter: filter,
-                filterDate: filterDate),
+                filter: filter,),
           ),
           BlocProvider.value(value: homeCubit),
         ],
@@ -85,9 +82,9 @@ class TransactionsPage extends StatelessWidget {
                 body: state.status == TransactionsStatus.loading
                     ? Center(child: CircularProgressIndicator())
                     : ListView.builder(
-                        itemCount: state.transactionList.length,
+                        itemCount: state.filteredTiles.length,
                         itemBuilder: (context, index) {
-                          final tr = state.transactionList[index];
+                          final tr = state.filteredTiles[index];
                           return TransactionListTile(
                             transactionTile: tr,
                             onDismissed: (_) {

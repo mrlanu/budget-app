@@ -3,6 +3,7 @@ import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/shared/models/section.dart';
+import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
@@ -27,6 +28,7 @@ class HomePage extends StatelessWidget {
         accountsRepository: context.read<AccountsRepositoryImpl>(),
           categoriesRepository: context.read<CategoriesRepositoryImpl>(),
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+          subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
           budgetId: appBloc.state.budget!.id),
       child: HomeView(),
     );

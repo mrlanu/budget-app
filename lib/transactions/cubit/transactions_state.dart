@@ -5,8 +5,7 @@ enum TransactionsStatus { initial, loading, success, failure }
 class TransactionsState extends Equatable {
   final TransactionsStatus status;
   final List<TransactionTile> transactionList;
-  final TransactionsFilter filter;
-  final DateTime? filterDate;
+  final TransactionsViewFilter filter;
   final String? errorMessage;
   final Transaction? lastDeletedTransaction;
 
@@ -14,17 +13,16 @@ class TransactionsState extends Equatable {
     this.status = TransactionsStatus.initial,
     this.transactionList = const [],
     required this.filter,
-    required this.filterDate,
     this.errorMessage,
     this.lastDeletedTransaction,
   });
 
+  List<TransactionTile> get filteredTiles => filter.applyAll(transactionList);
+
   TransactionsState copyWith({
     TransactionsStatus? status,
     List<TransactionTile>? transactionList,
-    TransactionsFilter? filter,
-    String? filterId,
-    DateTime? filterDate,
+    TransactionsViewFilter? filter,
     String? errorMessage,
     Transaction? Function()? lastDeletedTransaction,
   }) {
@@ -32,7 +30,6 @@ class TransactionsState extends Equatable {
       status: status ?? this.status,
       transactionList: transactionList ?? this.transactionList,
       filter: filter ?? this.filter,
-      filterDate: filterDate ?? this.filterDate,
       errorMessage: errorMessage ?? this.errorMessage,
       lastDeletedTransaction:
       lastDeletedTransaction != null ? lastDeletedTransaction() : this.lastDeletedTransaction,
@@ -44,7 +41,6 @@ class TransactionsState extends Equatable {
         status,
         transactionList,
         filter,
-        filterDate,
         errorMessage,
         lastDeletedTransaction
       ];

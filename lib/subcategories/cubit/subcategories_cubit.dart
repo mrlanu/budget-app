@@ -27,8 +27,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   Future<void> onInit(
       {required String budgetId, required Category category}) async {
-    final subcategories = await _subcategoriesRepository.fetchSubcategories(
-        budgetId: budgetId, categoryId: category.id!);
+    final subcategories = await _subcategoriesRepository.getSubcategories().first;
     emit(state.copyWith(
         status: SubcategoriesStatus.success, subcategories: subcategories));
   }

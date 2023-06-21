@@ -78,7 +78,7 @@ class _AppViewState extends State<AppView> {
             RepositoryProvider(
                 create: (context) => TransactionsRepositoryImpl(user: user, budget: budget!)),
             RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl(user: user)),
+                create: (context) => SubcategoriesRepositoryImpl(user: user, budget: budget!)),
             RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(

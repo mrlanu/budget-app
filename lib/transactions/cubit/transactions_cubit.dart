@@ -5,12 +5,11 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 import '../models/transaction.dart';
-import '../models/transactions_filter.dart';
+import '../models/transactions_view_filter.dart';
 import '../repository/transactions_repository.dart';
 
 part 'transactions_state.dart';
@@ -30,103 +29,52 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required CategoriesRepository categoriesRepository,
     required SubcategoriesRepository subcategoriesRepository,
     required AccountsRepository accountsRepository,
-    required TransactionsFilter filter,
-    required DateTime filterDate,
+    required TransactionsViewFilter filter,
   })  : _transactionsRepository = transactionsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
         _accountsRepository = accountsRepository,
         _budgetId = budgetId,
-        super(TransactionsState(filter: filter, filterDate: filterDate)) {
+        super(TransactionsState(filter: filter)) {
     _transactionsSubscription =
-        _transactionsRepository.getTransactions().listen((transactions) {
-      _onTransactionsChanged(transactions);
+        _transactionsRepository.getTransactions().listen((_) {
+      _onSomethingChanged();
     });
     _transfersSubscription =
-        _transactionsRepository.getTransfers().skip(1).listen((transfers) {
-      _onTransfersChanged(transfers);
+        _transactionsRepository.getTransfers().skip(1).listen((_) {
+      _onSomethingChanged();
     });
   }
 
-  Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
-    emit(state.copyWith(status: TransactionsStatus.loading));
-    var filteredTransactions = <TransactionTile>[];
-    switch (state.filter.filterBy) {
-      case FilterBy.allExpenses:
-        {
-          filteredTransactions = transactions
-              .where(
-                (element) => element.type == TransactionType.EXPENSE,
-              )
-              .map((e) => e.toTile())
-              .toList();
-        }
-        break;
-      case FilterBy.allIncomes:
-        {
-          filteredTransactions = transactions
-              .where(
-                (element) => element.type == TransactionType.INCOME,
-              )
-              .map((e) => e.toTile())
-              .toList();
-        }
-        break;
-      case FilterBy.categoryId:
-        {
-          filteredTransactions = transactions
-              .where((element) => element.categoryId == state.filter.id)
-              .map((e) => e.toTile())
-              .toList();
-        }
-        break;
-      case FilterBy.accountId:
-        {
-          filteredTransactions = await _doSomething(transactions: transactions);
-        }
+  Future<void> _onSomethingChanged() async {
+    var trTiles = <TransactionTile>[];
+
+    final transactions = await _transactionsRepository.getTransactions().first;
+    final transfers = await _transactionsRepository.getTransfers().first;
+    final categories = await _categoriesRepository.getCategories().first;
+    final subcategories = await _subcategoriesRepository.getSubcategories().first;
+    final accounts = await _accountsRepository.getAccounts().first;
+
+    transactions.forEach((element) {
+      final cat = categories.where((c) => element.categoryId == c.id).first;
+      final subcategory = subcategories.where((sc) => element.subcategoryId == sc.id).first;
+      final acc = accounts.where((a) => element.accountId == a.id).first;
+      trTiles.add(element.toTile(account: acc, category: cat, subcategory: subcategory));
+    });
+
+    if(state.filter.type == TransactionsViewFilterTypes.accountId){
+      transfers.forEach((element) {
+        final fromAcc = accounts.where((a) => element.fromAccountId == a.id).first;
+        final toAcc = accounts.where((a) => element.toAccountId == a.id).first;
+        trTiles.add(element.toTile(tabAccId: state.filter.filterId!, fromAccount: fromAcc, toAccount: toAcc));
+      });
     }
+    trTiles.sort(
+          (a, b) => a.dateTime.compareTo(b.dateTime),
+    );
     emit(state.copyWith(
         status: TransactionsStatus.success,
-        transactionList: filteredTransactions));
-  }
-
-  Future<List<TransactionTile>> _doSomething(
-      {List<Transaction>? transactions, List<Transfer>? transfers}) async {
-    var filteredTransactions = <TransactionTile>[];
-    if (transactions != null) {
-      filteredTransactions = transactions
-          .where((element) => element.accountId == state.filter.id)
-          .map((e) => e.toTile())
-          .toList();
-      final transfers = await _transactionsRepository.getTransfers().first;
-      final transferTiles =
-          transfers.map((e) => e.toTile(accountId: state.filter.id!)).toList();
-      filteredTransactions.addAll(transferTiles);
-      filteredTransactions.sort(
-        (a, b) => a.dateTime.compareTo(b.dateTime),
-      );
-    } else {
-      filteredTransactions = transfers!
-          .where((element) => element.fromAccountId == state.filter.id || element.toAccountId == state.filter.id)
-          .map((e) => e.toTile(accountId: state.filter.id!, ))
-          .toList();
-      final transactions = await _transactionsRepository.getTransactions().first;
-      final filteredTrans = transactions.where((element) => element.accountId == state.filter.id).toList();
-      final transactionTiles =
-      filteredTrans.map((e) => e.toTile()).toList();
-      filteredTransactions.addAll(transactionTiles);
-      filteredTransactions.sort(
-            (a, b) => a.dateTime.compareTo(b.dateTime),
-      );
-    }
-    return filteredTransactions;
-  }
-
-  Future<void> _onTransfersChanged(List<Transfer> transfers) async {
-    final filteredTransactions = await _doSomething(transfers: transfers);
-    emit(state.copyWith(
-        status: TransactionsStatus.success,
-        transactionList: filteredTransactions));
+        transactionList: trTiles));
   }
 
   Future<void> deleteTransaction({required String transactionId}) async {

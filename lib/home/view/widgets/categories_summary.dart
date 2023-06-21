@@ -1,8 +1,7 @@
 import 'package:budget_app/accounts/view/accounts_page.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/shared/models/summary_tile.dart';
-import 'package:budget_app/transactions/models/transactions_filter.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/transactions/models/transactions_view_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -77,14 +76,8 @@ class CategoriesSummary extends StatelessWidget {
                                       homeCubit:
                                           BlocProvider.of<HomeCubit>(context),
                                       filter: index == 0
-                                          ? TransactionsFilter(
-                                              filterBy: state.tab.index == 0
-                                                  ? FilterBy.allExpenses
-                                                  : FilterBy.allIncomes)
-                                          : TransactionsFilter(
-                                              filterBy: FilterBy.categoryId,
-                                              id: summaryItem.id),
-                                      filterDate: dateTime ?? DateTime.now()))),
+                                          ? TransactionsViewFilter(type: state.tab.index == 0 ? TransactionsViewFilterTypes.allExpenses : TransactionsViewFilterTypes.allIncomes)
+                                          : TransactionsViewFilter(type: TransactionsViewFilterTypes.categoryId, filterId: summaryItem.id),))),
                     );
                   }),
             ),
