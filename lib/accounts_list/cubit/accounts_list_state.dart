@@ -11,7 +11,7 @@ class AccountsListState extends Equatable {
   const AccountsListState({
     this.status = AccountsListStatus.loading,
     this.accounts = const [],
-    required this.accountCategories,
+    this.accountCategories = const [],
     this.errorMessage,
   });
 

@@ -91,8 +91,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         (cat) => cat.transactionType == event.transactionType,
       ).toList();
     final accounts = await _accountsRepository.getAccounts().first;
-    final accCategories = await _categoriesRepository.getCategories().first
-      ..where((cat) => cat.transactionType == TransactionType.ACCOUNT);
+    final accCategories = allCategories.where((cat) => cat.transactionType == TransactionType.ACCOUNT).toList();
     var subcategories = <Subcategory>[];
     var category;
     var subcategory;
@@ -147,7 +146,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _onCategoriesChanged(TransactionCategoriesChanged event,
       Emitter<TransactionState> emit) async {
     final categories = event.categories.where((cat) => cat.transactionType == state.transactionType).toList();
-    emit(state.copyWith(category: () => null, categories: () => categories));
+    final accCategories = event.categories.where((cat) => cat.transactionType == TransactionType.ACCOUNT).toList();
+    emit(state.copyWith(category: () => null, categories: () => categories, accountCategories: () => accCategories,));
   }
 
   void _onCategoryChanged(

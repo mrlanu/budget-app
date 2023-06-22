@@ -70,8 +70,15 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
         headers: await _getHeaders(), body: json.encode(transaction.toJson()));
     final newTransaction = Transaction.fromJson(jsonDecode(transactionResponse.body));
     final transactions = [..._transactionsStreamController.value];
-    transactions.add(newTransaction);
-    _transactionsStreamController.add(transactions);
+    final trIndex = transactions.indexWhere((t) => t.id == newTransaction.id);
+    if (trIndex == -1) {
+      transactions.add(newTransaction);
+      _transactionsStreamController.add(transactions);
+    } else {
+      transactions.removeAt(trIndex);
+      transactions.insert(trIndex, transaction);
+      _transactionsStreamController.add(transactions);
+    }
   }
 
   @override

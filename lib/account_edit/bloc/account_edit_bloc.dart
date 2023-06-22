@@ -86,7 +86,10 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   void _onCategoriesChanged(
       AccountCategoriesChanged event, Emitter<AccountEditState> emit) {
-    emit(state.copyWith(categories: event.categories));
+    final filteredCategories = event.categories
+        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
+        .toList();
+    emit(state.copyWith(categories: filteredCategories));
   }
 
   void _onCategoryChanged(

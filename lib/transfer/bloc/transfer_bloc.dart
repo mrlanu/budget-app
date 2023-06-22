@@ -26,6 +26,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final CategoriesRepository _categoriesRepository;
   late final AccountsRepository _accountsRepository;
   late final StreamSubscription<List<Account>> _accountsSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   TransferBloc({required this.budgetId,
     required TransactionsRepository transactionsRepository,
@@ -40,6 +41,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         _accountsRepository.getAccounts().skip(1).listen((accounts) {
           add(TransferAccountsChanged(accounts: accounts));
         });
+    _categoriesSubscription =
+        _categoriesRepository.getCategories().skip(1).listen((categories) {
+          add(TransferCategoriesChanged(categories: categories));
+        });
   }
 
   Future<void> _onEvent(TransferEvent event,
@@ -52,6 +57,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     final TransferFromAccountChanged e => _onFromAccountChanged(e, emit),
     final TransferToAccountChanged e => _onToAccountChanged(e, emit),
     final TransferNotesChanged e => _onNotesChanged(e, emit),
+      final TransferCategoriesChanged e => _onCategoriesChanged(e, emit),
     final TransferFormSubmitted e => _onFormSubmitted(e, emit),
     };
     }
@@ -76,16 +82,20 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             .first,
         date: transactionTile.dateTime,
         notes: transactionTile.description,
-        accountCategories: accCategories,
+        accountCategories: filteredCategories,
         accounts: accounts,
         isValid: true,
         trStatus: TransferStatus.success,));
     } else {
       emit(state.copyWith(trStatus: TransferStatus.success,
           budgetId: this.budgetId,
-          accountCategories: accCategories,
+          accountCategories: filteredCategories,
           accounts: accounts));
     }
+  }
+
+  void _onCategoriesChanged(TransferCategoriesChanged event, Emitter<TransferState> emit){
+    emit(state.copyWith(accountCategories: event.categories));
   }
 
   void _onAmountChanged(TransferAmountChanged event,
@@ -152,6 +162,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   @override
   Future<void> close() {
     _accountsSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

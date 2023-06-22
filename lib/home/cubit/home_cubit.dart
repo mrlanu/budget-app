@@ -11,6 +11,7 @@ import 'package:budget_app/subcategories/repository/subcategories_repository.dar
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/transfer/transfer.dart';
 import 'package:equatable/equatable.dart';
 import "package:collection/collection.dart";
 
@@ -22,7 +23,9 @@ class HomeCubit extends Cubit<HomeState> {
   final CategoriesRepository _categoriesRepository;
   final SubcategoriesRepository _subcategoriesRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
+  late final StreamSubscription<List<Transfer>> _transfersSubscription;
   late final StreamSubscription<List<Account>> _accountsSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
   final String budgetId;
 
   HomeCubit(
@@ -40,9 +43,17 @@ class HomeCubit extends Cubit<HomeState> {
         _transactionsRepository.getTransactions().listen((transactions) {
       _onTransactionsChanged(transactions);
     });
+    _transfersSubscription =
+        _transactionsRepository.getTransfers().listen((transfers) {
+          _onTransfersChanged(transfers);
+        });
     _accountsSubscription =
         _accountsRepository.getAccounts().skip(1).listen((accounts) {
           _onAccountsChanged(accounts);
+        });
+    _categoriesSubscription =
+        _categoriesRepository.getCategories().skip(1).listen((categories) {
+          _onCategoriesChanged(categories);
         });
     _init();
   }
@@ -82,10 +93,16 @@ class HomeCubit extends Cubit<HomeState> {
     ));
   }
 
+  Future<void> _onTransfersChanged(List<Transfer> transfers) async {
+    emit(state.copyWith(status: HomeStatus.loading));
+    // this call will trigger _onAccountsChanged which will redraw UI
+    await _accountsRepository.fetchAllAccounts();
+  }
+
   Future<void> _onAccountsChanged(List<Account> accounts) async {
     var summaries;
     if(state.tab == HomeTab.accounts){
-     summaries = _getSummariesByAccounts(accounts: accounts, categories: state.categories);
+     summaries = await _getSummariesByAccounts(accounts: accounts);
     }
     final sectionsSum =
     _recalculateSections(transactions: state.transactions, accounts: accounts);
@@ -94,6 +111,13 @@ class HomeCubit extends Cubit<HomeState> {
       sectionsSum: sectionsSum,
       summaryList: summaries,
       status: HomeStatus.success,
+    ));
+  }
+
+  Future<void> _onCategoriesChanged(List<Category> categories) async {
+    var summaries = await _getSummariesByAccounts(accounts: state.accounts);
+    emit(state.copyWith(
+      summaryList: summaries,
     ));
   }
 
@@ -151,8 +175,9 @@ class HomeCubit extends Cubit<HomeState> {
     return summaries;
   }
 
-  List<SummaryTile> _getSummariesByAccounts(
-      {required List<Account> accounts, required List<Category> categories}) {
+  Future<List<SummaryTile>> _getSummariesByAccounts(
+      {required List<Account> accounts}) async {
+    final categories = await _categoriesRepository.getCategories().first;
     final groupedAccByCat = groupBy(accounts, (Account acc) => acc.categoryId);
 
     List<SummaryTile> summaries = [];
@@ -177,8 +202,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(
         status: HomeStatus.loading, tab: HomeTab.values[tabIndex]));
     final summaries = tabIndex == HomeTab.accounts.index
-        ? _getSummariesByAccounts(
-            accounts: state.accounts, categories: state.categories)
+        ? await _getSummariesByAccounts(accounts: state.accounts)
         : _getSummariesByCategory(
             transactions: state.transactions, categories: state.categories);
     emit(state.copyWith(status: HomeStatus.success, summaryList: summaries));
@@ -194,6 +218,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> close() {
     _transactionsSubscription.cancel();
     _accountsSubscription.cancel();
+    _categoriesSubscription.cancel();
+    _transfersSubscription.cancel();
     return super.close();
   }
 }

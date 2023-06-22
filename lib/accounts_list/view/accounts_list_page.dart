@@ -25,7 +25,7 @@ class AccountsListPage extends StatelessWidget {
               BlocProvider(
                 create: (context) => AccountsListCubit(
                   accountsRepository: context.read<AccountsRepositoryImpl>(),
-                  accountCategories: accountCategories,
+                  categoriesRepository: context.read<CategoriesRepositoryImpl>(),
                 )..onInit(budgetId: context.read<AppBloc>().state.budget!.id),
               ),
               BlocProvider.value(value: homeCubit),

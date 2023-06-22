@@ -57,6 +57,13 @@ final class TransferNotesChanged extends TransferEvent {
   List<Object?> get props => [notes];
 }
 
+final class TransferCategoriesChanged extends TransferEvent {
+  final List<Category> categories;
+  const TransferCategoriesChanged({required this.categories});
+  @override
+  List<Object?> get props => [categories];
+}
+
 final class TransferFormSubmitted extends TransferEvent {
   final BuildContext? context;
   const TransferFormSubmitted({this.context});
