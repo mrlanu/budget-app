@@ -41,7 +41,9 @@ class TransactionListTile extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                    color: (transactionTile.type == TransactionType.EXPENSE)
+                    color: (transactionTile.type == TransactionType.EXPENSE ||
+                        transactionTile.title ==
+                            'Transfer out')
                         ? Theme.of(context).colorScheme.error
                         : Theme.of(context).colorScheme.tertiary,
                     width: 20.w),

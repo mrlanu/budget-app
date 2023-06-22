@@ -6,7 +6,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../shared/models/budget.dart';
 import '../models/category.dart';
-import '../../transactions/models/transaction_type.dart';
 
 abstract class CategoriesRepository {
   final User user;
@@ -15,11 +14,8 @@ abstract class CategoriesRepository {
   const CategoriesRepository({required this.user, required this.budget});
 
   Stream<List<Category>> getCategories();
-
   Future<void> fetchAllCategories();
-
   Future<void> saveCategory({required Category category});
-
   Future<void> deleteCategory({required Category category});
 }
 

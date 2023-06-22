@@ -65,10 +65,8 @@ class HomeCubit extends Cubit<HomeState> {
       _accountsRepository.fetchAllAccounts(),
       _subcategoriesRepository.fetchSubcategories(),
     ]);
-    _transactionsRepository.fetchTransactions(
-        budgetId: budgetId, dateTime: DateTime.now());
-    _transactionsRepository.fetchTransfers(
-        budgetId: budgetId, dateTime: DateTime.now());
+    _transactionsRepository.fetchTransactions(dateTime: DateTime.now());
+    _transactionsRepository.fetchTransfers(dateTime: DateTime.now());
   }
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
@@ -210,8 +208,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> changeDate(DateTime dateTime) async {
     emit(state.copyWith(status: HomeStatus.loading));
-    _transactionsRepository.fetchTransactions(
-        budgetId: budgetId, dateTime: dateTime);
+    _transactionsRepository.fetchTransactions(dateTime: dateTime);
   }
 
   @override

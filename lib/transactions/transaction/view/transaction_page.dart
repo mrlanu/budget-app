@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../home/cubit/home_cubit.dart';
-import '../../models/transaction.dart';
 import '../../models/transaction_type.dart';
 
 class TransactionPage extends StatelessWidget {

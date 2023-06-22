@@ -3,7 +3,6 @@ import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transfer/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction.g.dart';

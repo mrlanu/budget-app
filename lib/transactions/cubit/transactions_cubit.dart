@@ -19,7 +19,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   final CategoriesRepository _categoriesRepository;
   final SubcategoriesRepository _subcategoriesRepository;
   final AccountsRepository _accountsRepository;
-  final String _budgetId;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
 
@@ -34,7 +33,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
         _accountsRepository = accountsRepository,
-        _budgetId = budgetId,
         super(TransactionsState(filter: filter)) {
     _transactionsSubscription =
         _transactionsRepository.getTransactions().listen((_) {
@@ -95,7 +93,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       await _transactionsRepository.createTransfer(transfer!);
     }else {
       emit(state.copyWith(lastDeletedTransaction: () => null));
-      await _transactionsRepository.createTransaction(transaction!);
+      await _transactionsRepository.createTransaction(transaction);
     }
   }
 

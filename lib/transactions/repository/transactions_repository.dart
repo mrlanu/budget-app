@@ -16,30 +16,17 @@ abstract class TransactionsRepository {
         _budget = budget;
 
   Stream<List<Transaction>> getTransactions();
-
   Stream<List<Transfer>> getTransfers();
   Future<void> createTransaction(Transaction transaction);
-
   Future<void> createTransfer(Transfer transfer);
-
   Future<void> editTransfer(Transfer transfer);
-
   Future<void> fetchTransactions({
-    required String budgetId,
     required DateTime dateTime,
   });
-
   Future<void> fetchTransfers({
-    required String budgetId,
     required DateTime dateTime,
   });
-
-  Future<Transaction> fetchTransactionById(String transactionId);
-
-  Future<Transfer> fetchTransferById(String transferId);
-
   Future<Transaction> deleteTransaction(String transactionId);
-
   Future<Transfer> deleteTransfer(String transferId);
 }
 
@@ -111,11 +98,10 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> fetchTransactions({
-    required String budgetId,
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transactions',
-        {'budgetId': budgetId, 'date': dateTime.toString()});
+        {'budgetId': _budget.id, 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await _getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -126,39 +112,16 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> fetchTransfers({
-    required String budgetId,
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transfers',
-        {'budgetId': budgetId, 'date': dateTime.toString()});
+        {'budgetId': _budget.id, 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await _getHeaders());
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
     ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
     _transfersStreamController.add(result);
-  }
-
-  @override
-  Future<Transaction> fetchTransactionById(String transactionId) async {
-    final url = Uri.http(baseURL, '/api/transactions/$transactionId');
-
-    final response = await http.get(url, headers: await _getHeaders());
-
-    final result = Transaction.fromJson(json.decode(response.body));
-
-    return result;
-  }
-
-  @override
-  Future<Transfer> fetchTransferById(String transferId) async {
-    final url = Uri.http(baseURL, '/api/transfers/$transferId');
-
-    final response = await http.get(url, headers: await _getHeaders());
-
-    final result = Transfer.fromJson(json.decode(response.body));
-
-    return result;
   }
 
   @override

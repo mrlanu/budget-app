@@ -15,12 +15,9 @@ abstract class SubcategoriesRepository {
   const SubcategoriesRepository({required this.user, required this.budget});
 
   Stream<List<Subcategory>> getSubcategories();
-
   Future<void> saveSubcategory(
       {required String budgetId, required Subcategory subcategory});
-
   Future<void> fetchSubcategories();
-
   Future<void> delete({required Subcategory subcategory});
 }
 

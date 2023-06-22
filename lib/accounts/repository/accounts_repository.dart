@@ -12,14 +12,10 @@ abstract class AccountsRepository {
   final Budget budget;
 
   AccountsRepository({required this.user, required this.budget});
-
-  Future<void> deleteAccount({required Account account});
-
   Stream<List<Account>> getAccounts();
-
-  Future<void> saveAccount({required Account account});
-
   Future<void> fetchAllAccounts();
+  Future<void> saveAccount({required Account account});
+  Future<void> deleteAccount({required Account account});
 }
 
 class AccountFailure implements Exception {

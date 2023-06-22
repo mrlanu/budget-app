@@ -1,4 +1,3 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/amount_input_field.dart';
