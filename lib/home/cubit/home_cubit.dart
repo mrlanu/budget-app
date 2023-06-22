@@ -22,6 +22,7 @@ class HomeCubit extends Cubit<HomeState> {
   final CategoriesRepository _categoriesRepository;
   final SubcategoriesRepository _subcategoriesRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
+  late final StreamSubscription<List<Account>> _accountsSubscription;
   final String budgetId;
 
   HomeCubit(
@@ -39,6 +40,10 @@ class HomeCubit extends Cubit<HomeState> {
         _transactionsRepository.getTransactions().listen((transactions) {
       _onTransactionsChanged(transactions);
     });
+    _accountsSubscription =
+        _accountsRepository.getAccounts().skip(1).listen((accounts) {
+          _onAccountsChanged(accounts);
+        });
     _init();
   }
 
@@ -71,6 +76,17 @@ class HomeCubit extends Cubit<HomeState> {
       transactions: transactions,
       categories: categories,
       accounts: accounts,
+      sectionsSum: sectionsSum,
+      summaryList: summaries,
+      status: HomeStatus.success,
+    ));
+  }
+
+  Future<void> _onAccountsChanged(List<Account> accounts) async {
+    final summaries = _getSummariesByAccounts(accounts: accounts, categories: state.categories);
+    final sectionsSum =
+    _recalculateSections(transactions: state.transactions, accounts: accounts);
+    emit(state.copyWith(
       sectionsSum: sectionsSum,
       summaryList: summaries,
       status: HomeStatus.success,
@@ -173,6 +189,7 @@ class HomeCubit extends Cubit<HomeState> {
   @override
   Future<void> close() {
     _transactionsSubscription.cancel();
+    _accountsSubscription.cancel();
     return super.close();
   }
 }

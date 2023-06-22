@@ -24,7 +24,7 @@ class AccountsListCubit extends Cubit<AccountsListState> {
   }
 
   Future<void> onInit({required String budgetId}) async {
-    final accounts = await _accountsRepository.fetchAccounts(budgetId: budgetId);
+    final accounts = await _accountsRepository.getAccounts().first;
     emit(state.copyWith(
         status: AccountsListStatus.success, accounts: accounts));
   }

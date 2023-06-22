@@ -19,9 +19,6 @@ abstract class AccountsRepository {
 
   Future<void> saveAccount({required Account account});
 
-  Future<List<Account>> fetchAccounts(
-      {required String budgetId, String? categoryId});
-
   Future<void> fetchAllAccounts();
 }
 
@@ -45,35 +42,11 @@ class AccountsRepositoryImpl extends AccountsRepository {
       _accountsStreamController.asBroadcastStream();
 
   @override
-  Future<List<Account>> fetchAccounts(
-      {required String budgetId, String? categoryId}) async {
-    var response;
-
-    try {
-      final url = Uri.http(baseURL, '/api/accounts',
-          {'budgetId': budgetId, 'categoryId': categoryId});
-
-      response = await http.get(url, headers: await _getHeaders());
-
-      final accounts = List<Map<dynamic, dynamic>>.from(
-        json.decode(response.body) as List,
-      ).map((jsonMap) {
-        final m = Account.fromJson(Map<String, dynamic>.from(jsonMap));
-        return m;
-      }).toList();
-
-      return accounts;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  @override
   Future<void> fetchAllAccounts() async {
     var response;
 
     final url = Uri.http(
-        baseURL, '/api/accounts', {'budgetId': budget.id, 'categoryId': ''});
+        baseURL, '/api/accounts', {'budgetId': budget.id});
 
     response = await http.get(url, headers: await _getHeaders());
 
@@ -95,8 +68,8 @@ class AccountsRepositoryImpl extends AccountsRepository {
         headers: await _getHeaders(), body: json.encode(account.toJson()));
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
-
-    final accounts = await fetchAccounts(budgetId: newAcc.budgetId);
+    final accounts = [..._accountsStreamController.value];
+    accounts.add(newAcc);
     _accountsStreamController.add(accounts);
   }
 
@@ -108,8 +81,14 @@ class AccountsRepositoryImpl extends AccountsRepository {
     if (resp.statusCode != 200) {
       throw AccountFailure(jsonDecode(resp.body)['message']);
     }
-    final accounts = await fetchAccounts(budgetId: account.budgetId);
-    _accountsStreamController.add(accounts);
+    final accounts = [..._accountsStreamController.value];
+    final accIndex = accounts.indexWhere((acc) => acc.id == account.id);
+    if (accIndex == -1) {
+      //throw TodoNotFoundException();
+    } else {
+      accounts.removeAt(accIndex);
+      _accountsStreamController.add(accounts);
+    }
   }
 
   Future<Map<String, String>> _getHeaders() async {
