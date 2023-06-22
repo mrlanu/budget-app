@@ -16,9 +16,6 @@ abstract class CategoriesRepository {
 
   Stream<List<Category>> getCategories();
 
-  Future<List<Category>> fetchCategories(
-      {required String budgetId, required TransactionType transactionType});
-
   Future<void> fetchAllCategories();
 
   Future<void> saveCategory({required Category category});
@@ -48,24 +45,6 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
       _categoriesStreamController.asBroadcastStream();
 
   @override
-  Future<List<Category>> fetchCategories(
-      {required String budgetId,
-      required TransactionType transactionType}) async {
-    final url = Uri.http(baseURL, '/api/categories', {'budgetId': budgetId});
-
-    final response = await http.get(url, headers: await _getHeaders());
-
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    )
-        .map((jsonMap) => Category.fromJson(jsonMap))
-        .where((cat) => cat.transactionType == transactionType)
-        .toList();
-
-    return result;
-  }
-
-  @override
   Future<void> fetchAllCategories() async {
     final url = Uri.http(baseURL, '/api/categories', {'budgetId': budget.id});
 
@@ -80,10 +59,12 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
   @override
   Future<void> saveCategory({required Category category}) async {
     final url = Uri.http(baseURL, '/api/categories');
-    await http.post(url,
+    final catResponse = await http.post(url,
         headers: await _getHeaders(), body: json.encode(category.toJson()));
-
-    fetchAllCategories();
+    final newCategory = Category.fromJson(jsonDecode(catResponse.body));
+    final categories = [..._categoriesStreamController.value];
+    categories.add(newCategory);
+    _categoriesStreamController.add(categories);
   }
 
   @override
@@ -95,10 +76,15 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
     if (resp.statusCode != 200) {
       throw CategoryFailure(jsonDecode(resp.body)['message']);
     }
+    final categories = [..._categoriesStreamController.value];
 
-    final categories = await fetchCategories(
-        budgetId: category.budgetId, transactionType: category.transactionType);
-    _categoriesStreamController.add(categories);
+    final catIndex = categories.indexWhere((c) => c.id == category.id);
+    if (catIndex == -1) {
+      //throw TodoNotFoundException();
+    } else {
+      categories.removeAt(catIndex);
+      _categoriesStreamController.add(categories);
+    }
   }
 
   Future<Map<String, String>> _getHeaders() async {

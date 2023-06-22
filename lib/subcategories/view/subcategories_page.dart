@@ -131,6 +131,7 @@ class SubcategoriesView extends StatelessWidget {
                     ? 'Add subcategory'
                     : 'Edit subcategory'),
                 content: TextFormField(
+                  autofocus: true,
                   initialValue: state.editSubcategory?.name,
                   onChanged: (name) =>
                       context.read<SubcategoriesCubit>().onNameChanged(name),

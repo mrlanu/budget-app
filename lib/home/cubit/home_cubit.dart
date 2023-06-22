@@ -83,10 +83,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _onAccountsChanged(List<Account> accounts) async {
-    final summaries = _getSummariesByAccounts(accounts: accounts, categories: state.categories);
+    var summaries;
+    if(state.tab == HomeTab.accounts){
+     summaries = _getSummariesByAccounts(accounts: accounts, categories: state.categories);
+    }
     final sectionsSum =
     _recalculateSections(transactions: state.transactions, accounts: accounts);
     emit(state.copyWith(
+      accounts: accounts,
       sectionsSum: sectionsSum,
       summaryList: summaries,
       status: HomeStatus.success,

@@ -27,13 +27,21 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   Future<void> onInit(
       {required String budgetId, required Category category}) async {
-    final subcategories = await _subcategoriesRepository.getSubcategories().first;
+    final subcategories =
+        await _subcategoriesRepository.getSubcategories().first;
+    final filteredSubcategories =
+        subcategories.where((sC) => sC.categoryId == category.id).toList();
     emit(state.copyWith(
-        status: SubcategoriesStatus.success, subcategories: subcategories));
+        status: SubcategoriesStatus.success,
+        category: category,
+        subcategories: filteredSubcategories));
   }
 
   void _onSubcategoriesChanged(List<Subcategory> subcategories) {
-    emit(state.copyWith(subcategories: subcategories));
+    final filteredSubcategories = subcategories
+        .where((sC) => sC.categoryId == state.category!.id)
+        .toList();
+    emit(state.copyWith(subcategories: filteredSubcategories));
   }
 
   void onNameChanged(String name) {

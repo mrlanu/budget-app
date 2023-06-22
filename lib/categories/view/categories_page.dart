@@ -129,6 +129,7 @@ class CategoriesView extends StatelessWidget {
                     ? 'Add category'
                     : 'Edit category'),
                 content: TextFormField(
+                  autofocus: true,
                   initialValue: state.editCategory?.name,
                   onChanged: (name) =>
                       context.read<CategoriesCubit>().onNameChanged(name),
