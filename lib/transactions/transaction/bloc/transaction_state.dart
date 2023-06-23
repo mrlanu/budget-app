@@ -3,96 +3,76 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
-  final bool isEdit;
-  final TransactionStatus trStatus;
-  final Transaction? transaction;
+  final String? id;
+  final String? budgetId;
   final TransactionType transactionType;
   final Amount amount;
   final DateTime? date;
+  final Category? category;
+  final Subcategory? subcategory;
+  final Account? account;
+  final String? description;
+
   final List<Category> accountCategories;
   final List<Category> categories;
-  final Category? category;
   final List<Subcategory> subcategories;
-  final Subcategory? subcategory;
   final List<Account> accounts;
-  final Account? account;
-  final String description;
+
+  final TransactionStatus trStatus;
   final FormzSubmissionStatus status;
   final bool isValid;
   final String? errorMessage;
 
   TransactionState(
-      {this.transactionType = TransactionType.EXPENSE,
-      this.isEdit = false,
-      this.trStatus = TransactionStatus.loading,
-      this.transaction,
+      {this.id,
+      this.budgetId,
+      this.transactionType = TransactionType.EXPENSE,
       this.amount = const Amount.pure(),
       this.date,
-      this.accountCategories = const <Category>[],
-      this.categories = const <Category>[],
       this.category,
-      this.subcategories = const <Subcategory>[],
       this.subcategory,
-      this.accounts = const <Account>[],
       this.account,
       this.description = '',
+      this.accountCategories = const <Category>[],
+      this.categories = const <Category>[],
+      this.subcategories = const <Subcategory>[],
+      this.accounts = const <Account>[],
+      this.trStatus = TransactionStatus.loading,
       this.status = FormzSubmissionStatus.initial,
       this.isValid = false,
       this.errorMessage});
 
-  TransactionState resetSubcategories() {
-    return TransactionState(
-        transactionType: this.transactionType,
-        isEdit: this.isEdit,
-        trStatus: this.trStatus,
-        transaction: this.transaction,
-        date: this.date,
-        accountCategories: this.accountCategories,
-        categories: this.categories,
-        category: this.category,
-        subcategories: <Subcategory>[],
-        subcategory: null,
-        amount: this.amount,
-        accounts: this.accounts,
-        account: this.account,
-        description: this.description,
-        isValid: this.isValid,
-        status: this.status);
-  }
-
   TransactionState copyWith({
-    bool? isEdit,
-    TransactionStatus? trStatus,
-    Transaction? transaction,
     Amount? amount,
     DateTime? date,
-    List<Category>? accountCategories,
-    List<Category>? categories,
-    Category? category,
-    List<Subcategory>? subcategories,
-    Subcategory? subcategory,
-    List<Account>? accounts,
+    Category? Function()? category,
+    Subcategory? Function()? subcategory,
     Account? account,
     String? description,
+    List<Category> Function()? accountCategories,
+    List<Category> Function()? categories,
+    List<Subcategory> Function()? subcategories,
+    List<Account> Function()? accounts,
+    TransactionStatus? trStatus,
     FormzSubmissionStatus? status,
     bool? isValid,
     String? errorMessage,
   }) {
     return TransactionState(
-      transactionType: transactionType,
-      isEdit: isEdit ?? this.isEdit,
-      trStatus: trStatus ?? this.trStatus,
-      transaction: transaction ?? this.transaction,
+      id: this.id,
+      budgetId: this.budgetId,
+      transactionType: this.transactionType,
       amount: amount ?? this.amount,
       date: date ?? this.date,
-      accountCategories: accountCategories ?? this.accountCategories,
-      categories: categories ?? this.categories,
-      category: category ?? this.category,
-      subcategories: subcategories ?? this.subcategories,
-      subcategory: subcategory ?? this.subcategory,
-      accounts: accounts ?? this.accounts,
+      category: category != null ? category() : this.category,
+      subcategory: subcategory != null ? subcategory() : this.subcategory,
       account: account ?? this.account,
       description: description ?? this.description,
+      accountCategories: accountCategories != null ? accountCategories() : this.accountCategories,
+      categories: categories != null ? categories() : this.categories,
+      subcategories: subcategories != null ? subcategories() : this.subcategories,
+      accounts: accounts != null ? accounts() : this.accounts,
+      trStatus: trStatus ?? this.trStatus,
       status: status ?? this.status,
       isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -101,9 +81,7 @@ class TransactionState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isEdit,
         trStatus,
-        transaction,
         amount,
         date,
         accountCategories,

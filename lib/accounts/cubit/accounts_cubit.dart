@@ -15,6 +15,7 @@ class AccountsCubit extends Cubit<AccountsState> {
   final AccountsRepository _accountsRepository;
   final TransactionsRepository _transactionsRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
+  late final StreamSubscription<List<Account>> _accountsSubscription;
 
   AccountsCubit(
       {required String budgetId, required String categoryId, required AccountsRepository accountsRepository,
@@ -28,14 +29,22 @@ class AccountsCubit extends Cubit<AccountsState> {
         .listen((transactions) {
       fetchAllAccounts();
     });
+    _accountsSubscription = _accountsRepository
+        .getAccounts()
+        .skip(1)
+        .listen((accounts) {
+      fetchAllAccounts();
+    });
   }
 
   Future<void> fetchAllAccounts() async {
+    emit(
+        state.copyWith(status: DataStatus.loading));
     try {
-      final accountList = await _accountsRepository.fetchAccounts(
-          budgetId: state.budgetId, categoryId: state.categoryId);
+      final accountList = await _accountsRepository.getAccounts().first;
+      final filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
       emit(
-          state.copyWith(status: DataStatus.success, accountList: accountList));
+          state.copyWith(status: DataStatus.success, accountList: filteredAccounts));
     } catch (e) {
       emit(
           state.copyWith(status: DataStatus.error, errorMessage: e.toString()));
@@ -45,6 +54,7 @@ class AccountsCubit extends Cubit<AccountsState> {
   @override
   Future<void> close() {
     _transactionsSubscription.cancel();
+    _accountsSubscription.cancel();
     return super.close();
   }
 }

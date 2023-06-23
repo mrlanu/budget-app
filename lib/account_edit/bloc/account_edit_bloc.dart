@@ -53,24 +53,27 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
-    final categories = await _categoriesRepository.fetchCategories(
-        budgetId: budgetId, transactionType: TransactionType.ACCOUNT);
+    final categories = await _categoriesRepository.getCategories().first;
+    final filteredCategories = categories
+        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
+        .toList();
     if (event.account != null) {
       final account = event.account;
-      final category = categories
+      final category = filteredCategories
           .where((element) => element.id == account!.categoryId)
           .first;
       emit(state.copyWith(
           id: account!.id,
           category: category,
-          categories: categories,
+          categories: filteredCategories,
           name: account.name,
           balance: Amount.dirty(account.balance.toString()),
           isIncludeInTotals: account.includeInTotal,
           accStatus: AccountEditStatus.success,
           isValid: true));
     } else {
-      emit(state.copyWith(categories: categories, accStatus: AccountEditStatus.success));
+      emit(state.copyWith(
+          categories: filteredCategories, accStatus: AccountEditStatus.success));
     }
   }
 
@@ -83,7 +86,10 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   void _onCategoriesChanged(
       AccountCategoriesChanged event, Emitter<AccountEditState> emit) {
-    emit(state.copyWith(categories: event.categories));
+    final filteredCategories = event.categories
+        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
+        .toList();
+    emit(state.copyWith(categories: filteredCategories));
   }
 
   void _onCategoryChanged(

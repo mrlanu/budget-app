@@ -4,21 +4,18 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../shared/models/budget.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
   final User user;
+  final Budget budget;
 
-  AccountsRepository({required this.user});
-
-  Future<void> deleteAccount({required Account account});
-
+  AccountsRepository({required this.user, required this.budget});
   Stream<List<Account>> getAccounts();
-
+  Future<void> fetchAllAccounts();
   Future<void> saveAccount({required Account account});
-
-  Future<List<Account>> fetchAccounts(
-      {required String budgetId, String? categoryId});
+  Future<void> deleteAccount({required Account account});
 }
 
 class AccountFailure implements Exception {
@@ -34,34 +31,29 @@ class AccountsRepositoryImpl extends AccountsRepository {
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
-  AccountsRepositoryImpl({required super.user});
+  AccountsRepositoryImpl({required super.user, required super.budget});
 
   @override
   Stream<List<Account>> getAccounts() =>
       _accountsStreamController.asBroadcastStream();
 
   @override
-  Future<List<Account>> fetchAccounts(
-      {required String budgetId, String? categoryId}) async {
+  Future<void> fetchAllAccounts() async {
     var response;
 
-    try {
-      final url = Uri.http(baseURL, '/api/accounts',
-          {'budgetId': budgetId, 'categoryId': categoryId});
+    final url = Uri.http(
+        baseURL, '/api/accounts', {'budgetId': budget.id});
 
-      response = await http.get(url, headers: await _getHeaders());
+    response = await http.get(url, headers: await _getHeaders());
 
-      final accounts = List<Map<dynamic, dynamic>>.from(
-        json.decode(response.body) as List,
-      ).map((jsonMap) {
-        final m = Account.fromJson(Map<String, dynamic>.from(jsonMap));
-        return m;
-      }).toList();
+    final accounts = List<Map<dynamic, dynamic>>.from(
+      json.decode(response.body) as List,
+    ).map((jsonMap) {
+      final m = Account.fromJson(Map<String, dynamic>.from(jsonMap));
+      return m;
+    }).toList();
 
-      return accounts;
-    } catch (e) {
-      return [];
-    }
+    _accountsStreamController.add(accounts);
   }
 
   @override
@@ -72,8 +64,8 @@ class AccountsRepositoryImpl extends AccountsRepository {
         headers: await _getHeaders(), body: json.encode(account.toJson()));
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
-
-    final accounts = await fetchAccounts(budgetId: newAcc.budgetId);
+    final accounts = [..._accountsStreamController.value];
+    accounts.add(newAcc);
     _accountsStreamController.add(accounts);
   }
 
@@ -82,11 +74,17 @@ class AccountsRepositoryImpl extends AccountsRepository {
     final url = Uri.http(baseURL, '/api/accounts/${account.id}');
 
     final resp = await http.delete(url, headers: await _getHeaders());
-    if(resp.statusCode !=200){
+    if (resp.statusCode != 200) {
       throw AccountFailure(jsonDecode(resp.body)['message']);
     }
-    final accounts = await fetchAccounts(budgetId: account.budgetId);
-    _accountsStreamController.add(accounts);
+    final accounts = [..._accountsStreamController.value];
+    final accIndex = accounts.indexWhere((acc) => acc.id == account.id);
+    if (accIndex == -1) {
+      //throw TodoNotFoundException();
+    } else {
+      accounts.removeAt(accIndex);
+      _accountsStreamController.add(accounts);
+    }
   }
 
   Future<Map<String, String>> _getHeaders() async {

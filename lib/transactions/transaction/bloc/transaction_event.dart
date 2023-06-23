@@ -8,7 +8,7 @@ sealed class TransactionEvent extends Equatable {
 }
 
 final class TransactionFormLoaded extends TransactionEvent {
-  final Transaction? transaction;
+  final TransactionTile? transaction;
   final TransactionType transactionType;
   const TransactionFormLoaded(
       {required this.transaction, required this.transactionType});
