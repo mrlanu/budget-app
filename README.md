@@ -1,16 +1,11 @@
-# budget_app
+# Budget app
+📱 ***My Budget app project on Flutter, the back-end (Java) is available [here](https://github.com/mrlanu/budget-app-back).*** 📱
 
-A Budget app
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p align="center">
+    <img src="assets/screenshots/0.png" alt="MyPic" width="165">
+    <img src="assets/screenshots/3.png" alt="MyPic" width="165">
+    <img src="assets/screenshots/2.png" alt="MyPic" width="165">
+    <img src="assets/screenshots/1.png" alt="MyPic" width="165">
+    <img src="assets/screenshots/4.png" alt="MyPic" width="165">
+    <img src="assets/screenshots/5.png" alt="MyPic" width="165">
+</p>
