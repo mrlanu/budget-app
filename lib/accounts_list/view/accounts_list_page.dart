@@ -6,6 +6,7 @@ import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../accounts/models/account.dart';
 import '../../categories/repository/categories_repository.dart';
@@ -25,7 +26,8 @@ class AccountsListPage extends StatelessWidget {
               BlocProvider(
                 create: (context) => AccountsListCubit(
                   accountsRepository: context.read<AccountsRepositoryImpl>(),
-                  categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+                  categoriesRepository:
+                      context.read<CategoriesRepositoryImpl>(),
                 )..onInit(budgetId: context.read<AppBloc>().state.budget!.id),
               ),
               BlocProvider.value(value: homeCubit),
@@ -67,22 +69,25 @@ class AccountsListView extends StatelessWidget {
         ],
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {
-            return Container(
-              color: scheme.background,
-              child: SafeArea(
-                  child: Scaffold(
-                appBar: AppBar(
-                  title: Text('Accounts'),
-                ),
-                body: Column(
-                  children: [
-                    Divider(),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: state.accounts.length,
-                        itemBuilder: (context, index) {
-                          final account = state.accounts[index];
-                          return ListTile(
+            return Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              appBar: AppBar(
+                backgroundColor: scheme.primaryContainer,
+                title: Text('Accounts'),
+              ),
+              body: Column(
+                children: [
+                  SizedBox(
+                    height: 50.h,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.accounts.length,
+                      itemBuilder: (context, index) {
+                        final account = state.accounts[index];
+                        return Card(
+                          elevation: Theme.of(context).cardTheme.elevation,
+                          child: ListTile(
                             title: Text(
                               account.extendName(state.accountCategories),
                               style: TextStyle(
@@ -104,45 +109,46 @@ class AccountsListView extends StatelessWidget {
                             onTap: () {
                               _openDialog(context: context, account: account);
                             },
-                          );
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      tileColor: scheme.secondaryContainer,
-                      title: Text(
-                        'New Account',
-                        style: TextStyle(
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .fontSize),
-                      ),
-                      trailing: Icon(
-                        Icons.add,
-                        color: scheme.onSecondaryContainer,
-                      ),
-                      onTap: () {
-                        //context.read<AccountsListCubit>().onNewAccount();
-                        _openDialog(context: context);
+                          ),
+                        );
                       },
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                  ListTile(
+                    tileColor: scheme.primaryContainer,
+                    title: Text(
+                      'New Account',
+                      style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.titleLarge!.fontSize),
+                    ),
+                    trailing: Icon(
+                      Icons.add,
+                      color: scheme.onSecondaryContainer,
+                    ),
+                    onTap: () {
+                      //context.read<AccountsListCubit>().onNewAccount();
+                      _openDialog(context: context);
+                    },
+                  ),
+                ],
+              ),
             );
           },
         ));
   }
 
-  Future<String?> _openDialog({required BuildContext context, Account? account}) => showDialog<String>(
-      context: context,
-      builder: (_) => BlocProvider(
-            create: (context) => AccountEditBloc(
-                budgetId: context.read<AppBloc>().state.budget!.id,
-                categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-                accountsRepository: context.read<AccountsRepositoryImpl>())
-              ..add(AccountEditFormLoaded(account: account)),
-            child: AccountEditDialog(),
-          ));
+  Future<String?> _openDialog(
+          {required BuildContext context, Account? account}) =>
+      showDialog<String>(
+          context: context,
+          builder: (_) => BlocProvider(
+                create: (context) => AccountEditBloc(
+                    budgetId: context.read<AppBloc>().state.budget!.id,
+                    categoriesRepository:
+                        context.read<CategoriesRepositoryImpl>(),
+                    accountsRepository: context.read<AccountsRepositoryImpl>())
+                  ..add(AccountEditFormLoaded(account: account)),
+                child: AccountEditDialog(),
+              ));
 }

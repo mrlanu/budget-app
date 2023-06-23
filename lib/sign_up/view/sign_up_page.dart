@@ -10,8 +10,12 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      backgroundColor: scheme.secondaryContainer,
+      appBar: AppBar(
+          backgroundColor: scheme.primaryContainer,
+          title: const Text('Sign Up')),
       body: BlocProvider<SignUpCubit>(
         create: (_) => SignUpCubit(context.read<AuthenticationRepository>()),
         child: const SignUpForm(),

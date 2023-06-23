@@ -13,7 +13,7 @@ class TransferForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 50.w),
+      padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
       child: SingleChildScrollView(
         child: Column(
           children: [

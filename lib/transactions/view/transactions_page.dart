@@ -7,6 +7,7 @@ import 'package:budget_app/transactions/repository/transactions_repository.dart'
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../app/bloc/app_bloc.dart';
 import '../../subcategories/repository/subcategories_repository.dart';
@@ -46,6 +47,7 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return BlocListener<TransactionsCubit, TransactionsState>(
         listenWhen: (previous, current) =>
             (previous.lastDeletedTransaction !=
@@ -78,46 +80,57 @@ class TransactionsPage extends StatelessWidget {
         child: BlocBuilder<TransactionsCubit, TransactionsState>(
           builder: (context, state) {
             return Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                 appBar: AppBar(
+                  backgroundColor: scheme.primaryContainer,
                   centerTitle: true,
                   title: Text('Transactions'),
                 ),
                 body: state.status == TransactionsStatus.loading
                     ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: state.filteredTiles.length,
-                        itemBuilder: (context, index) {
-                          final tr = state.filteredTiles[index];
-                          return TransactionListTile(
-                            transactionTile: tr,
-                            onDismissed: (_) {
-                              final trCub = context.read<TransactionsCubit>();
-                              tr.type == TransactionType.TRANSFER
-                                  ? trCub.deleteTransfer(transferId: tr.id)
-                                  : trCub.deleteTransaction(
-                                      transactionId: tr.id);
-                            },
-                            onTap: () => {
-                              if (tr.type == TransactionType.TRANSFER)
-                                {
-                                  Navigator.of(context).push(
-                                    TransferPage.route(
-                                        homeCubit: context.read<HomeCubit>(),
-                                        transactionTile: tr),
-                                  )
-                                }
-                              else
-                                {
-                                  Navigator.of(context).push(
-                                    TransactionPage.route(
-                                        transaction: tr,
-                                        homeCubit: context.read<HomeCubit>(),
-                                        transactionType: tr.type),
-                                  )
-                                }
-                            },
-                          );
-                        }));
+                    : Column(
+                      children: [
+                        SizedBox(
+                          height: 50.h,
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                              itemCount: state.filteredTiles.length,
+                              itemBuilder: (context, index) {
+                                final tr = state.filteredTiles[index];
+                                return TransactionListTile(
+                                  transactionTile: tr,
+                                  onDismissed: (_) {
+                                    final trCub = context.read<TransactionsCubit>();
+                                    tr.type == TransactionType.TRANSFER
+                                        ? trCub.deleteTransfer(transferId: tr.id)
+                                        : trCub.deleteTransaction(
+                                            transactionId: tr.id);
+                                  },
+                                  onTap: () => {
+                                    if (tr.type == TransactionType.TRANSFER)
+                                      {
+                                        Navigator.of(context).push(
+                                          TransferPage.route(
+                                              homeCubit: context.read<HomeCubit>(),
+                                              transactionTile: tr),
+                                        )
+                                      }
+                                    else
+                                      {
+                                        Navigator.of(context).push(
+                                          TransactionPage.route(
+                                              transaction: tr,
+                                              homeCubit: context.read<HomeCubit>(),
+                                              transactionType: tr.type),
+                                        )
+                                      }
+                                  },
+                                );
+                              }),
+                        ),
+                      ],
+                    ));
           },
         ));
   }
