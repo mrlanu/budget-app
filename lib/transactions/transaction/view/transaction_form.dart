@@ -14,39 +14,42 @@ class TransactionForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 50.w),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            AmountInput(),
-            SizedBox(
-              height: 30.h,
-            ),
-            DateInput(),
-            SizedBox(
-              height: 75.h,
-            ),
-            CategoryInput(),
-            SizedBox(
-              height: 75.h,
-            ),
-            SubcategoryInput(),
-            SizedBox(
-              height: 75.h,
-            ),
-            AccountInput(),
-            SizedBox(
-              height: 75.h,
-            ),
-            _NotesInput(),
-            SizedBox(
-              height: 75.h,
-            ),
-            _SubmitButton()
-          ],
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
+          child: Column(
+            children: [
+              AmountInput(),
+              SizedBox(
+                height: 30.h,
+              ),
+              DateInput(),
+              SizedBox(
+                height: 75.h,
+              ),
+              CategoryInput(),
+              SizedBox(
+                height: 75.h,
+              ),
+              SubcategoryInput(),
+              SizedBox(
+                height: 75.h,
+              ),
+              AccountInput(),
+              SizedBox(
+                height: 75.h,
+              ),
+              _NotesInput(),
+              SizedBox(
+                height: 75.h,
+              ),
+            ],
+          ),
         ),
-      ),
+        Expanded(child: Container()),
+        _SubmitButton(),
+      ],
     );
   }
 }
@@ -79,19 +82,28 @@ class _NotesInput extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
-            : ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+            : ListTile(
+                tileColor: scheme.primaryContainer,
+                title: Center(
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                        color: state.isValid &&
+                                state.category != null &&
+                                state.subcategory != null &&
+                                state.account != null
+                            ? Colors.black
+                            : Colors.grey,
+                        fontSize:
+                            Theme.of(context).textTheme.titleLarge!.fontSize),
                   ),
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
                 ),
-                onPressed: state.isValid &&
+                onTap: state.isValid &&
                         state.category != null &&
                         state.subcategory != null &&
                         state.account != null
@@ -99,7 +111,6 @@ class _SubmitButton extends StatelessWidget {
                         .read<TransactionBloc>()
                         .add(TransactionFormSubmitted(context: context))
                     : null,
-                child: Text('SAVE'),
               );
       },
     );
