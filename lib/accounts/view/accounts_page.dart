@@ -43,8 +43,11 @@ class AccountsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+        backgroundColor: scheme.secondaryContainer,
         appBar: AppBar(
+          backgroundColor: scheme.primaryContainer,
           title: Text('Accounts'),
           centerTitle: true,
         ),
@@ -52,44 +55,51 @@ class AccountsPage extends StatelessWidget {
             builder: (context, state) {
           return state.status == DataStatus.loading
               ? Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  itemCount: state.accountList.length,
-                  itemBuilder: (context, index) {
-                    final acc = state.accountList[index];
-                    return Card(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 30.w, vertical: 15.h),
-                      elevation: Theme.of(context).cardTheme.elevation,
-                      child: ListTile(
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '\$ ${acc.balance.toString()}',
-                                style: TextStyle(
-                                    fontSize: textTheme.titleLarge!.fontSize,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                width: 30.w,
-                              ),
-                              Icon(Icons.chevron_right),
-                            ],
-                          ),
-                          title: Text(
-                            acc.name,
-                            style: TextStyle(
-                                fontSize: textTheme.titleLarge!.fontSize),
-                          ),
-                          onTap: () =>
-                              Navigator.of(context).push(TransactionsPage.route(
-                                homeCubit: context.read<HomeCubit>(),
-                                filter: TransactionsViewFilter(
-                                    type: TransactionsViewFilterTypes.accountId,
-                                    filterId: acc.id!),
-                              ))),
-                    );
-                  });
+              : Column(
+                children: [
+                  SizedBox(height: 50.h,),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: state.accountList.length,
+                        itemBuilder: (context, index) {
+                          final acc = state.accountList[index];
+                          return Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 30.w, vertical: 15.h),
+                            elevation: Theme.of(context).cardTheme.elevation,
+                            child: ListTile(
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '\$ ${acc.balance.toString()}',
+                                      style: TextStyle(
+                                          fontSize: textTheme.titleLarge!.fontSize,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      width: 30.w,
+                                    ),
+                                    Icon(Icons.chevron_right),
+                                  ],
+                                ),
+                                title: Text(
+                                  acc.name,
+                                  style: TextStyle(
+                                      fontSize: textTheme.titleLarge!.fontSize),
+                                ),
+                                onTap: () =>
+                                    Navigator.of(context).push(TransactionsPage.route(
+                                      homeCubit: context.read<HomeCubit>(),
+                                      filter: TransactionsViewFilter(
+                                          type: TransactionsViewFilterTypes.accountId,
+                                          filterId: acc.id!),
+                                    ))),
+                          );
+                        }),
+                  ),
+                ],
+              );
         }));
   }
 }

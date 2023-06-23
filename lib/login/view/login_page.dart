@@ -10,7 +10,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: scheme.secondaryContainer,
       body: BlocProvider(
         create: (_) => LoginCubit(context.read<AuthenticationRepository>()),
         child: const LoginForm(),

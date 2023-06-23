@@ -1,6 +1,7 @@
 import 'package:budget_app/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../categories/models/category.dart';
 import '../cubit/subcategories_cubit.dart';
@@ -15,9 +16,12 @@ class SubcategoriesPage extends StatelessWidget {
         builder: (context) {
           return BlocProvider(
             create: (context) => SubcategoriesCubit(
-                subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
+                subcategoriesRepository:
+                    context.read<SubcategoriesRepositoryImpl>(),
                 category: category)
-              ..onInit(budgetId: context.read<AppBloc>().state.budget!.id, category: category),
+              ..onInit(
+                  budgetId: context.read<AppBloc>().state.budget!.id,
+                  category: category),
             child: SubcategoriesPage(),
           );
         });
@@ -36,8 +40,7 @@ class SubcategoriesView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return BlocConsumer<SubcategoriesCubit, SubcategoriesState>(
-      listenWhen: (previous, current) =>
-      previous.status != current.status,
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == SubcategoriesStatus.failure) {
           ScaffoldMessenger.of(context)
@@ -50,71 +53,73 @@ class SubcategoriesView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Container(
-          color: scheme.background,
-          child: SafeArea(
-              child: Scaffold(
-            appBar: AppBar(
-              title: _buildTitle(state.category!),
-            ),
-            body: Column(
-              children: [
-                Divider(),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.subcategories.length,
-                    itemBuilder: (context, index) {
-                      final subcategory = state.subcategories[index];
-                      return Card(
-                        elevation: Theme.of(context).cardTheme.elevation,
-                        child: ListTile(
-                          title: Text(
-                            subcategory.name,
-                            style: TextStyle(
-                                fontSize: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .fontSize),
-                          ),
-                          leading: IconButton(
-                            icon: Icon(Icons.highlight_remove,
-                                color: Theme.of(context).colorScheme.error),
-                            onPressed: () {
-                              context.read<SubcategoriesCubit>().onSubcategoryDeleted(subcategory);
-                            },
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                          onTap: () {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          appBar: AppBar(
+            backgroundColor: scheme.primaryContainer,
+            title: _buildTitle(state.category!),
+          ),
+          body: Column(
+            children: [
+              SizedBox(
+                height: 50.h,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: state.subcategories.length,
+                  itemBuilder: (context, index) {
+                    final subcategory = state.subcategories[index];
+                    return Card(
+                      elevation: Theme.of(context).cardTheme.elevation,
+                      child: ListTile(
+                        title: Text(
+                          subcategory.name,
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .fontSize),
+                        ),
+                        leading: IconButton(
+                          icon: Icon(Icons.highlight_remove,
+                              color: Theme.of(context).colorScheme.error),
+                          onPressed: () {
                             context
                                 .read<SubcategoriesCubit>()
-                                .onSubcategoryEdit(subcategory);
-                            _openDialog(context);
+                                .onSubcategoryDeleted(subcategory);
                           },
                         ),
-                      );
-                    },
-                  ),
-                ),
-                ListTile(
-                  tileColor: scheme.secondaryContainer,
-                  title: Text(
-                    'New Subcategory',
-                    style: TextStyle(
-                        fontSize:
-                            Theme.of(context).textTheme.titleLarge!.fontSize),
-                  ),
-                  trailing: Icon(
-                    Icons.add,
-                    color: scheme.onSecondaryContainer,
-                  ),
-                  onTap: () {
-                    context.read<SubcategoriesCubit>().onNewSubcategory();
-                    _openDialog(context);
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          context
+                              .read<SubcategoriesCubit>()
+                              .onSubcategoryEdit(subcategory);
+                          _openDialog(context);
+                        },
+                      ),
+                    );
                   },
                 ),
-              ],
-            ),
-          )),
+              ),
+              ListTile(
+                tileColor: scheme.primaryContainer,
+                title: Text(
+                  'New Subcategory',
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.titleLarge!.fontSize),
+                ),
+                trailing: Icon(
+                  Icons.add,
+                  color: scheme.onSecondaryContainer,
+                ),
+                onTap: () {
+                  context.read<SubcategoriesCubit>().onNewSubcategory();
+                  _openDialog(context);
+                },
+              ),
+            ],
+          ),
         );
       },
     );

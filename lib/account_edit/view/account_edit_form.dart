@@ -16,7 +16,7 @@ class AccountEditDialog extends StatelessWidget {
         return state.accStatus == AccountEditStatus.loading
             ? Center(child: CircularProgressIndicator())
             : Dialog(
-                backgroundColor: Theme.of(context).dialogBackgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                 insetPadding: EdgeInsets.all(10),
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -27,7 +27,7 @@ class AccountEditDialog extends StatelessWidget {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Theme.of(context).dialogBackgroundColor,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                       ),
                       padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
                       child: Column(

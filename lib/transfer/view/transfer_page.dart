@@ -36,10 +36,13 @@ class TransferPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         return Scaffold(
+            backgroundColor: scheme.secondaryContainer,
             appBar: AppBar(
+              backgroundColor: scheme.primaryContainer,
               title: Text('Transfer'),
             ),
             body: state.trStatus == TransferStatus.success
