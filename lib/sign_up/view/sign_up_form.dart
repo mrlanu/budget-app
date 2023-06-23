@@ -23,7 +23,7 @@ class SignUpForm extends StatelessWidget {
         }
       },
       child: Align(
-        alignment: const Alignment(0, -1),
+        alignment: const Alignment(0, -1.5),
         child: Padding(
           padding: EdgeInsets.all(70.w),
           child: SingleChildScrollView(
@@ -31,7 +31,6 @@ class SignUpForm extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 FilledCard(),
-                SizedBox(height: 100.h),
                 _EmailInput(),
                 SizedBox(height: 20.h),
                 _PasswordInput(),
@@ -53,20 +52,19 @@ class FilledCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Color - ${Theme.of(context).colorScheme.primary}');
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(200.r)),
       ),
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: Theme.of(context).colorScheme.secondaryContainer,
       child: SizedBox(
         width: 800.w,
         height: 500.w,
         child: Padding(
           padding: EdgeInsets.all(100.h),
-          child: Image.asset(
-            'assets/images/icon_logo.png',
+          child: Image.asset(color: Theme.of(context).colorScheme.primary,
+            'assets/images/logo.png',
           ),
         ),
       ),

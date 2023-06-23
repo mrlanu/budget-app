@@ -4,6 +4,7 @@ import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({Key? key}) : super(key: key);
@@ -34,8 +35,7 @@ class CategoriesView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return BlocConsumer<CategoriesCubit, CategoriesState>(
-      listenWhen: (previous, current) =>
-      previous.status != current.status,
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == CategoriesStatus.failure) {
           ScaffoldMessenger.of(context)
@@ -48,71 +48,71 @@ class CategoriesView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Container(
-          color: scheme.background,
-          child: SafeArea(
-              child: Scaffold(
-            appBar: AppBar(
-              title: _buildTitle(state),
-            ),
-            body: Column(
-              children: [
-                Divider(),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.categories.length,
-                    itemBuilder: (context, index) {
-                      final category = state.categories[index];
-                      return Card(
-                        elevation: Theme.of(context).cardTheme.elevation,
-                        child: ListTile(
-                          title: Text(
-                            category.name,
-                            style: TextStyle(
-                                fontSize: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .fontSize),
-                          ),
-                          leading: IconButton(
-                            icon: Icon(Icons.highlight_remove,
-                                color: Theme.of(context).colorScheme.error),
-                            onPressed: () {
-                              context.read<CategoriesCubit>().onCategoryDeleted(category);
-                            },
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                          onTap: () {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          appBar: AppBar(
+            backgroundColor: scheme.primaryContainer,
+            title: _buildTitle(state),
+          ),
+          body: Column(
+            children: [
+              SizedBox(height: 50.h,),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: state.categories.length,
+                  itemBuilder: (context, index) {
+                    final category = state.categories[index];
+                    return Card(
+                      elevation: Theme.of(context).cardTheme.elevation,
+                      child: ListTile(
+                        title: Text(
+                          category.name,
+                          style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .fontSize),
+                        ),
+                        leading: IconButton(
+                          icon: Icon(Icons.highlight_remove,
+                              color: Theme.of(context).colorScheme.error),
+                          onPressed: () {
                             context
                                 .read<CategoriesCubit>()
-                                .onCategoryEdit(category);
-                            _openDialog(context);
+                                .onCategoryDeleted(category);
                           },
                         ),
-                      );
-                    },
-                  ),
-                ),
-                ListTile(
-                  tileColor: scheme.secondaryContainer,
-                  title: Text(
-                    'New category',
-                    style: TextStyle(
-                        fontSize:
-                            Theme.of(context).textTheme.titleLarge!.fontSize),
-                  ),
-                  trailing: Icon(
-                    Icons.add,
-                    color: scheme.onSecondaryContainer,
-                  ),
-                  onTap: () {
-                    context.read<CategoriesCubit>().onNewCategory();
-                    _openDialog(context);
+                        trailing: Icon(Icons.chevron_right),
+                        onTap: () {
+                          context
+                              .read<CategoriesCubit>()
+                              .onCategoryEdit(category);
+                          _openDialog(context);
+                        },
+                      ),
+                    );
                   },
                 ),
-              ],
-            ),
-          )),
+              ),
+              ListTile(
+                tileColor: scheme.primaryContainer,
+                title: Text(
+                  'New category',
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.titleLarge!.fontSize),
+                ),
+                trailing: Icon(
+                  Icons.add,
+                  color: scheme.onSecondaryContainer,
+                ),
+                onTap: () {
+                  context.read<CategoriesCubit>().onNewCategory();
+                  _openDialog(context);
+                },
+              ),
+            ],
+          ),
         );
       },
     );
@@ -156,7 +156,7 @@ class CategoriesView extends StatelessWidget {
       TransactionType.EXPENSE => 'Expenses categories',
       TransactionType.INCOME => 'Income categories',
       TransactionType.TRANSFER => 'Transfer',
-    TransactionType.ACCOUNT => 'Account categories',
+      TransactionType.ACCOUNT => 'Account categories',
     };
     return Text(body);
   }
