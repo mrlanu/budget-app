@@ -15,8 +15,7 @@ class CategoriesPage extends StatelessWidget {
           return BlocProvider(
             create: (context) => CategoriesCubit(
                 categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-                transactionType: transactionType)
-              ..onInit(budgetId: context.read<AppBloc>().state.budget!.id),
+                transactionType: transactionType),
             child: CategoriesPage(),
           );
         });
@@ -130,6 +129,7 @@ class CategoriesView extends StatelessWidget {
                     ? 'Add category'
                     : 'Edit category'),
                 content: TextFormField(
+                  autofocus: true,
                   initialValue: state.editCategory?.name,
                   onChanged: (name) =>
                       context.read<CategoriesCubit>().onNameChanged(name),

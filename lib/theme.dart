@@ -9,6 +9,7 @@ enum ColorSeed {
   teal('Teal', Colors.teal),
   green('Green', Colors.green),
   yellow('Yellow', Colors.yellow),
+  my('My', Color.fromRGBO(10, 1, 10, 1.0)),
   orange('Orange', Colors.orange),
   deepOrange('Deep Orange', Colors.deepOrange),
   pink('Pink', Colors.pink);

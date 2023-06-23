@@ -17,22 +17,27 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       {required CategoriesRepository categoriesRepository,
       required TransactionType transactionType})
       : _categoriesRepository = categoriesRepository,
-        super(CategoriesState(transactionType: transactionType)){
+        super(CategoriesState(transactionType: transactionType)) {
     _categoriesSubscription =
         _categoriesRepository.getCategories().listen((categories) {
-          _onCategoriesChanged(categories);
-        });
+      _onCategoriesChanged(categories);
+    });
   }
 
-  Future<void> onInit({required String budgetId}) async {
-    final categories = await _categoriesRepository.fetchCategories(
-        budgetId: budgetId, transactionType: state.transactionType);
+  /*Future<void> onInit({required String budgetId}) async {
+    final categories = await _categoriesRepository.getCategories().first;
+    final catByType = categories
+        .where((element) => element.transactionType == state.transactionType)
+        .toList();
     emit(state.copyWith(
-        status: CategoriesStatus.success, categories: categories));
-  }
+        status: CategoriesStatus.success, categories: catByType));
+  }*/
 
-  void _onCategoriesChanged(List<Category> categories){
-    emit(state.copyWith(categories: categories));
+  void _onCategoriesChanged(List<Category> categories) {
+    final catByType = categories
+        .where((element) => element.transactionType == state.transactionType)
+        .toList();
+    emit(state.copyWith(status: CategoriesStatus.success, categories: catByType));
   }
 
   void onNameChanged(String name) {
@@ -50,11 +55,15 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   void onSubmit(String budgetId) {
     var category;
     if (state.editCategory == null) {
-      category = Category(name: state.name!, budgetId: budgetId, transactionType: state.transactionType);
+      category = Category(
+          name: state.name!,
+          budgetId: budgetId,
+          transactionType: state.transactionType);
     } else {
       category = state.editCategory!.copyWith(name: state.name);
     }
     _categoriesRepository.saveCategory(category: category);
+    emit(state.copyWith(status: CategoriesStatus.loading));
   }
 
   Future<void> onCategoryDeleted(Category category) async {
@@ -69,7 +78,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
           status: CategoriesStatus.failure, errorMessage: 'Unknown error'));
     }
   }
-
 
   @override
   Future<void> close() {

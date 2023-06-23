@@ -48,12 +48,7 @@ class TransferForm extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TransferBloc, TransferState>(
-      listener: (context, state) {
-        if (state.status.isSuccess) {
-          context.read<HomeCubit>().getData();
-        }
-      },
+    return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         return state.status.isInProgress
             ? const CircularProgressIndicator()

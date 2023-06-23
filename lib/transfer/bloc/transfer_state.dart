@@ -3,49 +3,52 @@ part of 'transfer_bloc.dart';
 enum TransferStatus { loading, success, failure }
 
 class TransferState extends Equatable {
-
+  final String? budgetId;
   final String? id;
-  final TransferStatus trStatus;
   final Amount amount;
   final DateTime? date;
-  final List<Account> accounts;
-  final List<Category> accountCategories;
   final Account? fromAccount;
   final Account? toAccount;
   final String notes;
+  final List<Account> accounts;
+  final List<Category> accountCategories;
+  final TransferStatus trStatus;
   final FormzSubmissionStatus status;
   final bool isValid;
   final String? errorMessage;
 
   TransferState(
-      {this.id,
-        this.trStatus = TransferStatus.loading,
-        this.amount = const Amount.pure(),
-        this.date,
-        this.accounts = const <Account>[],
-        this.accountCategories = const <Category>[],
-        this.fromAccount,
-        this.toAccount,
-        this.notes = '',
-        this.status = FormzSubmissionStatus.initial,
-        this.isValid = false,
-        this.errorMessage});
+      {this.budgetId,
+      this.id,
+      this.amount = const Amount.pure(),
+      this.date,
+      this.fromAccount,
+      this.toAccount,
+      this.notes = '',
+      this.accounts = const <Account>[],
+      this.accountCategories = const <Category>[],
+      this.trStatus = TransferStatus.loading,
+      this.status = FormzSubmissionStatus.initial,
+      this.isValid = false,
+      this.errorMessage});
 
   TransferState copyWith({
+    String? budgetId,
     String? id,
-    TransferStatus? trStatus,
     Amount? amount,
     DateTime? date,
-    List<Account>? accounts,
-    List<Category>? accountCategories,
     Account? fromAccount,
     Account? toAccount,
     String? notes,
+    List<Account>? accounts,
+    List<Category>? accountCategories,
+    TransferStatus? trStatus,
     FormzSubmissionStatus? status,
     bool? isValid,
     String? errorMessage,
   }) {
     return TransferState(
+      budgetId: budgetId ?? this.budgetId,
       id: id ?? this.id,
       trStatus: trStatus ?? this.trStatus,
       amount: amount ?? this.amount,
@@ -63,17 +66,17 @@ class TransferState extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    trStatus,
-    amount,
-    date,
-    accounts,
-    accountCategories,
-    fromAccount,
-    toAccount,
-    notes,
-    status,
-    isValid,
-    errorMessage
-  ];
+        id,
+        trStatus,
+        amount,
+        date,
+        accounts,
+        accountCategories,
+        fromAccount,
+        toAccount,
+        notes,
+        status,
+        isValid,
+        errorMessage
+      ];
 }

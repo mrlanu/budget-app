@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:budget_app/shared/models/budget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../categories/repository/categories_repository.dart';
@@ -9,24 +10,21 @@ import 'package:http/http.dart' as http;
 
 abstract class SubcategoriesRepository {
   final User user;
+  final Budget budget;
 
-  const SubcategoriesRepository({required this.user});
+  const SubcategoriesRepository({required this.user, required this.budget});
 
   Stream<List<Subcategory>> getSubcategories();
-
   Future<void> saveSubcategory(
       {required String budgetId, required Subcategory subcategory});
-
-  Future<List<Subcategory>> fetchSubcategories(
-      {required String budgetId, required String categoryId});
-
+  Future<void> fetchSubcategories();
   Future<void> delete({required Subcategory subcategory});
 }
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   static const baseURL = '10.0.2.2:8080';
 
-  SubcategoriesRepositoryImpl({required super.user});
+  SubcategoriesRepositoryImpl({required super.user, required super.budget});
 
   final _subcategoriesStreamController =
       BehaviorSubject<List<Subcategory>>.seeded(const []);
@@ -44,17 +42,15 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
         headers: await _getHeaders(), body: json.encode(subcategory.toJson()));
 
     final newSubcategory = Subcategory.fromJson(jsonDecode(response.body));
-    final subcategories = await fetchSubcategories(
-        budgetId: newSubcategory.budgetId,
-        categoryId: newSubcategory.categoryId);
+    final subcategories = [..._subcategoriesStreamController.value];
+    subcategories.add(newSubcategory);
     _subcategoriesStreamController.add(subcategories);
   }
 
   @override
-  Future<List<Subcategory>> fetchSubcategories(
-      {required String budgetId, required String categoryId}) async {
+  Future<void> fetchSubcategories() async {
     final url =
-        Uri.http(baseURL, '/api/subcategories', {'categoryId': categoryId});
+        Uri.http(baseURL, '/api/subcategories', {'budgetId': budget.id});
     final response = await http.get(url, headers: await _getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
@@ -62,10 +58,9 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
     )
         .map((jsonMap) =>
             Subcategory.fromJson(Map<String, dynamic>.from(jsonMap)))
-        .where((scat) => scat.categoryId == categoryId)
         .toList();
 
-    return result;
+   _subcategoriesStreamController.add(result);
   }
 
   @override
@@ -78,9 +73,14 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
       throw CategoryFailure(jsonDecode(resp.body)['message']);
     }
 
-    final subcategories = await fetchSubcategories(
-        budgetId: subcategory.budgetId, categoryId: subcategory.categoryId);
-    _subcategoriesStreamController.add(subcategories);
+    final subcategories = [..._subcategoriesStreamController.value];
+    final subIndex = subcategories.indexWhere((t) => t.id == subcategory.id);
+    if (subIndex == -1) {
+      //throw TodoNotFoundException();
+    } else {
+      subcategories.removeAt(subIndex);
+      _subcategoriesStreamController.add(subcategories);
+    }
   }
 
   Future<Map<String, String>> _getHeaders() async {
