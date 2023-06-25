@@ -9,6 +9,7 @@ import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/repository/transfer_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +21,7 @@ import '../../transactions/transaction/view/transaction_page.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository =
-      AuthenticationRepository();
+      AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
   final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
 
   @override
@@ -71,14 +72,14 @@ class _AppViewState extends State<AppView> {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(
-                create: (context) => CategoriesRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => CategoriesRepositoryImpl(budget: budget!)),
             RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(user: user,  budget: budget!),
+              create: (context) => AccountsRepositoryImpl(budget: budget!),
             ),
             RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => TransactionsRepositoryImpl(budget: budget!)),
             RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => SubcategoriesRepositoryImpl(budget: budget!)),
             RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(

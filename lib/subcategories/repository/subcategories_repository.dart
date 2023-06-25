@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
+import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 import '../../categories/repository/categories_repository.dart';
 import '../../constants/api.dart';
 import '../../shared/models/subcategory.dart';
-import 'package:http/http.dart' as http;
 
 abstract class SubcategoriesRepository {
   Stream<List<Subcategory>> getSubcategories();
@@ -18,10 +17,9 @@ abstract class SubcategoriesRepository {
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
-  final User user;
   final Budget budget;
 
-  SubcategoriesRepositoryImpl({required this.user, required this.budget});
+  SubcategoriesRepositoryImpl({required this.budget});
 
   final _subcategoriesStreamController =
       BehaviorSubject<List<Subcategory>>.seeded(const []);
@@ -35,7 +33,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
     final url = Uri.http(baseURL, '/api/subcategories');
 
     final response = await http.post(url,
-        headers: await _getHeaders(), body: json.encode(subcategory.toJson()));
+        headers: await getHeaders(), body: json.encode(subcategory.toJson()));
 
     final newSubcategory = Subcategory.fromJson(jsonDecode(response.body));
     final subcategories = [..._subcategoriesStreamController.value];
@@ -47,7 +45,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   Future<void> fetchSubcategories() async {
     final url =
         Uri.http(baseURL, '/api/subcategories', {'budgetId': budget.id});
-    final response = await http.get(url, headers: await _getHeaders());
+    final response = await http.get(url, headers: await getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
@@ -63,7 +61,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   Future<void> delete({required Subcategory subcategory}) async {
     final url = Uri.http(baseURL, '/api/subcategories/${subcategory.id}');
 
-    final resp = await http.delete(url, headers: await _getHeaders());
+    final resp = await http.delete(url, headers: await getHeaders());
 
     if(resp.statusCode !=200){
       throw CategoryFailure(jsonDecode(resp.body)['message']);
@@ -77,13 +75,5 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
       subcategories.removeAt(subIndex);
       _subcategoriesStreamController.add(subcategories);
     }
-  }
-
-  Future<Map<String, String>> _getHeaders() async {
-    final token = await user.token;
-    return {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
-    };
   }
 }
