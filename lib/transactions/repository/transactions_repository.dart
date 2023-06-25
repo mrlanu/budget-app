@@ -7,14 +7,9 @@ import 'package:budget_app/transfer/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../constants/api.dart';
+
 abstract class TransactionsRepository {
-  final User _user;
-  final Budget _budget;
-
-  const TransactionsRepository({required User user, required Budget budget})
-      : _user = user,
-        _budget = budget;
-
   Stream<List<Transaction>> getTransactions();
   Stream<List<Transfer>> getTransfers();
   Future<void> createTransaction(Transaction transaction);
@@ -31,16 +26,16 @@ abstract class TransactionsRepository {
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
-  static const baseURL = '10.0.2.2:8080';
 
+  final User user;
+  final Budget budget;
   final _transactionsStreamController =
       BehaviorSubject<List<Transaction>>.seeded(const []);
 
   final _transfersStreamController =
   BehaviorSubject<List<Transfer>>.seeded(const []);
 
-  TransactionsRepositoryImpl({required User user, required Budget budget})
-      : super(user: user, budget: budget);
+  TransactionsRepositoryImpl({required this.user, required this.budget});
 
   @override
   Stream<List<Transaction>> getTransactions() =>
@@ -101,7 +96,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transactions',
-        {'budgetId': _budget.id, 'date': dateTime.toString()});
+        {'budgetId': budget.id, 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await _getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -115,7 +110,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transfers',
-        {'budgetId': _budget.id, 'date': dateTime.toString()});
+        {'budgetId': budget.id, 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await _getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -158,7 +153,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   Future<Map<String, String>> _getHeaders() async {
-    final token = await _user.token;
+    final token = await user.token;
     return {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"

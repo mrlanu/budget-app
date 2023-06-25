@@ -5,26 +5,23 @@ import 'package:budget_app/shared/models/budget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../categories/repository/categories_repository.dart';
+import '../../constants/api.dart';
 import '../../shared/models/subcategory.dart';
 import 'package:http/http.dart' as http;
 
 abstract class SubcategoriesRepository {
-  final User user;
-  final Budget budget;
-
-  const SubcategoriesRepository({required this.user, required this.budget});
-
   Stream<List<Subcategory>> getSubcategories();
-  Future<void> saveSubcategory(
-      {required String budgetId, required Subcategory subcategory});
+  Future<void> saveSubcategory({required Subcategory subcategory});
   Future<void> fetchSubcategories();
   Future<void> delete({required Subcategory subcategory});
 }
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
-  static const baseURL = '10.0.2.2:8080';
 
-  SubcategoriesRepositoryImpl({required super.user, required super.budget});
+  final User user;
+  final Budget budget;
+
+  SubcategoriesRepositoryImpl({required this.user, required this.budget});
 
   final _subcategoriesStreamController =
       BehaviorSubject<List<Subcategory>>.seeded(const []);
@@ -34,8 +31,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
       _subcategoriesStreamController.asBroadcastStream();
 
   @override
-  Future<void> saveSubcategory(
-      {required String budgetId, required Subcategory subcategory}) async {
+  Future<void> saveSubcategory({required Subcategory subcategory}) async {
     final url = Uri.http(baseURL, '/api/subcategories');
 
     final response = await http.post(url,

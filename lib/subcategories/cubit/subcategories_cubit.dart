@@ -66,8 +66,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     } else {
       subcategory = state.editSubcategory!.copyWith(name: state.name);
     }
-    _subcategoriesRepository.saveSubcategory(
-        subcategory: subcategory, budgetId: budgetId);
+    _subcategoriesRepository.saveSubcategory(subcategory: subcategory);
   }
 
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {

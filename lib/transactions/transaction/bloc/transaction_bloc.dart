@@ -177,8 +177,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       name: event.name,
       budgetId: _budget.id,
     );
-    _subcategoriesRepository.saveSubcategory(
-        budgetId: _budget.id, subcategory: newSubcategory);
+    _subcategoriesRepository.saveSubcategory(subcategory: newSubcategory);
   }
 
   void _onAccountsChanged(

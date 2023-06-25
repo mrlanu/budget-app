@@ -4,14 +4,11 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../constants/api.dart';
 import '../../shared/models/budget.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
-  final User user;
-  final Budget budget;
-
-  AccountsRepository({required this.user, required this.budget});
   Stream<List<Account>> getAccounts();
   Future<void> fetchAllAccounts();
   Future<void> saveAccount({required Account account});
@@ -27,11 +24,13 @@ class AccountFailure implements Exception {
 }
 
 class AccountsRepositoryImpl extends AccountsRepository {
-  static const baseURL = '10.0.2.2:8080';
+
+  final User user;
+  final Budget budget;
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
-  AccountsRepositoryImpl({required super.user, required super.budget});
+  AccountsRepositoryImpl({required this.user, required this.budget});
 
   @override
   Stream<List<Account>> getAccounts() =>

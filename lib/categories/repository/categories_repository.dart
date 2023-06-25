@@ -4,15 +4,11 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../constants/api.dart';
 import '../../shared/models/budget.dart';
 import '../models/category.dart';
 
 abstract class CategoriesRepository {
-  final User user;
-  final Budget budget;
-
-  const CategoriesRepository({required this.user, required this.budget});
-
   Stream<List<Category>> getCategories();
   Future<void> fetchAllCategories();
   Future<void> saveCategory({required Category category});
@@ -28,12 +24,13 @@ class CategoryFailure implements Exception {
 }
 
 class CategoriesRepositoryImpl extends CategoriesRepository {
-  static const baseURL = '10.0.2.2:8080';
 
+  final User user;
+  final Budget budget;
   final _categoriesStreamController =
       BehaviorSubject<List<Category>>.seeded(const []);
 
-  CategoriesRepositoryImpl({required super.user, required super.budget});
+  CategoriesRepositoryImpl({required this.user, required this.budget});
 
 
   @override

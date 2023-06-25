@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../constants/api.dart';
 import '../../shared/models/budget.dart';
 
 abstract class BudgetRepository {
@@ -10,13 +11,11 @@ abstract class BudgetRepository {
 
 class BudgetRepositoryImpl extends BudgetRepository{
 
-  static const baseURL = 'http://10.0.2.2:8080/api/budgets';
-
   @override
   Future<Budget> fetchBudget(String token) async {
-    final url = '$baseURL';
+    final url = Uri.http(baseURL, '/api/budgets');
 
-    final response = await http.get(Uri.parse(url), headers: {
+    final response = await http.get(url, headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     });
