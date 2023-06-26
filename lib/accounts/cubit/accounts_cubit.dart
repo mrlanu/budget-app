@@ -18,11 +18,11 @@ class AccountsCubit extends Cubit<AccountsState> {
   late final StreamSubscription<List<Account>> _accountsSubscription;
 
   AccountsCubit(
-      {required String budgetId, required String categoryId, required AccountsRepository accountsRepository,
+      {required String categoryId, required AccountsRepository accountsRepository,
         required TransactionsRepository transactionsRepository})
       : _accountsRepository = accountsRepository,
         _transactionsRepository = transactionsRepository,
-        super(AccountsState(budgetId: budgetId, categoryId: categoryId)) {
+        super(AccountsState(categoryId: categoryId)) {
     _transactionsSubscription = _transactionsRepository
         .getTransactions()
         .skip(1)

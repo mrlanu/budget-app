@@ -24,11 +24,10 @@ class AccountFailure implements Exception {
 
 class AccountsRepositoryImpl extends AccountsRepository {
 
-  final Budget budget;
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
-  AccountsRepositoryImpl({required this.budget});
+  AccountsRepositoryImpl();
 
   @override
   Stream<List<Account>> getAccounts() =>
@@ -39,7 +38,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
     var response;
 
     final url = Uri.http(
-        baseURL, '/api/accounts', {'budgetId': budget.id});
+        baseURL, '/api/accounts', {'budgetId': await getBudgetId()});
 
     response = await http.get(url, headers: await getHeaders());
 

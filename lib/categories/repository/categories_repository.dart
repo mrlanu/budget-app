@@ -24,11 +24,10 @@ class CategoryFailure implements Exception {
 
 class CategoriesRepositoryImpl extends CategoriesRepository {
 
-  final Budget budget;
   final _categoriesStreamController =
       BehaviorSubject<List<Category>>.seeded(const []);
 
-  CategoriesRepositoryImpl({required this.budget});
+  CategoriesRepositoryImpl();
 
 
   @override
@@ -37,7 +36,7 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
 
   @override
   Future<void> fetchAllCategories() async {
-    final url = Uri.http(baseURL, '/api/categories', {'budgetId': budget.id});
+    final url = Uri.http(baseURL, '/api/categories', {'budgetId': await getBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
 

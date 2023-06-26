@@ -38,9 +38,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (event.user.isEmpty) {
       emit(const AppState.unauthenticated());
     } else {
-      final budget = state.budget == null ? await _budgetRepository.fetchBudget() :
-      state.budget!;
-      emit(AppState.authenticated(event.user, budget));
+      await _budgetRepository.fetchBudget();
+      emit(AppState.authenticated(event.user));
     }
   }
 

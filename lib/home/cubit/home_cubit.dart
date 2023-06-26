@@ -12,8 +12,8 @@ import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
-import 'package:equatable/equatable.dart';
 import "package:collection/collection.dart";
+import 'package:equatable/equatable.dart';
 
 part 'home_state.dart';
 
@@ -26,15 +26,13 @@ class HomeCubit extends Cubit<HomeState> {
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
-  final String budgetId;
 
-  HomeCubit(
-      {required TransactionsRepository transactionsRepository,
-      required AccountsRepository accountsRepository,
-      required CategoriesRepository categoriesRepository,
-      required SubcategoriesRepository subcategoriesRepository,
-      required this.budgetId})
-      : _transactionsRepository = transactionsRepository,
+  HomeCubit({
+    required TransactionsRepository transactionsRepository,
+    required AccountsRepository accountsRepository,
+    required CategoriesRepository categoriesRepository,
+    required SubcategoriesRepository subcategoriesRepository,
+  })  : _transactionsRepository = transactionsRepository,
         _accountsRepository = accountsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
@@ -45,16 +43,16 @@ class HomeCubit extends Cubit<HomeState> {
     });
     _transfersSubscription =
         _transactionsRepository.getTransfers().listen((transfers) {
-          _onTransfersChanged(transfers);
-        });
+      _onTransfersChanged(transfers);
+    });
     _accountsSubscription =
         _accountsRepository.getAccounts().skip(1).listen((accounts) {
-          _onAccountsChanged(accounts);
-        });
+      _onAccountsChanged(accounts);
+    });
     _categoriesSubscription =
         _categoriesRepository.getCategories().skip(1).listen((categories) {
-          _onCategoriesChanged(categories);
-        });
+      _onCategoriesChanged(categories);
+    });
     _init();
   }
 
@@ -99,11 +97,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _onAccountsChanged(List<Account> accounts) async {
     var summaries;
-    if(state.tab == HomeTab.accounts){
-     summaries = await _getSummariesByAccounts(accounts: accounts);
+    if (state.tab == HomeTab.accounts) {
+      summaries = await _getSummariesByAccounts(accounts: accounts);
     }
-    final sectionsSum =
-    _recalculateSections(transactions: state.transactions, accounts: accounts);
+    final sectionsSum = _recalculateSections(
+        transactions: state.transactions, accounts: accounts);
     emit(state.copyWith(
       accounts: accounts,
       sectionsSum: sectionsSum,

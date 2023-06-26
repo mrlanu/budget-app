@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 
@@ -24,15 +25,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     });
   }
 
-  /*Future<void> onInit({required String budgetId}) async {
-    final categories = await _categoriesRepository.getCategories().first;
-    final catByType = categories
-        .where((element) => element.transactionType == state.transactionType)
-        .toList();
-    emit(state.copyWith(
-        status: CategoriesStatus.success, categories: catByType));
-  }*/
-
   void _onCategoriesChanged(List<Category> categories) {
     final catByType = categories
         .where((element) => element.transactionType == state.transactionType)
@@ -52,12 +44,12 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(state.copyWith(editCategory: category));
   }
 
-  void onSubmit(String budgetId) {
+  Future<void> onSubmit() async {
     var category;
     if (state.editCategory == null) {
       category = Category(
           name: state.name!,
-          budgetId: budgetId,
+          budgetId: await getBudgetId(),
           transactionType: state.transactionType);
     } else {
       category = state.editCategory!.copyWith(name: state.name);

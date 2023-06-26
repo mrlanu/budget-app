@@ -20,7 +20,6 @@ class TransferPage extends StatelessWidget {
           BlocProvider(
             create: (context) =>
             TransferBloc(
-              budgetId: appBloc.state.budget!.id,
               transactionsRepository: context.read<TransactionsRepositoryImpl>(),
               categoriesRepository: context.read<CategoriesRepositoryImpl>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),

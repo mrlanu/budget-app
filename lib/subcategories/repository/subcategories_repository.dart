@@ -17,9 +17,7 @@ abstract class SubcategoriesRepository {
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
-  final Budget budget;
-
-  SubcategoriesRepositoryImpl({required this.budget});
+  SubcategoriesRepositoryImpl();
 
   final _subcategoriesStreamController =
       BehaviorSubject<List<Subcategory>>.seeded(const []);
@@ -44,7 +42,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   @override
   Future<void> fetchSubcategories() async {
     final url =
-        Uri.http(baseURL, '/api/subcategories', {'budgetId': budget.id});
+        Uri.http(baseURL, '/api/subcategories', {'budgetId': await getBudgetId()});
     final response = await http.get(url, headers: await getHeaders());
 
     final result = List<Map<String, dynamic>>.from(

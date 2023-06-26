@@ -14,4 +14,9 @@ class Budget {
   factory Budget.fromJson(Map<String, dynamic> json) => _$BudgetFromJson(json);
 
   Map<String, dynamic> toJson() => _$BudgetToJson(this);
+
+  @override
+  String toString() {
+    return 'Budget {id: $id, userId: $userId}';
+  }
 }

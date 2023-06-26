@@ -26,14 +26,13 @@ abstract class TransactionsRepository {
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
 
-  final Budget budget;
   final _transactionsStreamController =
       BehaviorSubject<List<Transaction>>.seeded(const []);
 
   final _transfersStreamController =
   BehaviorSubject<List<Transfer>>.seeded(const []);
 
-  TransactionsRepositoryImpl({required this.budget});
+  TransactionsRepositoryImpl();
 
   @override
   Stream<List<Transaction>> getTransactions() =>
@@ -94,7 +93,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transactions',
-        {'budgetId': budget.id, 'date': dateTime.toString()});
+        {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -108,7 +107,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transfers',
-        {'budgetId': budget.id, 'date': dateTime.toString()});
+        {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(

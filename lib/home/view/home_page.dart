@@ -28,8 +28,7 @@ class HomePage extends StatelessWidget {
         accountsRepository: context.read<AccountsRepositoryImpl>(),
           categoriesRepository: context.read<CategoriesRepositoryImpl>(),
           transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-          subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
-          budgetId: appBloc.state.budget!.id),
+          subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),),
       child: HomeView(),
     );
   }

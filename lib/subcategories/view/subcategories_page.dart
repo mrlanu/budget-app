@@ -1,4 +1,3 @@
-import 'package:budget_app/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,9 +18,7 @@ class SubcategoriesPage extends StatelessWidget {
                 subcategoriesRepository:
                     context.read<SubcategoriesRepositoryImpl>(),
                 category: category)
-              ..onInit(
-                  budgetId: context.read<AppBloc>().state.budget!.id,
-                  category: category),
+              ..onInit(category: category),
             child: SubcategoriesPage(),
           );
         });
@@ -153,8 +150,7 @@ class SubcategoriesView extends StatelessWidget {
           )));
 
   void _submit(BuildContext context) {
-    final budgetId = context.read<AppBloc>().state.budget!.id;
-    context.read<SubcategoriesCubit>().onSubmit(budgetId);
+    context.read<SubcategoriesCubit>().onSubmit();
     Navigator.of(context).pop();
   }
 

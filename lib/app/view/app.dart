@@ -22,7 +22,10 @@ import '../../transactions/transaction/view/transaction_page.dart';
 class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
-  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
+
+  final BudgetRepository _budgetRepository;
+
+  App({required BudgetRepository budgetRepository}): _budgetRepository = budgetRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +65,6 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
-    final budget = context.select((AppBloc bloc) => bloc.state.budget);
     return ScreenUtilInit(
       designSize: const Size(1080, 2160),
       minTextAdapt: true,
@@ -72,14 +73,14 @@ class _AppViewState extends State<AppView> {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(
-                create: (context) => CategoriesRepositoryImpl(budget: budget!)),
+                create: (context) => CategoriesRepositoryImpl()),
             RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(budget: budget!),
+              create: (context) => AccountsRepositoryImpl(),
             ),
             RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl(budget: budget!)),
+                create: (context) => TransactionsRepositoryImpl()),
             RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl(budget: budget!)),
+                create: (context) => SubcategoriesRepositoryImpl()),
             RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(

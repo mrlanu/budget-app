@@ -146,8 +146,7 @@ class CategoriesView extends StatelessWidget {
           )));
 
   void _submit(BuildContext context) {
-    final budgetId = context.read<AppBloc>().state.budget!.id;
-    context.read<CategoriesCubit>().onSubmit(budgetId);
+    context.read<CategoriesCubit>().onSubmit();
     Navigator.of(context).pop();
   }
 
