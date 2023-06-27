@@ -40,10 +40,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    print('RED: ${scheme.secondaryContainer.red}');
-    print('GREEN: ${scheme.secondaryContainer.green}');
-    print('Blue: ${scheme.secondaryContainer.blue}');
-    print('ICON: ${Icons.payments_outlined.codePoint}');
+    print('ICON: ${Icons.account_balance_outlined.codePoint}');
     return BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
       return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,

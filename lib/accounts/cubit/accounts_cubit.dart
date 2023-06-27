@@ -42,7 +42,12 @@ class AccountsCubit extends Cubit<AccountsState> {
         state.copyWith(status: DataStatus.loading));
     try {
       final accountList = await _accountsRepository.getAccounts().first;
-      final filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
+      List<Account> filteredAccounts;
+      if(state.categoryId == 'all_accounts'){
+        filteredAccounts = accountList;
+      }else {
+        filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
+      }
       emit(
           state.copyWith(status: DataStatus.success, accountList: filteredAccounts));
     } catch (e) {
