@@ -282,7 +282,6 @@ extension on firebase_auth.User {
   User get toUser {
     return User(
         id: uid,
-        token: getIdToken(),
         email: email,
         name: displayName,
         photo: photoURL);

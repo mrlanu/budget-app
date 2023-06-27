@@ -18,11 +18,11 @@ class AccountsCubit extends Cubit<AccountsState> {
   late final StreamSubscription<List<Account>> _accountsSubscription;
 
   AccountsCubit(
-      {required String budgetId, required String categoryId, required AccountsRepository accountsRepository,
+      {required String categoryId, required AccountsRepository accountsRepository,
         required TransactionsRepository transactionsRepository})
       : _accountsRepository = accountsRepository,
         _transactionsRepository = transactionsRepository,
-        super(AccountsState(budgetId: budgetId, categoryId: categoryId)) {
+        super(AccountsState(categoryId: categoryId)) {
     _transactionsSubscription = _transactionsRepository
         .getTransactions()
         .skip(1)
@@ -42,7 +42,12 @@ class AccountsCubit extends Cubit<AccountsState> {
         state.copyWith(status: DataStatus.loading));
     try {
       final accountList = await _accountsRepository.getAccounts().first;
-      final filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
+      List<Account> filteredAccounts;
+      if(state.categoryId == 'all_accounts'){
+        filteredAccounts = accountList;
+      }else {
+        filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
+      }
       emit(
           state.copyWith(status: DataStatus.success, accountList: filteredAccounts));
     } catch (e) {

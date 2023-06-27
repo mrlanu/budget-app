@@ -1,36 +1,29 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants/api.dart';
 import '../../shared/models/budget.dart';
 
 abstract class BudgetRepository {
-  Future<Budget> fetchBudget(String token);
+  Future<void> fetchBudget();
 }
 
 class BudgetRepositoryImpl extends BudgetRepository{
 
-  static const baseURL = 'http://10.0.2.2:8080/api/budgets';
+  final SharedPreferences _plugin;
+
+  BudgetRepositoryImpl({required SharedPreferences plugin}): _plugin = plugin;
 
   @override
-  Future<Budget> fetchBudget(String token) async {
-    final url = '$baseURL';
+  Future<void> fetchBudget() async {
+    final url = Uri.http(baseURL, '/api/budgets');
 
-    final response = await http.get(Uri.parse(url), headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
-    });
-
-    return _decodeBudget(response.body);
+    final response = await http.get(url, headers: await getHeaders());
+    await _setValue('budget', response.body);
   }
 
-  Budget _decodeBudget(String data) {
-    final budgetMap = json.decode(data);
-
-    return Budget(
-      id: budgetMap['id'],
-      userId: budgetMap['userId'],
-    );
-  }
-
+  Future<void> _setValue(String key, String value) =>
+      _plugin.setString(key, value);
 }

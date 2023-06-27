@@ -26,6 +26,9 @@ dependencies:
   form_inputs:
     path: packages/form_inputs
   bloc_concurrency: ^0.2.1
+  shared_preferences: ^2.1.2
+  firebase_core: ^2.14.0
+  firebase_auth: ^4.6.3
 
 dev_dependencies:
   bloc_test: ^9.0.0
@@ -34,8 +37,6 @@ dev_dependencies:
   mocktail: ^0.3.0
   build_runner: ^2.3.3
   json_serializable: ^6.6.1
-  firebase_auth_platform_interface: ^6.15.0
-  firebase_core_platform_interface: ^4.8.0
   plugin_platform_interface: ^2.1.4
   very_good_analysis: ^4.0.0
 

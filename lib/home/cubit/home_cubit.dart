@@ -12,8 +12,8 @@ import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
-import 'package:equatable/equatable.dart';
 import "package:collection/collection.dart";
+import 'package:equatable/equatable.dart';
 
 part 'home_state.dart';
 
@@ -26,15 +26,13 @@ class HomeCubit extends Cubit<HomeState> {
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
-  final String budgetId;
 
-  HomeCubit(
-      {required TransactionsRepository transactionsRepository,
-      required AccountsRepository accountsRepository,
-      required CategoriesRepository categoriesRepository,
-      required SubcategoriesRepository subcategoriesRepository,
-      required this.budgetId})
-      : _transactionsRepository = transactionsRepository,
+  HomeCubit({
+    required TransactionsRepository transactionsRepository,
+    required AccountsRepository accountsRepository,
+    required CategoriesRepository categoriesRepository,
+    required SubcategoriesRepository subcategoriesRepository,
+  })  : _transactionsRepository = transactionsRepository,
         _accountsRepository = accountsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
@@ -45,16 +43,16 @@ class HomeCubit extends Cubit<HomeState> {
     });
     _transfersSubscription =
         _transactionsRepository.getTransfers().listen((transfers) {
-          _onTransfersChanged(transfers);
-        });
+      _onTransfersChanged(transfers);
+    });
     _accountsSubscription =
-        _accountsRepository.getAccounts().skip(1).listen((accounts) {
-          _onAccountsChanged(accounts);
-        });
+        _accountsRepository.getAccounts().skip(2).listen((accounts) {
+      _onAccountsChanged(accounts);
+    });
     _categoriesSubscription =
         _categoriesRepository.getCategories().skip(1).listen((categories) {
-          _onCategoriesChanged(categories);
-        });
+      _onCategoriesChanged(categories);
+    });
     _init();
   }
 
@@ -62,6 +60,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: HomeStatus.loading));
     await Future.wait([
       _categoriesRepository.fetchAllCategories(),
+      //_accountsSubscription skip 1
       _accountsRepository.fetchAllAccounts(),
       _subcategoriesRepository.fetchSubcategories(),
     ]);
@@ -73,6 +72,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: HomeStatus.loading));
 
     final categories = await _categoriesRepository.getCategories().first;
+    //_accountsSubscription skip 2
     await _accountsRepository.fetchAllAccounts();
     final accounts = await _accountsRepository.getAccounts().first;
 
@@ -99,15 +99,16 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _onAccountsChanged(List<Account> accounts) async {
     var summaries;
-    if(state.tab == HomeTab.accounts){
-     summaries = await _getSummariesByAccounts(accounts: accounts);
+    if (state.tab == HomeTab.accounts) {
+      summaries = await _getSummariesByAccounts(accounts: accounts);
     }
-    final sectionsSum =
-    _recalculateSections(transactions: state.transactions, accounts: accounts);
+    final sectionsSum = _recalculateSections(
+        transactions: state.transactions, accounts: accounts);
     emit(state.copyWith(
       accounts: accounts,
       sectionsSum: sectionsSum,
-      summaryList: summaries,
+      summaryList:
+          state.tab == HomeTab.accounts ? summaries : state.summaryList,
       status: HomeStatus.success,
     ));
   }
@@ -178,19 +179,27 @@ class HomeCubit extends Cubit<HomeState> {
     final categories = await _categoriesRepository.getCategories().first;
     final groupedAccByCat = groupBy(accounts, (Account acc) => acc.categoryId);
 
+    double allTotal = 0;
     List<SummaryTile> summaries = [];
     if (categories.isNotEmpty) {
       groupedAccByCat.forEach((key, value) {
         final cat = categories.where((element) => element.id == key).first;
         final double sum = value.fold<double>(
             0.0, (previousValue, element) => previousValue + element.balance);
-
+        allTotal = allTotal + sum;
         summaries.add(SummaryTile(
             id: cat.id!,
             name: cat.name,
             total: sum,
             iconCodePoint: cat.iconCode!));
       });
+      summaries.insert(
+          0,
+          SummaryTile(
+              id: 'all_accounts',
+              name: 'All',
+              total: allTotal,
+              iconCodePoint: 60978));
     }
 
     return summaries;

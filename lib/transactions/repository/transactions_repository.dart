@@ -1,20 +1,14 @@
 import 'dart:convert';
 
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../constants/api.dart';
+
 abstract class TransactionsRepository {
-  final User _user;
-  final Budget _budget;
-
-  const TransactionsRepository({required User user, required Budget budget})
-      : _user = user,
-        _budget = budget;
-
   Stream<List<Transaction>> getTransactions();
   Stream<List<Transfer>> getTransfers();
   Future<void> createTransaction(Transaction transaction);
@@ -31,7 +25,6 @@ abstract class TransactionsRepository {
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
-  static const baseURL = '10.0.2.2:8080';
 
   final _transactionsStreamController =
       BehaviorSubject<List<Transaction>>.seeded(const []);
@@ -39,8 +32,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   final _transfersStreamController =
   BehaviorSubject<List<Transfer>>.seeded(const []);
 
-  TransactionsRepositoryImpl({required User user, required Budget budget})
-      : super(user: user, budget: budget);
+  TransactionsRepositoryImpl();
 
   @override
   Stream<List<Transaction>> getTransactions() =>
@@ -54,7 +46,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> createTransaction(Transaction transaction) async {
     final url = Uri.http(baseURL, '/api/transactions');
     final transactionResponse = await http.post(url,
-        headers: await _getHeaders(), body: json.encode(transaction.toJson()));
+        headers: await getHeaders(), body: json.encode(transaction.toJson()));
     final newTransaction = Transaction.fromJson(jsonDecode(transactionResponse.body));
     final transactions = [..._transactionsStreamController.value];
     final trIndex = transactions.indexWhere((t) => t.id == newTransaction.id);
@@ -72,7 +64,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> createTransfer(Transfer transfer) async {
     final url = Uri.http(baseURL, '/api/transfers');
     final transferResponse = await http.post(url,
-        headers: await _getHeaders(), body: json.encode(transfer.toJson()));
+        headers: await getHeaders(), body: json.encode(transfer.toJson()));
     final newTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
     final transfers = [..._transfersStreamController.value];
     transfers.add(newTransfer);
@@ -83,7 +75,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> editTransfer(Transfer transfer) async {
     final url = Uri.http(baseURL, '/api/transfers');
     final transferResponse = await http.put(url,
-        headers: await _getHeaders(), body: json.encode(transfer.toJson()));
+        headers: await getHeaders(), body: json.encode(transfer.toJson()));
     final editedTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
     final transfers = [..._transfersStreamController.value];
     final trIndex = transfers.indexWhere((t) => t.id == editedTransfer.id);
@@ -101,9 +93,9 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transactions',
-        {'budgetId': _budget.id, 'date': dateTime.toString()});
+        {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
-    final response = await http.get(url, headers: await _getHeaders());
+    final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
     ).map((jsonMap) => Transaction.fromJson(jsonMap)).toList();
@@ -115,9 +107,9 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     required DateTime dateTime,
   }) async {
     final url = Uri.http(baseURL, '/api/transfers',
-        {'budgetId': _budget.id, 'date': dateTime.toString()});
+        {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
-    final response = await http.get(url, headers: await _getHeaders());
+    final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(
       json.decode(response.body) as List,
     ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
@@ -128,7 +120,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<Transaction> deleteTransaction(String transactionId) async {
     final url = Uri.http(
         baseURL, '/api/transactions', {'transactionId': transactionId});
-    final deletedTransactionResponse = await http.delete(url, headers: await _getHeaders());
+    final deletedTransactionResponse = await http.delete(url, headers: await getHeaders());
     final deletedTransaction = Transaction.fromJson(jsonDecode(deletedTransactionResponse.body));
     final transactions = [..._transactionsStreamController.value];
     final transactionIndex = transactions.indexWhere((t) => t.id == transactionId);
@@ -144,7 +136,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   @override
   Future<Transfer> deleteTransfer(String transferId) async {
     final url = Uri.http(baseURL, '/api/transfers', {'transferId': transferId});
-    final deletedTransferResponse = await http.delete(url, headers: await _getHeaders());
+    final deletedTransferResponse = await http.delete(url, headers: await getHeaders());
     final deletedTransfer = Transfer.fromJson(jsonDecode(deletedTransferResponse.body));
     final transfers = [..._transfersStreamController.value];
     final transferIndex = transfers.indexWhere((t) => t.id == transferId);
@@ -155,13 +147,5 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       _transfersStreamController.add(transfers);
     }
     return deletedTransfer;
-  }
-
-  Future<Map<String, String>> _getHeaders() async {
-    final token = await _user.token;
-    return {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
-    };
   }
 }

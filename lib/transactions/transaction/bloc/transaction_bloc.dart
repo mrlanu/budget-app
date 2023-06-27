@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:equatable/equatable.dart';
@@ -24,7 +25,7 @@ part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final Budget _budget;
+
   final TransactionsRepository _transactionsRepository;
   final CategoriesRepository _categoriesRepository;
   final SubcategoriesRepository _subcategoriesRepository;
@@ -34,13 +35,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   late final StreamSubscription<List<Account>> _accountsSubscription;
 
   TransactionBloc({
-    required Budget budget,
     required TransactionsRepository transactionsRepository,
     required CategoriesRepository categoriesRepository,
     required SubcategoriesRepository subcategoriesRepository,
     required AccountsRepository accountsRepository,
-  })  : _budget = budget,
-        _transactionsRepository = transactionsRepository,
+  })  : _transactionsRepository = transactionsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
         _accountsRepository = accountsRepository,
@@ -108,7 +107,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       account = accounts.where((element) => element.id == tr.fromAccount!.id).first;
     }
     emit(TransactionState(
-      budgetId: _budget.id,
+      budgetId: await getBudgetId(),
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
@@ -170,15 +169,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(subcategory: () => event.subcategory));
   }
 
-  void _onSubcategoryCreated(
-      TransactionSubcategoryCreated event, Emitter<TransactionState> emit) {
+  Future<void> _onSubcategoryCreated(
+      TransactionSubcategoryCreated event, Emitter<TransactionState> emit) async {
     final newSubcategory = Subcategory(
       categoryId: state.category!.id!,
       name: event.name,
-      budgetId: _budget.id,
+      budgetId: await getBudgetId(),
     );
-    _subcategoriesRepository.saveSubcategory(
-        budgetId: _budget.id, subcategory: newSubcategory);
+    _subcategoriesRepository.saveSubcategory(subcategory: newSubcategory);
   }
 
   void _onAccountsChanged(
@@ -201,7 +199,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
-      budgetId: _budget.id,
+      budgetId: await getBudgetId(),
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),

@@ -9,6 +9,7 @@ import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/repository/transfer_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,8 +21,11 @@ import '../../transactions/transaction/view/transaction_page.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository =
-      AuthenticationRepository();
-  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
+      AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
+
+  final BudgetRepository _budgetRepository;
+
+  App({required BudgetRepository budgetRepository}): _budgetRepository = budgetRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +65,6 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select((AppBloc bloc) => bloc.state.user);
-    final budget = context.select((AppBloc bloc) => bloc.state.budget);
     return ScreenUtilInit(
       designSize: const Size(1080, 2160),
       minTextAdapt: true,
@@ -71,14 +73,14 @@ class _AppViewState extends State<AppView> {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(
-                create: (context) => CategoriesRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => CategoriesRepositoryImpl()),
             RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(user: user,  budget: budget!),
+              create: (context) => AccountsRepositoryImpl(),
             ),
             RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => TransactionsRepositoryImpl()),
             RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl(user: user, budget: budget!)),
+                create: (context) => SubcategoriesRepositoryImpl()),
             RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
           ],
           child: MaterialApp(
