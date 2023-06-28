@@ -1,9 +1,11 @@
+import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class DebtPayoffPage extends StatelessWidget {
-
-  static Route<void> route(){
-    return MaterialPageRoute(builder: (context) => DebtPayoffPage(),);
+  static Route<void> route() {
+    return MaterialPageRoute(
+      builder: (context) => DebtPayoffPage(),
+    );
   }
 
   const DebtPayoffPage({super.key});
@@ -19,10 +21,18 @@ class DebtPayoffView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(child: Text('Planner'),),
+      appBar: AppBar(
+        title: Text('Debt payoff planner'),
+        centerTitle: true,
+        backgroundColor: scheme.primaryContainer,
+      ),
+      body: DebtController(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
+      ),
     );
   }
 }
-
