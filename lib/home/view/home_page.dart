@@ -1,5 +1,6 @@
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
 import 'package:budget_app/shared/models/section.dart';
@@ -65,7 +66,7 @@ class HomeView extends StatelessWidget {
               ),
             ],
           ),
-          drawer: Drawer(),
+          drawer: MainDrawer(),
           floatingActionButton: _buildFAB(context, state),
           body: state.status == HomeStatus.loading
               ? Center(child: CircularProgressIndicator())
