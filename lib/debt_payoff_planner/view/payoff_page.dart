@@ -1,3 +1,4 @@
+import 'package:budget_app/debt_payoff_planner/view/widgets/carousel.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -23,12 +24,14 @@ class DebtPayoffView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: AppBar(
         title: Text('Debt payoff planner'),
         centerTitle: true,
         backgroundColor: scheme.primaryContainer,
       ),
-      body: DebtController(),
+      bottomNavigationBar: DebtController(),
+      body: CarouselWithIndicatorDemo(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {},
