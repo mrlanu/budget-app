@@ -1,3 +1,4 @@
+import 'package:budget_app/debt_payoff_planner/view/widgets/strategy_select_button.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +30,7 @@ class DebtPayoffView extends StatelessWidget {
         centerTitle: true,
         backgroundColor: scheme.primaryContainer,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.filter_2))
+          StrategySelectButton()
         ],
       ),
       bottomNavigationBar: DebtController(),
