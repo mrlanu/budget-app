@@ -1,4 +1,3 @@
-import 'package:budget_app/debt_payoff_planner/view/widgets/carousel.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +30,13 @@ class DebtPayoffView extends StatelessWidget {
         backgroundColor: scheme.primaryContainer,
       ),
       bottomNavigationBar: DebtController(),
-      body: CarouselWithIndicatorDemo(),
+      body: SingleChildScrollView(
+          child: Column(
+            children: [
+              CarouselWithIndicatorDemo(),
+              PayoffSummary(),
+            ],
+          )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {},
