@@ -28,6 +28,9 @@ class DebtPayoffView extends StatelessWidget {
         title: Text('Debt payoff planner'),
         centerTitle: true,
         backgroundColor: scheme.primaryContainer,
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.filter_2))
+        ],
       ),
       bottomNavigationBar: DebtController(),
       body: SingleChildScrollView(
@@ -35,6 +38,8 @@ class DebtPayoffView extends StatelessWidget {
             children: [
               CarouselWithIndicatorDemo(),
               PayoffSummary(),
+              ReportTile(),
+              ReportTile(),
             ],
           )),
       floatingActionButton: FloatingActionButton(

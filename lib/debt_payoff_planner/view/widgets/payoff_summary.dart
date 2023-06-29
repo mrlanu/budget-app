@@ -8,7 +8,7 @@ class PayoffSummary extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Row(

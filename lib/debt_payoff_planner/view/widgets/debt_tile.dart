@@ -19,7 +19,7 @@ class DebtTile extends StatelessWidget {
                     bottomRight: Radius.zero,
                     topLeft: Radius.circular(10.0),
                     bottomLeft: Radius.zero),
-                color: Colors.orangeAccent,
+                color: scheme.tertiaryContainer,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,7 +84,7 @@ class DebtTile extends StatelessWidget {
                   bottomRight: Radius.circular(10.0),
                   topLeft: Radius.zero,
                   bottomLeft: Radius.circular(10.0)),
-              color: Colors.orangeAccent,
+              color: scheme.tertiaryContainer,
             ),
             child: Text('Completed: ', style: Theme.of(context).textTheme.titleMedium),)
         ],
