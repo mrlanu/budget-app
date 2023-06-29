@@ -40,6 +40,7 @@ class DebtPayoffView extends StatelessWidget {
               PayoffSummary(),
               ReportTile(),
               ReportTile(),
+              DebtFreeCongrats(),
             ],
           )),
       floatingActionButton: FloatingActionButton(
