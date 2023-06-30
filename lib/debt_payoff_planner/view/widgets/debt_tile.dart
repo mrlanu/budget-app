@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/debt.dart';
 
 class DebtTile extends StatelessWidget {
-  const DebtTile({super.key});
+
+  final Debt debtModel;
+
+  const DebtTile({super.key, required this.debtModel});
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +32,10 @@ class DebtTile extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Text('Capital One',
+                      Text(debtModel.name,
                           style: Theme.of(context).textTheme.titleMedium),
                       Text(
-                        '0 % APR',
+                        '${debtModel.apr} % APR',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -56,7 +62,7 @@ class DebtTile extends StatelessWidget {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Jun 28, 2023', style: Theme.of(context).textTheme.titleMedium),
+                        Text('${DateFormat('MM-dd-yyyy').format(debtModel.nextPaymentDue)}', style: Theme.of(context).textTheme.titleMedium),
                         Text('PAYMENT DUE', style: Theme.of(context).textTheme.bodySmall),
                         Expanded(child: Container()),
                         Text('--'),
@@ -65,10 +71,10 @@ class DebtTile extends StatelessWidget {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('\$ 50', style: Theme.of(context).textTheme.titleMedium),
+                        Text('\$ ${debtModel.minimumPayment}', style: Theme.of(context).textTheme.titleMedium),
                         Text('MIN PAYMENT', style: Theme.of(context).textTheme.bodySmall),
                         Expanded(child: Container()),
-                        Text('\$ 2000', style: Theme.of(context).textTheme.titleMedium),
+                        Text('\$ ${debtModel.currentBalance}', style: Theme.of(context).textTheme.titleMedium),
                         Text('CURRENT BALANCE', style: Theme.of(context).textTheme.bodySmall),
                       ])
                 ],

@@ -1,11 +1,22 @@
+import 'package:budget_app/debt_payoff_planner/cubit/debt_payoff_cubit.dart';
+import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/strategy_select_button.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DebtPayoffPage extends StatelessWidget {
   static Route<void> route() {
+    final _repository = DebtRepositoryImpl();
     return MaterialPageRoute(
-      builder: (context) => DebtPayoffPage(),
+      builder: (context) => RepositoryProvider(
+        create: (context) => _repository,
+        child: BlocProvider(
+          create: (context) =>
+              DebtPayoffCubit(debtsRepository: _repository)..initRequested(),
+          child: DebtPayoffPage(),
+        ),
+      ),
     );
   }
 
@@ -29,21 +40,20 @@ class DebtPayoffView extends StatelessWidget {
         title: Text('Debt payoff planner'),
         centerTitle: true,
         backgroundColor: scheme.primaryContainer,
-        actions: [
-          StrategySelectButton()
-        ],
+        actions: [StrategySelectButton()],
       ),
-      bottomNavigationBar: DebtController(),
+      //bottomNavigationBar: DebtController(),
       body: SingleChildScrollView(
           child: Column(
-            children: [
-              CarouselWithIndicatorDemo(),
-              PayoffSummary(),
-              ReportTile(),
-              ReportTile(),
-              DebtFreeCongrats(),
-            ],
-          )),
+        children: [
+          DebtController(),
+          DebtCarousel(),
+          PayoffSummary(),
+          ReportTile(),
+          ReportTile(),
+          DebtFreeCongrats(),
+        ],
+      )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {},
