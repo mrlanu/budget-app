@@ -4,3 +4,4 @@ export 'carousel.dart';
 export 'payoff_summary.dart';
 export 'report_tile.dart';
 export 'debt_free_congrats.dart';
+export 'debt_strategy.dart';

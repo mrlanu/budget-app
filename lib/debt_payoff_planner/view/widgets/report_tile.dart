@@ -1,66 +1,98 @@
+import 'package:budget_app/debt_payoff_planner/models/debt_report_item.dart';
+import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
 import 'package:flutter/material.dart';
 
 class ReportTile extends StatelessWidget {
-  const ReportTile({super.key});
+  final DebtStrategyReport report;
+
+  const ReportTile({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 15),
       child: Column(
         children: [
           Container(
-            alignment: Alignment.center,
-            height: 35,
+              alignment: Alignment.center,
+              height: 35,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(10.0),
-                    bottomRight: Radius.zero,
-                    topLeft: Radius.circular(10.0),
-                    bottomLeft: Radius.zero),
-                color: scheme.tertiaryContainer
-              ),
-              child: Text('DURATION 5 MONTHS',
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(10.0),
+                      bottomRight: Radius.zero,
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.zero),
+                  color: scheme.tertiaryContainer),
+              child: Text('DURATION ${report.duration} MONTHS',
                   style: Theme.of(context).textTheme.titleSmall)),
           Container(
-            height: 45,
+            height: report.extraPayments.length * 45,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                      Text('Capital One', style: Theme.of(context).textTheme.titleMedium),
-                      Text('\$ 190', style: Theme.of(context).textTheme.titleMedium),
+                for (DebtReportItem item in report.extraPayments)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${item.name}',
+                          style: item.paid
+                              ? textTheme.titleMedium!.copyWith(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold)
+                              : textTheme.titleMedium!),
+                      item.paid
+                          ? Text('LAST PAYMENT',
+                              style: textTheme.titleSmall!.copyWith(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold))
+                          : Container(),
+                      Text('\$ ${item.amount.toStringAsFixed(2)}',
+                          style: item.paid
+                              ? textTheme.titleMedium!.copyWith(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold)
+                              : textTheme.titleMedium!),
+                    ],
+                  ),
               ],
             ),
           ),
-          true ? Container(
-            height: 60,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.zero,
-                  bottomRight: Radius.circular(10.0),
-                  topLeft: Radius.zero,
-                  bottomLeft: Radius.circular(10.0)),
-              color: Color.fromRGBO(231, 231, 231, 1.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('AND MIN PAYMENT FOR:', style: Theme.of(context).textTheme.bodySmall),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Car', style: Theme.of(context).textTheme.titleMedium),
-                    Text('\$ 50', style: Theme.of(context).textTheme.titleMedium),
-                  ],
-                ),
-              ],
-            ),) : Container()
+          report.minPayments.length > 0
+              ? Container(
+                  height: 60,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.zero,
+                        bottomRight: Radius.circular(10.0),
+                        topLeft: Radius.zero,
+                        bottomLeft: Radius.circular(10.0)),
+                    color: Color.fromRGBO(231, 231, 231, 1.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('AND MIN PAYMENT FOR:',
+                          style: Theme.of(context).textTheme.bodySmall),
+                      for (DebtReportItem item in report.minPayments)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${item.name}', style: textTheme.titleMedium),
+                            Text('\$ ${item.amount.toStringAsFixed(2)}',
+                                style: textTheme.titleMedium),
+                          ],
+                        ),
+                    ],
+                  ),
+                )
+              : Container()
         ],
       ),
     );
