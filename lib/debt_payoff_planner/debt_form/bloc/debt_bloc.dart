@@ -26,12 +26,30 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
 
   Future<void> _onEvent(DebtEvent event, Emitter<DebtState> emit) {
     return switch (event) {
+      final FormInitEvent e => _onFormInit(e, emit),
       final NameChanged e => _onNameChanged(e, emit),
       final BalanceChanged e => _onBalanceChanged(e, emit),
       final MinPaymentChanged e => _onMinPaymentChanged(e, emit),
       final AprChanged e => _onAprChanged(e, emit),
       final DebtFormSubmitted e => _onFormSubmitted(e, emit)
     };
+  }
+
+  Future<void> _onFormInit(FormInitEvent event, Emitter<DebtState> emit) async {
+    final debt = event.debt;
+    if (debt != null) {
+      emit(state.copyWith(
+        status: DebtStateStatus.success,
+        id: debt.id,
+        name: debt.name,
+        balance: MyDigit.dirty(debt.startBalance.toString()),
+        minPayment: MyDigit.dirty(debt.minimumPayment.toString()),
+        apr: MyDigit.dirty(debt.apr.toString()),
+        isValid: true,
+      ));
+    } else {
+      emit(state.copyWith(status: DebtStateStatus.success));
+    }
   }
 
   Future<void> _onNameChanged(
@@ -67,10 +85,11 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
 
   Future<void> _onFormSubmitted(
       DebtFormSubmitted event, Emitter<DebtState> emit) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+    emit(state.copyWith(submissionStatus: FormzSubmissionStatus.inProgress));
     try {
       final debt = await _debtRepository.saveDebt(
           debt: Debt(
+              id: state.id,
               name: state.name,
               startBalance: double.parse(state.balance.value),
               currentBalance: double.parse(state.balance.value),
@@ -78,14 +97,15 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
               budgetId: await getBudgetId(),
               apr: double.parse(state.apr.value),
               minimumPayment: double.parse(state.minPayment.value)));
-      emit(state.copyWith(status: FormzSubmissionStatus.success));
+      emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
       Navigator.pop(event.context);
     } on DebtFailure catch (e) {
       emit(state.copyWith(
-          status: FormzSubmissionStatus.failure, errorMessage: e.message));
+          submissionStatus: FormzSubmissionStatus.failure,
+          errorMessage: e.message));
     } catch (e) {
       emit(state.copyWith(
-          status: FormzSubmissionStatus.failure,
+          submissionStatus: FormzSubmissionStatus.failure,
           errorMessage: 'Unknown Error'));
     }
   }

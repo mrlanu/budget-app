@@ -8,6 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/debt_cubit/debts_cubit.dart';
 
 class DebtCarousel extends StatefulWidget {
+  final Function onEdit;
+
+  DebtCarousel({required this.onEdit});
 
   @override
   State<StatefulWidget> createState() {
@@ -26,6 +29,7 @@ class _DebtCarouselState extends State<DebtCarousel> {
         final items = state.debtList
             .map((debt) => DebtTile(
                   debtModel: debt,
+                  onEdit: widget.onEdit,
                 ))
             .toList();
         return state.status == DebtsStatus.loading
@@ -59,12 +63,12 @@ class _DebtCarouselState extends State<DebtCarousel> {
                             vertical: 8.0, horizontal: 4.0),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: (Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black)
-                                .withOpacity(
-                                    _current == entry.key ? 0.9 : 0.4)),
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                    .withOpacity(
+                                        _current == entry.key ? 0.9 : 0.4)),
                       ),
                     );
                   }).toList(),

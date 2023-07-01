@@ -17,8 +17,8 @@ class DebtPayoffPage extends StatelessWidget {
               child: MultiBlocProvider(
                 providers: [
                   BlocProvider(
-                    create: (context) => DebtsCubit(debtsRepository: repository)
-                      ..updateDebts(),
+                    create: (context) =>
+                        DebtsCubit(debtsRepository: repository)..updateDebts(),
                   ),
                   BlocProvider(
                     create: (context) => StrategyCubit(),
@@ -63,27 +63,30 @@ class DebtPayoffView extends StatelessWidget {
           child: Column(
         children: [
           DebtController(),
-          DebtCarousel(),
+          DebtCarousel(
+              onEdit: (debt) => _openDialog(debt: debt, context: context)),
           DebtStrategy(),
         ],
       )),
     );
   }
 
-  Future<String?> _openDialog({required BuildContext context, Debt? debt}) =>
-      showDialog<String>(
-        context: context,
-        builder: (_) => MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (_) =>
-                  DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>()),
-            ),
-            BlocProvider.value(
-              value: context.read<DebtsCubit>(),
-            ),
-          ],
-          child: DebtDialog(),
-        ),
-      );
+  void _openDialog({required BuildContext context, Debt? debt}) {
+    showDialog<String>(
+      context: context,
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) =>
+                DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>())
+                  ..add(FormInitEvent(debt: debt)),
+          ),
+          BlocProvider.value(
+            value: context.read<DebtsCubit>(),
+          ),
+        ],
+        child: DebtDialog(),
+      ),
+    );
+  }
 }

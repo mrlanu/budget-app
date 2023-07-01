@@ -2,9 +2,15 @@ part of 'debt_bloc.dart';
 
 sealed class DebtEvent extends Equatable {
   const DebtEvent();
+}
+
+final class FormInitEvent extends DebtEvent {
+  final Debt? debt;
+
+  const FormInitEvent({this.debt});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [debt];
 }
 
 final class NameChanged extends DebtEvent {

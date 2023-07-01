@@ -6,8 +6,9 @@ import '../../models/debt.dart';
 class DebtTile extends StatelessWidget {
 
   final Debt debtModel;
+  final Function onEdit;
 
-  const DebtTile({super.key, required this.debtModel});
+  const DebtTile({super.key, required this.debtModel, required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class DebtTile extends StatelessWidget {
                   ButtonBar(
                     children: [
                       IconButton.filled(
-                          onPressed: () {},
+                          onPressed: () => onEdit(debtModel),
                           icon: const Icon(Icons.edit_note)),
                       IconButton.filled(
                           onPressed: () {},
