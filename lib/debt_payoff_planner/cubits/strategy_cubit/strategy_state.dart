@@ -8,11 +8,15 @@ class LoadingStrategyState extends StrategyState {
 }
 
 class LoadedStrategyState extends StrategyState {
-
+  final String strategy;
+  final String extraPayment;
   final DebtPayoffStrategy debtPayoffStrategy;
 
-  LoadedStrategyState({required this.debtPayoffStrategy});
+  LoadedStrategyState(
+      {required this.strategy,
+      required this.extraPayment,
+      required this.debtPayoffStrategy});
 
   @override
-  List<Object?> get props => [debtPayoffStrategy];
+  List<Object?> get props => [strategy, extraPayment, debtPayoffStrategy];
 }

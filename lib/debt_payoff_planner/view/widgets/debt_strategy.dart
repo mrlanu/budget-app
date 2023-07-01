@@ -13,7 +13,12 @@ class DebtStrategy extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<DebtsCubit, DebtsState>(
       listener: (context, state) {
-        context.read<StrategyCubit>().fetchStrategy();
+        final strategyCubit = context.read<StrategyCubit>();
+        final state = strategyCubit.state;
+        final isStateLoaded = state is LoadedStrategyState;
+        strategyCubit.fetchStrategy(
+            extraPayment: isStateLoaded ? state.extraPayment : '0',
+            strategyName: isStateLoaded ? state.strategy : 'snowball');
       },
       child: BlocBuilder<StrategyCubit, StrategyState>(
         builder: (context, state) {

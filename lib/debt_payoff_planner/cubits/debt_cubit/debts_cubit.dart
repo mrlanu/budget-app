@@ -18,4 +18,10 @@ class DebtsCubit extends Cubit<DebtsState> {
     final debtList = await _debtsRepository.fetchAllDebts();
     emit(state.copyWith(debtList: debtList, status: DebtsStatus.success));
   }
+
+  Future<void> deleteDebt(String debtId)async {
+    await _debtsRepository.deleteDebt(debtId: debtId);
+    final debtList = await _debtsRepository.fetchAllDebts();
+    emit(state.copyWith(debtList: debtList, status: DebtsStatus.success));
+  }
 }
