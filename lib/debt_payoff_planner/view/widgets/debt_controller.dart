@@ -13,8 +13,6 @@ class DebtController extends StatefulWidget {
 
 class _DebtControllerState extends State<DebtController> {
   late TextEditingController _textEditingController;
-  double? total;
-  double sumMinPayments = 0.0;
 
   @override
   void initState() {
@@ -29,69 +27,69 @@ class _DebtControllerState extends State<DebtController> {
   }
 
   void _onChanged(BuildContext context) {
-    final text = _textEditingController.text;
+    final doubleText = _parseString(_textEditingController.text);
+    setState(() {});
+    final strategyCubit = context.read<StrategyCubit>();
+    final state = strategyCubit.state;
+    final isLoadedState = state is LoadedStrategyState;
+    strategyCubit.fetchStrategy(
+        extraPayment: doubleText.toString(),
+        strategyName: isLoadedState ? state.strategy : 'snowball');
+  }
+
+  double _parseString(String text) {
+    double result;
     try {
-      final doubleText = double.parse(text);
-      setState(() {
-        total = doubleText + sumMinPayments;
-      });
-      final strategyCubit = context.read<StrategyCubit>();
-      final state = strategyCubit.state as LoadedStrategyState;
-      strategyCubit.fetchStrategy(
-          extraPayment: doubleText.toString(), strategyName: state.strategy);
+      result = double.parse(text);
     } catch (e) {
-      print('Error');
+      result = 0;
     }
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DebtsCubit, DebtsState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+    return BlocBuilder<DebtsCubit, DebtsState>(
       builder: (context, state) {
-        return BlocBuilder<DebtsCubit, DebtsState>(
-          builder: (context, state) {
-            sumMinPayments = state.debtList
-                .fold(0.0, (prevValue, d) => prevValue + d.minimumPayment);
-            return Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                padding: EdgeInsets.all(15),
-                width: double.infinity,
-                height: 80,
-                child: Row(
+        final sumMinPayments = state.debtList
+            .fold(0.0, (prevValue, d) => prevValue + d.minimumPayment);
+        final total =
+            sumMinPayments + _parseString(_textEditingController.text);
+        return Container(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            padding: EdgeInsets.all(15),
+            width: double.infinity,
+            height: 80,
+            child: Row(
+              children: [
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        Text('min'),
-                        Text('\$ ${sumMinPayments} +',
-                            style: Theme.of(context).textTheme.titleLarge)
-                      ],
-                    ),
-                    SizedBox(width: 15),
-                    Expanded(
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        controller: _textEditingController,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(), labelText: 'extra'),
-                        onChanged: (_) => _onChanged(context),
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Column(
-                      children: [
-                        Text('total'),
-                        Text('= \$ ${total ?? sumMinPayments}',
-                            style: Theme.of(context).textTheme.titleLarge),
-                      ],
-                    ),
+                    Text('min'),
+                    Text('\$ ${sumMinPayments} +',
+                        style: Theme.of(context).textTheme.titleLarge)
                   ],
-                ));
-          },
-        );
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(), labelText: 'extra'),
+                    onChanged: (_) => _onChanged(context),
+                  ),
+                ),
+                SizedBox(width: 15),
+                Column(
+                  children: [
+                    Text('total'),
+                    Text('= \$ $total',
+                        style: Theme.of(context).textTheme.titleLarge),
+                  ],
+                ),
+              ],
+            ));
       },
     );
   }
