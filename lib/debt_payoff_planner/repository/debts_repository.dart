@@ -4,6 +4,14 @@ import '../../constants/api.dart';
 import '../models/models.dart';
 import 'package:http/http.dart' as http;
 
+class DebtFailure implements Exception {
+  final String message;
+
+  const DebtFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+}
+
 abstract class DebtsRepository {
   Future<List<Debt>> fetchAllDebts();
   Future<Debt> saveDebt({required Debt debt});
@@ -35,9 +43,15 @@ class DebtRepositoryImpl extends DebtsRepository {
   }
 
   @override
-  Future<Debt> saveDebt({required Debt debt}) {
-    // TODO: implement saveDebt
-    throw UnimplementedError();
+  Future<Debt> saveDebt({required Debt debt}) async {
+    final url = Uri.http(baseURL, '/api/debts');
+    final debtResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(debt.toJson()));
+    if(debtResponse.statusCode != 200){
+      throw DebtFailure(jsonDecode(debtResponse.body)['message']);
+    }
+    final newDebt = Debt.fromJson(jsonDecode(debtResponse.body));
+    return newDebt;
   }
 
 }

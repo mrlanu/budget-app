@@ -1,39 +1,39 @@
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
-import 'package:budget_app/debt_payoff_planner/view/widgets/strategy_select_button.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../cubits/debt_cubit/debt_cubit.dart';
+import '../cubits/debt_cubit/debts_cubit.dart';
+import '../debt_form/debt_form.dart';
+import '../models/models.dart';
 
 class DebtPayoffPage extends StatelessWidget {
   static Route<void> route() {
-    final _repository = DebtRepositoryImpl();
+    final repository = DebtRepositoryImpl();
     return MaterialPageRoute(
-      builder: (context) => RepositoryProvider(
-        create: (context) => _repository,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) =>
-                  DebtCubit(debtsRepository: _repository)..initRequested(),
-            ),
-            BlocProvider(
-              create: (context) => StrategyCubit(),
-            ),
-          ],
-          child: DebtPayoffPage(),
-        ),
-      ),
-    );
+        builder: (context) => RepositoryProvider(
+              create: (context) => repository,
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => DebtsCubit(debtsRepository: repository)
+                      ..updateDebts(),
+                  ),
+                  BlocProvider(
+                    create: (context) => StrategyCubit(),
+                  ),
+                ],
+                child: DebtPayoffPage(),
+              ),
+            ));
   }
 
-  const DebtPayoffPage({super.key});
+  DebtPayoffPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DebtPayoffView();
+    return DebtPayoffView();
   }
 }
 
@@ -49,7 +49,14 @@ class DebtPayoffView extends StatelessWidget {
         title: Text('Debt payoff planner'),
         centerTitle: true,
         backgroundColor: scheme.primaryContainer,
-        actions: [StrategySelectButton()],
+        actions: [
+          IconButton(
+              onPressed: () async {
+                _openDialog(context: context);
+              },
+              icon: Icon(Icons.add)),
+          StrategySelectButton()
+        ],
       ),
       //bottomNavigationBar: DebtController(),
       body: SingleChildScrollView(
@@ -60,10 +67,23 @@ class DebtPayoffView extends StatelessWidget {
           DebtStrategy(),
         ],
       )),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {},
-      ),
     );
   }
+
+  Future<String?> _openDialog({required BuildContext context, Debt? debt}) =>
+      showDialog<String>(
+        context: context,
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>()),
+            ),
+            BlocProvider.value(
+              value: context.read<DebtsCubit>(),
+            ),
+          ],
+          child: DebtDialog(),
+        ),
+      );
 }

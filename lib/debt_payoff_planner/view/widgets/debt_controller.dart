@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubits/debt_cubit/debt_cubit.dart';
+import '../../cubits/debt_cubit/debts_cubit.dart';
 
 class DebtController extends StatefulWidget {
   const DebtController({super.key});
@@ -41,7 +41,7 @@ class _DebtControllerState extends State<DebtController> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DebtCubit, DebtState>(
+    return BlocBuilder<DebtsCubit, DebtsState>(
       builder: (context, state) {
         sumMinPayments = state.debtList
             .fold(0.0, (prevValue, d) => prevValue + d.minimumPayment);

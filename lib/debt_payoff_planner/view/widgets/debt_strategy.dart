@@ -1,5 +1,5 @@
-import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debt_cubit.dart';
-import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debt_cubit.dart';
+import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
+import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
@@ -11,7 +11,7 @@ class DebtStrategy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<DebtCubit, DebtState>(
+    return BlocListener<DebtsCubit, DebtsState>(
       listener: (context, state) {
         context.read<StrategyCubit>().fetchStrategy();
       },

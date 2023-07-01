@@ -1,27 +1,27 @@
-part of 'debt_cubit.dart';
+part of 'debts_cubit.dart';
 
-enum DebtStatus {
+enum DebtsStatus {
   loading,
   success,
   failure,
 }
 
-class DebtState extends Equatable {
+class DebtsState extends Equatable {
   final List<Debt> debtList;
-  final DebtStatus status;
+  final DebtsStatus status;
   final String? errorMessage;
 
-  DebtState(
+  DebtsState(
       {this.debtList = const [],
-      this.status = DebtStatus.loading,
+      this.status = DebtsStatus.loading,
       this.errorMessage});
 
-  DebtState copyWith({
+  DebtsState copyWith({
     List<Debt>? debtList,
-    DebtStatus? status,
+    DebtsStatus? status,
     String? errorMessage,
   }) {
-    return DebtState(
+    return DebtsState(
         debtList: debtList ?? this.debtList,
         status: status ?? this.status,
         errorMessage: errorMessage ?? this.errorMessage);

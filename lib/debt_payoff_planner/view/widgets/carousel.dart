@@ -5,9 +5,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubits/debt_cubit/debt_cubit.dart';
+import '../../cubits/debt_cubit/debts_cubit.dart';
 
 class DebtCarousel extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return _DebtCarouselState();
@@ -20,14 +21,14 @@ class _DebtCarouselState extends State<DebtCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DebtCubit, DebtState>(
+    return BlocBuilder<DebtsCubit, DebtsState>(
       builder: (context, state) {
         final items = state.debtList
             .map((debt) => DebtTile(
                   debtModel: debt,
                 ))
             .toList();
-        return state.status == DebtStatus.loading
+        return state.status == DebtsStatus.loading
             ? Center(
                 child: CircularProgressIndicator(),
               )

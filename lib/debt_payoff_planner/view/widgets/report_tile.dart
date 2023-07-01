@@ -64,7 +64,7 @@ class ReportTile extends StatelessWidget {
           ),
           report.minPayments.length > 0
               ? Container(
-                  height: 60,
+                  height: report.minPayments.length * 60,
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -77,6 +77,7 @@ class ReportTile extends StatelessWidget {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text('AND MIN PAYMENT FOR:',
                           style: Theme.of(context).textTheme.bodySmall),
