@@ -108,8 +108,15 @@ class DebtTile extends StatelessWidget {
                   bottomLeft: Radius.circular(10.0)),
               color: BudgetColors.teal600,
             ),
-            child: Text('Completed: ',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Completed: ',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)),
+                Text('0 %',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)),
+              ],
+            ),
           )
         ],
       ),

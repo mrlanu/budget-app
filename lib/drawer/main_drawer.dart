@@ -19,29 +19,18 @@ class MainDrawer extends StatelessWidget {
                 BudgetColors.teal600,
                 BudgetColors.teal900,
               ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.monetization_on_outlined,
-                    size: 48,
-                    color: BudgetColors.amber800,
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    'My Budget',
-                    style: Theme.of(context)
-                        .textTheme.headlineLarge!
-                        .copyWith(color: BudgetColors.amber800),
-                  )
-                ],
-              )),
+              child: Container(
+                  width: double.infinity,
+                  child: Image.asset('assets/images/piggy_logo.png',
+                      fit: BoxFit.contain))),
           ListTile(
-            leading: Icon(Icons.money_outlined, size: 26, color: BudgetColors.teal900,),
-            title: Text('Debt payoff planner', style: Theme.of(context)
-                .textTheme.titleLarge!
-                .copyWith(color: BudgetColors.teal900),),
+            leading: Icon(Icons.money_outlined,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Debt payoff planner',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, DebtPayoffPage.route());

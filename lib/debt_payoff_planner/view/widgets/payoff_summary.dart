@@ -13,6 +13,7 @@ class PayoffSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<StrategyCubit, StrategyState>(
       builder: (context, state) {
         return Card(
@@ -25,9 +26,11 @@ class PayoffSummary extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text('${DateFormat('MM-dd-yyyy').format(debtPayoffStrategy.debtFreeDate)}',
-                        style: textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                        '${DateFormat('MM-dd-yyyy').format(debtPayoffStrategy.debtFreeDate)}',
+                        style: textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: scheme.primary)),
                     Text('DEBT FREE ON', style: textTheme.bodySmall),
                   ],
                 ),
@@ -35,7 +38,7 @@ class PayoffSummary extends StatelessWidget {
                   children: [
                     Text('${debtPayoffStrategy.totalDuration}',
                         style: textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold)),
+                            .copyWith(fontWeight: FontWeight.bold, color: scheme.primary)),
                     Text('DURATION', style: textTheme.bodySmall),
                   ],
                 ),
@@ -43,7 +46,7 @@ class PayoffSummary extends StatelessWidget {
                   children: [
                     Text('\$ ${debtPayoffStrategy.totalInterest}',
                         style: textTheme.titleMedium!
-                            .copyWith(fontWeight: FontWeight.bold)),
+                            .copyWith(fontWeight: FontWeight.bold, color: scheme.primary)),
                     Text('TOTAL INTEREST', style: textTheme.bodySmall),
                   ],
                 ),

@@ -21,6 +21,7 @@ class CategoriesSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Column(
@@ -41,8 +42,10 @@ class CategoriesSummary extends StatelessWidget {
                           horizontal: 30.w, vertical: 15.h),
                       elevation: Theme.of(context).cardTheme.elevation,
                       child: ListTile(
-                          leading: Icon(IconData(summaryItem.iconCodePoint,
-                              fontFamily: 'MaterialIcons')),
+                          leading: Icon(
+                              color: scheme.primary,
+                              IconData(summaryItem.iconCodePoint,
+                                  fontFamily: 'MaterialIcons')),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -50,7 +53,8 @@ class CategoriesSummary extends StatelessWidget {
                                 '\$ ${summaryItem.total.toString()}',
                                 style: TextStyle(
                                     fontSize: textTheme.titleLarge!.fontSize,
-                                    fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold,
+                                    color: scheme.primary),
                               ),
                               SizedBox(
                                 width: 30.w,
@@ -61,8 +65,8 @@ class CategoriesSummary extends StatelessWidget {
                           title: Text(
                             summaryItem.name,
                             style: TextStyle(
-                              fontSize: textTheme.titleLarge!.fontSize,
-                            ),
+                                fontSize: textTheme.titleLarge!.fontSize,
+                                color: scheme.primary),
                           ),
                           onTap: state.tab == HomeTab.accounts
                               ? () => Navigator.of(context).push(
@@ -71,13 +75,22 @@ class CategoriesSummary extends StatelessWidget {
                                           BlocProvider.of<HomeCubit>(context),
                                       categoryId: summaryItem.id,
                                       dateTime: dateTime ?? DateTime.now()))
-                              : () => Navigator.of(context).push(
-                                  TransactionsPage.route(
-                                      homeCubit:
-                                          BlocProvider.of<HomeCubit>(context),
-                                      filter: index == 0
-                                          ? TransactionsViewFilter(type: state.tab.index == 0 ? TransactionsViewFilterTypes.allExpenses : TransactionsViewFilterTypes.allIncomes)
-                                          : TransactionsViewFilter(type: TransactionsViewFilterTypes.categoryId, filterId: summaryItem.id),))),
+                              : () => Navigator.of(context)
+                                      .push(TransactionsPage.route(
+                                    homeCubit:
+                                        BlocProvider.of<HomeCubit>(context),
+                                    filter: index == 0
+                                        ? TransactionsViewFilter(
+                                            type: state.tab.index == 0
+                                                ? TransactionsViewFilterTypes
+                                                    .allExpenses
+                                                : TransactionsViewFilterTypes
+                                                    .allIncomes)
+                                        : TransactionsViewFilter(
+                                            type: TransactionsViewFilterTypes
+                                                .categoryId,
+                                            filterId: summaryItem.id),
+                                  ))),
                     );
                   }),
             ),

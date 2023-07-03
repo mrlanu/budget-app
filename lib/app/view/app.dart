@@ -93,8 +93,8 @@ class _AppViewState extends State<AppView> {
                 textTheme: GoogleFonts.robotoCondensedTextTheme(),
                 cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
                 appBarTheme: AppBarTheme(
-                    backgroundColor: const Color(0xFF004D40),
-                    foregroundColor: Colors.white),
+                    backgroundColor: BudgetColors.teal900,
+                    foregroundColor: BudgetColors.teal50),
                 colorScheme: ThemeData.light().colorScheme.copyWith(
                       primary: BudgetColors.teal900,
                       tertiary: BudgetColors.amber800,

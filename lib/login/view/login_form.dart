@@ -24,28 +24,29 @@ class LoginForm extends StatelessWidget {
             );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, 0),
-        child: Padding(
-          padding: EdgeInsets.all(70.w),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FilledCard(),
-                SizedBox(height: 100.h),
-                _EmailInput(),
-                SizedBox(height: 20.h),
-                _PasswordInput(),
-                SizedBox(height: 50.h),
-                _LoginButton(),
-                SizedBox(height: 100.h),
-                _GoogleLoginButton(),
-                SizedBox(height: 100.h),
-                _SignUpButton()
-              ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FilledCard(),
+            Padding(
+              padding: EdgeInsets.all(70.w),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 100.h),
+                  _EmailInput(),
+                  SizedBox(height: 20.h),
+                  _PasswordInput(),
+                  SizedBox(height: 50.h),
+                  _LoginButton(),
+                  SizedBox(height: 100.h),
+                  _GoogleLoginButton(),
+                  SizedBox(height: 100.h),
+                  _SignUpButton()
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

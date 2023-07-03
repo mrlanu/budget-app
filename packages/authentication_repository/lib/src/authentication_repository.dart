@@ -181,7 +181,7 @@ class AuthenticationRepository {
   /// Emits [User.empty] if the user is not authenticated.
   Stream<User> get user async* {
     // delay for Splash screen
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 2000));
 
     yield* _firebaseAuth.authStateChanges().map((firebaseUser) {
       final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
