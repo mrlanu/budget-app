@@ -7,7 +7,6 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Drawer(
       backgroundColor: BudgetColors.teal50,
       child: Column(
@@ -24,6 +23,16 @@ class MainDrawer extends StatelessWidget {
                   child: Image.asset('assets/images/piggy_logo.png',
                       fit: BoxFit.contain))),
           ListTile(
+            leading: Icon(Icons.monetization_on_outlined,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Budgets',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {},
+          ),
+          ListTile(
             leading: Icon(Icons.money_outlined,
                 size: 26, color: BudgetColors.teal900),
             title: Text('Debt payoff planner',
@@ -35,6 +44,36 @@ class MainDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(context, DebtPayoffPage.route());
             },
+          ),
+          ListTile(
+            leading: Icon(Icons.account_balance_outlined,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Accounts',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(Icons.category,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Categories',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(Icons.settings,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Settings',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {},
           ),
         ],
       ),
