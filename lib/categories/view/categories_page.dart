@@ -1,6 +1,7 @@
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,9 +50,7 @@ class CategoriesView extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           appBar: AppBar(
-            backgroundColor: scheme.primaryContainer,
             title: _buildTitle(state),
           ),
           body: Column(
@@ -95,7 +94,7 @@ class CategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: scheme.primaryContainer,
+                tileColor: BudgetColors.amber800,
                 title: Text(
                   'New category',
                   style: TextStyle(
@@ -104,7 +103,7 @@ class CategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: scheme.onSecondaryContainer,
+                  color: BudgetColors.teal900,
                 ),
                 onTap: () {
                   context.read<CategoriesCubit>().onNewCategory();

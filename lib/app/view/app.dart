@@ -3,6 +3,7 @@ import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
@@ -25,7 +26,8 @@ class App extends StatelessWidget {
 
   final BudgetRepository _budgetRepository;
 
-  App({required BudgetRepository budgetRepository}): _budgetRepository = budgetRepository;
+  App({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   ThemeMode themeMode = ThemeMode.system;
-  ColorSeed colorSelected = ColorSeed.yellow;
+  ColorSeed colorSelected = ColorSeed.baseColor;
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   NavigatorState get _navigator => _navigatorKey.currentState!;
@@ -72,8 +74,7 @@ class _AppViewState extends State<AppView> {
       builder: (context, child) {
         return MultiRepositoryProvider(
           providers: [
-            RepositoryProvider(
-                create: (context) => CategoriesRepositoryImpl()),
+            RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
             RepositoryProvider(
               create: (context) => AccountsRepositoryImpl(),
             ),
@@ -81,23 +82,42 @@ class _AppViewState extends State<AppView> {
                 create: (context) => TransactionsRepositoryImpl()),
             RepositoryProvider(
                 create: (context) => SubcategoriesRepositoryImpl()),
-            RepositoryProvider(create: (context) => TransferRepositoryImpl(),)
+            RepositoryProvider(
+              create: (context) => TransferRepositoryImpl(),
+            )
           ],
           child: MaterialApp(
             navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-                textTheme: GoogleFonts.latoTextTheme(),
+                textTheme: GoogleFonts.robotoCondensedTextTheme(),
                 cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
-                useMaterial3: true,
-                colorSchemeSeed: colorSelected.color,
-                brightness: Brightness.light),
-            darkTheme: ThemeData(
+                appBarTheme: AppBarTheme(
+                    backgroundColor: BudgetColors.teal900,
+                    foregroundColor: BudgetColors.teal50),
+                colorScheme: ThemeData.light().colorScheme.copyWith(
+                      primary: BudgetColors.teal900,
+                      tertiary: BudgetColors.amber800,
+                      tertiaryContainer: BudgetColors.amber800,
+                      onPrimaryContainer: Colors.white70,
+                      surface: BudgetColors.teal100,
+                      background: BudgetColors.teal50,
+                    ),
+                inputDecorationTheme: const InputDecorationTheme(
+                    border: const OutlineInputBorder(),
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: const Color(0xFF343434), width: 1)),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide:
+                        const BorderSide(color: const Color(0xFF343434), width: 1))
+                    ),
+                useMaterial3: true),
+            /*darkTheme: ThemeData(
               cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
-              colorSchemeSeed: colorSelected.color,
               useMaterial3: true,
               brightness: Brightness.dark,
-            ),
+            ),*/
             routes: {
               HomePage.routeName: (context) => HomePage(),
               //AccountsPage.routeName: (context) => AccountsPage(),

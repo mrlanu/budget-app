@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,9 +52,7 @@ class SubcategoriesView extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           appBar: AppBar(
-            backgroundColor: scheme.primaryContainer,
             title: _buildTitle(state.category!),
           ),
           body: Column(
@@ -99,7 +98,7 @@ class SubcategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: scheme.primaryContainer,
+                tileColor: BudgetColors.amber800,
                 title: Text(
                   'New Subcategory',
                   style: TextStyle(
@@ -108,7 +107,7 @@ class SubcategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: scheme.onSecondaryContainer,
+                  color:BudgetColors.teal900,
                 ),
                 onTap: () {
                   context.read<SubcategoriesCubit>().onNewSubcategory();

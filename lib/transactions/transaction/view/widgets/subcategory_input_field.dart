@@ -61,7 +61,7 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,
-                color: Colors.orangeAccent,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
               border: OutlineInputBorder(),
               labelText: 'Subcategory',

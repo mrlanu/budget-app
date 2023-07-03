@@ -36,7 +36,7 @@ class CategoryInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,
-                color: Colors.orangeAccent,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
               border: OutlineInputBorder(),
               labelText: 'Category',
