@@ -50,9 +50,7 @@ class TransactionPage extends StatelessWidget {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return Scaffold(
-            backgroundColor: scheme.secondaryContainer,
             appBar: AppBar(
-              backgroundColor: scheme.primaryContainer,
               title: Text(_buildTitle(state)),
             ),
             body: state.trStatus == TransactionStatus.success

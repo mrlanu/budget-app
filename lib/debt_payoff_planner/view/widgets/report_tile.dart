@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_report_item.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class ReportTile extends StatelessWidget {
                       bottomRight: Radius.zero,
                       topLeft: Radius.circular(10.0),
                       bottomLeft: Radius.zero),
-                  color: scheme.tertiaryContainer),
+                  color: BudgetColors.teal200),
               child: Text('DURATION ${report.duration} MONTHS',
                   style: Theme.of(context).textTheme.titleSmall)),
           Container(
@@ -42,19 +43,19 @@ class ReportTile extends StatelessWidget {
                       Text('${item.name}',
                           style: item.paid
                               ? textTheme.titleMedium!.copyWith(
-                                  color: Colors.green,
+                                  color: BudgetColors.teal900,
                                   fontWeight: FontWeight.bold)
                               : textTheme.titleMedium!),
                       item.paid
                           ? Text('LAST PAYMENT',
                               style: textTheme.titleSmall!.copyWith(
-                                  color: Colors.green,
+                                  color: BudgetColors.teal900,
                                   fontWeight: FontWeight.bold))
                           : Container(),
                       Text('\$ ${item.amount.toStringAsFixed(2)}',
                           style: item.paid
                               ? textTheme.titleMedium!.copyWith(
-                                  color: Colors.green,
+                                  color: BudgetColors.teal900,
                                   fontWeight: FontWeight.bold)
                               : textTheme.titleMedium!),
                     ],

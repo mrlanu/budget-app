@@ -17,11 +17,10 @@ class AmountInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.attach_money,
-              color: Colors.orangeAccent,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
             border: OutlineInputBorder(),
             labelText: 'Amount',
-            helperText: '',
             errorText:
             state.amount.displayError != null ? 'invalid amount' : null,
           ),

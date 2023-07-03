@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class DebtTile extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+              padding: EdgeInsets.only(top: 0, left: 15, right: 0, bottom: 0),
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -28,7 +29,7 @@ class DebtTile extends StatelessWidget {
                     bottomRight: Radius.zero,
                     topLeft: Radius.circular(10.0),
                     bottomLeft: Radius.zero),
-                color: scheme.tertiaryContainer,
+                color: BudgetColors.teal600
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,19 +37,21 @@ class DebtTile extends StatelessWidget {
                   Column(
                     children: [
                       Text(debtModel.name,
-                          style: Theme.of(context).textTheme.titleMedium),
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)),
                       Text(
                         '${debtModel.apr} % APR',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
                       ),
                     ],
                   ),
                   ButtonBar(
                     children: [
-                      IconButton.filled(
+                      IconButton.outlined(
+                        color: BudgetColors.amber800,
                           onPressed: () => onEdit(debtModel),
                           icon: const Icon(Icons.edit_note)),
-                      IconButton.filled(
+                      IconButton.outlined(
+                        color: BudgetColors.amber800,
                           onPressed: () {
                             context.read<DebtsCubit>().deleteDebt(debtModel.id!);
                             //context.read<StrategyCubit>().fetchStrategy();
@@ -60,6 +63,7 @@ class DebtTile extends StatelessWidget {
               )),
           Expanded(
             child: Container(
+              color: BudgetColors.teal100,
               padding: EdgeInsets.all(15),
               width: double.infinity,
               child: Row(
@@ -102,10 +106,10 @@ class DebtTile extends StatelessWidget {
                   bottomRight: Radius.circular(10.0),
                   topLeft: Radius.zero,
                   bottomLeft: Radius.circular(10.0)),
-              color: scheme.tertiaryContainer,
+              color: BudgetColors.teal600,
             ),
             child: Text('Completed: ',
-                style: Theme.of(context).textTheme.titleMedium),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white)),
           )
         ],
       ),

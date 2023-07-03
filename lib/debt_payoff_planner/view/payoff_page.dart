@@ -44,11 +44,9 @@ class DebtPayoffView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: AppBar(
         title: Text('Debt payoff planner'),
         centerTitle: true,
-        backgroundColor: scheme.primaryContainer,
         actions: [
           IconButton(
               onPressed: () async {

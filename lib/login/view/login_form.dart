@@ -125,7 +125,7 @@ class _LoginButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
+                      BudgetColors.amber800,
                 ),
                 onPressed: state.isValid
                     ? () => context.read<LoginCubit>().logInWithCredentials()
@@ -144,7 +144,7 @@ class _GoogleLoginButton extends StatelessWidget {
       onTap: () => context.read<LoginCubit>().logInWithGoogle(),
       child: CircleAvatar(
         minRadius: 25.0,
-        backgroundColor: BudgetColors.primaryBackground,
+        backgroundColor: BudgetColors.teal50,
         child: Image.asset('assets/images/google.png', width: 50),
       ),
       /*child: Container(

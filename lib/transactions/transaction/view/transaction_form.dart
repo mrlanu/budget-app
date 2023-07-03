@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/amount_input_field.dart';
@@ -14,42 +15,43 @@ class TransactionForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
-          child: Column(
-            children: [
-              AmountInput(),
-              SizedBox(
-                height: 30.h,
-              ),
-              DateInput(),
-              SizedBox(
-                height: 75.h,
-              ),
-              CategoryInput(),
-              SizedBox(
-                height: 75.h,
-              ),
-              SubcategoryInput(),
-              SizedBox(
-                height: 75.h,
-              ),
-              AccountInput(),
-              SizedBox(
-                height: 75.h,
-              ),
-              _NotesInput(),
-              SizedBox(
-                height: 75.h,
-              ),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
+            child: Column(
+              children: [
+                AmountInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                DateInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                CategoryInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                SubcategoryInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                AccountInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                _NotesInput(),
+                SizedBox(
+                  height: 75.h,
+                ),
+                _SubmitButton(),
+              ],
+            ),
           ),
-        ),
-        Expanded(child: Container()),
-        _SubmitButton(),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -66,7 +68,7 @@ class _NotesInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
-                color: Colors.orangeAccent,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
               border: OutlineInputBorder(),
               labelText: 'Notes',
@@ -82,13 +84,17 @@ class _NotesInput extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ListTile(
-                tileColor: scheme.primaryContainer,
+                tileColor: state.isValid &&
+                    state.category != null &&
+                    state.subcategory != null &&
+                    state.account != null
+                    ? BudgetColors.amber800
+                    : BudgetColors.grey400,
                 title: Center(
                   child: Text(
                     'Save',

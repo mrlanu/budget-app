@@ -3,6 +3,7 @@ import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/models/category.dart';
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,9 +71,7 @@ class AccountsListView extends StatelessWidget {
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {
             return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
               appBar: AppBar(
-                backgroundColor: scheme.primaryContainer,
                 title: Text('Accounts'),
               ),
               body: Column(
@@ -115,7 +114,7 @@ class AccountsListView extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    tileColor: scheme.primaryContainer,
+                    tileColor: BudgetColors.amber800,
                     title: Text(
                       'New Account',
                       style: TextStyle(
@@ -124,7 +123,7 @@ class AccountsListView extends StatelessWidget {
                     ),
                     trailing: Icon(
                       Icons.add,
-                      color: scheme.onSecondaryContainer,
+                      color: BudgetColors.teal900,
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

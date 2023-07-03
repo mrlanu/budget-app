@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +57,7 @@ class _DebtControllerState extends State<DebtController> {
         final total =
             sumMinPayments + _parseString(_textEditingController.text);
         return Container(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: BudgetColors.teal100,
             padding: EdgeInsets.all(15),
             width: double.infinity,
             height: 80,

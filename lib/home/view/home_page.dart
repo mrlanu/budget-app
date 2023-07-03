@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../app/bloc/app_bloc.dart';
+import '../../colors.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
 
@@ -27,9 +28,10 @@ class HomePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeCubit(
         accountsRepository: context.read<AccountsRepositoryImpl>(),
-          categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-          subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),),
+        categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+        transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+        subcategoriesRepository: context.read<SubcategoriesRepositoryImpl>(),
+      ),
       child: HomeView(),
     );
   }
@@ -40,46 +42,44 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    print('ICON: ${Icons.account_balance_outlined.codePoint}');
     return BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-      return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-          appBar: AppBar(
-            backgroundColor: scheme.primaryContainer,
-            title: state.tab != HomeTab.accounts
-                ? MonthPaginator(
-                    onLeft: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                    onRight: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                  )
-                : Text('Accounts'),
-            centerTitle: true,
-            actions: <Widget>[
-              IconButton(
-                key: const Key('homePage_logout_iconButton'),
-                icon: const Icon(Icons.exit_to_app),
-                onPressed: () {
-                  context.read<AppBloc>().add(const AppLogoutRequested());
-                },
-              ),
-            ],
-          ),
-          drawer: MainDrawer(),
-          floatingActionButton: _buildFAB(context, state),
-          body: state.status == HomeStatus.loading
-              ? Center(child: CircularProgressIndicator())
-              : CategoriesSummary(
-                  summaryList: state.summaryList,
-                  dateTime: state.selectedDate),
-          bottomNavigationBar: _buildBottomNavigationBar(context, state));
+      return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              title: state.tab != HomeTab.accounts
+                  ? MonthPaginator(
+                      onLeft: (date) =>
+                          context.read<HomeCubit>().changeDate(date),
+                      onRight: (date) =>
+                          context.read<HomeCubit>().changeDate(date),
+                    )
+                  : Text('Accounts'),
+              centerTitle: true,
+              actions: <Widget>[
+                IconButton(
+                  key: const Key('homePage_logout_iconButton'),
+                  icon: const Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    context.read<AppBloc>().add(const AppLogoutRequested());
+                  },
+                ),
+              ],
+            ),
+            drawer: MainDrawer(),
+            floatingActionButton: _buildFAB(context, state),
+            body: state.status == HomeStatus.loading
+                ? Center(child: CircularProgressIndicator())
+                : CategoriesSummary(
+                    summaryList: state.summaryList,
+                    dateTime: state.selectedDate),
+            bottomNavigationBar: _buildBottomNavigationBar(context, state)),
+      );
     });
   }
 }
 
 FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
-  return FloatingActionButton(
+  return FloatingActionButton(backgroundColor: Theme.of(context).colorScheme.tertiary,
     onPressed: () {
       switch (state.tab) {
         case HomeTab.expenses:
@@ -101,7 +101,7 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
       }
       ;
     },
-    child: const Icon(Icons.add),
+    child: const Icon(Icons.add, color: Colors.black,),
   );
 }
 
@@ -109,19 +109,19 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     height: 230.h,
-    decoration: BoxDecoration(
+    /*decoration: BoxDecoration(
         color: scheme.primary,
-        /*borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),*/
+        */ /*borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),*/ /*
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 1,
           )
-        ]),
+        ]),*/
     child: BottomNavigationBar(
-      backgroundColor: scheme.primaryContainer,
+      backgroundColor: scheme.primary,
       currentIndex: state.tab.index,
       onTap: (value) {
         context.read<HomeCubit>().setTab(value);
@@ -129,12 +129,13 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
       elevation: 0,
       showSelectedLabels: true,
       showUnselectedLabels: false,
-      selectedItemColor: scheme.primary,
-      unselectedItemColor: scheme.tertiary,
+      selectedItemColor: BudgetColors.amber800,
+      unselectedItemColor: scheme.surfaceVariant,
       items: [
         _buildBottomNavigationBarItem(
             label: 'expenses',
             icon: Icons.account_balance_wallet,
+            color: scheme.onPrimary,
             section: Section.EXPENSES,
             state: state,
             amount: state.sectionsSum['expenses']!,
@@ -142,6 +143,7 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
         _buildBottomNavigationBarItem(
             label: 'income',
             icon: Icons.monetization_on_outlined,
+            color: scheme.onPrimary,
             section: Section.INCOME,
             state: state,
             amount: state.sectionsSum['incomes']!,
@@ -149,6 +151,7 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
         _buildBottomNavigationBarItem(
             label: 'accounts',
             icon: Icons.account_balance_outlined,
+            color: scheme.onPrimary,
             section: Section.ACCOUNTS,
             amount: state.sectionsSum['accounts']!,
             state: state,
@@ -161,6 +164,7 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
 BottomNavigationBarItem _buildBottomNavigationBarItem(
     {required String label,
     required IconData icon,
+    required Color color,
     required Section section,
     required HomeState state,
     required double amount,
@@ -173,6 +177,7 @@ BottomNavigationBarItem _buildBottomNavigationBarItem(
         Text(
           '\$ $amount',
           style: TextStyle(
+              color: color,
               fontWeight:
                   state.tab == tab ? FontWeight.bold : FontWeight.normal),
         )

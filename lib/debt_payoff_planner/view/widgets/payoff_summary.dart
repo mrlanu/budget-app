@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_payoff_strategy.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,11 @@ class PayoffSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return BlocBuilder<StrategyCubit, StrategyState>(
       builder: (context, state) {
         return Card(
+          color: BudgetColors.amber800,
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),

@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,7 +58,7 @@ class FilledCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(200.r)),
       ),
-      color: Theme.of(context).colorScheme.secondaryContainer,
+      color: BudgetColors.teal50,
       child: SizedBox(
         width: 800.w,
         height: 500.w,
@@ -163,7 +164,7 @@ class _SignUpButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            backgroundColor: BudgetColors.amber800,
           ),
           onPressed: state.isValid
               ? () => context.read<SignUpCubit>().signUpFormSubmitted()

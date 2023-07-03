@@ -1,6 +1,6 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/debt_form/debt_form.dart';
-import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,8 +30,7 @@ class DebtDialog extends StatelessWidget {
         return state.status == DebtStateStatus.loading
             ? Center(child: CircularProgressIndicator())
             : Dialog(
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
+                backgroundColor: BudgetColors.teal50,
                 insetPadding: EdgeInsets.all(10),
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -41,9 +40,7 @@ class DebtDialog extends StatelessWidget {
                       height: 1465.h,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                      ),
+                        borderRadius: BorderRadius.circular(15),),
                       padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
                       child: SingleChildScrollView(
                         child: Column(

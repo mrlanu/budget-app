@@ -44,9 +44,7 @@ class AccountsPage extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-        backgroundColor: scheme.secondaryContainer,
         appBar: AppBar(
-          backgroundColor: scheme.primaryContainer,
           title: Text('Accounts'),
           centerTitle: true,
         ),
