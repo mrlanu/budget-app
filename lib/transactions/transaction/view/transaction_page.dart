@@ -27,7 +27,6 @@ class TransactionPage extends StatelessWidget {
           BlocProvider(
             create: (context) =>
             TransactionBloc(
-              budget: appBloc.state.budget!,
               transactionsRepository: context.read<
                   TransactionsRepositoryImpl>(),
               categoriesRepository: context.read<CategoriesRepositoryImpl>(),
@@ -51,9 +50,7 @@ class TransactionPage extends StatelessWidget {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return Scaffold(
-            backgroundColor: scheme.secondaryContainer,
             appBar: AppBar(
-              backgroundColor: scheme.primaryContainer,
               title: Text(_buildTitle(state)),
             ),
             body: state.trStatus == TransactionStatus.success

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category.dart';
@@ -25,8 +26,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     });
   }
 
-  Future<void> onInit(
-      {required String budgetId, required Category category}) async {
+  Future<void> onInit({required Category category}) async {
     final subcategories =
         await _subcategoriesRepository.getSubcategories().first;
     final filteredSubcategories =
@@ -56,18 +56,17 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     emit(state.copyWith(editSubcategory: subcategory));
   }
 
-  void onSubmit(String budgetId) {
+  Future<void> onSubmit() async {
     var subcategory;
     if (state.editSubcategory == null) {
       subcategory = Subcategory(
           name: state.name!,
           categoryId: state.category!.id!,
-          budgetId: budgetId);
+          budgetId: await getBudgetId());
     } else {
       subcategory = state.editSubcategory!.copyWith(name: state.name);
     }
-    _subcategoriesRepository.saveSubcategory(
-        subcategory: subcategory, budgetId: budgetId);
+    _subcategoriesRepository.saveSubcategory(subcategory: subcategory);
   }
 
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {

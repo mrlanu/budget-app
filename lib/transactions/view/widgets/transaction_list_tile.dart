@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class TransactionListTile extends StatelessWidget {
                         transactionTile.title ==
                             'Transfer out')
                         ? Theme.of(context).colorScheme.error
-                        : Theme.of(context).colorScheme.tertiary,
+                        : BudgetColors.teal900,
                     width: 20.w),
               ),
             ),
@@ -62,7 +63,7 @@ class TransactionListTile extends StatelessWidget {
                                     transactionTile.title ==
                                         'Transfer out')
                                 ? theme.error
-                                : theme.tertiary,
+                                : BudgetColors.teal900,
                         fontSize: textTheme.titleLarge!.fontSize,
                         fontWeight: FontWeight.bold),
                   ),
@@ -77,8 +78,8 @@ class TransactionListTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: textTheme.titleLarge!.fontSize,
                   color: transactionTile.type == TransactionType.EXPENSE
-                      ? theme.onErrorContainer
-                      : theme.onTertiaryContainer,
+                      ? theme.primary
+                      : theme.primary,
                 ),
               ),
               subtitle: Text(

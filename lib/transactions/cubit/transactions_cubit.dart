@@ -23,7 +23,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
 
   TransactionsCubit({
-    required String budgetId,
     required TransactionsRepository transactionsRepository,
     required CategoriesRepository categoriesRepository,
     required SubcategoriesRepository subcategoriesRepository,

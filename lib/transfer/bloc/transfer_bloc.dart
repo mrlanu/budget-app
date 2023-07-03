@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
@@ -21,14 +22,14 @@ part 'transfer_event.dart';
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
-  final String budgetId;
+
   final TransactionsRepository _transactionsRepository;
   final CategoriesRepository _categoriesRepository;
   late final AccountsRepository _accountsRepository;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  TransferBloc({required this.budgetId,
+  TransferBloc({
     required TransactionsRepository transactionsRepository,
     required CategoriesRepository categoriesRepository,
     required AccountsRepository accountsRepository})
@@ -71,7 +72,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     final transactionTile = event.transactionTile;
     if (transactionTile != null) {
       emit(state.copyWith(
-        budgetId: this.budgetId,
+        budgetId: await getBudgetId(),
         id: transactionTile.id,
         amount: Amount.dirty(transactionTile.amount.toString()),
         fromAccount: accounts
@@ -88,7 +89,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         trStatus: TransferStatus.success,));
     } else {
       emit(state.copyWith(trStatus: TransferStatus.success,
-          budgetId: this.budgetId,
+          budgetId: await getBudgetId(),
           accountCategories: filteredCategories,
           accounts: accounts));
     }

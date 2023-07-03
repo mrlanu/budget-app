@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/accounts/models/account.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,13 +19,12 @@ part 'account_edit_event.dart';
 part 'account_edit_state.dart';
 
 class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
-  final String budgetId;
   final CategoriesRepository _categoriesRepository;
   final AccountsRepository _accountsRepository;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   AccountEditBloc(
-      {required this.budgetId,
+      {
       required CategoriesRepository categoriesRepository,
       required AccountsRepository accountsRepository})
       : _categoriesRepository = categoriesRepository,
@@ -123,7 +123,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals,
-        budgetId: budgetId);
+        budgetId: await getBudgetId());
     _accountsRepository.saveAccount(account: account);
     Navigator.of(event.context).pop();
   }

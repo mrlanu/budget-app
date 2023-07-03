@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,25 +23,26 @@ class SignUpForm extends StatelessWidget {
             );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, -1.5),
-        child: Padding(
-          padding: EdgeInsets.all(70.w),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FilledCard(),
-                _EmailInput(),
-                SizedBox(height: 20.h),
-                _PasswordInput(),
-                SizedBox(height: 20.h),
-                _ConfirmPasswordInput(),
-                SizedBox(height: 20.h),
-                _SignUpButton(),
-              ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FilledCard(height: 500),
+            Padding(
+              padding: EdgeInsets.all(70.w),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _EmailInput(),
+                  SizedBox(height: 20.h),
+                  _PasswordInput(),
+                  SizedBox(height: 20.h),
+                  _ConfirmPasswordInput(),
+                  SizedBox(height: 20.h),
+                  _SignUpButton(),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -48,27 +50,22 @@ class SignUpForm extends StatelessWidget {
 }
 
 class FilledCard extends StatelessWidget {
-  const FilledCard({super.key});
+
+  final int height;
+
+  const FilledCard({super.key, this.height = 700});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(200.r)),
-      ),
-      color: Theme.of(context).colorScheme.secondaryContainer,
-      child: SizedBox(
-        width: 800.w,
-        height: 500.w,
+    return Container(
+      color: BudgetColors.teal900,
+        width: double.infinity,
+        height: height.w,
         child: Padding(
-          padding: EdgeInsets.all(100.h),
-          child: Image.asset(color: Theme.of(context).colorScheme.primary,
-            'assets/images/logo.png',
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 100.w, vertical: 0),
+          child: Image.asset('assets/images/piggy_logo.png'),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -163,7 +160,7 @@ class _SignUpButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            backgroundColor: BudgetColors.amber800,
           ),
           onPressed: state.isValid
               ? () => context.read<SignUpCubit>().signUpFormSubmitted()

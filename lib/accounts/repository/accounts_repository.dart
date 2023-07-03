@@ -1,17 +1,13 @@
 import 'dart:convert';
 
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
+import '../../constants/api.dart';
 import '../../shared/models/budget.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
-  final User user;
-  final Budget budget;
-
-  AccountsRepository({required this.user, required this.budget});
   Stream<List<Account>> getAccounts();
   Future<void> fetchAllAccounts();
   Future<void> saveAccount({required Account account});
@@ -27,11 +23,11 @@ class AccountFailure implements Exception {
 }
 
 class AccountsRepositoryImpl extends AccountsRepository {
-  static const baseURL = '10.0.2.2:8080';
+
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
-  AccountsRepositoryImpl({required super.user, required super.budget});
+  AccountsRepositoryImpl();
 
   @override
   Stream<List<Account>> getAccounts() =>
@@ -42,9 +38,9 @@ class AccountsRepositoryImpl extends AccountsRepository {
     var response;
 
     final url = Uri.http(
-        baseURL, '/api/accounts', {'budgetId': budget.id});
+        baseURL, '/api/accounts', {'budgetId': await getBudgetId()});
 
-    response = await http.get(url, headers: await _getHeaders());
+    response = await http.get(url, headers: await getHeaders());
 
     final accounts = List<Map<dynamic, dynamic>>.from(
       json.decode(response.body) as List,
@@ -61,7 +57,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
     final url = Uri.http(baseURL, '/api/accounts');
 
     final response = await http.post(url,
-        headers: await _getHeaders(), body: json.encode(account.toJson()));
+        headers: await getHeaders(), body: json.encode(account.toJson()));
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
     final accounts = [..._accountsStreamController.value];
@@ -73,7 +69,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
   Future<void> deleteAccount({required Account account}) async {
     final url = Uri.http(baseURL, '/api/accounts/${account.id}');
 
-    final resp = await http.delete(url, headers: await _getHeaders());
+    final resp = await http.delete(url, headers: await getHeaders());
     if (resp.statusCode != 200) {
       throw AccountFailure(jsonDecode(resp.body)['message']);
     }
@@ -85,13 +81,5 @@ class AccountsRepositoryImpl extends AccountsRepository {
       accounts.removeAt(accIndex);
       _accountsStreamController.add(accounts);
     }
-  }
-
-  Future<Map<String, String>> _getHeaders() async {
-    final token = await user.token;
-    return {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
-    };
   }
 }

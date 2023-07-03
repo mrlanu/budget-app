@@ -1,4 +1,4 @@
-import 'package:budget_app/app/app.dart';
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,9 +19,7 @@ class SubcategoriesPage extends StatelessWidget {
                 subcategoriesRepository:
                     context.read<SubcategoriesRepositoryImpl>(),
                 category: category)
-              ..onInit(
-                  budgetId: context.read<AppBloc>().state.budget!.id,
-                  category: category),
+              ..onInit(category: category),
             child: SubcategoriesPage(),
           );
         });
@@ -54,9 +52,7 @@ class SubcategoriesView extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           appBar: AppBar(
-            backgroundColor: scheme.primaryContainer,
             title: _buildTitle(state.category!),
           ),
           body: Column(
@@ -102,7 +98,7 @@ class SubcategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: scheme.primaryContainer,
+                tileColor: BudgetColors.amber800,
                 title: Text(
                   'New Subcategory',
                   style: TextStyle(
@@ -111,7 +107,7 @@ class SubcategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: scheme.onSecondaryContainer,
+                  color:BudgetColors.teal900,
                 ),
                 onTap: () {
                   context.read<SubcategoriesCubit>().onNewSubcategory();
@@ -153,8 +149,7 @@ class SubcategoriesView extends StatelessWidget {
           )));
 
   void _submit(BuildContext context) {
-    final budgetId = context.read<AppBloc>().state.budget!.id;
-    context.read<SubcategoriesCubit>().onSubmit(budgetId);
+    context.read<SubcategoriesCubit>().onSubmit();
     Navigator.of(context).pop();
   }
 

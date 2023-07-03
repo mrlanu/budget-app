@@ -26,7 +26,6 @@ class AccountsPage extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AccountsCubit(
-                budgetId: appBloc.state.budget!.id,
                 categoryId: categoryId,
                 transactionsRepository:
                     context.read<TransactionsRepositoryImpl>(),
@@ -45,9 +44,7 @@ class AccountsPage extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-        backgroundColor: scheme.secondaryContainer,
         appBar: AppBar(
-          backgroundColor: scheme.primaryContainer,
           title: Text('Accounts'),
           centerTitle: true,
         ),

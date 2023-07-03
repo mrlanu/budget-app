@@ -1,4 +1,6 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -10,10 +12,11 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(17, 17, 31, 1),
+      backgroundColor: BudgetColors.teal900,
       body: Center(
         child: Container(
-          child: Image.asset('assets/images/anim_logo.gif',),
+          width: 500.w,
+          child: Image.asset('assets/images/logo.png'),
         ),
       ),
     );

@@ -20,7 +20,6 @@ class TransferPage extends StatelessWidget {
           BlocProvider(
             create: (context) =>
             TransferBloc(
-              budgetId: appBloc.state.budget!.id,
               transactionsRepository: context.read<TransactionsRepositoryImpl>(),
               categoriesRepository: context.read<CategoriesRepositoryImpl>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
@@ -40,9 +39,7 @@ class TransferPage extends StatelessWidget {
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         return Scaffold(
-            backgroundColor: scheme.secondaryContainer,
             appBar: AppBar(
-              backgroundColor: scheme.primaryContainer,
               title: Text('Transfer'),
             ),
             body: state.trStatus == TransferStatus.success

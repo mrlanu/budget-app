@@ -19,7 +19,7 @@ class DateInput extends StatelessWidget {
                 border: OutlineInputBorder(),
                 icon: Icon(
                   Icons.calendar_today,
-                  color: Colors.orangeAccent,
+                  color: Color(0xFFEAAA00),
                 ),
                 labelText: "Date"),
             readOnly: true,

@@ -26,7 +26,6 @@ class TransactionsPage extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => TransactionsCubit(
-              budgetId: appBloc.state.budget!.id,
               transactionsRepository:
                   context.read<TransactionsRepositoryImpl>(),
               categoriesRepository: context.read<CategoriesRepositoryImpl>(),
@@ -80,9 +79,7 @@ class TransactionsPage extends StatelessWidget {
         child: BlocBuilder<TransactionsCubit, TransactionsState>(
           builder: (context, state) {
             return Scaffold(
-                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                 appBar: AppBar(
-                  backgroundColor: scheme.primaryContainer,
                   centerTitle: true,
                   title: Text('Transactions'),
                 ),
