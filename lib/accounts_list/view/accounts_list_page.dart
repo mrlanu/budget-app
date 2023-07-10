@@ -1,7 +1,6 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
@@ -17,8 +16,7 @@ class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
   static Route<void> route(
-      {required HomeCubit homeCubit,
-      required List<Category> accountCategories}) {
+      {required HomeCubit homeCubit}) {
     return MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {

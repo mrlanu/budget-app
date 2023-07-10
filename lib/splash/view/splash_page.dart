@@ -22,7 +22,7 @@ class _SplashPageState extends State<SplashPage>
     super.initState();
     controller =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    animation = CurvedAnimation(parent: controller, curve: Curves.bounceOut)
+    animation = CurvedAnimation(parent: controller, curve: Curves.bounceOut);
     controller.forward();
   }
 
