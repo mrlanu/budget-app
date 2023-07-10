@@ -1,6 +1,11 @@
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../accounts_list/view/accounts_list_page.dart';
+import '../app/bloc/app_bloc.dart';
+import '../home/cubit/home_cubit.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -46,26 +51,6 @@ class MainDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_balance_outlined,
-                size: 26, color: BudgetColors.teal900),
-            title: Text('Accounts',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: BudgetColors.teal900)),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(Icons.category,
-                size: 26, color: BudgetColors.teal900),
-            title: Text('Categories',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: BudgetColors.teal900)),
-            onTap: () {},
-          ),
-          ListTile(
             leading: Icon(Icons.settings,
                 size: 26, color: BudgetColors.teal900),
             title: Text('Settings',
@@ -74,6 +59,16 @@ class MainDrawer extends StatelessWidget {
                     .titleLarge!
                     .copyWith(color: BudgetColors.teal900)),
             onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(Icons.logout,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Log out',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {context.read<AppBloc>().add(const AppLogoutRequested());},
           ),
         ],
       ),

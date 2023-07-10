@@ -1,4 +1,5 @@
 import 'package:budget_app/accounts/view/accounts_page.dart';
+import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/shared/models/summary_tile.dart';
 import 'package:budget_app/transactions/models/transactions_view_filter.dart';
@@ -37,7 +38,7 @@ class CategoriesSummary extends StatelessWidget {
                       ),
                   itemBuilder: (context, index) {
                     final summaryItem = summaryList[index];
-                    return Card(
+                    return Card(color: index == 0 ? BudgetColors.teal300 : null,
                       margin: EdgeInsets.symmetric(
                           horizontal: 30.w, vertical: 15.h),
                       elevation: Theme.of(context).cardTheme.elevation,

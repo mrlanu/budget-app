@@ -1,5 +1,6 @@
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/categories_summary.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../accounts_list/view/accounts_list_page.dart';
 import '../../app/bloc/app_bloc.dart';
 import '../../colors.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
@@ -58,9 +60,22 @@ class HomeView extends StatelessWidget {
               actions: <Widget>[
                 IconButton(
                   key: const Key('homePage_logout_iconButton'),
-                  icon: const Icon(Icons.exit_to_app),
+                  icon: const Icon(Icons.create_new_folder_outlined),
                   onPressed: () {
-                    context.read<AppBloc>().add(const AppLogoutRequested());
+                    switch (state.tab) {
+                      case HomeTab.income:
+                        Navigator.of(context).push(CategoriesPage.route(
+                            transactionType: TransactionType.INCOME));
+                        break;
+                      case HomeTab.expenses:
+                        Navigator.of(context).push(CategoriesPage.route(
+                            transactionType: TransactionType.EXPENSE));
+                        break;
+                      case HomeTab.accounts:
+                        Navigator.of(context).push(AccountsListPage.route(
+                            homeCubit: context.read<HomeCubit>()));
+                        break;
+                    }
                   },
                 ),
               ],
@@ -79,7 +94,8 @@ class HomeView extends StatelessWidget {
 }
 
 FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
-  return FloatingActionButton(backgroundColor: Theme.of(context).colorScheme.tertiary,
+  return FloatingActionButton(
+    backgroundColor: Theme.of(context).colorScheme.tertiary,
     onPressed: () {
       switch (state.tab) {
         case HomeTab.expenses:
@@ -101,7 +117,10 @@ FloatingActionButton _buildFAB(BuildContext context, HomeState state) {
       }
       ;
     },
-    child: const Icon(Icons.add, color: Colors.black,),
+    child: const Icon(
+      Icons.add,
+      color: Colors.black,
+    ),
   );
 }
 
@@ -109,54 +128,49 @@ Widget _buildBottomNavigationBar(BuildContext context, HomeState state) {
   final scheme = Theme.of(context).colorScheme;
   return Container(
     height: 230.h,
-    /*decoration: BoxDecoration(
-        color: scheme.primary,
-        */ /*borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40.h), topRight: Radius.circular(40.h)),*/ /*
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 1,
-          )
-        ]),*/
-    child: BottomNavigationBar(
-      backgroundColor: scheme.primary,
-      currentIndex: state.tab.index,
-      onTap: (value) {
-        context.read<HomeCubit>().setTab(value);
-      },
-      elevation: 0,
-      showSelectedLabels: true,
-      showUnselectedLabels: false,
-      selectedItemColor: BudgetColors.amber800,
-      unselectedItemColor: scheme.surfaceVariant,
-      items: [
-        _buildBottomNavigationBarItem(
-            label: 'expenses',
-            icon: Icons.account_balance_wallet,
-            color: scheme.onPrimary,
-            section: Section.EXPENSES,
-            state: state,
-            amount: state.sectionsSum['expenses']!,
-            tab: HomeTab.expenses),
-        _buildBottomNavigationBarItem(
-            label: 'income',
-            icon: Icons.monetization_on_outlined,
-            color: scheme.onPrimary,
-            section: Section.INCOME,
-            state: state,
-            amount: state.sectionsSum['incomes']!,
-            tab: HomeTab.income),
-        _buildBottomNavigationBarItem(
-            label: 'accounts',
-            icon: Icons.account_balance_outlined,
-            color: scheme.onPrimary,
-            section: Section.ACCOUNTS,
-            amount: state.sectionsSum['accounts']!,
-            state: state,
-            tab: HomeTab.accounts),
-      ],
+    child: Theme(
+      data: Theme.of(context).copyWith(
+        //splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+      ),
+      child: BottomNavigationBar(
+        backgroundColor: scheme.primary,
+        currentIndex: state.tab.index,
+        onTap: (value) {
+          context.read<HomeCubit>().setTab(value);
+        },
+        elevation: 0,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
+        selectedItemColor: BudgetColors.amber800,
+        unselectedItemColor: scheme.surfaceVariant,
+        items: [
+          _buildBottomNavigationBarItem(
+              label: 'expenses',
+              icon: Icons.account_balance_wallet,
+              color: scheme.onPrimary,
+              section: Section.EXPENSES,
+              state: state,
+              amount: state.sectionsSum['expenses']!,
+              tab: HomeTab.expenses),
+          _buildBottomNavigationBarItem(
+              label: 'income',
+              icon: Icons.monetization_on_outlined,
+              color: scheme.onPrimary,
+              section: Section.INCOME,
+              state: state,
+              amount: state.sectionsSum['incomes']!,
+              tab: HomeTab.income),
+          _buildBottomNavigationBarItem(
+              label: 'accounts',
+              icon: Icons.account_balance_outlined,
+              color: scheme.onPrimary,
+              section: Section.ACCOUNTS,
+              amount: state.sectionsSum['accounts']!,
+              state: state,
+              tab: HomeTab.accounts),
+        ],
+      ),
     ),
   );
 }
