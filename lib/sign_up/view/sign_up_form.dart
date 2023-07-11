@@ -58,7 +58,12 @@ class FilledCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: BudgetColors.teal900,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/money_back.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
         width: double.infinity,
         height: height.w,
         child: Padding(
