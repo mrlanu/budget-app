@@ -4,7 +4,8 @@ import 'package:formz/formz.dart';
 
 import '../../constants/constants.dart';
 import '../../shared/widgets/filled_card.dart';
-import '../login.dart';
+import '../cubit/sign_up_cubit.dart';
+import '../sign_up.dart';
 
 class MobileView extends StatelessWidget {
   const MobileView({super.key});
@@ -12,30 +13,32 @@ class MobileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<LoginCubit, LoginState>(
+      appBar: AppBar(
+          title: const Text('Log in')),
+      body: BlocListener<SignUpCubit, SignUpState>(
         listener: (context, state) {
-          if (state.status.isFailure) {
+          if (state.status.isSuccess) {
+            //Navigator.of(context).pushNamedAndRemoveUntil(LoginPage.routeName, (route) => false);
+          } else if (state.status.isFailure) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage ?? 'Authentication Failure'),
-                ),
+                SnackBar(content: Text(state.errorMessage ?? 'Sign Up Failure')),
               );
           }
         },
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FilledCard(height: h * 0.35),
+              FilledCard(height: h * 0.25),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: h * 0.06, horizontal: w * 0.06),
-                  child: LoginInputGroup()
+                  child: SignupInputGroup()
               ),
             ],
           ),
         ),
-      )
+      ),
       );
   }
 }
