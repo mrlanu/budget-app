@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,7 @@ class PasswordInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.key,
-              color: Colors.orangeAccent,
+              color: BudgetColors.teal900,
             ),
             border: OutlineInputBorder(),
             labelText: 'Password',

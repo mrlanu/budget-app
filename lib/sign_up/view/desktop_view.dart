@@ -51,7 +51,17 @@ class DesktopView extends StatelessWidget {
               ),
               child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: w * 0.02, vertical: h * 0.06),
-                  child: SignupInputGroup()
+                  child: Column(
+                    children: [
+                      EmailInput(),
+                      SizedBox(height: h * 0.01),
+                      PasswordInput(),
+                      SizedBox(height: h * 0.01),
+                      ConfirmPasswordInput(),
+                      SizedBox(height: h * 0.01),
+                      SignUpButton(),
+                    ],
+                  )
               ),
             )
           ],

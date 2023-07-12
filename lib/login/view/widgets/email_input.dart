@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,7 +17,7 @@ class EmailInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.email,
-              color: Colors.orangeAccent,
+              color: BudgetColors.teal900,
             ),
             border: OutlineInputBorder(),
             labelText: 'Email',

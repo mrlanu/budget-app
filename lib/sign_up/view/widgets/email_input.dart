@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +15,7 @@ class EmailInput extends StatelessWidget {
           onChanged: (email) => context.read<SignUpCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            icon: Icon(Icons.email, color: Colors.orangeAccent,),
+            icon: Icon(Icons.email, color: BudgetColors.teal900,),
             labelText: 'Email',
             helperText: '',
             border: OutlineInputBorder(),

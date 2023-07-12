@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +19,7 @@ class ConfirmPasswordInput extends StatelessWidget {
               .confirmedPasswordChanged(confirmPassword),
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.key, color: Colors.orangeAccent,),
+            icon: Icon(Icons.password, color: BudgetColors.teal900,),
             border: OutlineInputBorder(),
             labelText: 'Confirm password',
             helperText: '',

@@ -33,7 +33,17 @@ class MobileView extends StatelessWidget {
               FilledCard(height: h * 0.25),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: h * 0.06, horizontal: w * 0.06),
-                  child: SignupInputGroup()
+                  child: Column(
+                    children: [
+                      EmailInput(),
+                      SizedBox(height: h * 0.01),
+                      PasswordInput(),
+                      SizedBox(height: h * 0.01),
+                      ConfirmPasswordInput(),
+                      SizedBox(height: h * 0.01),
+                      SignUpButton(),
+                    ],
+                  ),
               ),
             ],
           ),

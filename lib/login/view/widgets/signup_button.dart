@@ -5,6 +5,9 @@ import '../../../colors.dart';
 import '../../../sign_up/view/sign_up_page.dart';
 
 class SignUpButton extends StatelessWidget {
+
+  SignUpButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return RichText(

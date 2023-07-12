@@ -30,7 +30,18 @@ class MobileView extends StatelessWidget {
               FilledCard(height: h * 0.35),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: h * 0.06, horizontal: w * 0.06),
-                  child: LoginInputGroup()
+                  child: Column(
+                    children: [
+                      EmailInput(),
+                      SizedBox(height: h * 0.01),
+                      PasswordInput(),
+                      SizedBox(height: h * 0.01),
+                      LoginButton(),
+                      SizedBox(height: h * 0.01),
+                      Container(alignment: Alignment.topRight, child: SignUpButton()),
+                      //GoogleLoginButton(),
+                    ],
+                  ),
               ),
             ],
           ),

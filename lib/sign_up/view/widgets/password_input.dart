@@ -1,3 +1,4 @@
+import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +16,7 @@ class PasswordInput extends StatelessWidget {
               context.read<SignUpCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.password, color: Colors.orangeAccent,),
+            icon: Icon(Icons.key, color: BudgetColors.teal900,),
             border: OutlineInputBorder(),
             labelText: 'Password',
             helperText: '',
