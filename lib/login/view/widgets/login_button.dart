@@ -11,7 +11,7 @@ class LoginButton extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
         return state.status.isInProgress
-            ? const CircularProgressIndicator()
+            ? Container(child: const CircularProgressIndicator())
             : Container(width: double.infinity,
             child: ElevatedButton(
               key: const Key('loginForm_continue_raisedButton'),

@@ -82,7 +82,7 @@ class _DesktopViewState extends State<DesktopView> {
   Widget _loginBuilder() {
     return Container(
       width: w * 0.3,
-      height: h * 0.42,
+      height: h * 0.43,
       decoration: BoxDecoration(
           color: BudgetColors.teal50.withOpacity(0.85), borderRadius: BorderRadius.circular(25)),
       child: Padding(
@@ -92,7 +92,7 @@ class _DesktopViewState extends State<DesktopView> {
             login.EmailInput(),
             SizedBox(height: h * 0.01),
             login.PasswordInput(),
-            SizedBox(height: h * 0.01),
+            Expanded(child: Container()),
             login.LoginButton(),
             SizedBox(height: h * 0.01),
             Align(

@@ -4,6 +4,7 @@ import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
