@@ -1,31 +1,34 @@
 part of 'accounts_cubit.dart';
 
 class AccountsState extends Equatable {
-  final String categoryId;
   final DataStatus status;
   final List<Account> accountList;
+  final AccountsViewFilter filter;
   final String? errorMessage;
 
   const AccountsState(
-      {required this.categoryId, this.status = DataStatus.loading,
+      {this.status = DataStatus.loading,
       this.accountList = const [],
+        required this.filter,
       this.errorMessage});
+
+  List<Account> get filteredAccounts => filter.applyAll(accountList);
 
   AccountsState copyWith({
     String? budgetId,
-    String? categoryId,
     DataStatus? status,
     List<Account>? accountList,
+    AccountsViewFilter? filter,
     String? errorMessage,
   }) {
     return AccountsState(
-      categoryId: categoryId ?? this.categoryId,
       status: status ?? this.status,
       accountList: accountList ?? this.accountList,
+      filter: filter ?? this.filter,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object> get props => [categoryId, status, accountList];
+  List<Object> get props => [status, accountList, filter];
 }

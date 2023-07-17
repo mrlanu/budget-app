@@ -74,6 +74,11 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         transactionList: trTiles));
   }
 
+  Future<void> filterChanged({required TransactionsViewFilter filter})async {
+    emit(state.copyWith(filter: filter));
+    _onSomethingChanged();
+  }
+
   Future<void> deleteTransaction({required String transactionId}) async {
     final deletedTransaction = await _transactionsRepository.deleteTransaction(transactionId);
     emit(state.copyWith(lastDeletedTransaction: () => deletedTransaction));

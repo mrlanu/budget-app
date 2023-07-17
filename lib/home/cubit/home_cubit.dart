@@ -46,7 +46,7 @@ class HomeCubit extends Cubit<HomeState> {
       _onTransfersChanged(transfers);
     });
     _accountsSubscription =
-        _accountsRepository.getAccounts().skip(2).listen((accounts) {
+        _accountsRepository.getAccounts().skip(1).listen((accounts) {
       _onAccountsChanged(accounts);
     });
     _categoriesSubscription =
@@ -60,7 +60,6 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(status: HomeStatus.loading));
     await Future.wait([
       _categoriesRepository.fetchAllCategories(),
-      //_accountsSubscription skip 1
       _accountsRepository.fetchAllAccounts(),
       _subcategoriesRepository.fetchSubcategories(),
     ]);
@@ -164,13 +163,6 @@ class HomeCubit extends Cubit<HomeState> {
         }
       });
     }
-    summaries.insert(
-        0,
-        SummaryTile(
-            id: state.tab.name == 'EXPENSE' ? 'all_expenses' : 'all_incomes',
-            name: 'All',
-            total: allTotal,
-            iconCodePoint: 62335));
     return summaries;
   }
 
@@ -193,13 +185,6 @@ class HomeCubit extends Cubit<HomeState> {
             total: sum,
             iconCodePoint: cat.iconCode!));
       });
-      summaries.insert(
-          0,
-          SummaryTile(
-              id: 'all_accounts',
-              name: 'All',
-              total: allTotal,
-              iconCodePoint: 60978));
     }
 
     return summaries;

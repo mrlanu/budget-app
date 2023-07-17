@@ -202,7 +202,7 @@ class AuthenticationRepository {
         email: email,
         password: password,
       );
-      return await result.user!.getIdToken();
+      return await result.user!.getIdToken() ?? '';
 
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
