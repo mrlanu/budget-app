@@ -207,6 +207,12 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransactions(dateTime: dateTime);
   }
 
+  Future<void> changeExpanded(int index)async{
+    var summaryList = [...state.summaryList];
+    summaryList[index] = summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
+    emit(state.copyWith(summaryList: summaryList));
+  }
+
   @override
   Future<void> close() {
     _transactionsSubscription.cancel();

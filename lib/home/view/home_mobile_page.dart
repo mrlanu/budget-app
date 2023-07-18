@@ -81,8 +81,7 @@ class HomeMobileView extends StatelessWidget {
                     ? Center(child: CircularProgressIndicator())
                     : state.tab == HomeTab.accounts
                         ? AccountsSummaries()
-                        : CategorySummaries(
-                            key: UniqueKey(), summaryList: state.summaryList),
+                        : CategorySummaries(),
                 bottomNavigationBar: HomeBottomNavBar(
                     selectedTab: state.tab, sectionsSum: state.sectionsSum)));
       }),

@@ -75,9 +75,7 @@ class _Body extends StatelessWidget {
                                         child: CircularProgressIndicator())
                                         : state.tab == HomeTab.accounts
                                         ? AccountsSummaries()
-                                        : CategorySummaries(
-                                        key: UniqueKey(),
-                                        summaryList: state.summaryList),
+                                        : CategorySummaries(),
                                   ),
                                 )
                               ],
