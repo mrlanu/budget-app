@@ -74,12 +74,7 @@ class _Body extends StatelessWidget {
                                         ? Center(
                                         child: CircularProgressIndicator())
                                         : state.tab == HomeTab.accounts
-                                        ? AccountsSummaries(
-                                        accountList: context
-                                            .read<AccountsCubit>()
-                                            .state
-                                            .accountList,
-                                        key: UniqueKey())
+                                        ? AccountsSummaries()
                                         : CategorySummaries(
                                         key: UniqueKey(),
                                         summaryList: state.summaryList),

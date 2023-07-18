@@ -37,39 +37,41 @@ class HomeCubit extends Cubit<HomeState> {
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
         super(HomeState(selectedDate: DateTime.now())) {
-    _transactionsSubscription =
-        _transactionsRepository.getTransactions().listen((transactions) {
-      _onTransactionsChanged(transactions);
-    });
-    _transfersSubscription =
-        _transactionsRepository.getTransfers().listen((transfers) {
-      _onTransfersChanged(transfers);
-    });
-    _accountsSubscription =
-        _accountsRepository.getAccounts().skip(1).listen((accounts) {
-      _onAccountsChanged(accounts);
-    });
-    _categoriesSubscription =
-        _categoriesRepository.getCategories().skip(1).listen((categories) {
-      _onCategoriesChanged(categories);
-    });
     _init();
   }
 
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
-    await Future.wait([
-      _categoriesRepository.fetchAllCategories(),
-      _accountsRepository.fetchAllAccounts(),
-      _subcategoriesRepository.fetchSubcategories(),
-    ]);
-    _transactionsRepository.fetchTransactions(dateTime: DateTime.now());
-    _transactionsRepository.fetchTransfers(dateTime: DateTime.now());
+    try {
+      await Future.wait([
+        _categoriesRepository.fetchAllCategories(),
+        _accountsRepository.fetchAllAccounts(),
+        _subcategoriesRepository.fetchSubcategories(),
+        _transactionsRepository.fetchTransactions(dateTime: DateTime.now()),
+        _transactionsRepository.fetchTransfers(dateTime: DateTime.now()),
+      ]);
+      _transactionsSubscription =
+          _transactionsRepository.getTransactions().listen((transactions) {
+            _onTransactionsChanged(transactions);
+          });
+      _transfersSubscription =
+          _transactionsRepository.getTransfers().listen((transfers) {
+            _onTransfersChanged(transfers);
+          });
+      _accountsSubscription =
+          _accountsRepository.getAccounts().listen((accounts) {
+            _onAccountsChanged(accounts);
+          });
+      _categoriesSubscription =
+          _categoriesRepository.getCategories().listen((categories) {
+            _onCategoriesChanged(categories);
+          });
+    } catch (e) {
+      emit(state.copyWith(status: HomeStatus.failure, errorMessage: 'Something went wrong'));
+    }
   }
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
-    emit(state.copyWith(status: HomeStatus.loading));
-
     final categories = await _categoriesRepository.getCategories().first;
     //_accountsSubscription skip 2
     await _accountsRepository.fetchAllAccounts();

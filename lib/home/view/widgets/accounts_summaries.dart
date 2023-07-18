@@ -1,50 +1,51 @@
-import 'package:budget_app/accounts/models/account.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../accounts/cubit/accounts_cubit.dart';
+import '../../../accounts/models/accounts_view_filter.dart';
+import '../../../accounts/repository/accounts_repository.dart';
 import '../../../colors.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
+import '../../../transactions/repository/transactions_repository.dart';
 import '../../../transactions/view/transactions_list.dart';
 
-class AccountsSummaries extends StatefulWidget {
-  final List<Account> accountList;
-  final Key key;
-
-  AccountsSummaries({required this.accountList, required this.key})
-      : super(key: key);
+class AccountsSummaries extends StatelessWidget {
+  AccountsSummaries({super.key});
 
   @override
-  State<AccountsSummaries> createState() => _AccountsSummariesState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AccountsCubit(
+          filter: AccountsViewFilter(filterId: ''),
+          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+          accountsRepository: context.read<AccountsRepositoryImpl>())
+        ..fetchAllAccounts(),
+      child: AccountsSummariesView(),
+    );
+  }
 }
 
-class _AccountsSummariesState extends State<AccountsSummaries> {
-  late final List<Account> _accountList;
-
-  @override
-  void initState() {
-    super.initState();
-    _accountList = widget.accountList;
-  }
-
+class AccountsSummariesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
-        child: ExpansionPanelList(
+        child: BlocBuilder<AccountsCubit, AccountsState>(
+      builder: (context, state) {
+        return ExpansionPanelList(
           dividerColor: BudgetColors.teal900,
           expansionCallback: (int index, bool isExpanded) {
-            setState(() {
-              _accountList[index] =
-                  _accountList[index].copyWith(isExpanded: !isExpanded);
-            });
+            context.read<AccountsCubit>().changeExpanded(index);
           },
-          children: _accountList.map<ExpansionPanel>((acc) {
+          children: state.accountList.map<ExpansionPanel>((acc) {
             return ExpansionPanel(
                 canTapOnHeader: true,
                 backgroundColor: BudgetColors.teal100,
                 headerBuilder: (BuildContext context, bool isExpanded) {
                   return ListTile(
-                    leading: Icon(Icons.account_balance_outlined, color: scheme.primary),
+                    leading: Icon(Icons.account_balance_outlined,
+                        color: scheme.primary),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -72,6 +73,8 @@ class _AccountsSummariesState extends State<AccountsSummaries> {
                         filterId: acc.id)),
                 isExpanded: acc.isExpanded);
           }).toList(),
-        ));
+        );
+      },
+    ));
   }
 }

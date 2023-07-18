@@ -53,18 +53,27 @@ class Transfer extends Equatable {
   @override
   List<Object?> get props => [id, budgetId];
 
-  TransactionTile toTile({required String tabAccId, required Account fromAccount, required Account toAccount}) {
-    return TransactionTile(
+  List<TransactionTile> toTiles({required Account fromAccount, required Account toAccount}) {
+    return List.of(
+    [TransactionTile(
         id: this.id!,
         type: TransactionType.TRANSFER,
         amount: this.amount,
-        title: tabAccId == fromAccount.id ? 'Transfer out' : 'Transfer in',
-        subtitle: tabAccId == fromAccount.id
-            ? 'to ${toAccount.name}'
-            : 'from ${fromAccount.name}',
+        title: 'Transfer in',
+        subtitle: 'from ${fromAccount.name}',
         dateTime: date,
         description: this.notes!,
         fromAccount: fromAccount,
-        toAccount: toAccount);
+        toAccount: toAccount),
+    TransactionTile(
+        id: this.id!,
+        type: TransactionType.TRANSFER,
+        amount: this.amount,
+        title: 'Transfer out',
+        subtitle: 'to ${toAccount.name}',
+        dateTime: date,
+        description: this.notes!,
+        fromAccount: fromAccount,
+        toAccount: toAccount)]);
   }
 }

@@ -42,14 +42,6 @@ class HomePage extends StatelessWidget {
                 type: TransactionsViewFilterTypes.allExpenses),
           ),
         ),
-        BlocProvider(
-          create: (context) => AccountsCubit(
-              filter: AccountsViewFilter(filterId: ''),
-              transactionsRepository:
-              context.read<TransactionsRepositoryImpl>(),
-              accountsRepository: context.read<AccountsRepositoryImpl>())
-            ..fetchAllAccounts(),
-        ),
       ],
       child: isDisplayDesktop(context) ? HomeDesktopPage() : HomeMobilePage()
     );

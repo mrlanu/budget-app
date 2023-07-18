@@ -19,16 +19,23 @@ class HomeMobilePage extends StatelessWidget {
     return HomeMobileView();
   }
 }
+
 class HomeMobileView extends StatelessWidget {
   const HomeMobileView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeCubit, HomeState>(
-      listenWhen: (previous, current) => previous.tab != current.tab && current.tab == HomeTab.accounts,
       listener: (context, state) {
-        // it has been added for update accounts during first tab open
-        context.read<AccountsCubit>().fetchAllAccounts();
+        if (state.status == HomeStatus.failure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage ?? 'Something went wrong'),
+              ),
+            );
+        }
       },
       child: BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
         return SafeArea(
@@ -37,11 +44,11 @@ class HomeMobileView extends StatelessWidget {
                 appBar: AppBar(
                   title: state.tab != HomeTab.accounts
                       ? MonthPaginator(
-                    onLeft: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                    onRight: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                  )
+                          onLeft: (date) =>
+                              context.read<HomeCubit>().changeDate(date),
+                          onRight: (date) =>
+                              context.read<HomeCubit>().changeDate(date),
+                        )
                       : Text('Accounts'),
                   centerTitle: true,
                   actions: <Widget>[
@@ -69,19 +76,13 @@ class HomeMobileView extends StatelessWidget {
                 ),
                 drawer: MainDrawer(),
                 floatingActionButton:
-                HomeFloatingActionButton(selectedTab: state.tab),
+                    HomeFloatingActionButton(selectedTab: state.tab),
                 body: state.status == HomeStatus.loading
                     ? Center(child: CircularProgressIndicator())
                     : state.tab == HomeTab.accounts
-                    ? AccountsSummaries(
-                    accountList:
-                    context
-                        .read<AccountsCubit>()
-                        .state
-                        .accountList,
-                    key: UniqueKey())
-                    : CategorySummaries(
-                    key: UniqueKey(), summaryList: state.summaryList),
+                        ? AccountsSummaries()
+                        : CategorySummaries(
+                            key: UniqueKey(), summaryList: state.summaryList),
                 bottomNavigationBar: HomeBottomNavBar(
                     selectedTab: state.tab, sectionsSum: state.sectionsSum)));
       }),

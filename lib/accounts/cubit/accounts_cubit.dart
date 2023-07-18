@@ -38,8 +38,6 @@ class AccountsCubit extends Cubit<AccountsState> {
   }
 
   Future<void> fetchAllAccounts() async {
-    emit(
-        state.copyWith(status: DataStatus.loading));
     try {
       final accountList = await _accountsRepository.getAccounts().first;
       emit(
@@ -48,6 +46,12 @@ class AccountsCubit extends Cubit<AccountsState> {
       emit(
           state.copyWith(status: DataStatus.error, errorMessage: e.toString()));
     }
+  }
+
+  Future<void> changeExpanded(int index)async{
+    var accounts = [...state.accountList];
+    accounts[index] = accounts[index].copyWith(isExpanded: !accounts[index].isExpanded);
+    emit(state.copyWith(accountList: accounts));
   }
 
   @override
