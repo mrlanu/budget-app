@@ -1,4 +1,3 @@
-import 'package:budget_app/accounts/cubit/accounts_cubit.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:flutter/material.dart';
