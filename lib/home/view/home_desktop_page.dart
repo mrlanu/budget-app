@@ -1,12 +1,21 @@
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
+import 'package:budget_app/transfer/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../accounts/cubit/accounts_cubit.dart';
+import '../../accounts/repository/accounts_repository.dart';
+import '../../categories/repository/categories_repository.dart';
 import '../../colors.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
+import '../../subcategories/repository/subcategories_repository.dart';
+import '../../transactions/repository/transactions_repository.dart';
+import '../../transactions/transaction/bloc/transaction_bloc.dart';
+import '../../transfer/bloc/transfer_bloc.dart';
 import '../home.dart';
 
 class HomeDesktopPage extends StatelessWidget {
@@ -14,11 +23,36 @@ class HomeDesktopPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: BudgetColors.teal100,
-        body: Row(
-          children: [MainDrawer(), _Body()],
-        ));
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+          TransactionBloc(
+            transactionsRepository: context.read<
+                TransactionsRepositoryImpl>(),
+            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+            subcategoriesRepository: context.read<
+                SubcategoriesRepositoryImpl>(),
+            accountsRepository: context.read<AccountsRepositoryImpl>(),
+          )
+            ..add(TransactionFormLoaded(transactionType: TransactionType.EXPENSE)),
+        ),
+        BlocProvider(
+          create: (context) =>
+          TransferBloc(
+            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+            accountsRepository: context.read<AccountsRepositoryImpl>(),
+          )
+            ..add(TransferFormLoaded()),
+        ),
+      ],
+      child: Scaffold(
+          backgroundColor: BudgetColors.teal100,
+          body: Row(
+            children: [MainDrawer(), _Body()],
+          )),
+    );
   }
 }
 
@@ -31,7 +65,8 @@ class _Body extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: h * 0.03),
         child: BlocListener<HomeCubit, HomeState>(
-          listenWhen: (previous, current) => previous.tab != current.tab && current.tab == HomeTab.accounts,
+          listenWhen: (previous, current) =>
+          previous.tab != current.tab && current.tab == HomeTab.accounts,
           listener: (context, state) {
             // it has been added for update accounts during first tab open
             context.read<AccountsCubit>().fetchAllAccounts();
@@ -85,13 +120,21 @@ class _Body extends StatelessWidget {
                             child: Column(
                               children: [
                                 Card(
-                                  color: BudgetColors.teal50,
-                                  elevation: 5,
-                                  child: Container(
+                                    color: BudgetColors.teal50,
+                                    elevation: 5,
+                                    child: Container(
+                                      padding:
+                                      EdgeInsets.symmetric(horizontal: 30),
                                       width: w * 0.3,
                                       height: h * 0.7,
-                                      child: Container() /*TransactionsView()*/),
-                                ) //TransactionsViewBody())
+                                      child: state.tab == HomeTab.accounts
+                                          ? TransferWindow.window(
+                                          transactionType:
+                                          TransactionType.TRANSFER)
+                                          : TransactionWindow.window(
+                                          transactionType:
+                                          TransactionType.EXPENSE),
+                                    )) //TransactionsViewBody())
                               ],
                             ),
                           ),

@@ -11,7 +11,7 @@ final class TransactionFormLoaded extends TransactionEvent {
   final TransactionTile? transaction;
   final TransactionType transactionType;
   const TransactionFormLoaded(
-      {required this.transaction, required this.transactionType});
+      {this.transaction, required this.transactionType});
   @override
   List<Object?> get props => [transaction, transactionType];
 }

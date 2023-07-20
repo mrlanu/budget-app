@@ -1,15 +1,18 @@
+import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../colors.dart';
+import '../../../constants/constants.dart';
 import '../../../shared/models/section.dart';
 import '../../cubit/home_cubit.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
   const HomeBottomNavBar(
       {super.key,
-        this.selectedTab = HomeTab.expenses,
-        required this.sectionsSum});
+      this.selectedTab = HomeTab.expenses,
+      required this.sectionsSum});
 
   final HomeTab selectedTab;
   final Map<String, double> sectionsSum;
@@ -29,6 +32,17 @@ class HomeBottomNavBar extends StatelessWidget {
           currentIndex: selectedTab.index,
           onTap: (value) {
             context.read<HomeCubit>().setTab(value);
+            if(isDisplayDesktop(context)){
+              final tab = HomeTab.values[value];
+              var tType = switch (tab) {
+                HomeTab.expenses => TransactionType.EXPENSE,
+                HomeTab.income => TransactionType.INCOME,
+                HomeTab.accounts => TransactionType.TRANSFER,
+              };
+              context
+                  .read<TransactionBloc>()
+                  .add(TransactionFormLoaded(transactionType: tType));
+            }
           },
           elevation: 0,
           showSelectedLabels: true,
@@ -68,12 +82,12 @@ class HomeBottomNavBar extends StatelessWidget {
 
   BottomNavigationBarItem _buildBottomNavigationBarItem(
       {required String label,
-        required IconData icon,
-        required Color color,
-        required Section section,
-        required HomeTab selectedTab,
-        required double amount,
-        required HomeTab tab}) {
+      required IconData icon,
+      required Color color,
+      required Section section,
+      required HomeTab selectedTab,
+      required double amount,
+      required HomeTab tab}) {
     return BottomNavigationBarItem(
       label: label,
       icon: Column(
@@ -84,7 +98,7 @@ class HomeBottomNavBar extends StatelessWidget {
             style: TextStyle(
                 color: color,
                 fontWeight:
-                selectedTab == tab ? FontWeight.bold : FontWeight.normal),
+                    selectedTab == tab ? FontWeight.bold : FontWeight.normal),
           )
         ],
       ),

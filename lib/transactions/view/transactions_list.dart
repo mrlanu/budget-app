@@ -1,7 +1,9 @@
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/models/transactions_view_filter.dart';
+import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
+import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,7 +27,9 @@ class TransactionsList extends StatelessWidget {
             ? Center(child: CircularProgressIndicator())
             : Container(
                 margin: EdgeInsets.only(bottom: 10),
-                height: state.filteredTiles.length * 80 > maxHeight ? maxHeight : state.filteredTiles.length * 80,
+                height: state.filteredTiles.length * 80 > maxHeight
+                    ? maxHeight
+                    : state.filteredTiles.length * 80,
                 child: ListView.separated(
                     itemCount: state.filteredTiles.length,
                     itemBuilder: (context, index) {
@@ -41,6 +45,9 @@ class TransactionsList extends StatelessWidget {
                         onTap: () => {
                           if (tr.type == TransactionType.TRANSFER)
                             {
+                              isDisplayDesktop(context)
+                              ? context.read<TransferBloc>().add(
+                                  TransferFormLoaded(transactionTile: tr)) :
                               Navigator.of(context).push(
                                 TransferPage.route(
                                     homeCubit: context.read<HomeCubit>(),
@@ -49,16 +56,23 @@ class TransactionsList extends StatelessWidget {
                             }
                           else
                             {
-                              Navigator.of(context).push(
-                                TransactionPage.route(
-                                    transaction: tr,
-                                    homeCubit: context.read<HomeCubit>(),
-                                    transactionType: tr.type),
-                              )
+                              isDisplayDesktop(context)
+                                  ? context.read<TransactionBloc>().add(
+                                      TransactionFormLoaded(
+                                          transactionType: tr.type,
+                                          transaction: tr))
+                                  : Navigator.of(context).push(
+                                      TransactionPage.route(
+                                          transaction: tr,
+                                          homeCubit: context.read<HomeCubit>(),
+                                          transactionType: tr.type),
+                                    )
                             }
                         },
                       );
-                    }, separatorBuilder: (context, index) => Divider(indent: 30, endIndent: 30)),
+                    },
+                    separatorBuilder: (context, index) =>
+                        Divider(indent: 30, endIndent: 30)),
               );
       },
     );

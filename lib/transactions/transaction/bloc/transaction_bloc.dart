@@ -5,6 +5,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/constants/api.dart';
+import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:equatable/equatable.dart';
@@ -24,7 +25,6 @@ part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-
   final TransactionsRepository _transactionsRepository;
   final CategoriesRepository _categoriesRepository;
   final SubcategoriesRepository _subcategoriesRepository;
@@ -85,11 +85,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(state.copyWith(trStatus: TransactionStatus.loading));
     final allCategories = await _categoriesRepository.getCategories().first;
-    final filteredCategories = allCategories.where(
-        (cat) => cat.transactionType == event.transactionType,
-      ).toList();
+    final filteredCategories = allCategories
+        .where(
+          (cat) => cat.transactionType == event.transactionType,
+        )
+        .toList();
     final accounts = await _accountsRepository.getAccounts().first;
-    final accCategories = allCategories.where((cat) => cat.transactionType == TransactionType.ACCOUNT).toList();
+    final accCategories = allCategories
+        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
+        .toList();
     var subcategories = <Subcategory>[];
     var category;
     var subcategory;
@@ -98,15 +102,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     final tr = event.transaction;
     if (tr != null) {
       id = tr.id;
-      category = filteredCategories.where((cat) => cat.id == tr.category!.id).first;
+      category =
+          filteredCategories.where((cat) => cat.id == tr.category!.id).first;
       subcategories = await _subcategoriesRepository.getSubcategories().first;
       subcategory = subcategories
           .where((element) => element.id == tr.subcategory!.id)
           .first;
-      account = accounts.where((element) => element.id == tr.fromAccount!.id).first;
+      account =
+          accounts.where((element) => element.id == tr.fromAccount!.id).first;
     }
+    //for amount update on desktop view
+    await Future.delayed(Duration(milliseconds: 100));
+
     emit(TransactionState(
-      budgetId: await getBudgetId(),
+        budgetId: await getBudgetId(),
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
@@ -143,24 +152,39 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onCategoriesChanged(TransactionCategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    final categories = event.categories.where((cat) => cat.transactionType == state.transactionType).toList();
-    final accCategories = event.categories.where((cat) => cat.transactionType == TransactionType.ACCOUNT).toList();
-    emit(state.copyWith(category: () => null, categories: () => categories, accountCategories: () => accCategories,));
+    final categories = event.categories
+        .where((cat) => cat.transactionType == state.transactionType)
+        .toList();
+    final accCategories = event.categories
+        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
+        .toList();
+    emit(state.copyWith(
+      category: () => null,
+      categories: () => categories,
+      accountCategories: () => accCategories,
+    ));
   }
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
     final subcategories =
         await _subcategoriesRepository.getSubcategories().first;
-    final filteredScs = subcategories.where((sc) => sc.categoryId == event.category!.id).toList();
-    emit(
-        state.copyWith(category: () => event.category, subcategory: () => null, subcategories: () => filteredScs));
+    final filteredScs = subcategories
+        .where((sc) => sc.categoryId == event.category!.id)
+        .toList();
+    emit(state.copyWith(
+        category: () => event.category,
+        subcategory: () => null,
+        subcategories: () => filteredScs));
   }
 
   Future<void> _onSubcategoriesChanged(TransactionSubcategoriesChanged event,
       Emitter<TransactionState> emit) async {
-    final subcategories = event.subcategories.where((sc) => sc.categoryId == state.category!.id).toList();
-    emit(state.copyWith(subcategory: () => null, subcategories: () => subcategories));
+    final subcategories = event.subcategories
+        .where((sc) => sc.categoryId == state.category!.id)
+        .toList();
+    emit(state.copyWith(
+        subcategory: () => null, subcategories: () => subcategories));
   }
 
   void _onSubcategoryChanged(
@@ -168,8 +192,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(subcategory: () => event.subcategory));
   }
 
-  Future<void> _onSubcategoryCreated(
-      TransactionSubcategoryCreated event, Emitter<TransactionState> emit) async {
+  Future<void> _onSubcategoryCreated(TransactionSubcategoryCreated event,
+      Emitter<TransactionState> emit) async {
     final newSubcategory = Subcategory(
       categoryId: state.category!.id!,
       name: event.name,
@@ -209,7 +233,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     try {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      Navigator.of(event.context!).pop();
+      isDisplayDesktop(event.context!)
+          ? add(TransactionFormLoaded(transactionType: transaction.type!))
+          : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }

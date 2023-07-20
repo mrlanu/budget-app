@@ -8,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../accounts/repository/accounts_repository.dart';
 import '../../app/bloc/app_bloc.dart';
 import '../../categories/repository/categories_repository.dart';
+import '../../transactions/models/transaction_type.dart';
+import '../../transactions/transaction/bloc/transaction_bloc.dart';
 
 class TransferPage extends StatelessWidget {
   const TransferPage({Key? key}) : super(key: key);
@@ -47,6 +49,28 @@ class TransferPage extends StatelessWidget {
                 : Center(
               child: CircularProgressIndicator(),
             ));
+      },
+    );
+  }
+}
+
+class TransferWindow extends StatelessWidget {
+  const TransferWindow({Key? key}) : super(key: key);
+
+  static Widget window(
+      {Key? key, TransactionTile? transaction,
+        required TransactionType transactionType}) {
+    return  TransferWindow(key: key,);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TransferBloc, TransferState>(
+      builder: (context, state) {
+        return state.trStatus == TransferStatus.success
+            ? TransferForm()
+            : Center(child: CircularProgressIndicator(),
+        );
       },
     );
   }

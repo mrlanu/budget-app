@@ -1,3 +1,4 @@
+import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,6 +6,7 @@ import '../../../accounts/cubit/accounts_cubit.dart';
 import '../../../accounts/models/accounts_view_filter.dart';
 import '../../../accounts/repository/accounts_repository.dart';
 import '../../../colors.dart';
+import '../../../constants/constants.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
 import '../../../transactions/repository/transactions_repository.dart';
 import '../../../transactions/view/transactions_list.dart';
@@ -37,6 +39,9 @@ class AccountsSummariesView extends StatelessWidget {
           dividerColor: BudgetColors.teal900,
           expansionCallback: (int index, bool isExpanded) {
             context.read<AccountsCubit>().changeExpanded(index);
+            if(isDisplayDesktop(context)){
+              context.read<TransferBloc>().add(TransferFormLoaded());
+            }
           },
           children: state.accountList.map<ExpansionPanel>((acc) {
             return ExpansionPanel(

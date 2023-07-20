@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 import '../../colors.dart';
+import '../../constants/constants.dart';
 import '../../home/cubit/home_cubit.dart';
 import '../widgets/to_account_input_field.dart';
 
@@ -17,28 +18,28 @@ class TransferForm extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
+            padding: EdgeInsets.symmetric(vertical: h * 0.04, horizontal: 30),
             child: Column(
               children: [
                 AmountInput(),
                 SizedBox(
-                  height: 30.h,
+                  height: 0,
                 ),
                 DateInputField(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 FromAccountInputField(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 ToAccountInputField(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 NotesInputField(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 _SubmitButton(),
               ],
