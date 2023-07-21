@@ -1,11 +1,11 @@
 import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../accounts_list/view/accounts_list_page.dart';
 import '../app/bloc/app_bloc.dart';
-import '../home/cubit/home_cubit.dart';
+import '../home/view/home_page.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -35,7 +35,12 @@ class MainDrawer extends StatelessWidget {
                     .textTheme
                     .titleLarge!
                     .copyWith(color: BudgetColors.teal900)),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushNamedAndRemoveUntil<void>(
+                HomePage.routeName,
+                    (route) => false,
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.money_outlined,
@@ -46,6 +51,12 @@ class MainDrawer extends StatelessWidget {
                     .titleLarge!
                     .copyWith(color: BudgetColors.teal900)),
             onTap: () {
+              if(isDisplayDesktop(context)){
+                Navigator.of(context).pushAndRemoveUntil(
+                  DebtPayoffPage.route(),
+                      (route) => false,
+                );
+              }
               Navigator.pop(context);
               Navigator.push(context, DebtPayoffPage.route());
             },

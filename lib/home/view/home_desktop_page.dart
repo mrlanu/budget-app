@@ -48,7 +48,7 @@ class HomeDesktopPage extends StatelessWidget {
         ),
       ],
       child: Scaffold(
-          backgroundColor: BudgetColors.teal100,
+          backgroundColor: BudgetColors.teal50,
           body: Row(
             children: [MainDrawer(), _Body()],
           )),

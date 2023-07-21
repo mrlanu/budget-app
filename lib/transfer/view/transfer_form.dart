@@ -1,12 +1,10 @@
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 import '../../colors.dart';
 import '../../constants/constants.dart';
-import '../../home/cubit/home_cubit.dart';
 import '../widgets/to_account_input_field.dart';
 
 class TransferForm extends StatelessWidget {
@@ -54,7 +52,6 @@ class TransferForm extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         return state.status.isInProgress

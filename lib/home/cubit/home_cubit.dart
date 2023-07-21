@@ -45,7 +45,6 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       await Future.wait([
         _categoriesRepository.fetchAllCategories(),
-        _accountsRepository.fetchAllAccounts(),
         _subcategoriesRepository.fetchSubcategories(),
         _transactionsRepository.fetchTransactions(dateTime: DateTime.now()),
         _transactionsRepository.fetchTransfers(dateTime: DateTime.now()),
@@ -73,7 +72,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
     final categories = await _categoriesRepository.getCategories().first;
-    //_accountsSubscription skip 2
     await _accountsRepository.fetchAllAccounts();
     final accounts = await _accountsRepository.getAccounts().first;
 

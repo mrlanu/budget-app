@@ -6,17 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../accounts/repository/accounts_repository.dart';
-import '../../app/bloc/app_bloc.dart';
 import '../../categories/repository/categories_repository.dart';
 import '../../transactions/models/transaction_type.dart';
-import '../../transactions/transaction/bloc/transaction_bloc.dart';
 
 class TransferPage extends StatelessWidget {
   const TransferPage({Key? key}) : super(key: key);
 
   static Route<void> route({required HomeCubit homeCubit, TransactionTile? transactionTile}) {
     return MaterialPageRoute(builder: (context) {
-      final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -37,7 +34,6 @@ class TransferPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         return Scaffold(
