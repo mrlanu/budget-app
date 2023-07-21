@@ -30,6 +30,7 @@ dependencies:
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
   carousel_slider: ^4.2.1
+  adaptive_breakpoints: ^0.1.6
 
 dev_dependencies:
   bloc_test: ^9.0.0

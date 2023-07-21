@@ -1,8 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:budget_app/login/login.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -11,11 +10,17 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (_) => LoginCubit(context.read<AuthenticationRepository>()),
-        child: const LoginForm(),
+    return BlocProvider(
+      create: (context) => LoginCubit(context.read<AuthenticationRepository>()),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 1100) {
+            return MobileView();
+          }
+          return DesktopView();
+        },
       ),
     );
   }
 }
+

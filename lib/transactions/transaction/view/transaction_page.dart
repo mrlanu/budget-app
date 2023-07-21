@@ -1,5 +1,4 @@
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
@@ -21,7 +20,6 @@ class TransactionPage extends StatelessWidget {
       {required HomeCubit homeCubit, TransactionTile? transaction,
         required TransactionType transactionType}) {
     return MaterialPageRoute(builder: (context) {
-      final appBloc = BlocProvider.of<AppBloc>(context);
       return MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -46,7 +44,6 @@ class TransactionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return Scaffold(
@@ -71,5 +68,27 @@ class TransactionPage extends StatelessWidget {
     TransactionType.ACCOUNT => 'Account',
     };
     return '$prefix $body';
+  }
+}
+
+class TransactionWindow extends StatelessWidget {
+  const TransactionWindow({Key? key}) : super(key: key);
+
+  static Widget window(
+      {Key? key, TransactionTile? transaction,
+        required TransactionType transactionType}) {
+    return  TransactionWindow(key: key,);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        return state.trStatus == TransactionStatus.success
+                ? TransactionForm()
+                : Center(child: CircularProgressIndicator(),
+            );
+      },
+    );
   }
 }

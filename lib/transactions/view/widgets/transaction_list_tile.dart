@@ -31,26 +31,7 @@ class TransactionListTile extends StatelessWidget {
           color: Color(0xAAFFFFFF),
         ),
       ),
-      child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.h),
-        elevation: Theme.of(context).cardTheme.elevation,
-        child: ClipPath(
-          clipper: ShapeBorderClipper(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(
-                    color: (transactionTile.type == TransactionType.EXPENSE ||
-                        transactionTile.title ==
-                            'Transfer out')
-                        ? Theme.of(context).colorScheme.error
-                        : BudgetColors.teal900,
-                    width: 20.w),
-              ),
-            ),
-            child: ListTile(
+      child: ListTile(
               leading: Icon(Icons.clear_all),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -87,9 +68,6 @@ class TransactionListTile extends StatelessWidget {
               isThreeLine: false,
               onTap: onTap,
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }

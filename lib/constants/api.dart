@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:budget_app/shared/models/budget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const baseURL = '10.0.2.2:8080';
+final baseURL = kIsWeb ? 'localhost:8080' : '10.0.2.2:8080';
 
 Future<Map<String, String>> getHeaders() async {
 

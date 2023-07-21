@@ -49,48 +49,57 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final transactions = await _transactionsRepository.getTransactions().first;
     final transfers = await _transactionsRepository.getTransfers().first;
     final categories = await _categoriesRepository.getCategories().first;
-    final subcategories = await _subcategoriesRepository.getSubcategories().first;
+    final subcategories =
+        await _subcategoriesRepository.getSubcategories().first;
     final accounts = await _accountsRepository.getAccounts().first;
 
     transactions.forEach((element) {
       final cat = categories.where((c) => element.categoryId == c.id).first;
-      final subcategory = subcategories.where((sc) => element.subcategoryId == sc.id).first;
+      final subcategory =
+          subcategories.where((sc) => element.subcategoryId == sc.id).first;
       final acc = accounts.where((a) => element.accountId == a.id).first;
-      trTiles.add(element.toTile(account: acc, category: cat, subcategory: subcategory));
+      trTiles.add(element.toTile(
+          account: acc, category: cat, subcategory: subcategory));
     });
 
-    if(state.filter.type == TransactionsViewFilterTypes.accountId){
-      transfers.forEach((element) {
-        final fromAcc = accounts.where((a) => element.fromAccountId == a.id).first;
-        final toAcc = accounts.where((a) => element.toAccountId == a.id).first;
-        trTiles.add(element.toTile(tabAccId: state.filter.filterId!, fromAccount: fromAcc, toAccount: toAcc));
-      });
-    }
+    transfers.forEach((element) {
+      final fromAcc =
+          accounts.where((a) => element.fromAccountId == a.id).first;
+      final toAcc = accounts.where((a) => element.toAccountId == a.id).first;
+      trTiles.addAll(element.toTiles(fromAccount: fromAcc, toAccount: toAcc));
+    });
+
     trTiles.sort(
-          (a, b) => a.dateTime.compareTo(b.dateTime),
+      (a, b) => a.dateTime.compareTo(b.dateTime),
     );
     emit(state.copyWith(
-        status: TransactionsStatus.success,
-        transactionList: trTiles));
+        status: TransactionsStatus.success, transactionList: trTiles));
+  }
+
+  Future<void> filterChanged({required TransactionsViewFilter filter}) async {
+    emit(state.copyWith(filter: filter));
+    _onSomethingChanged();
   }
 
   Future<void> deleteTransaction({required String transactionId}) async {
-    final deletedTransaction = await _transactionsRepository.deleteTransaction(transactionId);
+    final deletedTransaction =
+        await _transactionsRepository.deleteTransaction(transactionId);
     emit(state.copyWith(lastDeletedTransaction: () => deletedTransaction));
   }
 
   Future<void> deleteTransfer({required String transferId}) async {
-    final deletedTransfer = await _transactionsRepository.deleteTransfer(transferId);
+    final deletedTransfer =
+        await _transactionsRepository.deleteTransfer(transferId);
     emit(state.copyWith(lastDeletedTransfer: () => deletedTransfer));
   }
 
   Future<void> undoDelete() async {
     final transaction = state.lastDeletedTransaction;
     final transfer = state.lastDeletedTransfer;
-    if(transaction == null){
+    if (transaction == null) {
       emit(state.copyWith(lastDeletedTransfer: () => null));
       await _transactionsRepository.createTransfer(transfer!);
-    }else {
+    } else {
       emit(state.copyWith(lastDeletedTransaction: () => null));
       await _transactionsRepository.createTransaction(transaction);
     }

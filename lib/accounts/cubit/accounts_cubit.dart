@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/accounts/models/accounts_view_filter.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:equatable/equatable.dart';
@@ -18,11 +19,11 @@ class AccountsCubit extends Cubit<AccountsState> {
   late final StreamSubscription<List<Account>> _accountsSubscription;
 
   AccountsCubit(
-      {required String categoryId, required AccountsRepository accountsRepository,
+      {required AccountsViewFilter filter, required AccountsRepository accountsRepository,
         required TransactionsRepository transactionsRepository})
       : _accountsRepository = accountsRepository,
         _transactionsRepository = transactionsRepository,
-        super(AccountsState(categoryId: categoryId)) {
+        super(AccountsState(filter: filter)) {
     _transactionsSubscription = _transactionsRepository
         .getTransactions()
         .skip(1)
@@ -31,29 +32,26 @@ class AccountsCubit extends Cubit<AccountsState> {
     });
     _accountsSubscription = _accountsRepository
         .getAccounts()
-        .skip(1)
         .listen((accounts) {
       fetchAllAccounts();
     });
   }
 
   Future<void> fetchAllAccounts() async {
-    emit(
-        state.copyWith(status: DataStatus.loading));
     try {
       final accountList = await _accountsRepository.getAccounts().first;
-      List<Account> filteredAccounts;
-      if(state.categoryId == 'all_accounts'){
-        filteredAccounts = accountList;
-      }else {
-        filteredAccounts = accountList.where((acc) => acc.categoryId == state.categoryId).toList();
-      }
       emit(
-          state.copyWith(status: DataStatus.success, accountList: filteredAccounts));
+          state.copyWith(status: DataStatus.success, accountList: accountList));
     } catch (e) {
       emit(
           state.copyWith(status: DataStatus.error, errorMessage: e.toString()));
     }
+  }
+
+  Future<void> changeExpanded(int index)async{
+    var accounts = [...state.accountList];
+    accounts[index] = accounts[index].copyWith(isExpanded: !accounts[index].isExpanded);
+    emit(state.copyWith(accountList: accounts));
   }
 
   @override
