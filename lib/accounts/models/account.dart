@@ -15,6 +15,7 @@ class Account extends Equatable{
   final double initialBalance;
   final bool includeInTotal;
   final String budgetId;
+  final bool isExpanded;
 
   const Account({
     this.id,
@@ -24,8 +25,33 @@ class Account extends Equatable{
     required this.balance,
     required this.initialBalance,
     this.includeInTotal = true,
-    required this.budgetId
+    required this.budgetId,
+    this.isExpanded = false
   });
+
+  Account copyWith({
+    String? id,
+    String? name,
+    String? categoryId,
+    String? currency,
+    double? balance,
+    double? initialBalance,
+    bool? includeInTotal,
+    String? budgetId,
+    bool? isExpanded,
+}){
+    return Account(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      currency: currency ?? this.currency,
+      balance: balance ?? this.balance,
+      initialBalance: initialBalance ?? this.initialBalance,
+      includeInTotal: includeInTotal ?? this.includeInTotal,
+      budgetId: budgetId ?? this.budgetId,
+      isExpanded: isExpanded ?? this.isExpanded
+    );
+  }
 
   String extendName(List<Category> categories){
     final category = categories.where((element) => element.id == this.categoryId).first;
@@ -36,5 +62,5 @@ class Account extends Equatable{
   Map<String, dynamic> toJson() => _$AccountToJson(this);
 
   @override
-  List<Object?> get props => [id, name, balance];
+  List<Object?> get props => [id, name, balance, isExpanded];
 }

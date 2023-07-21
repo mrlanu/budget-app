@@ -15,8 +15,7 @@ class ToAccountInputField extends StatelessWidget {
               child: Icon(Icons.edit_note),
               onTap: () {
                 Navigator.of(context).push(AccountsListPage.route(
-                    homeCubit: context.read<HomeCubit>(),
-                    accountCategories: state.accountCategories));
+                    homeCubit: context.read<HomeCubit>()));
               },
             ),
             items: state.accounts

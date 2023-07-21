@@ -5,6 +5,7 @@ class BudgetColors {
   static const Color statusBar = Color(0xFF00695C);
   static const Color teal900 = Color(0xFF004D40);
   static const Color teal600 = Color(0xFF00897B);
+  static const Color teal300 = Color(0xFF4DB6AC);
   static const Color teal50 = Color(0xFFE0F2F1);
   static const Color teal100 = Color(0xFFB2DFDB);
   static const Color teal200 = Color(0xFF80CBC4);

@@ -7,8 +7,9 @@ import 'package:budget_app/transactions/transaction/view/widgets/date_input_fiel
 import 'package:budget_app/transactions/transaction/view/widgets/subcategory_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
+
+import '../../../constants/constants.dart';
 
 class TransactionForm extends StatelessWidget {
   const TransactionForm({Key? key}) : super(key: key);
@@ -19,32 +20,32 @@ class TransactionForm extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(vertical: 70.w, horizontal: 50.w),
+            padding: EdgeInsets.symmetric(vertical: h * 0.04, horizontal: 30),
             child: Column(
               children: [
                 AmountInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 DateInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 CategoryInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 SubcategoryInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 AccountInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 _NotesInput(),
                 SizedBox(
-                  height: 75.h,
+                  height: 20,
                 ),
                 _SubmitButton(),
               ],

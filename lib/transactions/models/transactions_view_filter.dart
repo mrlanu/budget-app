@@ -20,10 +20,14 @@ class TransactionsViewFilter {
       case TransactionsViewFilterTypes.allIncomes:
         return transactionTile.type == TransactionType.INCOME;
       case TransactionsViewFilterTypes.categoryId:
-        return transactionTile.category!.id == filterId!;
+        return transactionTile.category?.id == filterId!;
       case TransactionsViewFilterTypes.accountId:
-        return transactionTile.fromAccount!.id == filterId! ||
-            transactionTile.toAccount?.id == filterId;
+        if(transactionTile.type == TransactionType.TRANSFER){
+          return (transactionTile.fromAccount!.id == filterId && transactionTile.title == 'Transfer out') ||
+              (transactionTile.toAccount?.id == filterId && transactionTile.title == 'Transfer in');
+        }else{
+          return transactionTile.fromAccount!.id == filterId;
+        }
     }
   }
 

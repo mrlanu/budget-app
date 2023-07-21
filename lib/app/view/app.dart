@@ -16,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../constants/constants.dart';
 import '../../subcategories/repository/subcategories_repository.dart';
 import '../../theme.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
@@ -67,6 +68,8 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    w = MediaQuery.of(context).size.width;
+    h = MediaQuery.of(context).size.height;
     return ScreenUtilInit(
       designSize: const Size(1080, 2160),
       minTextAdapt: true,
