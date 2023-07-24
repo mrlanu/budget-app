@@ -26,25 +26,22 @@ class HomeDesktopPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-          TransactionBloc(
-            transactionsRepository: context.read<
-                TransactionsRepositoryImpl>(),
+          create: (context) => TransactionBloc(
+            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
             categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-            subcategoriesRepository: context.read<
-                SubcategoriesRepositoryImpl>(),
+            subcategoriesRepository:
+                context.read<SubcategoriesRepositoryImpl>(),
             accountsRepository: context.read<AccountsRepositoryImpl>(),
-          )
-            ..add(TransactionFormLoaded(transactionType: TransactionType.EXPENSE)),
+          )..add(TransactionFormLoaded(
+              transactionType: TransactionType.EXPENSE,
+              date: context.read<HomeCubit>().state.selectedDate!)),
         ),
         BlocProvider(
-          create: (context) =>
-          TransferBloc(
+          create: (context) => TransferBloc(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
             categoriesRepository: context.read<CategoriesRepositoryImpl>(),
             accountsRepository: context.read<AccountsRepositoryImpl>(),
-          )
-            ..add(TransferFormLoaded()),
+          )..add(TransferFormLoaded()),
         ),
       ],
       child: Scaffold(
@@ -66,14 +63,13 @@ class _Body extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: h * 0.03),
         child: BlocListener<HomeCubit, HomeState>(
           listenWhen: (previous, current) =>
-          previous.tab != current.tab && current.tab == HomeTab.accounts,
+              previous.tab != current.tab && current.tab == HomeTab.accounts,
           listener: (context, state) {
             // it has been added for update accounts during first tab open
             context.read<AccountsCubit>().fetchAllAccounts();
           },
           child: BlocBuilder<HomeCubit, HomeState>(
-              builder: (context, state) =>
-                  Column(
+              builder: (context, state) => Column(
                     children: [
                       Container(
                         margin: EdgeInsets.only(bottom: 10),
@@ -107,10 +103,10 @@ class _Body extends StatelessWidget {
                                     height: h * 0.7,
                                     child: state.status == HomeStatus.loading
                                         ? Center(
-                                        child: CircularProgressIndicator())
+                                            child: CircularProgressIndicator())
                                         : state.tab == HomeTab.accounts
-                                        ? AccountsSummaries()
-                                        : CategorySummaries(),
+                                            ? AccountsSummaries()
+                                            : CategorySummaries(),
                                   ),
                                 )
                               ],
@@ -124,16 +120,16 @@ class _Body extends StatelessWidget {
                                     elevation: 5,
                                     child: Container(
                                       padding:
-                                      EdgeInsets.symmetric(horizontal: 30),
+                                          EdgeInsets.symmetric(horizontal: 30),
                                       width: w * 0.3,
                                       height: h * 0.7,
                                       child: state.tab == HomeTab.accounts
                                           ? TransferWindow.window(
-                                          transactionType:
-                                          TransactionType.TRANSFER)
+                                              transactionType:
+                                                  TransactionType.TRANSFER)
                                           : TransactionWindow.window(
-                                          transactionType:
-                                          TransactionType.EXPENSE),
+                                              transactionType:
+                                                  TransactionType.EXPENSE),
                                     )) //TransactionsViewBody())
                               ],
                             ),

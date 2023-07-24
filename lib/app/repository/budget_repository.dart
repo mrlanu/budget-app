@@ -1,10 +1,8 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/api.dart';
-import '../../shared/models/budget.dart';
 
 abstract class BudgetRepository {
   Future<void> fetchBudget();
@@ -27,3 +25,4 @@ class BudgetRepositoryImpl extends BudgetRepository{
   Future<void> _setValue(String key, String value) =>
       _plugin.setString(key, value);
 }
+

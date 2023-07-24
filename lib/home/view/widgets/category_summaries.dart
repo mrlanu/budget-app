@@ -12,24 +12,20 @@ import '../../../transactions/view/transactions_list.dart';
 class CategorySummaries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
-    final scheme = Theme
-        .of(context)
-        .colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(child: BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return ExpansionPanelList(
           dividerColor: BudgetColors.teal900,
           expansionCallback: (int index, bool isExpanded) {
-            final homeCubit = context.read<HomeCubit>()
-              ..changeExpanded(index);
-            if(isDisplayDesktop(context)){
+            final homeCubit = context.read<HomeCubit>()..changeExpanded(index);
+            if (isDisplayDesktop(context)) {
               context.read<TransactionBloc>().add(TransactionFormLoaded(
                   transactionType: homeCubit.state.tab == HomeTab.expenses
                       ? TransactionType.EXPENSE
-                      : TransactionType.INCOME));
+                      : TransactionType.INCOME,
+                  date: homeCubit.state.selectedDate!));
             }
           },
           children: state.summaryList.map<ExpansionPanel>((tile) {

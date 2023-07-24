@@ -32,16 +32,16 @@ class HomeBottomNavBar extends StatelessWidget {
           currentIndex: selectedTab.index,
           onTap: (value) {
             context.read<HomeCubit>().setTab(value);
-            if(isDisplayDesktop(context)){
+            if (isDisplayDesktop(context)) {
               final tab = HomeTab.values[value];
               var tType = switch (tab) {
                 HomeTab.expenses => TransactionType.EXPENSE,
                 HomeTab.income => TransactionType.INCOME,
                 HomeTab.accounts => TransactionType.TRANSFER,
               };
-              context
-                  .read<TransactionBloc>()
-                  .add(TransactionFormLoaded(transactionType: tType));
+              context.read<TransactionBloc>().add(TransactionFormLoaded(
+                  transactionType: tType,
+                  date: context.read<HomeCubit>().state.selectedDate!));
             }
           },
           elevation: 0,
