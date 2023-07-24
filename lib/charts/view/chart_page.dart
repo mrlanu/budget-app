@@ -1,6 +1,7 @@
 import 'package:budget_app/charts/cubit/chart_cubit.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/constants.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,6 +39,44 @@ class ChartPage extends StatelessWidget {
                     ));
         },
       ),
+    );
+  }
+}
+
+class TrendChartDesktopView extends StatelessWidget {
+  const TrendChartDesktopView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final _repo = ChartRepositoryImpl();
+    return BlocProvider(
+        create: (context) => ChartCubit(chartRepository: _repo)..fetchChart(),
+        child: TrendChartDesktopViewBody());
+  }
+}
+
+class TrendChartDesktopViewBody extends StatelessWidget {
+  const TrendChartDesktopViewBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ChartCubit, ChartState>(
+      builder: (context, state) {
+        return Center(
+            child: state.status == ChartStatus.loading
+                ? CircularProgressIndicator()
+                : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(width: w * 0.35, height: h * 0.6, child: TrendChart()),
+                      SizedBox(width: w * 0.01),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Container(width: w * 0.35, height: h * 0.6, child: TrendTable()),
+                      )
+                    ],
+                  ));
+      },
     );
   }
 }
@@ -128,39 +167,8 @@ class TrendChart extends StatelessWidget {
                             showTitles: true,
                             reservedSize: state.maxValue > 10000 ? 35 : 30,
                             interval: 1,
-                            getTitlesWidget: (value, meta) {
-                              const style = TextStyle(
-                                color: Color(0xff7589a2),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              );
-                              String text;
-                              if (value == 0) {
-                                text = '0';
-                              } else if (value ==
-                                  (state.maxValue / 4).round()) {
-                                text =
-                                    '${(state.maxValue / 4 / 1000).toStringAsFixed(1)}K';
-                              } else if (value ==
-                                  (state.maxValue / 2).round()) {
-                                text =
-                                    '${(state.maxValue / 2 / 1000).toStringAsFixed(1)}K';
-                              } else if (value ==
-                                  (state.maxValue / 4 * 3).round()) {
-                                text =
-                                    '${(state.maxValue / 4 * 3 / 1000).toStringAsFixed(1)}K';
-                              } else if (value == state.maxValue) {
-                                text =
-                                    '${(state.maxValue / 1000).toStringAsFixed(1)}K';
-                              } else {
-                                return Container();
-                              }
-                              return SideTitleWidget(
-                                axisSide: meta.axisSide,
-                                space: 0,
-                                child: Text(text, style: style),
-                              );
-                            },
+                            getTitlesWidget: (value, meta) =>
+                                _getLeftTitlesWidget(value, meta, state),
                           ),
                         ),
                       ),
@@ -177,6 +185,33 @@ class TrendChart extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _getLeftTitlesWidget(double value, TitleMeta meta, ChartState state) {
+    const style = TextStyle(
+      color: Color(0xff7589a2),
+      fontWeight: FontWeight.bold,
+      fontSize: 14,
+    );
+    String text;
+    if (value == 0) {
+      text = '0';
+    } else if (value == (state.maxValue / 4).round()) {
+      text = '${(state.maxValue / 4 / 1000).toStringAsFixed(1)}K';
+    } else if (value == (state.maxValue / 2).round()) {
+      text = '${(state.maxValue / 2 / 1000).toStringAsFixed(1)}K';
+    } else if (value == (state.maxValue / 4 * 3).round()) {
+      text = '${(state.maxValue / 4 * 3 / 1000).toStringAsFixed(1)}K';
+    } else if (value == state.maxValue) {
+      text = '${(state.maxValue / 1000).toStringAsFixed(1)}K';
+    } else {
+      return Container();
+    }
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 0,
+      child: Text(text, style: style),
     );
   }
 

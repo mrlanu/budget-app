@@ -1,4 +1,3 @@
-import 'package:budget_app/home/cubit/cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import '../../../colors.dart';
 import '../../../constants/constants.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
 import '../../../transactions/view/transactions_list.dart';
+import '../../home.dart';
 
 class CategorySummaries extends StatelessWidget {
   @override
