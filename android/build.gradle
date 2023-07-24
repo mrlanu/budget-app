@@ -12,6 +12,8 @@ buildscript {
     }
 }
 
+apply plugin: 'com.google.gms.google-services'
+
 allprojects {
     repositories {
         google()
@@ -30,3 +32,5 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+

@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -65,5 +62,15 @@ class DefaultFirebaseOptions {
     messagingSenderId: '299009765894',
     projectId: 'qruto-budget',
     storageBucket: 'qruto-budget.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCfeSaMtxuvNS_V0rg2G1JlQsnA5nIEBJ8',
+    appId: '1:299009765894:ios:b38b5e083900da03b0c987',
+    messagingSenderId: '299009765894',
+    projectId: 'qruto-budget',
+    storageBucket: 'qruto-budget.appspot.com',
+    iosClientId: '299009765894-1me7dfhovc7t632ki4jverl1ubc3kflo.apps.googleusercontent.com',
+    iosBundleId: 'xyz.qruto.budgetApp',
   );
 }
