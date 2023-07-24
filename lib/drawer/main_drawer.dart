@@ -1,3 +1,4 @@
+import 'package:budget_app/charts/view/chart_page.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
@@ -40,6 +41,19 @@ class MainDrawer extends StatelessWidget {
                 HomePage.routeName,
                     (route) => false,
               );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.bar_chart,
+                size: 26, color: BudgetColors.teal900),
+            title: Text('Trend',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(ChartPage.route());
             },
           ),
           ListTile(
