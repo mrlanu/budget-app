@@ -23,8 +23,9 @@ abstract class DebtsRepository {
 class DebtRepositoryImpl extends DebtsRepository {
   @override
   Future<List<Debt>> fetchAllDebts() async {
-    final url =
-        Uri.https(baseURL, '/api/debts', {'budgetId': await getBudgetId()});
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/debts', {'budgetId': await getBudgetId()})
+        : Uri.https(baseURL, '/api/debts', {'budgetId': await getBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -36,7 +37,9 @@ class DebtRepositoryImpl extends DebtsRepository {
 
   @override
   Future<Debt> saveDebt({required Debt debt}) async {
-    final url = Uri.https(baseURL, '/api/debts');
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/debts')
+        : Uri.https(baseURL, '/api/debts');
     final debtResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(debt.toJson()));
     if (debtResponse.statusCode != 200) {
@@ -48,7 +51,9 @@ class DebtRepositoryImpl extends DebtsRepository {
 
   @override
   Future<void> deleteDebt({required String debtId}) async {
-    final url = Uri.https(baseURL, '/api/debts', {'debtId': debtId});
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/debts', {'debtId': debtId})
+        : Uri.https(baseURL, '/api/debts', {'debtId': debtId});
     await http.delete(url, headers: await getHeaders());
   }
 }

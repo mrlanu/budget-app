@@ -10,13 +10,15 @@ import '../../shared/models/subcategory.dart';
 
 abstract class SubcategoriesRepository {
   Stream<List<Subcategory>> getSubcategories();
+
   Future<void> saveSubcategory({required Subcategory subcategory});
+
   Future<void> fetchSubcategories();
+
   Future<void> delete({required Subcategory subcategory});
 }
 
 class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
-
   SubcategoriesRepositoryImpl();
 
   final _subcategoriesStreamController =
@@ -28,7 +30,9 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
   @override
   Future<void> saveSubcategory({required Subcategory subcategory}) async {
-    final url = Uri.https(baseURL, '/api/subcategories');
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/subcategories')
+        : Uri.https(baseURL, '/api/subcategories');
 
     final response = await http.post(url,
         headers: await getHeaders(), body: json.encode(subcategory.toJson()));
@@ -41,8 +45,11 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
   @override
   Future<void> fetchSubcategories() async {
-    final url =
-        Uri.https(baseURL, '/api/subcategories', {'budgetId': await getBudgetId()});
+    final url = isTestMode
+        ? Uri.http(
+            baseURL, '/api/subcategories', {'budgetId': await getBudgetId()})
+        : Uri.https(
+            baseURL, '/api/subcategories', {'budgetId': await getBudgetId()});
     final response = await http.get(url, headers: await getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
@@ -52,16 +59,18 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
             Subcategory.fromJson(Map<String, dynamic>.from(jsonMap)))
         .toList();
 
-   _subcategoriesStreamController.add(result);
+    _subcategoriesStreamController.add(result);
   }
 
   @override
   Future<void> delete({required Subcategory subcategory}) async {
-    final url = Uri.https(baseURL, '/api/subcategories/${subcategory.id}');
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/subcategories/${subcategory.id}')
+        : Uri.https(baseURL, '/api/subcategories/${subcategory.id}');
 
     final resp = await http.delete(url, headers: await getHeaders());
 
-    if(resp.statusCode !=200){
+    if (resp.statusCode != 200) {
       throw CategoryFailure(jsonDecode(resp.body)['message']);
     }
 
