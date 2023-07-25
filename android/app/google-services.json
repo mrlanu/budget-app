@@ -29,6 +29,13 @@
             {
               "client_id": "299009765894-on6lc8p0h1udam2vao4rc09v3ltpghhe.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "299009765894-1me7dfhovc7t632ki4jverl1ubc3kflo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "xyz.qruto.budgetApp"
+              }
             }
           ]
         }

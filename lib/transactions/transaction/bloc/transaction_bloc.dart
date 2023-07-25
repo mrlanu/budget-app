@@ -119,7 +119,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
-        date: tr?.dateTime ?? DateTime.now(),
+        date: tr?.dateTime ?? event.date,
         category: category,
         subcategory: subcategory,
         account: account,
@@ -234,7 +234,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(transactionType: transaction.type!))
+          ? add(TransactionFormLoaded(
+              transactionType: transaction.type!, date: transaction.date!))
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));

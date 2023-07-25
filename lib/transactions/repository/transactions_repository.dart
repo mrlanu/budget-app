@@ -44,7 +44,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> createTransaction(Transaction transaction) async {
-    final url = Uri.http(baseURL, '/api/transactions');
+    final url = Uri.https(baseURL, '/api/transactions');
     final transactionResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(transaction.toJson()));
     final newTransaction = Transaction.fromJson(jsonDecode(transactionResponse.body));
@@ -62,7 +62,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> createTransfer(Transfer transfer) async {
-    final url = Uri.http(baseURL, '/api/transfers');
+    final url = Uri.https(baseURL, '/api/transfers');
     final transferResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(transfer.toJson()));
     final newTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
@@ -73,7 +73,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> editTransfer(Transfer transfer) async {
-    final url = Uri.http(baseURL, '/api/transfers');
+    final url = Uri.https(baseURL, '/api/transfers');
     final transferResponse = await http.put(url,
         headers: await getHeaders(), body: json.encode(transfer.toJson()));
     final editedTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
@@ -92,7 +92,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> fetchTransactions({
     required DateTime dateTime,
   }) async {
-    final url = Uri.http(baseURL, '/api/transactions',
+    final url = Uri.https(baseURL, '/api/transactions',
         {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await getHeaders());
@@ -106,7 +106,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<void> fetchTransfers({
     required DateTime dateTime,
   }) async {
-    final url = Uri.http(baseURL, '/api/transfers',
+    final url = Uri.https(baseURL, '/api/transfers',
         {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
 
     final response = await http.get(url, headers: await getHeaders());
@@ -118,7 +118,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<Transaction> deleteTransaction(String transactionId) async {
-    final url = Uri.http(
+    final url = Uri.https(
         baseURL, '/api/transactions', {'transactionId': transactionId});
     final deletedTransactionResponse = await http.delete(url, headers: await getHeaders());
     final deletedTransaction = Transaction.fromJson(jsonDecode(deletedTransactionResponse.body));
@@ -135,7 +135,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<Transfer> deleteTransfer(String transferId) async {
-    final url = Uri.http(baseURL, '/api/transfers', {'transferId': transferId});
+    final url = Uri.https(baseURL, '/api/transfers', {'transferId': transferId});
     final deletedTransferResponse = await http.delete(url, headers: await getHeaders());
     final deletedTransfer = Transfer.fromJson(jsonDecode(deletedTransferResponse.body));
     final transfers = [..._transfersStreamController.value];

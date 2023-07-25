@@ -201,7 +201,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> changeDate(DateTime dateTime) async {
-    emit(state.copyWith(status: HomeStatus.loading));
+    emit(state.copyWith(status: HomeStatus.loading, selectedDate: dateTime));
     _transactionsRepository.fetchTransactions(dateTime: dateTime);
     _transactionsRepository.fetchTransfers(dateTime: dateTime);
   }

@@ -2,10 +2,10 @@ part of 'login_cubit.dart';
 
 class LoginState extends Equatable {
   const LoginState({
-    this.email = const Email.pure(),
-    this.password = const Password.pure(),
+    this.email = const Email.dirty('test@test.com'),
+    this.password = const Password.dirty('test123'),
     this.status = FormzSubmissionStatus.initial,
-    this.isValid = false,
+    this.isValid = true,
     this.errorMessage,
   });
 

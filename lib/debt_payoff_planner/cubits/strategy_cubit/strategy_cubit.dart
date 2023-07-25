@@ -15,7 +15,7 @@ class StrategyCubit extends Cubit<StrategyState> {
   Future<void> fetchStrategy(
       {String extraPayment = '0', String strategyName = 'snowball'}) async {
     emit(LoadingStrategyState());
-    final url = Uri.http(baseURL, '/api/debts/payoff', {
+    final url = Uri.https(baseURL, '/api/debts/payoff', {
       'budgetId': await getBudgetId(),
       'extraPayment': extraPayment,
       'strategy': strategyName,
