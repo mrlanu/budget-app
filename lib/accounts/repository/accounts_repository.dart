@@ -37,7 +37,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
   Future<void> fetchAllAccounts() async {
     var response;
 
-    final url = Uri.http(
+    final url = Uri.https(
         baseURL, '/api/accounts', {'budgetId': await getBudgetId()});
 
     response = await http.get(url, headers: await getHeaders());
@@ -54,7 +54,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
 
   @override
   Future<void> saveAccount({required Account account}) async {
-    final url = Uri.http(baseURL, '/api/accounts');
+    final url = Uri.https(baseURL, '/api/accounts');
 
     final response = await http.post(url,
         headers: await getHeaders(), body: json.encode(account.toJson()));
@@ -67,7 +67,7 @@ class AccountsRepositoryImpl extends AccountsRepository {
 
   @override
   Future<void> deleteAccount({required Account account}) async {
-    final url = Uri.http(baseURL, '/api/accounts/${account.id}');
+    final url = Uri.https(baseURL, '/api/accounts/${account.id}');
 
     final resp = await http.delete(url, headers: await getHeaders());
     if (resp.statusCode != 200) {

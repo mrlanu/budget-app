@@ -1,4 +1,3 @@
-import 'package:budget_app/home/cubit/cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
@@ -8,28 +7,25 @@ import '../../../colors.dart';
 import '../../../constants/constants.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
 import '../../../transactions/view/transactions_list.dart';
+import '../../home.dart';
 
 class CategorySummaries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
-    final scheme = Theme
-        .of(context)
-        .colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(child: BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return ExpansionPanelList(
           dividerColor: BudgetColors.teal900,
           expansionCallback: (int index, bool isExpanded) {
-            final homeCubit = context.read<HomeCubit>()
-              ..changeExpanded(index);
-            if(isDisplayDesktop(context)){
+            final homeCubit = context.read<HomeCubit>()..changeExpanded(index);
+            if (isDisplayDesktop(context)) {
               context.read<TransactionBloc>().add(TransactionFormLoaded(
                   transactionType: homeCubit.state.tab == HomeTab.expenses
                       ? TransactionType.EXPENSE
-                      : TransactionType.INCOME));
+                      : TransactionType.INCOME,
+                  date: homeCubit.state.selectedDate!));
             }
           },
           children: state.summaryList.map<ExpansionPanel>((tile) {

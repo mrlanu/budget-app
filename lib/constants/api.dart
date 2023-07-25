@@ -5,7 +5,7 @@ import 'package:budget_app/shared/models/budget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final baseURL = kIsWeb ? 'localhost:8080' : '10.0.2.2:8080';
+final baseURL = kIsWeb ? 'qruto-budget-app-bd7e344cca5d.herokuapp.com' : 'qruto-budget-app-bd7e344cca5d.herokuapp.com';
 
 Future<Map<String, String>> getHeaders() async {
 

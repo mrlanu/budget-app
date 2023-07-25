@@ -46,26 +46,35 @@ class TransactionsList extends StatelessWidget {
                           if (tr.type == TransactionType.TRANSFER)
                             {
                               isDisplayDesktop(context)
-                              ? context.read<TransferBloc>().add(
-                                  TransferFormLoaded(transactionTile: tr)) :
-                              Navigator.of(context).push(
-                                TransferPage.route(
-                                    homeCubit: context.read<HomeCubit>(),
-                                    transactionTile: tr),
-                              )
+                                  ? context.read<TransferBloc>().add(
+                                      TransferFormLoaded(transactionTile: tr))
+                                  : Navigator.of(context).push(
+                                      TransferPage.route(
+                                          homeCubit: context.read<HomeCubit>(),
+                                          transactionTile: tr),
+                                    )
                             }
                           else
                             {
                               isDisplayDesktop(context)
                                   ? context.read<TransactionBloc>().add(
-                                      TransactionFormLoaded(
-                                          transactionType: tr.type,
-                                          transaction: tr))
+                                        TransactionFormLoaded(
+                                            transactionType: tr.type,
+                                            transaction: tr,
+                                            date: context
+                                                .read<HomeCubit>()
+                                                .state
+                                                .selectedDate!),
+                                      )
                                   : Navigator.of(context).push(
                                       TransactionPage.route(
                                           transaction: tr,
                                           homeCubit: context.read<HomeCubit>(),
-                                          transactionType: tr.type),
+                                          transactionType: tr.type,
+                                          date: context
+                                              .read<HomeCubit>()
+                                              .state
+                                              .selectedDate!),
                                     )
                             }
                         },

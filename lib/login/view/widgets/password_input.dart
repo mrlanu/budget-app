@@ -10,7 +10,8 @@ class PasswordInput extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
-        return TextField(
+        return TextFormField(
+          initialValue: state.password.value,
           key: const Key('loginForm_passwordInput_textField'),
           onChanged: (password) =>
               context.read<LoginCubit>().passwordChanged(password),

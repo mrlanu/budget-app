@@ -36,7 +36,7 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
 
   @override
   Future<void> fetchAllCategories() async {
-    final url = Uri.http(baseURL, '/api/categories', {'budgetId': await getBudgetId()});
+    final url = Uri.https(baseURL, '/api/categories', {'budgetId': await getBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
 
@@ -48,7 +48,7 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
 
   @override
   Future<void> saveCategory({required Category category}) async {
-    final url = Uri.http(baseURL, '/api/categories');
+    final url = Uri.https(baseURL, '/api/categories');
     final catResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(category.toJson()));
     final newCategory = Category.fromJson(jsonDecode(catResponse.body));
@@ -59,7 +59,7 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
 
   @override
   Future<void> deleteCategory({required Category category}) async {
-    final url = Uri.http(baseURL, '/api/categories/${category.id}');
+    final url = Uri.https(baseURL, '/api/categories/${category.id}');
 
     final resp = await http.delete(url, headers: await getHeaders());
 

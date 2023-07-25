@@ -13,6 +13,7 @@ class HomeFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
     return FloatingActionButton(
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       onPressed: () {
@@ -20,14 +21,16 @@ class HomeFloatingActionButton extends StatelessWidget {
           case HomeTab.expenses:
             Navigator.of(context).push(
               TransactionPage.route(
-                  homeCubit: context.read<HomeCubit>(),
-                  transactionType: TransactionType.EXPENSE),
+                  homeCubit: homeCubit,
+                  transactionType: TransactionType.EXPENSE,
+                  date: homeCubit.state.selectedDate!),
             );
           case HomeTab.income:
             Navigator.of(context).push(
               TransactionPage.route(
                   homeCubit: context.read<HomeCubit>(),
-                  transactionType: TransactionType.INCOME),
+                  transactionType: TransactionType.INCOME,
+                  date: homeCubit.state.selectedDate!),
             );
           case HomeTab.accounts:
             Navigator.of(context).push(

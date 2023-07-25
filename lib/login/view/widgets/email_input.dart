@@ -10,7 +10,8 @@ class EmailInput extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
-        return TextField(
+        return TextFormField(
+          initialValue: state.email.value,
           key: const Key('loginForm_emailInput_textField'),
           onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
           keyboardType: TextInputType.emailAddress,
