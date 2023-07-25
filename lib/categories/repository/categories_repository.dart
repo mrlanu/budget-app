@@ -59,8 +59,15 @@ class CategoriesRepositoryImpl extends CategoriesRepository {
         headers: await getHeaders(), body: json.encode(category.toJson()));
     final newCategory = Category.fromJson(jsonDecode(catResponse.body));
     final categories = [..._categoriesStreamController.value];
-    categories.add(newCategory);
-    _categoriesStreamController.add(categories);
+    final catIndex = categories.indexWhere((cat) => cat.id == newCategory.id);
+    if (catIndex == -1) {
+      categories.add(newCategory);
+      _categoriesStreamController.add(categories);
+    } else {
+      categories.removeAt(catIndex);
+      categories.insert(catIndex, category);
+      _categoriesStreamController.add(categories);
+    }
   }
 
   @override

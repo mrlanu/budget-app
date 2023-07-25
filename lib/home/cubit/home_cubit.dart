@@ -51,22 +51,23 @@ class HomeCubit extends Cubit<HomeState> {
       ]);
       _transactionsSubscription =
           _transactionsRepository.getTransactions().listen((transactions) {
-            _onTransactionsChanged(transactions);
-          });
+        _onTransactionsChanged(transactions);
+      });
       _transfersSubscription =
           _transactionsRepository.getTransfers().listen((transfers) {
-            _onTransfersChanged(transfers);
-          });
+        _onTransfersChanged(transfers);
+      });
       _accountsSubscription =
           _accountsRepository.getAccounts().listen((accounts) {
-            _onAccountsChanged(accounts);
-          });
+        _onAccountsChanged(accounts);
+      });
       _categoriesSubscription =
           _categoriesRepository.getCategories().listen((categories) {
-            _onCategoriesChanged(categories);
-          });
+        _onCategoriesChanged(categories);
+      });
     } catch (e) {
-      emit(state.copyWith(status: HomeStatus.failure, errorMessage: 'Something went wrong'));
+      emit(state.copyWith(
+          status: HomeStatus.failure, errorMessage: 'Something went wrong'));
     }
   }
 
@@ -113,7 +114,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _onCategoriesChanged(List<Category> categories) async {
-    var summaries = await _getSummariesByAccounts(accounts: state.accounts);
+    var summaries = await _getSummariesByCategory(
+        transactions: state.transactions, categories: categories);
     emit(state.copyWith(
       summaryList: summaries,
     ));
@@ -206,9 +208,10 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransfers(dateTime: dateTime);
   }
 
-  Future<void> changeExpanded(int index)async{
+  Future<void> changeExpanded(int index) async {
     var summaryList = [...state.summaryList];
-    summaryList[index] = summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
+    summaryList[index] =
+        summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
     emit(state.copyWith(summaryList: summaryList));
   }
 

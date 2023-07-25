@@ -36,6 +36,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(state.copyWith(name: name));
   }
 
+  void onIconCodeChanged(String code) {
+    emit(state.copyWith(iconCode: int.parse(code)));
+  }
+
   void onNewCategory() {
     emit(state.resetCategory());
   }
@@ -49,10 +53,11 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     if (state.editCategory == null) {
       category = Category(
           name: state.name!,
+          iconCode: state.iconCode,
           budgetId: await getBudgetId(),
           transactionType: state.transactionType);
     } else {
-      category = state.editCategory!.copyWith(name: state.name);
+      category = state.editCategory!.copyWith(name: state.name, iconCode: state.iconCode);
     }
     _categoriesRepository.saveCategory(category: category);
     emit(state.copyWith(status: CategoriesStatus.loading));

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../constants/constants.dart';
+
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({Key? key}) : super(key: key);
 
@@ -127,12 +129,27 @@ class CategoriesView extends StatelessWidget {
                 title: Text(state.editCategory == null
                     ? 'Add category'
                     : 'Edit category'),
-                content: TextFormField(
-                  autofocus: true,
-                  initialValue: state.editCategory?.name,
-                  onChanged: (name) =>
-                      context.read<CategoriesCubit>().onNameChanged(name),
-                  decoration: InputDecoration(hintText: 'Enter name'),
+                content: Container(
+                  height: h * 0.25,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        autofocus: true,
+                        initialValue: state.editCategory?.name,
+                        onChanged: (name) =>
+                            context.read<CategoriesCubit>().onNameChanged(name),
+                        decoration: InputDecoration(hintText: 'Enter name'),
+                      ),
+                      SizedBox(height: 30),
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        initialValue: state.editCategory?.iconCode.toString(),
+                        onChanged: (code) =>
+                            context.read<CategoriesCubit>().onIconCodeChanged(code),
+                        decoration: InputDecoration(hintText: 'Enter icon code'),
+                      ),
+                    ],
+                  ),
                 ),
                 actions: [
                   TextButton(
