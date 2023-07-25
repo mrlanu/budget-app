@@ -16,7 +16,7 @@ class BudgetRepositoryImpl extends BudgetRepository{
 
   @override
   Future<void> fetchBudget() async {
-    final url = Uri.http(baseURL, '/api/budgets');
+    final url = Uri.https(baseURL, '/api/budgets');
 
     final response = await http.get(url, headers: await getHeaders());
     await _setValue('budget', response.body);

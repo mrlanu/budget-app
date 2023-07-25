@@ -12,7 +12,7 @@ abstract class ChartRepository {
 class ChartRepositoryImpl extends ChartRepository {
   @override
   Future<List<YearMonthSum>> fetchChart() async {
-    final url = Uri.http(
+    final url = Uri.https(
         baseURL,
         '/api/charts/trend-chart',
         {'budgetId': await getBudgetId()});

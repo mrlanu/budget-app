@@ -28,7 +28,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
   @override
   Future<void> saveSubcategory({required Subcategory subcategory}) async {
-    final url = Uri.http(baseURL, '/api/subcategories');
+    final url = Uri.https(baseURL, '/api/subcategories');
 
     final response = await http.post(url,
         headers: await getHeaders(), body: json.encode(subcategory.toJson()));
@@ -42,7 +42,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
   @override
   Future<void> fetchSubcategories() async {
     final url =
-        Uri.http(baseURL, '/api/subcategories', {'budgetId': await getBudgetId()});
+        Uri.https(baseURL, '/api/subcategories', {'budgetId': await getBudgetId()});
     final response = await http.get(url, headers: await getHeaders());
 
     final result = List<Map<String, dynamic>>.from(
@@ -57,7 +57,7 @@ class SubcategoriesRepositoryImpl extends SubcategoriesRepository {
 
   @override
   Future<void> delete({required Subcategory subcategory}) async {
-    final url = Uri.http(baseURL, '/api/subcategories/${subcategory.id}');
+    final url = Uri.https(baseURL, '/api/subcategories/${subcategory.id}');
 
     final resp = await http.delete(url, headers: await getHeaders());
 
