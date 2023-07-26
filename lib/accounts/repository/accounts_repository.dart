@@ -66,8 +66,15 @@ class AccountsRepositoryImpl extends AccountsRepository {
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
     final accounts = [..._accountsStreamController.value];
-    accounts.add(newAcc);
-    _accountsStreamController.add(accounts);
+    final accIndex = accounts.indexWhere((acc) => acc.id == newAcc.id);
+    if (accIndex == -1) {
+      accounts.add(newAcc);
+      _accountsStreamController.add(accounts);
+    } else {
+      accounts.removeAt(accIndex);
+      accounts.insert(accIndex, account);
+      _accountsStreamController.add(accounts);
+    }
   }
 
   @override

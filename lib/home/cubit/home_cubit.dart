@@ -136,8 +136,10 @@ class HomeCubit extends Cubit<HomeState> {
             ?.fold<double>(0,
                 (previousValue, element) => previousValue + element.amount!) ??
         0;
-    final double accSum = accounts.fold<double>(
-        0.0, (previousValue, element) => previousValue + element.balance);
+    final double accSum = accounts
+        .where((acc) => acc.includeInTotal)
+        .fold<double>(
+            0.0, (previousValue, element) => previousValue + element.balance);
     return {'expenses': expSum, 'incomes': incSum, 'accounts': accSum};
   }
 

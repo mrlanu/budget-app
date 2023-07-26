@@ -83,4 +83,8 @@ class SignUpCubit extends Cubit<SignUpState> {
       ));
     }
   }
+
+  Future<void> resetStatus() async {
+    emit(state.copyWith(status: FormzSubmissionStatus.initial));
+  }
 }
