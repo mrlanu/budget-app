@@ -55,7 +55,7 @@ class AccountsSummariesView extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '\$ ${acc.balance.toString()}',
+                          '\$ ${acc.balance.toStringAsFixed(2)}',
                           style: TextStyle(
                               fontSize: textTheme.titleLarge!.fontSize,
                               fontWeight: FontWeight.bold,

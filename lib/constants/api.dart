@@ -5,7 +5,7 @@ import 'package:budget_app/shared/models/budget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const bool isTestMode = true;
+const bool isTestMode = false;
 
 final baseURL = isTestMode
     ? kIsWeb
