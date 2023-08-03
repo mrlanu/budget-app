@@ -22,6 +22,7 @@ class MobileView extends StatelessWidget {
                   content: Text(state.errorMessage ?? 'Authentication Failure'),
                 ),
               );
+            context.read<LoginCubit>().resetStatus();
           }
         },
         child: SingleChildScrollView(

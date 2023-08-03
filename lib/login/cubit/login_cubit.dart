@@ -31,6 +31,10 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
+  Future<void> resetStatus()async {
+    emit(state.copyWith(status: FormzSubmissionStatus.initial));
+  }
+
   Future<void> logInWithCredentials() async {
     if (!state.isValid) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));

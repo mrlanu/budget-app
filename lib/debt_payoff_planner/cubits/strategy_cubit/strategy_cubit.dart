@@ -15,11 +15,17 @@ class StrategyCubit extends Cubit<StrategyState> {
   Future<void> fetchStrategy(
       {String extraPayment = '0', String strategyName = 'snowball'}) async {
     emit(LoadingStrategyState());
-    final url = Uri.https(baseURL, '/api/debts/payoff', {
-      'budgetId': await getBudgetId(),
-      'extraPayment': extraPayment,
-      'strategy': strategyName,
-    });
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/debts/payoff', {
+            'budgetId': await getBudgetId(),
+            'extraPayment': extraPayment,
+            'strategy': strategyName,
+          })
+        : Uri.https(baseURL, '/api/debts/payoff', {
+            'budgetId': await getBudgetId(),
+            'extraPayment': extraPayment,
+            'strategy': strategyName,
+          });
 
     final response = await http.get(url, headers: await getHeaders());
     final strategy = DebtPayoffStrategy.fromJson(jsonDecode(response.body));

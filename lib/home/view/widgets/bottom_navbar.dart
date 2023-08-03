@@ -94,7 +94,7 @@ class HomeBottomNavBar extends StatelessWidget {
         children: [
           Icon(icon),
           Text(
-            '\$ $amount',
+            '\$ ${amount.toStringAsFixed(2)}',
             style: TextStyle(
                 color: color,
                 fontWeight:

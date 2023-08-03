@@ -82,7 +82,7 @@ class TrendTable extends StatelessWidget {
                               alignment: Alignment.centerRight,
                               child: Text(
                                   style: TextStyle(fontWeight: FontWeight.bold),
-                                  '\$ $sumInc')),
+                                  '\$ ${sumInc.toStringAsFixed(2)}')),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(5.0),
@@ -90,7 +90,7 @@ class TrendTable extends StatelessWidget {
                               alignment: Alignment.centerRight,
                               child: Text(
                                   style: TextStyle(fontWeight: FontWeight.bold),
-                                  '\$ $sumExp')),
+                                  '\$ ${sumExp.toStringAsFixed(2)}')),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(5.0),
@@ -98,7 +98,7 @@ class TrendTable extends StatelessWidget {
                               alignment: Alignment.centerRight,
                               child: Text(
                                   style: TextStyle(fontWeight: FontWeight.bold),
-                                  '\$ $balanceSum')),
+                                  '\$ ${balanceSum.toStringAsFixed(2)}')),
                         ),
                       ]),
                 ],
@@ -147,7 +147,7 @@ class TrendTable extends StatelessWidget {
                                                       .textTheme
                                                       .titleMedium!
                                                       .fontSize),
-                                              '\$ ${e.incomeSum}'),
+                                              '\$ ${e.incomeSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
                                     verticalAlignment:
@@ -162,7 +162,7 @@ class TrendTable extends StatelessWidget {
                                                       .textTheme
                                                       .titleMedium!
                                                       .fontSize),
-                                              '\$ ${e.expenseSum}'),
+                                              '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
                                     verticalAlignment:
@@ -182,7 +182,7 @@ class TrendTable extends StatelessWidget {
                                                         .textTheme
                                                         .titleMedium!
                                                         .fontSize),
-                                                '\$ ${e.incomeSum - e.expenseSum}'),
+                                                '\$ ${(e.incomeSum - e.expenseSum).toStringAsFixed(2)}'),
                                           )),
                                     )),
                               ],

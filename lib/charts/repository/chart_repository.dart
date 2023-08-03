@@ -12,10 +12,11 @@ abstract class ChartRepository {
 class ChartRepositoryImpl extends ChartRepository {
   @override
   Future<List<YearMonthSum>> fetchChart() async {
-    final url = Uri.https(
-        baseURL,
-        '/api/charts/trend-chart',
-        {'budgetId': await getBudgetId()});
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/charts/trend-chart',
+            {'budgetId': await getBudgetId()})
+        : Uri.https(baseURL, '/api/charts/trend-chart',
+            {'budgetId': await getBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(

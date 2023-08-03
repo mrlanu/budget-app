@@ -4,13 +4,15 @@ import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 import '../../constants/api.dart';
-import '../../shared/models/budget.dart';
 import '../models/account.dart';
 
 abstract class AccountsRepository {
   Stream<List<Account>> getAccounts();
+
   Future<void> fetchAllAccounts();
+
   Future<void> saveAccount({required Account account});
+
   Future<void> deleteAccount({required Account account});
 }
 
@@ -23,7 +25,6 @@ class AccountFailure implements Exception {
 }
 
 class AccountsRepositoryImpl extends AccountsRepository {
-
   final _accountsStreamController =
       BehaviorSubject<List<Account>>.seeded(const []);
 
@@ -37,8 +38,10 @@ class AccountsRepositoryImpl extends AccountsRepository {
   Future<void> fetchAllAccounts() async {
     var response;
 
-    final url = Uri.https(
-        baseURL, '/api/accounts', {'budgetId': await getBudgetId()});
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/accounts', {'budgetId': await getBudgetId()})
+        : Uri.https(
+            baseURL, '/api/accounts', {'budgetId': await getBudgetId()});
 
     response = await http.get(url, headers: await getHeaders());
 
@@ -54,20 +57,31 @@ class AccountsRepositoryImpl extends AccountsRepository {
 
   @override
   Future<void> saveAccount({required Account account}) async {
-    final url = Uri.https(baseURL, '/api/accounts');
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/accounts')
+        : Uri.https(baseURL, '/api/accounts');
 
     final response = await http.post(url,
         headers: await getHeaders(), body: json.encode(account.toJson()));
 
     final newAcc = Account.fromJson(jsonDecode(response.body));
     final accounts = [..._accountsStreamController.value];
-    accounts.add(newAcc);
-    _accountsStreamController.add(accounts);
+    final accIndex = accounts.indexWhere((acc) => acc.id == newAcc.id);
+    if (accIndex == -1) {
+      accounts.add(newAcc);
+      _accountsStreamController.add(accounts);
+    } else {
+      accounts.removeAt(accIndex);
+      accounts.insert(accIndex, account);
+      _accountsStreamController.add(accounts);
+    }
   }
 
   @override
   Future<void> deleteAccount({required Account account}) async {
-    final url = Uri.https(baseURL, '/api/accounts/${account.id}');
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/accounts/${account.id}')
+        : Uri.https(baseURL, '/api/accounts/${account.id}');
 
     final resp = await http.delete(url, headers: await getHeaders());
     if (resp.statusCode != 200) {

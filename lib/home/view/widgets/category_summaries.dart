@@ -10,6 +10,9 @@ import '../../../transactions/view/transactions_list.dart';
 import '../../home.dart';
 
 class CategorySummaries extends StatelessWidget {
+
+  CategorySummaries({super.key});
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;

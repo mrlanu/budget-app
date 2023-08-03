@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/account.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
@@ -18,6 +19,7 @@ import 'package:equatable/equatable.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final BudgetRepository _budgetRepository;
   final TransactionsRepository _transactionsRepository;
   final AccountsRepository _accountsRepository;
   final CategoriesRepository _categoriesRepository;
@@ -28,11 +30,13 @@ class HomeCubit extends Cubit<HomeState> {
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   HomeCubit({
+    required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
     required AccountsRepository accountsRepository,
     required CategoriesRepository categoriesRepository,
     required SubcategoriesRepository subcategoriesRepository,
-  })  : _transactionsRepository = transactionsRepository,
+  })  : _budgetRepository = budgetRepository,
+        _transactionsRepository = transactionsRepository,
         _accountsRepository = accountsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
@@ -43,6 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
     try {
+      await _budgetRepository.fetchBudget();
       await Future.wait([
         _categoriesRepository.fetchAllCategories(),
         _subcategoriesRepository.fetchSubcategories(),
@@ -51,22 +56,23 @@ class HomeCubit extends Cubit<HomeState> {
       ]);
       _transactionsSubscription =
           _transactionsRepository.getTransactions().listen((transactions) {
-            _onTransactionsChanged(transactions);
-          });
+        _onTransactionsChanged(transactions);
+      });
       _transfersSubscription =
           _transactionsRepository.getTransfers().listen((transfers) {
-            _onTransfersChanged(transfers);
-          });
+        _onTransfersChanged(transfers);
+      });
       _accountsSubscription =
           _accountsRepository.getAccounts().listen((accounts) {
-            _onAccountsChanged(accounts);
-          });
+        _onAccountsChanged(accounts);
+      });
       _categoriesSubscription =
           _categoriesRepository.getCategories().listen((categories) {
-            _onCategoriesChanged(categories);
-          });
+        _onCategoriesChanged(categories);
+      });
     } catch (e) {
-      emit(state.copyWith(status: HomeStatus.failure, errorMessage: 'Something went wrong'));
+      emit(state.copyWith(
+          status: HomeStatus.failure, errorMessage: 'Something went wrong'));
     }
   }
 
@@ -113,7 +119,8 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _onCategoriesChanged(List<Category> categories) async {
-    var summaries = await _getSummariesByAccounts(accounts: state.accounts);
+    var summaries = await _getSummariesByCategory(
+        transactions: state.transactions, categories: categories);
     emit(state.copyWith(
       summaryList: summaries,
     ));
@@ -134,8 +141,10 @@ class HomeCubit extends Cubit<HomeState> {
             ?.fold<double>(0,
                 (previousValue, element) => previousValue + element.amount!) ??
         0;
-    final double accSum = accounts.fold<double>(
-        0.0, (previousValue, element) => previousValue + element.balance);
+    final double accSum = accounts
+        .where((acc) => acc.includeInTotal)
+        .fold<double>(
+            0.0, (previousValue, element) => previousValue + element.balance);
     return {'expenses': expSum, 'incomes': incSum, 'accounts': accSum};
   }
 
@@ -206,9 +215,10 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransfers(dateTime: dateTime);
   }
 
-  Future<void> changeExpanded(int index)async{
+  Future<void> changeExpanded(int index) async {
     var summaryList = [...state.summaryList];
-    summaryList[index] = summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
+    summaryList[index] =
+        summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
     emit(state.copyWith(summaryList: summaryList));
   }
 

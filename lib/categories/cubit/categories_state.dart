@@ -7,6 +7,7 @@ class CategoriesState extends Equatable {
   final List<Category> categories;
   final TransactionType transactionType;
   final String? name;
+  final int? iconCode;
   final Category? editCategory;
   final String? errorMessage;
 
@@ -15,6 +16,7 @@ class CategoriesState extends Equatable {
       this.categories = const [],
       this.transactionType = TransactionType.EXPENSE,
       this.name,
+      this.iconCode,
       this.editCategory,
       this.errorMessage});
 
@@ -23,6 +25,7 @@ class CategoriesState extends Equatable {
       List<Category>? categories,
       TransactionType? transactionType,
       String? name,
+      int? iconCode,
       Category? editCategory,
       String? errorMessage}) {
     return CategoriesState(
@@ -30,6 +33,7 @@ class CategoriesState extends Equatable {
         categories: categories ?? this.categories,
         transactionType: transactionType ?? this.transactionType,
         name: name ?? this.name,
+        iconCode: iconCode ?? this.iconCode,
         editCategory: editCategory ?? this.editCategory,
         errorMessage: errorMessage ?? this.errorMessage);
   }
@@ -40,10 +44,18 @@ class CategoriesState extends Equatable {
         categories: this.categories,
         transactionType: this.transactionType,
         name: this.name,
+        iconCode: this.iconCode,
         editCategory: null);
   }
 
   @override
-  List<Object?> get props =>
-      [status, categories, transactionType, name, editCategory, errorMessage];
+  List<Object?> get props => [
+        status,
+        categories,
+        transactionType,
+        name,
+        iconCode,
+        editCategory,
+        errorMessage
+      ];
 }
