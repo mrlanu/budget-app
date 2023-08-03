@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../app/bloc/app_bloc.dart';
 import '../home/view/home_page.dart';
+import '../summary/view/summary_page.dart';
 
 class MainDrawer extends StatefulWidget {
   final TabController? tabController;
@@ -56,7 +57,26 @@ class _MainDrawerState extends State<MainDrawer> {
           ),
           ListTile(
             tileColor:
-                widget.tabController?.index == 1 ? BudgetColors.teal100 : null,
+            widget.tabController?.index == 1 ? BudgetColors.teal100 : null,
+            leading:
+            Icon(Icons.summarize_outlined, size: 26, color: BudgetColors.teal900),
+            title: Text('Summary',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: BudgetColors.teal900)),
+            onTap: () {
+              isDisplayDesktop(context)
+                  ? {widget.tabController?.index = 1, setState(() {}),}
+                  : {
+                Navigator.pop(context),
+                Navigator.of(context).push(SummaryPage.route())
+              };
+            },
+          ),
+          ListTile(
+            tileColor:
+                widget.tabController?.index == 2 ? BudgetColors.teal100 : null,
             leading:
                 Icon(Icons.bar_chart, size: 26, color: BudgetColors.teal900),
             title: Text('Trend',
@@ -66,7 +86,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     .copyWith(color: BudgetColors.teal900)),
             onTap: () {
               isDisplayDesktop(context)
-                  ? {widget.tabController?.index = 1, setState(() {}),}
+                  ? {widget.tabController?.index = 2, setState(() {}),}
                   : {
                       Navigator.pop(context),
                       Navigator.of(context).push(ChartPage.route())
@@ -75,7 +95,7 @@ class _MainDrawerState extends State<MainDrawer> {
           ),
           ListTile(
             tileColor:
-            widget.tabController?.index == 2 ? BudgetColors.teal100 : null,
+            widget.tabController?.index == 3 ? BudgetColors.teal100 : null,
             leading: Icon(Icons.money_outlined,
                 size: 26, color: BudgetColors.teal900),
             title: Text('Debt payoff planner',
@@ -85,7 +105,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     .copyWith(color: BudgetColors.teal900)),
             onTap: () {
               isDisplayDesktop(context)
-                  ? {widget.tabController?.index = 2, setState(() {}),}
+                  ? {widget.tabController?.index = 3, setState(() {}),}
                   : {
                       Navigator.pop(context),
                       Navigator.push(context, DebtPayoffPage.route())

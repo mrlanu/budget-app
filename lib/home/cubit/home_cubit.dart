@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/account.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/shared/models/budget.dart';
@@ -18,6 +19,7 @@ import 'package:equatable/equatable.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final BudgetRepository _budgetRepository;
   final TransactionsRepository _transactionsRepository;
   final AccountsRepository _accountsRepository;
   final CategoriesRepository _categoriesRepository;
@@ -28,11 +30,13 @@ class HomeCubit extends Cubit<HomeState> {
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   HomeCubit({
+    required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
     required AccountsRepository accountsRepository,
     required CategoriesRepository categoriesRepository,
     required SubcategoriesRepository subcategoriesRepository,
-  })  : _transactionsRepository = transactionsRepository,
+  })  : _budgetRepository = budgetRepository,
+        _transactionsRepository = transactionsRepository,
         _accountsRepository = accountsRepository,
         _categoriesRepository = categoriesRepository,
         _subcategoriesRepository = subcategoriesRepository,
@@ -43,6 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
     try {
+      await _budgetRepository.fetchBudget();
       await Future.wait([
         _categoriesRepository.fetchAllCategories(),
         _subcategoriesRepository.fetchSubcategories(),

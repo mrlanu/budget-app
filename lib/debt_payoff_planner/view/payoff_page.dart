@@ -44,49 +44,7 @@ class DebtPayoffViewMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Debt payoff planner'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () async {
-                _openDialog(context: context);
-              },
-              icon: Icon(Icons.add)),
-          StrategySelectButton()
-        ],
-      ),
-      //bottomNavigationBar: DebtController(),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          DebtController(),
-          DebtCarousel(
-              onEdit: (debt) => _openDialog(debt: debt, context: context)),
-          DebtStrategy(),
-        ],
-      )),
-    );
-  }
-
-  void _openDialog({required BuildContext context, Debt? debt}) {
-    showDialog<String>(
-      context: context,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) =>
-                DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>())
-                  ..add(FormInitEvent(debt: debt)),
-          ),
-          BlocProvider.value(
-            value: context.read<DebtsCubit>(),
-          ),
-        ],
-        child: DebtDialog(),
-      ),
-    );
+    return _Body();
   }
 }
 
@@ -115,53 +73,63 @@ class DebtPayoffViewDesktop extends StatelessWidget {
                 borderOnForeground: true,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
-                  child: Scaffold(
-                    backgroundColor: BudgetColors.teal50,
-                    appBar: AppBar(
-                      title: Text('Debt payoff planner'),
-                      centerTitle: true,
-                      actions: [
-                        IconButton(
-                            onPressed: () async {
-                              _openDialog(context: context);
-                            },
-                            icon: Icon(Icons.add)),
-                        StrategySelectButton()
-                      ],
-                    ),
-                    //bottomNavigationBar: DebtController(),
-                    body: SingleChildScrollView(
-                        child: Column(
-                      children: [
-                        DebtController(),
-                        DebtCarousel(
-                            onEdit: (debt) =>
-                                _openDialog(debt: debt, context: context)),
-                        DebtStrategy(),
-                      ],
-                    )),
-                  ),
+                  child: _Body()
                 ),
               ),
             )));
   }
+}
 
-  void _openDialog({required BuildContext context, Debt? debt}) {
-    showDialog<String>(
-      context: context,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) =>
-                DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>())
-                  ..add(FormInitEvent(debt: debt)),
-          ),
-          BlocProvider.value(
-            value: context.read<DebtsCubit>(),
-          ),
+class _Body extends StatelessWidget {
+  const _Body();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: BudgetColors.teal50,
+      appBar: AppBar(
+        title: Text('Debt payoff planner'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                _openDialog(context: context);
+              },
+              icon: Icon(Icons.add)),
+          StrategySelectButton()
         ],
-        child: DebtDialog(),
       ),
+      //bottomNavigationBar: DebtController(),
+      body: SingleChildScrollView(
+          child: Column(
+            children: [
+              DebtController(),
+              DebtCarousel(
+                  onEdit: (debt) =>
+                      _openDialog(debt: debt, context: context)),
+              DebtStrategy(),
+            ],
+          )),
     );
   }
 }
+
+void _openDialog({required BuildContext context, Debt? debt}) {
+  showDialog<String>(
+    context: context,
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+          DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>())
+            ..add(FormInitEvent(debt: debt)),
+        ),
+        BlocProvider.value(
+          value: context.read<DebtsCubit>(),
+        ),
+      ],
+      child: DebtDialog(),
+    ),
+  );
+}
+
