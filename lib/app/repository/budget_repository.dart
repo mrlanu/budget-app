@@ -8,9 +8,6 @@ abstract class BudgetRepository {
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
-  final SharedPreferences _plugin;
-
-  BudgetRepositoryImpl({required SharedPreferences plugin}) : _plugin = plugin;
 
   @override
   Future<void> fetchBudget() async {
@@ -22,6 +19,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
     await _setValue('budget', response.body);
   }
 
-  Future<void> _setValue(String key, String value) =>
-      _plugin.setString(key, value);
+  Future<void> _setValue(String key, String value) async {
+    final _plugin = await SharedPreferences.getInstance();
+      _plugin.setString(key, value);}
 }

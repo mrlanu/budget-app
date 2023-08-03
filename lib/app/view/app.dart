@@ -25,11 +25,6 @@ class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
 
-  final BudgetRepository _budgetRepository;
-
-  App({required BudgetRepository budgetRepository})
-      : _budgetRepository = budgetRepository;
-
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -37,14 +32,10 @@ class App extends StatelessWidget {
         RepositoryProvider(
           create: (context) => _authenticationRepository,
         ),
-        RepositoryProvider(
-          create: (context) => _budgetRepository,
-        )
       ],
       child: BlocProvider(
         create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository,
-          budgetRepository: _budgetRepository,
+          authenticationRepository: _authenticationRepository
         ),
         child: AppView(),
       ),
@@ -77,6 +68,7 @@ class _AppViewState extends State<AppView> {
       builder: (context, child) {
         return MultiRepositoryProvider(
           providers: [
+            RepositoryProvider(create: (context) => BudgetRepositoryImpl()),
             RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
             RepositoryProvider(
               create: (context) => AccountsRepositoryImpl(),

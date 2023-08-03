@@ -1,3 +1,4 @@
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,7 @@ class HomePage extends StatelessWidget {
       providers: [
         BlocProvider(
             create: (context) => HomeCubit(
+              budgetRepository: context.read<BudgetRepositoryImpl>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
               categoriesRepository:
               context.read<CategoriesRepositoryImpl>(),
