@@ -122,7 +122,7 @@ class HomeCubit extends Cubit<HomeState> {
     var summaries = await _getSummariesByCategory(
         transactions: state.transactions, categories: categories);
     emit(state.copyWith(
-      summaryList: summaries,
+      summaryList: summaries, categories: categories
     ));
   }
 

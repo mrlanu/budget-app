@@ -6,7 +6,6 @@ import 'package:budget_app/account_edit/view/widgets/name_input_field.dart';
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 class AccountEditDialog extends StatelessWidget {
@@ -25,7 +24,7 @@ class AccountEditDialog extends StatelessWidget {
                         alignment: Alignment.center,
                         children: <Widget>[
                           Container(
-                            height: 1500.h,
+                            height: 495,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -43,24 +42,20 @@ class AccountEditDialog extends StatelessWidget {
                                           ?.fontSize),
                                 ),
                                 SizedBox(
-                                  height: 50.h,
+                                  height: 20,
                                 ),
                                 CategoryInputField(),
                                 SizedBox(
-                                  height: 75.h,
+                                  height: 25,
                                 ),
                                 NameInputField(),
                                 SizedBox(
-                                  height: 75.h,
+                                  height: 25,
                                 ),
                                 BalanceInputField(),
-                                SizedBox(
-                                  height: 75.h,
-                                ),
+                                Divider(),
                                 IncludeSwitch(),
-                                SizedBox(
-                                  height: 75.h,
-                                ),
+                                Divider(),
                                 _SubmitButton(),
                               ],
                             ),

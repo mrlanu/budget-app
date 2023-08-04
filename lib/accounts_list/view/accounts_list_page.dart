@@ -6,6 +6,7 @@ import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../accounts/models/account.dart';
 import '../../categories/repository/categories_repository.dart';
@@ -14,8 +15,7 @@ import '../cubit/accounts_list_cubit.dart';
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
-  static Route<void> route(
-      {required HomeCubit homeCubit}) {
+  static Route<void> route({required HomeCubit homeCubit}) {
     return MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
@@ -66,6 +66,7 @@ class AccountsListView extends StatelessWidget {
         ],
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {
+            final scheme = Theme.of(context).colorScheme;
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
@@ -83,13 +84,28 @@ class AccountsListView extends StatelessWidget {
                         return Card(
                           elevation: Theme.of(context).cardTheme.elevation,
                           child: ListTile(
-                            title: Text(
-                              account.extendName(state.accountCategories),
-                              style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .fontSize),
+                            title: Row(
+                              children: [
+                                Text(
+                                  account.extendName(state.accountCategories),
+                                  style: TextStyle(
+                                      fontSize: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .fontSize),
+                                ),
+                                Expanded(child: Container()),
+                                FaIcon(
+                                    color: scheme.primary,
+                                    IconData(
+                                        state.accountCategories
+                                                .firstWhere((element) =>
+                                                    element.id ==
+                                                    account.categoryId)
+                                                .iconCode ??
+                                            0,
+                                        fontFamily: 'FontAwesomeSolid')),
+                              ],
                             ),
                             leading: IconButton(
                               icon: Icon(Icons.highlight_remove,

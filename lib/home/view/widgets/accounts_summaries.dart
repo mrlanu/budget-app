@@ -1,6 +1,8 @@
+import 'package:budget_app/home/home.dart';
 import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../accounts/cubit/accounts_cubit.dart';
 import '../../../accounts/models/accounts_view_filter.dart';
@@ -39,7 +41,7 @@ class AccountsSummariesView extends StatelessWidget {
           dividerColor: BudgetColors.teal900,
           expansionCallback: (int index, bool isExpanded) {
             context.read<AccountsCubit>().changeExpanded(index);
-            if(isDisplayDesktop(context)){
+            if (isDisplayDesktop(context)) {
               context.read<TransferBloc>().add(TransferFormLoaded());
             }
           },
@@ -49,8 +51,17 @@ class AccountsSummariesView extends StatelessWidget {
                 backgroundColor: BudgetColors.teal100,
                 headerBuilder: (BuildContext context, bool isExpanded) {
                   return ListTile(
-                    leading: Icon(Icons.account_balance_outlined,
-                        color: scheme.primary),
+                    leading: Builder(builder: (context) {
+                      final categories = context
+                          .select((HomeCubit cubit) => cubit.state.categories);
+                      return FaIcon(
+                          color: scheme.primary,
+                          IconData(
+                              categories.firstWhere((element) =>
+                                          element.id == acc.categoryId)
+                                      .iconCode ?? 0,
+                              fontFamily: 'FontAwesomeSolid'));
+                    }),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

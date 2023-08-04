@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
