@@ -13,7 +13,6 @@ import 'package:budget_app/transfer/repository/transfer_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../constants/constants.dart';
@@ -61,12 +60,7 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
-    return ScreenUtilInit(
-      designSize: const Size(1080, 2160),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return MultiRepositoryProvider(
+    return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(create: (context) => BudgetRepositoryImpl()),
             RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
@@ -147,7 +141,5 @@ class _AppViewState extends State<AppView> {
             onGenerateRoute: (_) => SplashPage.route(),
           ),
         );
-      },
-    );
   }
 }

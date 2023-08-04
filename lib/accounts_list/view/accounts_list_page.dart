@@ -5,7 +5,6 @@ import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../accounts/models/account.dart';
@@ -74,7 +73,7 @@ class AccountsListView extends StatelessWidget {
               body: Column(
                 children: [
                   SizedBox(
-                    height: 50.h,
+                    height: 10,
                   ),
                   Expanded(
                     child: ListView.builder(

@@ -2,7 +2,6 @@ import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class TransactionListTile extends StatelessWidget {
@@ -23,7 +22,6 @@ class TransactionListTile extends StatelessWidget {
       onDismissed: onDismissed,
       direction: DismissDirection.startToEnd,
       background: Container(
-        //alignment: Alignment.centerRight,
         color: theme.error,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: const Icon(
@@ -49,7 +47,7 @@ class TransactionListTile extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
-                    width: 30.w,
+                    width: 10,
                   ),
                   Icon(Icons.chevron_right),
                 ],
