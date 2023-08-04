@@ -114,7 +114,7 @@ class AccountsListView extends StatelessWidget {
                   ListTile(
                     tileColor: BudgetColors.amber800,
                     title: Text(
-                      'New Account',
+                      'Add Account',
                       style: TextStyle(
                           fontSize:
                               Theme.of(context).textTheme.titleLarge!.fontSize),

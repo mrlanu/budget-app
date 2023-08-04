@@ -43,7 +43,8 @@ class HomeMobileView extends StatelessWidget {
                 appBar: AppBar(
                   title: AnimatedSwitcher(
                       duration: Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double> animation) {
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
                         return ScaleTransition(scale: animation, child: child);
                       },
                       child: state.tab != HomeTab.accounts

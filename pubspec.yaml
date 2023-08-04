@@ -48,3 +48,16 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+  fonts:
+    - family: FontAwesomeBrands
+      fonts:
+        - asset: assets/fonts/fa-brands-400.ttf
+          weight: 400
+    - family: FontAwesomeRegular
+      fonts:
+        - asset: assets/fonts/fa-regular-400.ttf
+          weight: 400
+    - family: FontAwesomeSolid
+      fonts:
+        - asset: assets/fonts/fa-solid-900.ttf
+          weight: 900
