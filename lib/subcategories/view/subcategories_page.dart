@@ -1,7 +1,6 @@
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../categories/models/category.dart';
 import '../cubit/subcategories_cubit.dart';
@@ -36,7 +35,6 @@ class SubcategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocConsumer<SubcategoriesCubit, SubcategoriesState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
@@ -58,7 +56,7 @@ class SubcategoriesView extends StatelessWidget {
           body: Column(
             children: [
               SizedBox(
-                height: 50.h,
+                height: 10,
               ),
               Expanded(
                 child: ListView.builder(

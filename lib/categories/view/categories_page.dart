@@ -1,11 +1,11 @@
-import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/categories/view/widgets/categories_grid.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../constants/constants.dart';
 
@@ -57,7 +57,9 @@ class CategoriesView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SizedBox(height: 50.h,),
+              SizedBox(
+                height: 10,
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: state.categories.length,
@@ -66,13 +68,22 @@ class CategoriesView extends StatelessWidget {
                     return Card(
                       elevation: Theme.of(context).cardTheme.elevation,
                       child: ListTile(
-                        title: Text(
-                          category.name,
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .fontSize),
+                        title: Row(
+                          children: [
+                            Text(
+                              category.name,
+                              style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .fontSize),
+                            ),
+                            Expanded(child: Container()),
+                            FaIcon(
+                                color: scheme.primary,
+                                IconData(category.iconCode ?? 0,
+                                    fontFamily: 'FontAwesomeSolid')),
+                          ],
                         ),
                         leading: IconButton(
                           icon: Icon(Icons.highlight_remove,
@@ -98,7 +109,7 @@ class CategoriesView extends StatelessWidget {
               ListTile(
                 tileColor: BudgetColors.amber800,
                 title: Text(
-                  'New category',
+                  'Add category',
                   style: TextStyle(
                       fontSize:
                           Theme.of(context).textTheme.titleLarge!.fontSize),
@@ -125,38 +136,64 @@ class CategoriesView extends StatelessWidget {
           value: context.read<CategoriesCubit>(),
           child: BlocBuilder<CategoriesCubit, CategoriesState>(
             builder: (context, state) {
-              return AlertDialog(
-                title: Text(state.editCategory == null
-                    ? 'Add category'
-                    : 'Edit category'),
-                content: Container(
-                  height: h * 0.25,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        autofocus: true,
-                        initialValue: state.editCategory?.name,
-                        onChanged: (name) =>
-                            context.read<CategoriesCubit>().onNameChanged(name),
-                        decoration: InputDecoration(hintText: 'Enter name'),
+              return Center(
+                child: SingleChildScrollView(
+                  child: Dialog(
+                    insetPadding: EdgeInsets.all(10),
+                    child: Container(
+                      height: h * 0.7,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                state.editCategory == null
+                                    ? 'Add category'
+                                    : 'Edit category',
+                                style: Theme.of(context).textTheme.titleLarge),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              autofocus: true,
+                              initialValue: state.editCategory?.name,
+                              onChanged: (name) => context
+                                  .read<CategoriesCubit>()
+                                  .onNameChanged(name),
+                              decoration:
+                                  InputDecoration(hintText: 'Enter name'),
+                            ),
+                            SizedBox(height: 10),
+                            Divider(),
+                            Expanded(
+                                child: CategoriesGrid(
+                                    selectedIconCode: state.iconCode,
+                                    onSelect: (code) => context
+                                        .read<CategoriesCubit>()
+                                        .onIconCodeChanged(code))),
+                            Divider(),
+                            TextButton(
+                              onPressed: state.name == null ||
+                                      state.name?.length == 0 ||
+                                      state.iconCode < 0
+                                  ? null
+                                  : () => _submit(context),
+                              child: Text('SAVE',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: state.name == null ||
+                                              state.name?.length == 0 ||
+                                              state.iconCode < 0
+                                          ? Colors.grey
+                                          : BudgetColors.amber800)),
+                            )
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 30),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        initialValue: state.editCategory?.iconCode.toString(),
-                        onChanged: (code) =>
-                            context.read<CategoriesCubit>().onIconCodeChanged(code),
-                        decoration: InputDecoration(hintText: 'Enter icon code'),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => _submit(context),
-                    child: Text('SAVE'),
-                  )
-                ],
               );
             },
           )));

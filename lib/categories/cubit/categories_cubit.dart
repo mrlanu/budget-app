@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../models/category.dart';
 import '../repository/categories_repository.dart';
@@ -29,15 +30,18 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     final catByType = categories
         .where((element) => element.transactionType == state.transactionType)
         .toList();
-    emit(state.copyWith(status: CategoriesStatus.success, categories: catByType));
+    emit(state.copyWith(
+        status: CategoriesStatus.success, categories: catByType));
   }
 
   void onNameChanged(String name) {
     emit(state.copyWith(name: name));
   }
 
-  void onIconCodeChanged(String code) {
-    emit(state.copyWith(iconCode: int.parse(code)));
+  void onIconCodeChanged(int code) {
+    print('Family: ${FontAwesomeIcons.code.fontFamily}');
+    print('CODE: ${FontAwesomeIcons.code.codePoint}');
+    emit(state.copyWith(iconCode: code));
   }
 
   void onNewCategory() {
@@ -45,7 +49,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   }
 
   void onCategoryEdit(Category category) {
-    emit(state.copyWith(editCategory: category));
+    emit(state.copyWith(
+        editCategory: category,
+        name: category.name,
+        iconCode: category.iconCode));
   }
 
   Future<void> onSubmit() async {
@@ -57,7 +64,8 @@ class CategoriesCubit extends Cubit<CategoriesState> {
           budgetId: await getBudgetId(),
           transactionType: state.transactionType);
     } else {
-      category = state.editCategory!.copyWith(name: state.name, iconCode: state.iconCode);
+      category = state.editCategory!
+          .copyWith(name: state.name, iconCode: state.iconCode);
     }
     _categoriesRepository.saveCategory(category: category);
     emit(state.copyWith(status: CategoriesStatus.loading));

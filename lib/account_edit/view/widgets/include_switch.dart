@@ -1,7 +1,6 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class IncludeSwitch extends StatelessWidget {
   const IncludeSwitch({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class IncludeSwitch extends StatelessWidget {
                       .titleLarge
                       ?.fontSize),
             ),
-            SizedBox(width: 50.w,),
+            SizedBox(width: 10),
             Switch(
               thumbIcon: _thumbIcon,
               value: state.isIncludeInTotals,
