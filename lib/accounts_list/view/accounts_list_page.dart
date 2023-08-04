@@ -1,7 +1,6 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +46,6 @@ class AccountsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return MultiBlocListener(
         listeners: [
           BlocListener<AccountsListCubit, AccountsListState>(
