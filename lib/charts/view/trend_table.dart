@@ -168,9 +168,13 @@ class TrendTable extends StatelessWidget {
                                     verticalAlignment:
                                         TableCellVerticalAlignment.middle,
                                     child: Container(
-                                      color: e.incomeSum - e.expenseSum <= 0
-                                          ? Color.fromRGBO(255, 227, 227, 1.0)
-                                          : Color.fromRGBO(221, 255, 216, 1.0),
+                                      color: e.incomeSum - e.expenseSum == 0
+                                          ? null
+                                          : e.incomeSum - e.expenseSum <= 0
+                                              ? Color.fromRGBO(
+                                                  255, 227, 227, 1.0)
+                                              : Color.fromRGBO(
+                                                  221, 255, 216, 1.0),
                                       child: Align(
                                           alignment: Alignment.centerRight,
                                           child: Padding(

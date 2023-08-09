@@ -66,13 +66,19 @@ class TrendChartDesktopViewBody extends StatelessWidget {
             child: state.status == ChartStatus.loading
                 ? CircularProgressIndicator()
                 : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(width: w * 0.35, height: h * 0.6, child: TrendChart()),
+                      Container(
+                          width: w * 0.35,
+                          height: h * 0.6,
+                          child: TrendChart()),
                       SizedBox(width: w * 0.01),
                       Padding(
                         padding: const EdgeInsets.only(top: 40),
-                        child: Container(width: w * 0.35, height: h * 0.6, child: TrendTable()),
+                        child: Container(
+                            width: w * 0.35,
+                            height: h * 0.6,
+                            child: TrendTable()),
                       )
                     ],
                   ));
@@ -112,10 +118,11 @@ class TrendChart extends StatelessWidget {
                       barTouchData: BarTouchData(
                         touchTooltipData: BarTouchTooltipData(
                           fitInsideHorizontally: true,
+                          fitInsideVertically: true,
                           tooltipBgColor: Colors.lightBlueAccent,
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
                             return BarTooltipItem(
-                                '${group.barRods[0].toY} / ${group.barRods[1].toY}',
+                                '${group.barRods[0].toY.toStringAsFixed(2)} / ${group.barRods[1].toY.toStringAsFixed(2)}',
                                 TextStyle(color: Colors.black));
                           },
                         ),

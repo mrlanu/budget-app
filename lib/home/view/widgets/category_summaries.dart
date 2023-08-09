@@ -46,7 +46,7 @@ class CategorySummaries extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '\$ ${tile.total.toString()}',
+                          '\$ ${tile.total.toStringAsFixed(2)}',
                           style: TextStyle(
                               fontSize: textTheme.titleLarge!.fontSize,
                               fontWeight: FontWeight.bold,
