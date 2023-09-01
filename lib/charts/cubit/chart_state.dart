@@ -11,6 +11,15 @@ class ChartState extends Equatable {
     return data.map((e) => e.date.split('-')[1]).toList();
   }
 
+  List<double> get dataPoints {
+    final result = <double>[];
+    data.forEach((element) {
+      result.add(element.expenseSum);
+      result.add(element.incomeSum);
+    });
+    return result;
+  }
+
   double get maxValue {
     final expMax =  data.map((e) => e.expenseSum).reduce(max);
     final incMax =  data.map((e) => e.incomeSum).reduce(max);
