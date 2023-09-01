@@ -20,6 +20,8 @@ dependencies:
   uuid: ^3.0.0
   json_annotation: ^4.8.0
   http: ^1.1.0
+  chart:
+    path: packages/chart
   authentication_repository:
     path: packages/authentication_repository
   form_inputs:
