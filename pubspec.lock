@@ -175,6 +175,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  chart:
+    dependency: "direct main"
+    description:
+      path: "packages/chart"
+      relative: true
+    source: path
+    version: "1.0.0"
   checked_yaml:
     dependency: transitive
     description:

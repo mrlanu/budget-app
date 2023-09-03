@@ -1,4 +1,5 @@
-import 'package:budget_app/charts/view/chart_page.dart';
+import 'package:budget_app/charts/view/category_chart_page.dart';
+import 'package:budget_app/charts/view/trend_chart_page.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
@@ -43,104 +44,62 @@ class _MainDrawerState extends State<MainDrawer> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   children: [
-                    ListTile(
-                      tileColor:
-                      widget.tabController?.index == 0 ? BudgetColors.teal100 : null,
-                      leading:
-                      FaIcon(FontAwesomeIcons.coins, color: BudgetColors.teal900),
-                      title: Text('Budgets',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
-                      onTap: () {
-                        isDisplayDesktop(context)
-                            ? {
-                          widget.tabController?.index = 0,
-                          setState(
-                                () {},
-                          )
-                        }
-                            : Navigator.of(context).pushNamedAndRemoveUntil<void>(
-                          HomePage.routeName,
-                              (route) => false,
-                        );
-                      },
-                    ),
+                    _buildMenuItem(
+                        menuIndex: 0,
+                        title: 'Budgets',
+                        icon: FaIcon(FontAwesomeIcons.coins,
+                            color: BudgetColors.teal900),
+                        route: HomePage.route()),
                     Divider(color: BudgetColors.teal900),
-                    ListTile(
-                      tileColor:
-                      widget.tabController?.index == 1 ? BudgetColors.teal100 : null,
-                      leading: FaIcon(
-                        FontAwesomeIcons.listUl,
-                        color: BudgetColors.teal900,
+                    _buildMenuItem(
+                        menuIndex: 1,
+                        title: 'Summary',
+                        icon: FaIcon(FontAwesomeIcons.listUl,
+                            color: BudgetColors.teal900),
+                        route: SummaryPage.route()),
+                    Divider(color: BudgetColors.teal900),
+                    ExpansionTile(
+                      shape: Border.all(color: Colors.transparent),
+                      title: Row(
+                        children: [
+                          FaIcon(FontAwesomeIcons.chartSimple,
+                              color: BudgetColors.teal900),
+                          SizedBox(width: 20),
+                          Text('Charts',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(color: BudgetColors.teal900)),
+                        ],
                       ),
-                      title: Text('Summary',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
-                      onTap: () {
-                        isDisplayDesktop(context)
-                            ? {
-                          widget.tabController?.index = 1,
-                          setState(() {}),
-                        }
-                            : {
-                          Navigator.pop(context),
-                          Navigator.of(context).push(SummaryPage.route())
-                        };
-                      },
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: _buildMenuItem(
+                                menuIndex: 2,
+                                title: 'Trend',
+                                icon: null,
+                                route: TrendChartPage.route())),
+                        Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: _buildMenuItem(
+                                menuIndex: 2,
+                                title: 'Sum by Category',
+                                icon: null,
+                                route: CategoryChartPage.route())),
+                      ],
                     ),
                     Divider(color: BudgetColors.teal900),
+                    _buildMenuItem(
+                        menuIndex: 3,
+                        title: 'Debt payoff planner',
+                        icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
+                            color: BudgetColors.teal900),
+                        route: DebtPayoffPage.route()),
+                    Divider(color: BudgetColors.teal900),
                     ListTile(
-                      tileColor:
-                      widget.tabController?.index == 2 ? BudgetColors.teal100 : null,
-                      leading: FaIcon(FontAwesomeIcons.chartSimple,
+                      leading: FaIcon(FontAwesomeIcons.gear,
                           color: BudgetColors.teal900),
-                      title: Text('Trend',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
-                      onTap: () {
-                        isDisplayDesktop(context)
-                            ? {
-                          widget.tabController?.index = 2,
-                          setState(() {}),
-                        }
-                            : {
-                          Navigator.pop(context),
-                          Navigator.of(context).push(ChartPage.route())
-                        };
-                      },
-                    ),
-                    Divider(color: BudgetColors.teal900),
-                    ListTile(
-                      tileColor:
-                      widget.tabController?.index == 3 ? BudgetColors.teal100 : null,
-                      leading: FaIcon(FontAwesomeIcons.moneyCheckDollar,
-                          color: BudgetColors.teal900),
-                      title: Text('Debt payoff planner',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
-                      onTap: () {
-                        isDisplayDesktop(context)
-                            ? {
-                          widget.tabController?.index = 3,
-                          setState(() {}),
-                        }
-                            : {
-                          Navigator.pop(context),
-                          Navigator.push(context, DebtPayoffPage.route())
-                        };
-                      },
-                    ),
-                    Divider(color: BudgetColors.teal900),
-                    ListTile(
-                      leading: FaIcon(FontAwesomeIcons.gear, color: BudgetColors.teal900),
                       title: Text('Settings',
                           style: Theme.of(context)
                               .textTheme
@@ -150,7 +109,8 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                     Divider(color: BudgetColors.teal900),
                     ListTile(
-                      leading: FaIcon(FontAwesomeIcons.rightFromBracket, color: BudgetColors.teal900),
+                      leading: FaIcon(FontAwesomeIcons.rightFromBracket,
+                          color: BudgetColors.teal900),
                       title: Text('Log out',
                           style: Theme.of(context)
                               .textTheme
@@ -168,6 +128,29 @@ class _MainDrawerState extends State<MainDrawer> {
           )
         ],
       ),
+    );
+  }
+
+  ListTile _buildMenuItem(
+      {required int menuIndex,
+      required String title,
+      required Widget? icon,
+      required Route route}) {
+    return ListTile(
+      tileColor: widget.tabController?.index == menuIndex
+          ? BudgetColors.teal100
+          : null,
+      leading: icon,
+      title: Text(title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: BudgetColors.teal900)),
+      onTap: () {
+        isDisplayDesktop(context)
+            ? {widget.tabController?.index = menuIndex, setState(() {})}
+            : {Navigator.of(context).pop(), Navigator.of(context).push(route)};
+      },
     );
   }
 }
