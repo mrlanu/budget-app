@@ -1,12 +1,11 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../accounts/models/account.dart';
 import '../../categories/repository/categories_repository.dart';
@@ -15,8 +14,7 @@ import '../cubit/accounts_list_cubit.dart';
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
-  static Route<void> route(
-      {required HomeCubit homeCubit}) {
+  static Route<void> route({required HomeCubit homeCubit}) {
     return MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
@@ -47,7 +45,6 @@ class AccountsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return MultiBlocListener(
         listeners: [
           BlocListener<AccountsListCubit, AccountsListState>(
@@ -68,6 +65,7 @@ class AccountsListView extends StatelessWidget {
         ],
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {
+            final scheme = Theme.of(context).colorScheme;
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
@@ -75,7 +73,7 @@ class AccountsListView extends StatelessWidget {
               body: Column(
                 children: [
                   SizedBox(
-                    height: 50.h,
+                    height: 10,
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -85,13 +83,28 @@ class AccountsListView extends StatelessWidget {
                         return Card(
                           elevation: Theme.of(context).cardTheme.elevation,
                           child: ListTile(
-                            title: Text(
-                              account.extendName(state.accountCategories),
-                              style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .fontSize),
+                            title: Row(
+                              children: [
+                                Text(
+                                  account.extendName(state.accountCategories),
+                                  style: TextStyle(
+                                      fontSize: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .fontSize),
+                                ),
+                                Expanded(child: Container()),
+                                FaIcon(
+                                    color: scheme.primary,
+                                    IconData(
+                                        state.accountCategories
+                                                .firstWhere((element) =>
+                                                    element.id ==
+                                                    account.categoryId)
+                                                .iconCode ??
+                                            0,
+                                        fontFamily: 'FontAwesomeSolid')),
+                              ],
                             ),
                             leading: IconButton(
                               icon: Icon(Icons.highlight_remove,
@@ -114,7 +127,7 @@ class AccountsListView extends StatelessWidget {
                   ListTile(
                     tileColor: BudgetColors.amber800,
                     title: Text(
-                      'New Account',
+                      'Add Account',
                       style: TextStyle(
                           fontSize:
                               Theme.of(context).textTheme.titleLarge!.fontSize),

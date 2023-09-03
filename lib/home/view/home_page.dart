@@ -14,6 +14,10 @@ import '../../transactions/repository/transactions_repository.dart';
 class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
+  static Route<void> route(){
+    return MaterialPageRoute(builder: (context) => HomePage());
+  }
+
   const HomePage({Key? key}) : super(key: key);
 
   @override

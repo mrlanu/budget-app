@@ -2,6 +2,7 @@ import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
+import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
@@ -59,13 +60,12 @@ class HomeGrid extends StatefulWidget {
 }
 
 class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
-
   late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -84,6 +84,7 @@ class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
             controller: _tabController,
             children: [
               HomeViewDesktop(),
+              Center(child: Container(width: w * 0.5, height: h * 0.9, child: SummaryPage())),
               TrendChartDesktopView(),
               DebtPayoffViewDesktop(),
             ],

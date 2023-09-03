@@ -1,2 +1,3 @@
+export 'trend_chart_page.dart';
 export 'trend_table.dart';
-export 'chart_page.dart';
+export 'widgets/widgets.dart';

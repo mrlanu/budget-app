@@ -3,7 +3,6 @@ import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dar
 import 'package:budget_app/debt_payoff_planner/debt_form/debt_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 class DebtDialog extends StatelessWidget {
@@ -37,7 +36,7 @@ class DebtDialog extends StatelessWidget {
                   alignment: Alignment.center,
                   children: <Widget>[
                     Container(
-                      height: 1465.h,
+                      height: 500,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),),
@@ -51,15 +50,15 @@ class DebtDialog extends StatelessWidget {
                                         .textTheme
                                         .titleLarge
                                         ?.fontSize)),
-                            SizedBox(height: 50.h),
+                            SizedBox(height: 15),
                             NameInputField(),
-                            SizedBox(height: 75.h),
+                            SizedBox(height: 20),
                             BalanceInput(),
-                            SizedBox(height: 75.h),
+                            SizedBox(height: 20),
                             MinInputField(),
-                            SizedBox(height: 75.h),
+                            SizedBox(height: 20),
                             AprInputField(),
-                            SizedBox(height: 75.h),
+                            SizedBox(height: 20),
                             _SubmitButton(),
                           ],
                         ),

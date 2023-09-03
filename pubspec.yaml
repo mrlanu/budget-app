@@ -1,6 +1,6 @@
 name: budget_app
 description: A Budget app.
-version: 2.4.0
+version: 2.5.0
 publish_to: none
 
 environment:
@@ -11,7 +11,6 @@ dependencies:
   bloc: ^8.1.0
   rxdart: ^0.27.5
   equatable: ^2.0.3
-  flutter_screenutil: ^5.7.0
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
@@ -21,6 +20,8 @@ dependencies:
   uuid: ^3.0.0
   json_annotation: ^4.8.0
   http: ^1.1.0
+  chart:
+    path: packages/chart
   authentication_repository:
     path: packages/authentication_repository
   form_inputs:
@@ -32,6 +33,7 @@ dependencies:
   carousel_slider: ^4.2.1
   adaptive_breakpoints: ^0.1.6
   fl_chart: ^0.63.0
+  font_awesome_flutter: ^10.5.0
 
 dev_dependencies:
   bloc_test: ^9.0.0
@@ -47,3 +49,16 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+  fonts:
+    - family: FontAwesomeBrands
+      fonts:
+        - asset: assets/fonts/fa-brands-400.ttf
+          weight: 400
+    - family: FontAwesomeRegular
+      fonts:
+        - asset: assets/fonts/fa-regular-400.ttf
+          weight: 400
+    - family: FontAwesomeSolid
+      fonts:
+        - asset: assets/fonts/fa-solid-900.ttf
+          weight: 900

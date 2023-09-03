@@ -3,18 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/chart_cubit.dart';
 
-class TrendTable extends StatelessWidget {
-  const TrendTable({super.key});
+class CategoryTable extends StatelessWidget {
+  const CategoryTable({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChartCubit, ChartState>(
       builder: (context, state) {
-        final sumInc = state.data.fold(
-            0.0, (previousValue, element) => previousValue + element.incomeSum);
         final sumExp = state.data.fold(0.0,
             (previousValue, element) => previousValue + element.expenseSum);
-        final balanceSum = sumInc - sumExp;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 9),
           child: Column(
@@ -23,39 +20,29 @@ class TrendTable extends StatelessWidget {
                 border: TableBorder.all(color: Colors.grey),
                 columnWidths: const <int, TableColumnWidth>{
                   0: FlexColumnWidth(),
-                  1: FlexColumnWidth(),
                   2: FlexColumnWidth(),
-                  3: FlexColumnWidth(),
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
-                  TableRow(children: [
+                  TableRow(
+                      decoration: BoxDecoration(
+                          color: Colors.white60
+                      ),
+                      children: [
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 18),
                             'Date')),
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            'Income')),
-                    Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            'Expenses')),
-                    Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            'Balance')),
+                            style: TextStyle(fontSize: 18),
+                            'Spent')),
                   ]),
                   TableRow(
                       decoration: BoxDecoration(
-                        color: balanceSum <= 0
-                            ? Color.fromRGBO(255, 227, 227, 1.0)
-                            : Color.fromRGBO(221, 255, 216, 1.0),
+                        color: Colors.white54
                       ),
                       children: [
                         Padding(
@@ -82,23 +69,7 @@ class TrendTable extends StatelessWidget {
                               alignment: Alignment.centerRight,
                               child: Text(
                                   style: TextStyle(fontWeight: FontWeight.bold),
-                                  '\$ ${sumInc.toStringAsFixed(2)}')),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
                                   '\$ ${sumExp.toStringAsFixed(2)}')),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                  '\$ ${balanceSum.toStringAsFixed(2)}')),
                         ),
                       ]),
                 ],
@@ -109,9 +80,7 @@ class TrendTable extends StatelessWidget {
                     border: TableBorder.all(color: Colors.grey),
                     columnWidths: const <int, TableColumnWidth>{
                       0: FlexColumnWidth(),
-                      1: FlexColumnWidth(),
                       2: FlexColumnWidth(),
-                      3: FlexColumnWidth(),
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: <TableRow>[
@@ -147,48 +116,8 @@ class TrendTable extends StatelessWidget {
                                                       .textTheme
                                                       .titleMedium!
                                                       .fontSize),
-                                              '\$ ${e.incomeSum.toStringAsFixed(2)}'),
-                                        ))),
-                                TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Text(
-                                              style: TextStyle(
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .fontSize),
                                               '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
-                                TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Container(
-                                      color: e.incomeSum - e.expenseSum == 0
-                                          ? null
-                                          : e.incomeSum - e.expenseSum <= 0
-                                              ? Color.fromRGBO(
-                                                  255, 227, 227, 1.0)
-                                              : Color.fromRGBO(
-                                                  221, 255, 216, 1.0),
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(5.0),
-                                            child: Text(
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium!
-                                                        .fontSize),
-                                                '\$ ${(e.incomeSum - e.expenseSum).toStringAsFixed(2)}'),
-                                          )),
-                                    )),
                               ],
                             ),
                           )

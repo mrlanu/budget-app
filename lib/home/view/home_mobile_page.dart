@@ -41,19 +41,12 @@ class HomeMobileView extends StatelessWidget {
             child: Scaffold(
                 backgroundColor: BudgetColors.teal50,
                 appBar: AppBar(
-                  title: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double> animation) {
-                        return ScaleTransition(scale: animation, child: child);
-                      },
-                      child: state.tab != HomeTab.accounts
-                          ? MonthPaginator(
-                              onLeft: (date) =>
-                                  context.read<HomeCubit>().changeDate(date),
-                              onRight: (date) =>
-                                  context.read<HomeCubit>().changeDate(date),
-                            )
-                          : Text('Accounts')),
+                  title: MonthPaginator(
+                    onLeft: (date) =>
+                        context.read<HomeCubit>().changeDate(date),
+                    onRight: (date) =>
+                        context.read<HomeCubit>().changeDate(date),
+                  ),
                   centerTitle: true,
                   actions: <Widget>[
                     IconButton(

@@ -7,7 +7,7 @@ class CategoriesState extends Equatable {
   final List<Category> categories;
   final TransactionType transactionType;
   final String? name;
-  final int? iconCode;
+  final int iconCode;
   final Category? editCategory;
   final String? errorMessage;
 
@@ -16,7 +16,7 @@ class CategoriesState extends Equatable {
       this.categories = const [],
       this.transactionType = TransactionType.EXPENSE,
       this.name,
-      this.iconCode,
+      this.iconCode = -1,
       this.editCategory,
       this.errorMessage});
 
@@ -43,8 +43,8 @@ class CategoriesState extends Equatable {
         status: this.status,
         categories: this.categories,
         transactionType: this.transactionType,
-        name: this.name,
-        iconCode: this.iconCode,
+        name: null,
+        iconCode: 0,
         editCategory: null);
   }
 
