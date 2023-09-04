@@ -33,7 +33,7 @@ class TransactionsList extends StatelessWidget {
                 child: ListView.separated(
                     itemCount: state.filteredTiles.length,
                     itemBuilder: (context, index) {
-                      final tr = state.filteredTiles[index];
+                      final tr = state.filteredTiles[state.filteredTiles.length - index - 1];
                       return TransactionListTile(
                         transactionTile: tr,
                         onDismissed: (_) {

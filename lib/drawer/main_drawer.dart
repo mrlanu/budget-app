@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../app/bloc/app_bloc.dart';
-import '../home/view/home_page.dart';
 import '../summary/view/summary_page.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -44,13 +43,13 @@ class _MainDrawerState extends State<MainDrawer> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   children: [
-                    _buildMenuItem(
+                    /*_buildMenuItem(
                         menuIndex: 0,
                         title: 'Budgets',
                         icon: FaIcon(FontAwesomeIcons.coins,
                             color: BudgetColors.teal900),
                         route: HomePage.route()),
-                    Divider(color: BudgetColors.teal900),
+                    Divider(color: BudgetColors.teal900),*/
                     _buildMenuItem(
                         menuIndex: 1,
                         title: 'Summary',
@@ -96,7 +95,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: BudgetColors.teal900),
                         route: DebtPayoffPage.route()),
-                    Divider(color: BudgetColors.teal900),
+                    /*Divider(color: BudgetColors.teal900),
                     ListTile(
                       leading: FaIcon(FontAwesomeIcons.gear,
                           color: BudgetColors.teal900),
@@ -106,7 +105,7 @@ class _MainDrawerState extends State<MainDrawer> {
                               .titleLarge!
                               .copyWith(color: BudgetColors.teal900)),
                       onTap: () {},
-                    ),
+                    ),*/
                     Divider(color: BudgetColors.teal900),
                     ListTile(
                       leading: FaIcon(FontAwesomeIcons.rightFromBracket,
