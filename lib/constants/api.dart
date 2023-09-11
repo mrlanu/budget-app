@@ -22,6 +22,17 @@ Future<Map<String, String>> getHeaders() async {
   return {"Content-Type": "application/json", "Authorization": "Bearer $token"};
 }
 
+Future<String> getUserId() async {
+  final instance = await SharedPreferences.getInstance();
+  return instance.getString('userId') ?? '';
+}
+
+Future<String> getCurrentBudgetId() async {
+  final instance = await SharedPreferences.getInstance();
+  return instance.getString('currentBudgetId') ?? '';
+
+}
+
 Future<String> getBudgetId() async {
   final instance = await SharedPreferences.getInstance();
   final budgetJson = instance.getString('budget');

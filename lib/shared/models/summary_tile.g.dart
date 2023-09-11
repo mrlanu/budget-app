@@ -11,6 +11,7 @@ SummaryTile _$SummaryTileFromJson(Map<String, dynamic> json) => SummaryTile(
       name: json['name'] as String,
       total: (json['total'] as num).toDouble(),
       iconCodePoint: json['iconCodePoint'] as int,
+      isExpanded: json['isExpanded'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SummaryTileToJson(SummaryTile instance) =>
@@ -19,4 +20,5 @@ Map<String, dynamic> _$SummaryTileToJson(SummaryTile instance) =>
       'name': instance.name,
       'total': instance.total,
       'iconCodePoint': instance.iconCodePoint,
+      'isExpanded': instance.isExpanded,
     };

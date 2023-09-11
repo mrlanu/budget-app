@@ -4,7 +4,7 @@ version: 2.0.0
 publish_to: none
 
 environment:
-  sdk: ">=3.0.0-417.1.beta <3.0.6"
+  sdk: ">=3.0.0-417.1.beta <=3.1.1"
 
 dependencies:
   cache:
@@ -12,6 +12,7 @@ dependencies:
   equatable: ^2.0.5
   firebase_auth: ^4.7.1
   firebase_core: ^2.15.0
+  cloud_firestore: ^4.9.1
   flutter:
     sdk: flutter
   google_sign_in: ^6.1.4

@@ -38,10 +38,10 @@ class Category extends Equatable {
 
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 
-  @override
+  /*@override
   String toString() {
     return 'Category{id: $id, name: $name, budgetId: $budgetId, type: $transactionType';
-  }
+  }*/
 
   @override
   List<Object?> get props => [id, name];

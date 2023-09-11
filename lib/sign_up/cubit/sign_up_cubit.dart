@@ -7,9 +7,11 @@ import 'package:formz/formz.dart';
 part 'sign_up_state.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
-  SignUpCubit(this._authenticationRepository) : super(const SignUpState());
+  SignUpCubit(
+      {required this.authenticationRepository})
+      : super(const SignUpState());
 
-  final AuthenticationRepository _authenticationRepository;
+  final AuthenticationRepository authenticationRepository;
 
   void emailChanged(String value) {
     final email = Email.dirty(value);
@@ -65,11 +67,12 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (!state.isValid) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
-      final token = await _authenticationRepository.signUp(
+      final user = await authenticationRepository.signUp(
         email: state.email.value,
         password: state.password.value,
       );
-      emit(state.copyWith(status: FormzSubmissionStatus.success));
+      //await budgetRepository.createBeginningBudget(userId: user!.uid);
+      //emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       emit(
         state.copyWith(

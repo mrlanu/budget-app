@@ -16,9 +16,12 @@ import 'package:budget_app/transfer/transfer.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
 
+import '../../budgets/budgets.dart' as newBudget;
+
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final String? userId;
   final BudgetRepository _budgetRepository;
   final TransactionsRepository _transactionsRepository;
   final AccountsRepository _accountsRepository;
@@ -28,8 +31,10 @@ class HomeCubit extends Cubit<HomeState> {
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
+  late final StreamSubscription<newBudget.Budget> _budgetsSubscription;
 
   HomeCubit({
+    this.userId,
     required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
     required AccountsRepository accountsRepository,
@@ -46,8 +51,14 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
+    _budgetsSubscription =
+        _budgetRepository.budgets.listen((budget) {
+          print('<<<<<<<BUDGET>>>>>>>: ${budget.toJson()}');
+        }, onError: (err){
+          emit(state.copyWith(
+              status: HomeStatus.failure, errorMessage: 'HomeCubit. Something went wrong'));
+        });
     try {
-      await _budgetRepository.fetchBudget();
       await Future.wait([
         _categoriesRepository.fetchAllCategories(),
         _subcategoriesRepository.fetchSubcategories(),
@@ -121,9 +132,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _onCategoriesChanged(List<Category> categories) async {
     var summaries = await _getSummariesByCategory(
         transactions: state.transactions, categories: categories);
-    emit(state.copyWith(
-      summaryList: summaries, categories: categories
-    ));
+    emit(state.copyWith(summaryList: summaries, categories: categories));
   }
 
   Map<String, double> _recalculateSections(
@@ -228,6 +237,7 @@ class HomeCubit extends Cubit<HomeState> {
     _accountsSubscription.cancel();
     _categoriesSubscription.cancel();
     _transfersSubscription.cancel();
+    _budgetsSubscription.cancel();
     return super.close();
   }
 }

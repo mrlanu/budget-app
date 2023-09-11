@@ -84,7 +84,8 @@ class _DesktopViewState extends State<DesktopView> {
       width: w * 0.3,
       height: h * 0.43,
       decoration: BoxDecoration(
-          color: BudgetColors.teal50.withOpacity(0.85), borderRadius: BorderRadius.circular(25)),
+          color: BudgetColors.teal50.withOpacity(0.85),
+          borderRadius: BorderRadius.circular(25)),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: w * 0.02, vertical: h * 0.06),
         child: Column(
@@ -107,8 +108,8 @@ class _DesktopViewState extends State<DesktopView> {
 
   Widget _signupBuilder() {
     return BlocProvider(
-      create: (context) =>
-          SignUpCubit(context.read<AuthenticationRepository>()),
+      create: (context) => SignUpCubit(
+          authenticationRepository: context.read<AuthenticationRepository>()),
       child: Container(
         width: w * 0.3,
         height: h * 0.53,

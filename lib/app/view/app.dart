@@ -10,7 +10,6 @@ import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/repository/transfer_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,7 +21,8 @@ import '../../transactions/transaction/view/transaction_page.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository =
-      AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
+      AuthenticationRepository();
+  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +31,12 @@ class App extends StatelessWidget {
         RepositoryProvider(
           create: (context) => _authenticationRepository,
         ),
+        RepositoryProvider(create: (context) => _budgetRepository),
       ],
       child: BlocProvider(
         create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository
-        ),
+            authenticationRepository: _authenticationRepository,
+            budgetRepository: _budgetRepository),
         child: AppView(),
       ),
     );
@@ -61,85 +62,81 @@ class _AppViewState extends State<AppView> {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
     return MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider(create: (context) => BudgetRepositoryImpl()),
-            RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
-            RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(),
-            ),
-            RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl()),
-            RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl()),
-            RepositoryProvider(
-              create: (context) => TransferRepositoryImpl(),
-            )
-          ],
-          child: MaterialApp(
-            navigatorKey: _navigatorKey,
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-                textTheme: GoogleFonts.robotoCondensedTextTheme(),
-                cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
-                appBarTheme: AppBarTheme(
-                    backgroundColor: BudgetColors.teal900,
-                    foregroundColor: BudgetColors.teal50),
-                colorScheme: ThemeData.light().colorScheme.copyWith(
-                      primary: BudgetColors.teal900,
-                      tertiary: BudgetColors.amber800,
-                      tertiaryContainer: BudgetColors.amber800,
-                      onPrimaryContainer: Colors.white70,
-                      surface: BudgetColors.teal100,
-                      background: BudgetColors.teal50,
-                    ),
-                inputDecorationTheme: const InputDecorationTheme(
-                    border: const OutlineInputBorder(),
-                    enabledBorder: const OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(color: const Color(0xFF343434), width: 1)),
-                    focusedBorder: const OutlineInputBorder(
-                        borderSide:
-                        const BorderSide(color: const Color(0xFF343434), width: 1))
-                    ),
-                useMaterial3: true),
-            /*darkTheme: ThemeData(
+      providers: [
+        RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
+        RepositoryProvider(
+          create: (context) => AccountsRepositoryImpl(),
+        ),
+        RepositoryProvider(create: (context) => TransactionsRepositoryImpl()),
+        RepositoryProvider(create: (context) => SubcategoriesRepositoryImpl()),
+        RepositoryProvider(
+          create: (context) => TransferRepositoryImpl(),
+        )
+      ],
+      child: MaterialApp(
+        navigatorKey: _navigatorKey,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            textTheme: GoogleFonts.robotoCondensedTextTheme(),
+            cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
+            appBarTheme: AppBarTheme(
+                backgroundColor: BudgetColors.teal900,
+                foregroundColor: BudgetColors.teal50),
+            colorScheme: ThemeData.light().colorScheme.copyWith(
+                  primary: BudgetColors.teal900,
+                  tertiary: BudgetColors.amber800,
+                  tertiaryContainer: BudgetColors.amber800,
+                  onPrimaryContainer: Colors.white70,
+                  surface: BudgetColors.teal100,
+                  background: BudgetColors.teal50,
+                ),
+            inputDecorationTheme: const InputDecorationTheme(
+                border: const OutlineInputBorder(),
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: const Color(0xFF343434), width: 1)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: const Color(0xFF343434), width: 1))),
+            useMaterial3: true),
+        /*darkTheme: ThemeData(
               cardTheme: Theme.of(context).cardTheme.copyWith(elevation: 4),
               useMaterial3: true,
               brightness: Brightness.dark,
             ),*/
-            routes: {
-              HomePage.routeName: (context) => HomePage(),
-              //AccountsPage.routeName: (context) => AccountsPage(),
-              SignUpPage.routeName: (context) => SignUpPage(),
-              LoginPage.routeName: (context) => LoginPage(),
-              TransactionPage.routeName: (context) => TransactionPage(),
-              //TransactionsPage.routeName: (context) => TransactionsPage(),
+        routes: {
+          HomePage.routeName: (context) => HomePage(),
+          //AccountsPage.routeName: (context) => AccountsPage(),
+          SignUpPage.routeName: (context) => SignUpPage(),
+          LoginPage.routeName: (context) => LoginPage(),
+          TransactionPage.routeName: (context) => TransactionPage(),
+          //TransactionsPage.routeName: (context) => TransactionsPage(),
+        },
+        builder: (context, child) {
+          return BlocListener<AppBloc, AppState>(
+            listener: (context, state) {
+              switch (state.status) {
+                case AppStatus.authenticated:
+                  _navigator.pushNamedAndRemoveUntil<void>(
+                    HomePage.routeName,
+                    (route) => false,
+                  );
+                  break;
+                case AppStatus.unauthenticated:
+                  _navigator.pushNamedAndRemoveUntil<void>(
+                    LoginPage.routeName,
+                    (route) => false,
+                  );
+                  break;
+                case AppStatus.unknown:
+                  break;
+              }
             },
-            builder: (context, child) {
-              return BlocListener<AppBloc, AppState>(
-                listener: (context, state) {
-                  switch (state.status) {
-                    case AppStatus.authenticated:
-                      _navigator.pushNamedAndRemoveUntil<void>(
-                        HomePage.routeName,
-                        (route) => false,
-                      );
-                      break;
-                    case AppStatus.unauthenticated:
-                      _navigator.pushNamedAndRemoveUntil<void>(
-                        LoginPage.routeName,
-                        (route) => false,
-                      );
-                      break;
-                    case AppStatus.unknown:
-                      break;
-                  }
-                },
-                child: child,
-              );
-            },
-            onGenerateRoute: (_) => SplashPage.route(),
-          ),
-        );
+            child: child,
+          );
+        },
+        onGenerateRoute: (_) => SplashPage.route(),
+      ),
+    );
   }
 }
