@@ -1,42 +1,48 @@
-import 'package:budget_app/accounts/models/account.dart';
-import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../../budgets/budgets.dart';
 
 part 'transaction.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Transaction {
   final String? id;
-  final String? budgetId;
   final DateTime? date;
   final TransactionType? type;
   final String? description;
   final double? amount;
-  final String? categoryId;
-  final String? subcategoryId;
+  final Category? category;
+  final Subcategory? subcategory;
   final String? accountId;
 
   Transaction(
       {this.id,
-      this.budgetId,
       this.date,
       this.type,
       this.description = '',
       this.amount,
-      this.categoryId,
-      this.subcategoryId,
+      this.category,
+      this.subcategory,
       this.accountId});
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
+  factory Transaction.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot,) {
+    final data = snapshot.data();
+    return Transaction.fromJson(data!);
+  }
+
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
   TransactionTile toTile(
-      {required Category category, required Account account, required Subcategory subcategory}) {
+      {required Category category,
+      required Account account,
+      required Subcategory subcategory}) {
     return TransactionTile(
         id: this.id!,
         type: this.type!,
@@ -52,6 +58,6 @@ class Transaction {
 
   @override
   String toString() {
-    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
+    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: ${category?.name}, sub: ${subcategory?.name}, acc: $accountId';
   }
 }

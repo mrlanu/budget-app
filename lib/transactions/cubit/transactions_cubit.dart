@@ -54,12 +54,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final accounts = await _accountsRepository.getAccounts().first;
 
     transactions.forEach((element) {
-      final cat = categories.where((c) => element.categoryId == c.id).first;
+      final cat = categories.where((c) => element.category!.name == c.id).first;
       final subcategory =
-          subcategories.where((sc) => element.subcategoryId == sc.id).first;
+          subcategories.where((sc) => element.subcategory!.name == sc.id).first;
       final acc = accounts.where((a) => element.accountId == a.id).first;
-      trTiles.add(element.toTile(
-          account: acc, category: cat, subcategory: subcategory));
+      /*trTiles.add(element.toTile(
+          account: null, category: nu, subcategory: subcategory));*/
     });
 
     transfers.forEach((element) {

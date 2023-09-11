@@ -63,8 +63,8 @@ class Transfer extends Equatable {
         subtitle: 'from ${fromAccount.name}',
         dateTime: date,
         description: this.notes!,
-        fromAccount: fromAccount,
-        toAccount: toAccount),
+        fromAccount: null,
+        toAccount: null),
     TransactionTile(
         id: this.id!,
         type: TransactionType.TRANSFER,
@@ -73,7 +73,7 @@ class Transfer extends Equatable {
         subtitle: 'to ${toAccount.name}',
         dateTime: date,
         description: this.notes!,
-        fromAccount: fromAccount,
-        toAccount: toAccount)]);
+        fromAccount: null,
+        toAccount: null)]);
   }
 }

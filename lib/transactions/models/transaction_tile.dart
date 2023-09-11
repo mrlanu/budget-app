@@ -1,8 +1,7 @@
-import 'package:budget_app/accounts/models/account.dart';
-import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/shared/models/subcategory.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../budgets/budgets.dart';
 
 class TransactionTile extends Equatable {
   final String id;

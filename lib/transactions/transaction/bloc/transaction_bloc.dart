@@ -21,7 +21,6 @@ import '../../models/transaction_type.dart';
 import '../../repository/transactions_repository.dart';
 
 part 'transaction_event.dart';
-
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
@@ -103,10 +102,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (tr != null) {
       id = tr.id;
       category =
-          filteredCategories.where((cat) => cat.id == tr.category!.id).first;
+          filteredCategories.where((cat) => cat.id == tr.category!.name).first;
       subcategories = await _subcategoriesRepository.getSubcategories().first;
       subcategory = subcategories
-          .where((element) => element.id == tr.subcategory!.id)
+          .where((element) => element.id == tr.subcategory!.name)
           .first;
       account =
           accounts.where((element) => element.id == tr.fromAccount!.id).first;
@@ -222,12 +221,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
-      budgetId: await getBudgetId(),
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),
-      categoryId: state.category!.id,
-      subcategoryId: state.subcategory!.id,
+      category: null,
+      subcategory: null,
       accountId: state.account!.id,
     );
     try {

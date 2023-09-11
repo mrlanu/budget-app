@@ -58,8 +58,8 @@ class AccountsSummariesView extends StatelessWidget {
                           color: scheme.primary,
                           IconData(
                               categories.firstWhere((element) =>
-                                          element.id == acc.categoryId)
-                                      .iconCode ?? 0,
+                                          element.name == acc.categoryId)
+                                      .iconCode,
                               fontFamily: 'FontAwesomeSolid'));
                     }),
                     trailing: Row(

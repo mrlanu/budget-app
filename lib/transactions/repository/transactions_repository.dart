@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transfer/models/models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as cloudFirestore;
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 import '../../constants/api.dart';
 
 abstract class TransactionsRepository {
+
+  Stream<List<Transaction>> get transactions;
+
   Stream<List<Transaction>> getTransactions();
 
   Stream<List<Transfer>> getTransfers();
@@ -38,7 +42,45 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   final _transfersStreamController =
       BehaviorSubject<List<Transfer>>.seeded(const []);
 
-  TransactionsRepositoryImpl();
+  final cloudFirestore.FirebaseFirestore _firebaseFirestore;
+
+  TransactionsRepositoryImpl(
+      {cloudFirestore.FirebaseFirestore? firebaseFirestore})
+      : _firebaseFirestore =
+            firebaseFirestore ?? cloudFirestore.FirebaseFirestore.instance;
+
+  Stream<List<Transaction>> get transactions async* {
+    final userId = await getUserId();
+    final budgetId = await getCurrentBudgetId();
+    yield* _firebaseFirestore
+        .collection('users')
+        .doc(userId)
+        .collection('budgets')
+        .doc(budgetId)
+        .collection('transactions')
+        .snapshots()
+        .map((event) =>
+            event.docs.map((e) => Transaction.fromFirestore(e)).toList());
+  }
+
+  /*Future<void> _createSomeTransactions() async {
+    final userId = await getUserId();
+    final budgetId = await getCurrentBudgetId();
+    final ref = await _firebaseFirestore
+        .collection('users')
+        .doc(userId)
+        .collection('budgets')
+        .doc(budgetId)
+        .collection('transactions');
+
+        ref.add(Transaction(id: Uuid().v4(), amount: 200, ).toJson()).then((documentSnapshot) {
+          ref.doc(documentSnapshot.id).set({'id': documentSnapshot.id}, cloudFirestore.SetOptions(merge: true));
+    });
+
+    *//*await _firebaseFirestore
+        .doc('users/$userId/budgets/${ref.id}')
+        .set(beginningBudget.toFirestore());*//*
+  }*/
 
   @override
   Stream<List<Transaction>> getTransactions() =>

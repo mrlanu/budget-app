@@ -40,7 +40,6 @@ class HomeState extends Equatable {
     Map<String, double>? sectionsSum,
     List<SummaryTile>? summaryList,
     HomeStatus? status,
-    Budget? budget,
     DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,

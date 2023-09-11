@@ -20,7 +20,7 @@ class TransactionsViewFilter {
       case TransactionsViewFilterTypes.allIncomes:
         return transactionTile.type == TransactionType.INCOME;
       case TransactionsViewFilterTypes.categoryId:
-        return transactionTile.category?.id == filterId!;
+        return transactionTile.category?.name == filterId!;
       case TransactionsViewFilterTypes.accountId:
         if(transactionTile.type == TransactionType.TRANSFER){
           return (transactionTile.fromAccount!.id == filterId && transactionTile.title == 'Transfer out') ||
