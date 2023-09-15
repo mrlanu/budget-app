@@ -1,6 +1,4 @@
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
-import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
@@ -16,30 +14,32 @@ class TransactionPage extends StatelessWidget {
 
   static const routeName = '/transaction';
 
-  static Route<void> route(
-      {required HomeCubit homeCubit,
-      TransactionTile? transaction,
-      required TransactionType transactionType,
-      required DateTime date}) {
-    return MaterialPageRoute(builder: (context) {
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => TransactionBloc(
-              transactionsRepository:
-                  context.read<TransactionsRepositoryImpl>(),
-              categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-              subcategoriesRepository:
-                  context.read<SubcategoriesRepositoryImpl>(),
-              accountsRepository: context.read<AccountsRepositoryImpl>(),
-            )..add(TransactionFormLoaded(
-                transaction: transaction,
-                transactionType: transactionType,
-                date: date)),
-          ),
-          BlocProvider.value(value: homeCubit),
-        ],
-        child: TransactionPage(),
+  static Route<void> route({required HomeCubit homeCubit,
+    TransactionTile? transaction,
+    required TransactionType transactionType,
+    required DateTime date}) {
+    return MaterialPageRoute(
+        builder: (ctx) {
+          final ts = ctx.read<TransactionsRepositoryImpl>();
+      return RepositoryProvider.value(
+        value: ctx.read<TransactionsRepositoryImpl>(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+              TransactionBloc(
+                  transactionsRepository:
+                  ctx.read<TransactionsRepositoryImpl>(),
+                  budgetRepository: context.read<BudgetRepository>())
+                ..add(TransactionFormLoaded(
+                    transaction: transaction,
+                    transactionType: transactionType,
+                    date: date)),
+            ),
+            BlocProvider.value(value: homeCubit),
+          ],
+          child: TransactionPage(),
+        ),
       );
     });
   }
@@ -55,8 +55,8 @@ class TransactionPage extends StatelessWidget {
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
                 : Center(
-                    child: CircularProgressIndicator(),
-                  ));
+              child: CircularProgressIndicator(),
+            ));
       },
     );
   }
@@ -77,10 +77,9 @@ class TransactionPage extends StatelessWidget {
 class TransactionWindow extends StatelessWidget {
   const TransactionWindow({Key? key}) : super(key: key);
 
-  static Widget window(
-      {Key? key,
-      TransactionTile? transaction,
-      required TransactionType transactionType}) {
+  static Widget window({Key? key,
+    TransactionTile? transaction,
+    required TransactionType transactionType}) {
     return TransactionWindow(
       key: key,
     );
@@ -90,7 +89,7 @@ class TransactionWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (previous, current) =>
-          previous.selectedDate != current.selectedDate,
+      previous.selectedDate != current.selectedDate,
       listener: (context, state) {
         final transactionType = switch (state.tab) {
           HomeTab.expenses => TransactionType.EXPENSE,
@@ -105,8 +104,8 @@ class TransactionWindow extends StatelessWidget {
           return state.trStatus == TransactionStatus.success
               ? TransactionForm()
               : Center(
-                  child: CircularProgressIndicator(),
-                );
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );

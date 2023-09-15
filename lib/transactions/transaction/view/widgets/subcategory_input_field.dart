@@ -2,7 +2,7 @@ import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../shared/models/subcategory.dart';
+import '../../../../budgets/budgets.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class SubcategoryInput extends StatefulWidget {

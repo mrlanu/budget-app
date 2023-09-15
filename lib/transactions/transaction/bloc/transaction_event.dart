@@ -17,6 +17,14 @@ final class TransactionFormLoaded extends TransactionEvent {
   List<Object?> get props => [transaction, transactionType, date];
 }
 
+final class TransactionBudgetChanged extends TransactionEvent {
+  final List<Category>? categories;
+  final List<Account>? accounts;
+  const TransactionBudgetChanged({this.categories, this.accounts});
+  @override
+  List<Object?> get props => [categories, accounts];
+}
+
 final class TransactionAmountChanged extends TransactionEvent {
   final String? amount;
   const TransactionAmountChanged({this.amount});

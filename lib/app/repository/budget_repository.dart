@@ -1,35 +1,45 @@
 import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../budgets/budgets.dart';
 
 abstract class BudgetRepository {
-  Stream<Budget> get budgets;
+  Stream<Budget> get budget;
   Future<List<Budget>> fetchAvailableBudgets(String userId);
   Future<void> createBeginningBudget({required String userId});
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
   final FirebaseFirestore _firebaseFirestore;
+  final _budgetStreamController =
+  BehaviorSubject<Budget>.seeded(Budget());
 
   BudgetRepositoryImpl(
       {FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance {
+    _init();
   }
 
-  Stream<Budget> get budgets async* {
+  void _init() async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();
-    yield* _firebaseFirestore
+    _firebaseFirestore
         .collection('users')
         .doc(userId)
         .collection('budgets')
         .doc(budgetId)
         .snapshots()
-        .map((event) => Budget.fromFirestore(event));
+        .map((event) => Budget.fromFirestore(event)).listen((budget) {
+          _budgetStreamController.add(budget);
+    });
   }
+
+  @override
+  Stream<Budget> get budget =>
+      _budgetStreamController.asBroadcastStream();
   
   Future<List<Budget>> fetchAvailableBudgets(String userId) async {
     final budgets = (await _firebaseFirestore

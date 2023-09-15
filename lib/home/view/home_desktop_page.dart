@@ -1,3 +1,4 @@
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
@@ -15,7 +16,6 @@ import '../../categories/repository/categories_repository.dart';
 import '../../colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
-import '../../subcategories/repository/subcategories_repository.dart';
 import '../../transactions/repository/transactions_repository.dart';
 import '../../transactions/transaction/bloc/transaction_bloc.dart';
 import '../../transfer/bloc/transfer_bloc.dart';
@@ -31,10 +31,7 @@ class HomeDesktopPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TransactionBloc(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-            subcategoriesRepository:
-                context.read<SubcategoriesRepositoryImpl>(),
-            accountsRepository: context.read<AccountsRepositoryImpl>(),
+            budgetRepository: context.read<BudgetRepository>()
           )..add(TransactionFormLoaded(
               transactionType: TransactionType.EXPENSE,
               date: context.read<HomeCubit>().state.selectedDate!)),

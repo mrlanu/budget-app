@@ -2,7 +2,7 @@ import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../categories/models/category.dart';
+import '../../../../budgets/budgets.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class CategoryInput extends StatelessWidget {

@@ -10,9 +10,9 @@ import '../../constants/api.dart';
 
 abstract class TransactionsRepository {
 
-  Stream<List<Transaction>> get transactions;
+  void initTransactions();
 
-  Stream<List<Transaction>> getTransactions();
+  Stream<List<Transaction>> get transactions;
 
   Stream<List<Transfer>> getTransfers();
 
@@ -21,10 +21,6 @@ abstract class TransactionsRepository {
   Future<void> createTransfer(Transfer transfer);
 
   Future<void> editTransfer(Transfer transfer);
-
-  Future<void> fetchTransactions({
-    required DateTime dateTime,
-  });
 
   Future<void> fetchTransfers({
     required DateTime dateTime,
@@ -47,23 +43,35 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   TransactionsRepositoryImpl(
       {cloudFirestore.FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore =
-            firebaseFirestore ?? cloudFirestore.FirebaseFirestore.instance;
+            firebaseFirestore ?? cloudFirestore.FirebaseFirestore.instance {}
 
-  Stream<List<Transaction>> get transactions async* {
+  void initTransactions() async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();
-    yield* _firebaseFirestore
+    _firebaseFirestore
         .collection('users')
         .doc(userId)
         .collection('budgets')
         .doc(budgetId)
         .collection('transactions')
         .snapshots()
-        .map((event) =>
-            event.docs.map((e) => Transaction.fromFirestore(e)).toList());
+        .listen((event) {
+      final transactions =
+          event.docs.map((e) => Transaction.fromFirestore(e)).toList();
+      _transactionsStreamController.add(transactions);
+    });
   }
 
-  /*Future<void> _createSomeTransactions() async {
+  @override
+  Stream<List<Transaction>> get transactions =>
+      _transactionsStreamController.asBroadcastStream();
+
+  @override
+  Stream<List<Transfer>> getTransfers() =>
+      _transfersStreamController.asBroadcastStream();
+
+  @override
+  Future<void> createTransaction(Transaction transaction) async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();
     final ref = await _firebaseFirestore
@@ -73,42 +81,10 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
         .doc(budgetId)
         .collection('transactions');
 
-        ref.add(Transaction(id: Uuid().v4(), amount: 200, ).toJson()).then((documentSnapshot) {
-          ref.doc(documentSnapshot.id).set({'id': documentSnapshot.id}, cloudFirestore.SetOptions(merge: true));
+    ref.add(transaction.toJson()).then((documentSnapshot) {
+      ref.doc(documentSnapshot.id).set(
+          {'id': documentSnapshot.id}, cloudFirestore.SetOptions(merge: true));
     });
-
-    *//*await _firebaseFirestore
-        .doc('users/$userId/budgets/${ref.id}')
-        .set(beginningBudget.toFirestore());*//*
-  }*/
-
-  @override
-  Stream<List<Transaction>> getTransactions() =>
-      _transactionsStreamController.asBroadcastStream();
-
-  @override
-  Stream<List<Transfer>> getTransfers() =>
-      _transfersStreamController.asBroadcastStream();
-
-  @override
-  Future<void> createTransaction(Transaction transaction) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions')
-        : Uri.https(baseURL, '/api/transactions');
-    final transactionResponse = await http.post(url,
-        headers: await getHeaders(), body: json.encode(transaction.toJson()));
-    final newTransaction =
-        Transaction.fromJson(jsonDecode(transactionResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.id == newTransaction.id);
-    if (trIndex == -1) {
-      transactions.add(newTransaction);
-      _transactionsStreamController.add(transactions);
-    } else {
-      transactions.removeAt(trIndex);
-      transactions.insert(trIndex, transaction);
-      _transactionsStreamController.add(transactions);
-    }
   }
 
   @override
@@ -144,23 +120,6 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<void> fetchTransactions({
-    required DateTime dateTime,
-  }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions',
-            {'budgetId': await getBudgetId(), 'date': dateTime.toString()})
-        : Uri.https(baseURL, '/api/transactions',
-            {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transaction.fromJson(jsonMap)).toList();
-    _transactionsStreamController.add(result);
-  }
-
-  @override
   Future<void> fetchTransfers({
     required DateTime dateTime,
   }) async {
@@ -179,7 +138,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<Transaction> deleteTransaction(String transactionId) async {
-    final url = isTestMode
+    /*final url = isTestMode
         ? Uri.http(
             baseURL, '/api/transactions', {'transactionId': transactionId})
         : Uri.https(
@@ -197,7 +156,8 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       transactions.removeAt(transactionIndex);
       _transactionsStreamController.add(transactions);
     }
-    return deletedTransaction;
+    return deletedTransaction;*/
+    return Transaction();
   }
 
   @override

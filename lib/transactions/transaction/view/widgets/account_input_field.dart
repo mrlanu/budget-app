@@ -1,8 +1,9 @@
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../accounts/models/account.dart';
+
 import '../../../../accounts_list/view/accounts_list_page.dart';
+import '../../../../budgets/budgets.dart';
 import '../../bloc/transaction_bloc.dart';
 
 class AccountInput extends StatelessWidget {
@@ -21,7 +22,8 @@ class AccountInput extends StatelessWidget {
             items: state.accounts.map((Account account) {
               return DropdownMenuItem(
                 value: account,
-                child: Text(account.extendName(state.accountCategories)),
+                //child: Text(account.extendName(state.accountCategories)),
+                child: Text(account.name),
               );
             }).toList(),
             onChanged: (newValue) {

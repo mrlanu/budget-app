@@ -34,7 +34,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         _accountsRepository = accountsRepository,
         super(TransactionsState(filter: filter)) {
     _transactionsSubscription =
-        _transactionsRepository.getTransactions().listen((_) {
+        _transactionsRepository.transactions.listen((_) {
       _onSomethingChanged();
     });
     _transfersSubscription =
@@ -46,7 +46,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> _onSomethingChanged() async {
     var trTiles = <TransactionTile>[];
 
-    final transactions = await _transactionsRepository.getTransactions().first;
+    final transactions = await _transactionsRepository.transactions.first;
     final transfers = await _transactionsRepository.getTransfers().first;
     final categories = await _categoriesRepository.getCategories().first;
     final subcategories =
@@ -54,10 +54,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final accounts = await _accountsRepository.getAccounts().first;
 
     transactions.forEach((element) {
-      final cat = categories.where((c) => element.category!.name == c.id).first;
+      /*final cat = categories.where((c) => element.category!.name == c.id).first;
       final subcategory =
           subcategories.where((sc) => element.subcategory!.name == sc.id).first;
-      final acc = accounts.where((a) => element.accountId == a.id).first;
+      final acc = accounts.where((a) => element.accountId == a.id).first;*/
       /*trTiles.add(element.toTile(
           account: null, category: nu, subcategory: subcategory));*/
     });

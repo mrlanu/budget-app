@@ -4,7 +4,6 @@ enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
   final String? id;
-  final String? budgetId;
   final TransactionType transactionType;
   final Amount amount;
   final DateTime? date;
@@ -25,7 +24,6 @@ class TransactionState extends Equatable {
 
   TransactionState(
       {this.id,
-      this.budgetId,
       this.transactionType = TransactionType.EXPENSE,
       this.amount = const Amount.pure(),
       this.date,
@@ -60,7 +58,6 @@ class TransactionState extends Equatable {
   }) {
     return TransactionState(
       id: this.id,
-      budgetId: this.budgetId,
       transactionType: this.transactionType,
       amount: amount ?? this.amount,
       date: date ?? this.date,

@@ -22,4 +22,20 @@ class Category {
       _$CategoryFromJson(json);
 
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
+
+  Category copyWith(
+      {String? name,
+      int? iconCode,
+      List<Subcategory>? subcategoryList,
+      TransactionType? type}) {
+    return Category(
+        name: name ?? this.name,
+        type: type ?? this.type,
+        iconCode: iconCode ?? this.iconCode,
+        subcategoryList: subcategoryList ?? this.subcategoryList);
+  }
+
+  Category shrink({String? name, TransactionType? type}) {
+    return Category(name: name ?? this.name, type: type ?? this.type);
+  }
 }

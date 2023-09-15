@@ -11,7 +11,7 @@ class Budget{
   final List<Category> categoryList;
   final List<Account> accountList;
 
-  Budget({this.id = '', this.categoryList = const [], this.accountList = const[]});
+  const Budget({this.id = '', this.categoryList = const [], this.accountList = const[]});
 
   factory Budget.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,) {

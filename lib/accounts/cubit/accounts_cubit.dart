@@ -25,8 +25,7 @@ class AccountsCubit extends Cubit<AccountsState> {
         _transactionsRepository = transactionsRepository,
         super(AccountsState(filter: filter)) {
     _transactionsSubscription = _transactionsRepository
-        .getTransactions()
-        .skip(1)
+        .transactions
         .listen((transactions) {
       fetchAllAccounts();
     });

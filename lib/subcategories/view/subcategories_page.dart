@@ -2,7 +2,7 @@ import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../categories/models/category.dart';
+import '../../budgets/budgets.dart';
 import '../cubit/subcategories_cubit.dart';
 import '../repository/subcategories_repository.dart';
 

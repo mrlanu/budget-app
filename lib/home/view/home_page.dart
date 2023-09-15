@@ -1,4 +1,3 @@
-import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ import '../../transactions/repository/transactions_repository.dart';
 class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
-  static Route<void> route(){
+  static Route<void> route() {
     return MaterialPageRoute(builder: (context) => HomePage());
   }
 
@@ -27,7 +26,6 @@ class HomePage extends StatelessWidget {
       providers: [
         BlocProvider(
             create: (context) => HomeCubit(
-              userId: context.read<AppBloc>().state.user.id,
               budgetRepository: context.read<BudgetRepository>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
               categoriesRepository:

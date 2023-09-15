@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/constants/api.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../categories/models/category.dart';
+import '../../budgets/budgets.dart';
 import '../../categories/repository/categories_repository.dart';
-import '../../shared/models/subcategory.dart';
 import '../repository/subcategories_repository.dart';
 
 part 'subcategories_state.dart';
@@ -20,26 +18,26 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
       required Category category})
       : _subcategoriesRepository = subcategoriesRepository,
         super(SubcategoriesState(category: category)) {
-    _subcategoriesSubscription =
+    /*_subcategoriesSubscription =
         _subcategoriesRepository.getSubcategories().listen((subcategories) {
       _onSubcategoriesChanged(subcategories);
-    });
+    });*/
   }
 
   Future<void> onInit({required Category category}) async {
     final subcategories =
         await _subcategoriesRepository.getSubcategories().first;
     final filteredSubcategories =
-        subcategories.where((sC) => sC.categoryId == category.id).toList();
+        subcategories.where((sC) => sC.categoryId == category.name).toList();
     emit(state.copyWith(
         status: SubcategoriesStatus.success,
         category: category,
-        subcategories: filteredSubcategories));
+        /*subcategories: filteredSubcategories*/));
   }
 
   void _onSubcategoriesChanged(List<Subcategory> subcategories) {
     final filteredSubcategories = subcategories
-        .where((sC) => sC.categoryId == state.category!.id)
+        .where((sC) => sC.name == state.category!.name)
         .toList();
     emit(state.copyWith(subcategories: filteredSubcategories));
   }
@@ -60,11 +58,9 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     var subcategory;
     if (state.editSubcategory == null) {
       subcategory = Subcategory(
-          name: state.name!,
-          categoryId: state.category!.id!,
-          budgetId: await getBudgetId());
+          name: state.name!,);
     } else {
-      subcategory = state.editSubcategory!.copyWith(name: state.name);
+      //subcategory = state.editSubcategory!.copyWith(name: state.name);
     }
     _subcategoriesRepository.saveSubcategory(subcategory: subcategory);
   }
@@ -72,7 +68,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {
     emit(state.copyWith(status: SubcategoriesStatus.loading));
     try {
-      await _subcategoriesRepository.delete(subcategory: subcategory);
+      //await _subcategoriesRepository.delete(subcategory: subcategory);
     } on CategoryFailure catch (e) {
       emit(state.copyWith(
           status: SubcategoriesStatus.failure, errorMessage: e.message));

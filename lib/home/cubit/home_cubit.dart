@@ -17,14 +17,12 @@ import '../../transactions/models/transaction.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final String? userId;
   final BudgetRepository _budgetRepository;
   final TransactionsRepository _transactionsRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
   late final StreamSubscription<Budget> _budgetsSubscription;
 
   HomeCubit({
-    this.userId,
     required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
     required AccountsRepository accountsRepository,
@@ -38,7 +36,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
-    _budgetsSubscription = _budgetRepository.budgets.listen((budget) {
+    _transactionsRepository.initTransactions();
+    _budgetsSubscription = _budgetRepository.budget.listen((budget) {
       final sections = _recalculateSections(accounts: budget.accountList);
       emit(state.copyWith(
           categories: budget.categoryList,
@@ -60,9 +59,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
+    emit(state.copyWith(
+      status: HomeStatus.loading,
+    ));
     final summaries = _getSummariesByCategory(transactions: transactions);
     final sectionsSum = _recalculateSections(transactions: transactions);
-
     emit(state.copyWith(
       transactions: transactions,
       sectionsSum: sectionsSum,
@@ -171,8 +172,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> changeDate(DateTime dateTime) async {
     emit(state.copyWith(status: HomeStatus.loading, selectedDate: dateTime));
-    _transactionsRepository.fetchTransactions(dateTime: dateTime);
-    _transactionsRepository.fetchTransfers(dateTime: dateTime);
+    //_transactionsRepository.fetchTransactions(dateTime: dateTime);
+    //_transactionsRepository.fetchTransfers(dateTime: dateTime);
   }
 
   Future<void> changeExpanded(int index) async {
