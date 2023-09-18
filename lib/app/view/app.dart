@@ -1,5 +1,4 @@
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/colors.dart';
@@ -61,9 +60,6 @@ class _AppViewState extends State<AppView> {
     h = MediaQuery.of(context).size.height;
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => AccountsRepositoryImpl(),
-        ),
         RepositoryProvider(create: (context) => TransactionsRepositoryImpl()),
         RepositoryProvider(
           create: (context) => TransferRepositoryImpl(),

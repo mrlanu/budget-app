@@ -2,49 +2,33 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/accounts_view_filter.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../transactions/repository/transactions_repository.dart';
-import '../models/account.dart';
-import '../repository/accounts_repository.dart';
-
 part 'accounts_state.dart';
 
 class AccountsCubit extends Cubit<AccountsState> {
-  final AccountsRepository _accountsRepository;
-  final TransactionsRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
-  late final StreamSubscription<List<Account>> _accountsSubscription;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
   AccountsCubit(
-      {required AccountsViewFilter filter, required AccountsRepository accountsRepository,
-        required TransactionsRepository transactionsRepository})
-      : _accountsRepository = accountsRepository,
-        _transactionsRepository = transactionsRepository,
+      {required AccountsViewFilter filter, required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(AccountsState(filter: filter)) {
-    _transactionsSubscription = _transactionsRepository
-        .transactions
-        .listen((transactions) {
-      fetchAllAccounts();
-    });
-    _accountsSubscription = _accountsRepository
-        .getAccounts()
-        .listen((accounts) {
-      fetchAllAccounts();
+    _budgetSubscription = _budgetRepository
+        .budget
+        .listen((budget) {
+      budgetChanged(budget);
     });
   }
 
-  Future<void> fetchAllAccounts() async {
-    try {
-      final accountList = await _accountsRepository.getAccounts().first;
-      emit(
-          state.copyWith(status: DataStatus.success, accountList: accountList));
-    } catch (e) {
-      emit(
-          state.copyWith(status: DataStatus.error, errorMessage: e.toString()));
-    }
+  Future<void> budgetChanged(Budget budget) async {
+    emit(
+        state.copyWith(status: DataStatus.success, accountList: budget.accountList));
   }
 
   Future<void> changeExpanded(int index)async{
@@ -56,7 +40,7 @@ class AccountsCubit extends Cubit<AccountsState> {
   @override
   Future<void> close() {
     _transactionsSubscription.cancel();
-    _accountsSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }

@@ -50,7 +50,7 @@ class Account extends Equatable{
   }
 
   String extendName(List<Category> categories){
-    final category = categories.where((element) => element.name == this.categoryId).first;
+    final category = categories.where((element) => element.id == this.categoryId).first;
     return '${category.name} / ${this.name}';
   }
 

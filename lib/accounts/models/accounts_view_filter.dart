@@ -1,4 +1,4 @@
-import 'account.dart';
+import '../../budgets/budgets.dart';
 
 class AccountsViewFilter {
   final String filterId;

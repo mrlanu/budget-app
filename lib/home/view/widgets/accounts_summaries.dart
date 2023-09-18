@@ -1,3 +1,4 @@
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../accounts/cubit/accounts_cubit.dart';
 import '../../../accounts/models/accounts_view_filter.dart';
-import '../../../accounts/repository/accounts_repository.dart';
 import '../../../colors.dart';
 import '../../../constants/constants.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
-import '../../../transactions/repository/transactions_repository.dart';
 import '../../../transactions/view/transactions_list.dart';
 
 class AccountsSummaries extends StatelessWidget {
@@ -21,9 +20,7 @@ class AccountsSummaries extends StatelessWidget {
     return BlocProvider(
       create: (context) => AccountsCubit(
           filter: AccountsViewFilter(filterId: ''),
-          transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-          accountsRepository: context.read<AccountsRepositoryImpl>())
-        ..fetchAllAccounts(),
+          budgetRepository: context.read<BudgetRepository>()),
       child: AccountsSummariesView(),
     );
   }
@@ -57,9 +54,10 @@ class AccountsSummariesView extends StatelessWidget {
                       return FaIcon(
                           color: scheme.primary,
                           IconData(
-                              categories.firstWhere((element) =>
-                                          element.id == acc.categoryId)
-                                      .iconCode,
+                              categories
+                                  .firstWhere(
+                                      (element) => element.id == acc.categoryId)
+                                  .iconCode,
                               fontFamily: 'FontAwesomeSolid'));
                     }),
                     trailing: Row(

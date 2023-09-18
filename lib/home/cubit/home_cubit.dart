@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/shared/models/summary_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
@@ -23,7 +22,6 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
-    required AccountsRepository accountsRepository,
   })  : _budgetRepository = budgetRepository,
         _transactionsRepository = transactionsRepository,
         super(HomeState(selectedDate: DateTime.now())) {

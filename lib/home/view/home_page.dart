@@ -3,7 +3,6 @@ import 'package:budget_app/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../accounts/repository/accounts_repository.dart';
 import '../../constants/constants.dart';
 import '../../transactions/cubit/transactions_cubit.dart';
 import '../../transactions/models/transactions_view_filter.dart';
@@ -25,7 +24,6 @@ class HomePage extends StatelessWidget {
         BlocProvider(
             create: (context) => HomeCubit(
               budgetRepository: context.read<BudgetRepository>(),
-              accountsRepository: context.read<AccountsRepositoryImpl>(),
               transactionsRepository:
               context.read<TransactionsRepositoryImpl>(),
             )),
