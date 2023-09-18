@@ -7,13 +7,15 @@ part 'category.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Category {
+  final String id;
   final String name;
   final int iconCode;
   final List<Subcategory> subcategoryList;
   final TransactionType type;
 
   const Category(
-      {required this.name,
+      {required this.id,
+      required this.name,
       this.iconCode = 0,
       this.subcategoryList = const [],
       required this.type});
@@ -24,18 +26,16 @@ class Category {
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 
   Category copyWith(
-      {String? name,
+      {String? id,
+      String? name,
       int? iconCode,
       List<Subcategory>? subcategoryList,
       TransactionType? type}) {
     return Category(
+        id: id ?? this.id,
         name: name ?? this.name,
         type: type ?? this.type,
         iconCode: iconCode ?? this.iconCode,
         subcategoryList: subcategoryList ?? this.subcategoryList);
-  }
-
-  Category shrink({String? name, TransactionType? type}) {
-    return Category(name: name ?? this.name, type: type ?? this.type);
   }
 }

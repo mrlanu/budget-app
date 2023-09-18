@@ -1,5 +1,5 @@
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/categories/view/widgets/categories_grid.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
@@ -18,7 +18,7 @@ class CategoriesPage extends StatelessWidget {
         builder: (context) {
           return BlocProvider(
             create: (context) => CategoriesCubit(
-                categoriesRepository: context.read<CategoriesRepositoryImpl>(),
+                budgetRepository: context.read<BudgetRepository>(),
                 transactionType: transactionType),
             child: CategoriesPage(),
           );
@@ -81,7 +81,7 @@ class CategoriesView extends StatelessWidget {
                             Expanded(child: Container()),
                             FaIcon(
                                 color: scheme.primary,
-                                IconData(category.iconCode ?? 0,
+                                IconData(category.iconCode,
                                     fontFamily: 'FontAwesomeSolid')),
                           ],
                         ),

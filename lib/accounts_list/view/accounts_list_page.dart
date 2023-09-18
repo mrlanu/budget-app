@@ -1,14 +1,13 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../accounts/models/account.dart';
-import '../../categories/repository/categories_repository.dart';
+import '../../budgets/budgets.dart';
 import '../cubit/accounts_list_cubit.dart';
 
 class AccountsListPage extends StatelessWidget {
@@ -22,10 +21,8 @@ class AccountsListPage extends StatelessWidget {
             providers: [
               BlocProvider(
                 create: (context) => AccountsListCubit(
-                  accountsRepository: context.read<AccountsRepositoryImpl>(),
-                  categoriesRepository:
-                      context.read<CategoriesRepositoryImpl>(),
-                )..onInit(),
+                  budgetRepository: context.read<BudgetRepository>()
+                ),
               ),
               BlocProvider.value(value: homeCubit),
             ],
@@ -101,8 +98,7 @@ class AccountsListView extends StatelessWidget {
                                                 .firstWhere((element) =>
                                                     element.id ==
                                                     account.categoryId)
-                                                .iconCode ??
-                                            0,
+                                                .iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
                             ),
@@ -153,10 +149,7 @@ class AccountsListView extends StatelessWidget {
       showDialog<String>(
           context: context,
           builder: (_) => BlocProvider(
-                create: (context) => AccountEditBloc(
-                    categoriesRepository:
-                        context.read<CategoriesRepositoryImpl>(),
-                    accountsRepository: context.read<AccountsRepositoryImpl>())
+                create: (context) => AccountEditBloc(budgetRepository: context.read<BudgetRepository>())
                   ..add(AccountEditFormLoaded(account: account)),
                 child: AccountEditDialog(),
               ));

@@ -2,38 +2,28 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/accounts/models/account.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/constants/api.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
-
-import '../../categories/models/category.dart';
-import '../../categories/repository/categories_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'account_edit_event.dart';
-
 part 'account_edit_state.dart';
 
 class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
-  final CategoriesRepository _categoriesRepository;
-  final AccountsRepository _accountsRepository;
-  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  final BudgetRepository _budgetRepository;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
-  AccountEditBloc(
-      {
-      required CategoriesRepository categoriesRepository,
-      required AccountsRepository accountsRepository})
-      : _categoriesRepository = categoriesRepository,
-        _accountsRepository = accountsRepository,
+  AccountEditBloc({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
-    _categoriesSubscription =
-        _categoriesRepository.getCategories().skip(1).listen((categories) {
-      add(AccountCategoriesChanged(categories: categories));
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
+      add(AccountCategoriesChanged(categories: budget.categoryList));
     });
   }
 
@@ -53,17 +43,14 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
-    final categories = await _categoriesRepository.getCategories().first;
-    final filteredCategories = categories
-        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
-        .toList();
+    final filteredCategories =
+        _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
     if (event.account != null) {
-      final account = event.account;
-      final category = filteredCategories
-          .where((element) => element.id == account!.categoryId)
-          .first;
+      Account account = event.account!;
+      final category =
+          _budgetRepository.getCategoryById(account.categoryId);
       emit(state.copyWith(
-          id: account!.id,
+          id: account.id,
           category: category,
           categories: filteredCategories,
           name: account.name,
@@ -73,7 +60,9 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
           isValid: true));
     } else {
       emit(state.copyWith(
-          categories: filteredCategories, accStatus: AccountEditStatus.success));
+          id: Uuid().v4(),
+          categories: filteredCategories,
+          accStatus: AccountEditStatus.success));
     }
   }
 
@@ -86,10 +75,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   void _onCategoriesChanged(
       AccountCategoriesChanged event, Emitter<AccountEditState> emit) {
-    final filteredCategories = event.categories
-        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
-        .toList();
-    emit(state.copyWith(categories: filteredCategories));
+    emit(state.copyWith(categories: event.categories));
   }
 
   void _onCategoryChanged(
@@ -117,20 +103,19 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
       AccountFormSubmitted event, Emitter<AccountEditState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final account = Account(
-        id: state.id,
+        id: state.id!,
         name: state.name!,
-        categoryId: state.category!.id!,
+        categoryId: state.category!.id,
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
-        includeInTotal: state.isIncludeInTotals,
-        budgetId: await getBudgetId());
-    _accountsRepository.saveAccount(account: account);
+        includeInTotal: state.isIncludeInTotals);
+    _budgetRepository.createAccount(account);
     Navigator.of(event.context).pop();
   }
 
   @override
   Future<void> close() {
-    _categoriesSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }

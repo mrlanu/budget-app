@@ -2,7 +2,6 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/view/home_page.dart';
 import 'package:budget_app/login/login.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../constants/constants.dart';
-import '../../subcategories/repository/subcategories_repository.dart';
 import '../../theme.dart';
 import '../../transactions/transaction/view/transaction_page.dart';
 
@@ -63,12 +61,10 @@ class _AppViewState extends State<AppView> {
     h = MediaQuery.of(context).size.height;
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
         RepositoryProvider(
           create: (context) => AccountsRepositoryImpl(),
         ),
         RepositoryProvider(create: (context) => TransactionsRepositoryImpl()),
-        RepositoryProvider(create: (context) => SubcategoriesRepositoryImpl()),
         RepositoryProvider(
           create: (context) => TransferRepositoryImpl(),
         )

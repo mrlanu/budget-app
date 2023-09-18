@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../accounts/repository/accounts_repository.dart';
-import '../../categories/repository/categories_repository.dart';
 import '../../transactions/models/transaction_type.dart';
 
 class TransferPage extends StatelessWidget {
@@ -20,7 +19,6 @@ class TransferPage extends StatelessWidget {
             create: (context) =>
             TransferBloc(
               transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-              categoriesRepository: context.read<CategoriesRepositoryImpl>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
             )
               ..add(TransferFormLoaded(transactionTile: transactionTile)),

@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../accounts/repository/accounts_repository.dart';
-import '../../categories/repository/categories_repository.dart';
 import '../../constants/constants.dart';
-import '../../subcategories/repository/subcategories_repository.dart';
 import '../../transactions/cubit/transactions_cubit.dart';
 import '../../transactions/models/transactions_view_filter.dart';
 import '../../transactions/repository/transactions_repository.dart';
@@ -28,20 +26,13 @@ class HomePage extends StatelessWidget {
             create: (context) => HomeCubit(
               budgetRepository: context.read<BudgetRepository>(),
               accountsRepository: context.read<AccountsRepositoryImpl>(),
-              categoriesRepository:
-              context.read<CategoriesRepositoryImpl>(),
               transactionsRepository:
               context.read<TransactionsRepositoryImpl>(),
-              subcategoriesRepository:
-              context.read<SubcategoriesRepositoryImpl>(),
             )),
         BlocProvider(
           create: (context) => TransactionsCubit(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-            subcategoriesRepository:
-            context.read<SubcategoriesRepositoryImpl>(),
-            accountsRepository: context.read<AccountsRepositoryImpl>(),
+            budgetRepository: context.read<BudgetRepository>(),
             filter: TransactionsViewFilter(
                 type: TransactionsViewFilterTypes.allExpenses),
           ),

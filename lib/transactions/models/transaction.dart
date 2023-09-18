@@ -14,8 +14,8 @@ class Transaction {
   final TransactionType? type;
   final String? description;
   final double? amount;
-  final Category? category;
-  final Subcategory? subcategory;
+  final String? categoryId;
+  final String? subcategoryName;
   final String? accountId;
 
   Transaction(
@@ -24,8 +24,8 @@ class Transaction {
       this.type,
       this.description = '',
       this.amount,
-      this.category,
-      this.subcategory,
+      this.categoryId,
+      this.subcategoryName,
       this.accountId});
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
@@ -34,8 +34,28 @@ class Transaction {
   factory Transaction.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,) {
     final data = snapshot.data();
-    return Transaction.fromJson(data!);
+    return Transaction(
+      id: snapshot.id,
+      date:
+      data?['date'] == null ? null : DateTime.parse(data?['date'] as String),
+      type: $enumDecodeNullable(_$TransactionTypeEnumMap, data?['type']),
+      description: data?['description'] as String? ?? '',
+      amount: (data?['amount'] as num?)?.toDouble(),
+      categoryId: data?['categoryId'] as String?,
+      subcategoryName: data?['subcategoryName'] as String?,
+      accountId: data?['accountId'] as String?,
+    );
   }
+
+  Map<String, dynamic> toFirestore() => <String, dynamic>{
+    'date': date?.toIso8601String(),
+    'type': _$TransactionTypeEnumMap[type],
+    'description': description,
+    'amount': amount,
+    'categoryId': categoryId,
+    'subcategoryName': subcategoryName,
+    'accountId': accountId,
+  };
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
@@ -58,6 +78,6 @@ class Transaction {
 
   @override
   String toString() {
-    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: ${category?.name}, sub: ${subcategory?.name}, acc: $accountId';
+    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryName, acc: $accountId';
   }
 }

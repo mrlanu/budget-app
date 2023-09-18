@@ -1,37 +1,34 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/constants/api.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../models/category.dart';
-import '../repository/categories_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'categories_state.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
-  final CategoriesRepository _categoriesRepository;
-  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  late final BudgetRepository _budgetRepository;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
   CategoriesCubit(
-      {required CategoriesRepository categoriesRepository,
+      {required BudgetRepository budgetRepository,
       required TransactionType transactionType})
-      : _categoriesRepository = categoriesRepository,
+      : _budgetRepository = budgetRepository,
         super(CategoriesState(transactionType: transactionType)) {
-    _categoriesSubscription =
-        _categoriesRepository.getCategories().listen((categories) {
-      _onCategoriesChanged(categories);
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
+      _onBudgetChanged(budget);
     });
   }
 
-  void _onCategoriesChanged(List<Category> categories) {
-    final catByType = categories
-        .where((element) => element.transactionType == state.transactionType)
-        .toList();
+  void _onBudgetChanged(Budget budget) {
     emit(state.copyWith(
-        status: CategoriesStatus.success, categories: catByType));
+        status: CategoriesStatus.success,
+        categories:
+            _budgetRepository.getCategoriesByType(state.transactionType)));
   }
 
   void onNameChanged(String name) {
@@ -59,25 +56,22 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     var category;
     if (state.editCategory == null) {
       category = Category(
+          id: Uuid().v4(),
           name: state.name!,
           iconCode: state.iconCode,
-          budgetId: await getBudgetId(),
-          transactionType: state.transactionType);
+          type: state.transactionType);
     } else {
       category = state.editCategory!
           .copyWith(name: state.name, iconCode: state.iconCode);
     }
-    _categoriesRepository.saveCategory(category: category);
+    _budgetRepository.saveCategory(category);
     emit(state.copyWith(status: CategoriesStatus.loading));
   }
 
   Future<void> onCategoryDeleted(Category category) async {
     emit(state.copyWith(status: CategoriesStatus.loading));
     try {
-      await _categoriesRepository.deleteCategory(category: category);
-    } on CategoryFailure catch (e) {
-      emit(state.copyWith(
-          status: CategoriesStatus.failure, errorMessage: e.message));
+      //await _categoriesRepository.deleteCategory(category: category);
     } catch (e) {
       emit(state.copyWith(
           status: CategoriesStatus.failure, errorMessage: 'Unknown error'));
@@ -86,7 +80,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
   @override
   Future<void> close() {
-    _categoriesSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }

@@ -14,27 +14,21 @@ import 'package:formz/formz.dart';
 import '../../accounts/models/account.dart';
 import '../../accounts/repository/accounts_repository.dart';
 import '../../categories/models/category.dart';
-import '../../categories/repository/categories_repository.dart';
 import '../../constants/constants.dart';
-import '../../transactions/models/transaction_type.dart';
 
 part 'transfer_event.dart';
-
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final TransactionsRepository _transactionsRepository;
-  final CategoriesRepository _categoriesRepository;
   late final AccountsRepository _accountsRepository;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   TransferBloc(
       {required TransactionsRepository transactionsRepository,
-      required CategoriesRepository categoriesRepository,
       required AccountsRepository accountsRepository})
       : _transactionsRepository = transactionsRepository,
-        _categoriesRepository = categoriesRepository,
         _accountsRepository = accountsRepository,
         super(TransferState()) {
     on<TransferEvent>(_onEvent, transformer: sequential());
@@ -42,10 +36,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         _accountsRepository.getAccounts().skip(1).listen((accounts) {
       add(TransferAccountsChanged(accounts: accounts));
     });
-    _categoriesSubscription =
+    /*_categoriesSubscription =
         _categoriesRepository.getCategories().skip(1).listen((categories) {
       add(TransferCategoriesChanged(categories: categories));
-    });
+    });*/
   }
 
   Future<void> _onEvent(
@@ -67,10 +61,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
     final accounts = await _accountsRepository.getAccounts().first;
-    final accCategories = await _categoriesRepository.getCategories().first;
-    final filteredCategories = accCategories
+    //final accCategories = await _categoriesRepository.getCategories().first;
+    /*final filteredCategories = accCategories
         .where((aC) => aC.transactionType == TransactionType.ACCOUNT)
-        .toList();
+        .toList();*/
     final transactionTile = event.transactionTile;
     var id;
     var fromAccount;
@@ -96,7 +90,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       toAccount: toAccount,
       date: transactionTile?.dateTime ?? DateTime.now(),
       notes: transactionTile?.description ?? '',
-      accountCategories: filteredCategories,
+      //accountCategories: filteredCategories,
       accounts: accounts,
       isValid: transactionTile == null ? false : true,
     ));

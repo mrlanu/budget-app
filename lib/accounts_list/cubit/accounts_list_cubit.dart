@@ -1,53 +1,30 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/accounts/models/account.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../categories/models/category.dart';
 
 part 'accounts_list_state.dart';
 
 class AccountsListCubit extends Cubit<AccountsListState> {
-  final AccountsRepository _accountsRepository;
-  final CategoriesRepository _categoriesRepository;
-  late final StreamSubscription<List<Account>> _accountsSubscription;
-  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  late final BudgetRepository _budgetRepository;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
-  AccountsListCubit(
-      {required AccountsRepository accountsRepository,
-      required CategoriesRepository categoriesRepository})
-      : _accountsRepository = accountsRepository,
-        _categoriesRepository = categoriesRepository,
+  AccountsListCubit({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(AccountsListState()) {
-    _accountsSubscription =
-        _accountsRepository.getAccounts().listen((accounts) {
-      _onAccountsChanged(accounts);
-    });
-    _categoriesSubscription =
-        _categoriesRepository.getCategories().listen((categories) {
-      _onCategoriesChanged(categories);
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
+      _onBudgetChanged(budget);
     });
   }
 
-  Future<void> onInit() async {
-    emit(state.copyWith(status: AccountsListStatus.loading));
-    final accounts = await _accountsRepository.getAccounts().first;
-    final categories = await _categoriesRepository.getCategories().first;
-    final filteredCategories = categories
-        .where((cat) => cat.transactionType == TransactionType.ACCOUNT)
-        .toList();
+  void _onBudgetChanged(Budget budget) {
     emit(state.copyWith(
-        status: AccountsListStatus.success,
-        accounts: accounts,
-        accountCategories: filteredCategories));
-  }
-
-  void _onAccountsChanged(List<Account> accounts) {
-    emit(state.copyWith(accounts: accounts));
+        accounts: budget.accountList,
+        accountCategories:
+            _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT)));
   }
 
   Future<void> _onCategoriesChanged(categories) async {
@@ -59,7 +36,7 @@ class AccountsListCubit extends Cubit<AccountsListState> {
 
   Future<void> onAccountDeleted(Account account) async {
     emit(state.copyWith(status: AccountsListStatus.loading));
-    try {
+    /*try {
       await _accountsRepository.deleteAccount(account: account);
     } on AccountFailure catch (e) {
       emit(state.copyWith(
@@ -67,13 +44,12 @@ class AccountsListCubit extends Cubit<AccountsListState> {
     } catch (e) {
       emit(state.copyWith(
           status: AccountsListStatus.failure, errorMessage: 'Unknown error'));
-    }
+    }*/
   }
 
   @override
   Future<void> close() {
-    _accountsSubscription.cancel();
-    _categoriesSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }

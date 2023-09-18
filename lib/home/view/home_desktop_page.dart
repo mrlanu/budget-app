@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../accounts/cubit/accounts_cubit.dart';
 import '../../accounts/repository/accounts_repository.dart';
-import '../../categories/repository/categories_repository.dart';
 import '../../colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
@@ -39,7 +38,6 @@ class HomeDesktopPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TransferBloc(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
             accountsRepository: context.read<AccountsRepositoryImpl>(),
           )..add(TransferFormLoaded()),
         ),

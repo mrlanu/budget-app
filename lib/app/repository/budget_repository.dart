@@ -8,17 +8,29 @@ import '../../budgets/budgets.dart';
 
 abstract class BudgetRepository {
   Stream<Budget> get budget;
+
   Future<List<Budget>> fetchAvailableBudgets(String userId);
+
+  List<Category> getCategoriesByType(TransactionType type);
+
+  Category getCategoryById(String name);
+
+  Account getAccountById(String accountId);
+
+  Future<void> saveCategory(Category category);
+
+  Future<void> saveSubcategory(Category category, Subcategory subcategory);
+
+  Future<void> createAccount(Account account);
+
   Future<void> createBeginningBudget({required String userId});
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
   final FirebaseFirestore _firebaseFirestore;
-  final _budgetStreamController =
-  BehaviorSubject<Budget>.seeded(Budget());
+  final _budgetStreamController = BehaviorSubject<Budget>.seeded(Budget());
 
-  BudgetRepositoryImpl(
-      {FirebaseFirestore? firebaseFirestore})
+  BudgetRepositoryImpl({FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance {
     _init();
   }
@@ -32,22 +44,96 @@ class BudgetRepositoryImpl extends BudgetRepository {
         .collection('budgets')
         .doc(budgetId)
         .snapshots()
-        .map((event) => Budget.fromFirestore(event)).listen((budget) {
-          _budgetStreamController.add(budget);
+        .map((event) => Budget.fromFirestore(event))
+        .listen((budget) {
+      _budgetStreamController.add(budget);
     });
   }
 
   @override
-  Stream<Budget> get budget =>
-      _budgetStreamController.asBroadcastStream();
-  
+  Stream<Budget> get budget => _budgetStreamController.asBroadcastStream();
+
   Future<List<Budget>> fetchAvailableBudgets(String userId) async {
     final budgets = (await _firebaseFirestore
+            .collection('users')
+            .doc(userId)
+            .collection('budgets')
+            .get())
+        .docs
+        .map((e) => Budget.fromFirestore(e))
+        .toList();
+    return budgets;
+  }
+
+  Category getCategoryById(String id) =>
+      _budgetStreamController.value.categoryList
+          .where((cat) => cat.id == id)
+          .first;
+
+  List<Category> getCategoriesByType(TransactionType type) =>
+      _budgetStreamController.value.categoryList
+          .where((cat) => cat.type == type)
+          .toList();
+
+  Account getAccountById(String accountId) =>
+      _budgetStreamController.value.accountList
+          .where((acc) => acc.id == accountId)
+          .first;
+
+  Future<void> saveCategory(Category category) async {
+    final categories = [..._budgetStreamController.value.categoryList];
+    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+    if (catIndex == -1) {
+      categories.add(category);
+    } else {
+      categories.removeAt(catIndex);
+      categories.insert(catIndex, category);
+    }
+    updateBudget(
+        _budgetStreamController.value.copyWith(categoryList: categories));
+  }
+
+  Future<void> saveSubcategory(
+      Category category, Subcategory subcategory) async {
+    final subcategoriesCopy = [
+      ...getCategoryById(category.id).subcategoryList
+    ];
+    final subCatIndex = subcategoriesCopy.indexWhere((sc) => sc.id == subcategory.id);
+    if (subCatIndex == -1) {
+      subcategoriesCopy.add(subcategory);
+    } else {
+      subcategoriesCopy.removeAt(subCatIndex);
+      subcategoriesCopy.insert(subCatIndex, subcategory);
+    }
+
+    final categories = [..._budgetStreamController.value.categoryList];
+    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+    categories.removeAt(catIndex);
+    categories.insert(
+        catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
+
+    updateBudget(
+        _budgetStreamController.value.copyWith(categoryList: categories));
+  }
+
+  Future<void> createAccount(Account account) async {
+    final accountsCopy = [..._budgetStreamController.value.accountList];
+    accountsCopy.add(account);
+    updateBudget(
+        _budgetStreamController.value.copyWith(accountList: accountsCopy));
+  }
+
+  Future<void> updateBudget(Budget budget) async {
+    final userId = await getUserId();
+    final budgetId = await getCurrentBudgetId();
+    _firebaseFirestore
         .collection('users')
         .doc(userId)
         .collection('budgets')
-        .get()).docs.map((e) => Budget.fromFirestore(e)).toList();
-    return budgets;
+        .doc(budgetId)
+        .set(budget.toFirestore());
   }
 
   Future<void> createBeginningBudget({required String userId}) async {
@@ -68,22 +154,25 @@ class BudgetRepositoryImpl extends BudgetRepository {
 
 final categoryList = <Category>[
   Category(
+      id: Uuid().v4(),
       name: 'Fun',
       iconCode: 62922,
       subcategoryList: [
-        Subcategory(name: 'Alcohol'),
-        Subcategory(name: 'Girls')
+        Subcategory(id: Uuid().v4(), name: 'Alcohol'),
+        Subcategory(id: Uuid().v4(), name: 'Girls')
       ],
       type: TransactionType.EXPENSE),
   Category(
+      id: Uuid().v4(),
       name: 'Bills',
       iconCode: 61675,
       subcategoryList: [
-        Subcategory(name: 'Gas'),
-        Subcategory(name: 'Electricity')
+        Subcategory(id: Uuid().v4(), name: 'Gas'),
+        Subcategory(id: Uuid().v4(), name: 'Electricity')
       ],
       type: TransactionType.EXPENSE),
   Category(
+      id: Uuid().v4(),
       name: 'Checking',
       iconCode: 61675,
       subcategoryList: [],
@@ -93,7 +182,7 @@ final accountList = <Account>[
   Account(
       id: Uuid().v4(),
       name: 'Chase',
-      categoryName: 'Checking',
+      categoryId: categoryList[2].id,
       balance: 2000.0,
       initialBalance: 2000.0)
 ];

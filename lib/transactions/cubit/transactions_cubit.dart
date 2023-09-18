@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
-import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:equatable/equatable.dart';
@@ -16,58 +14,45 @@ part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
   final TransactionsRepository _transactionsRepository;
-  final CategoriesRepository _categoriesRepository;
-  final SubcategoriesRepository _subcategoriesRepository;
-  final AccountsRepository _accountsRepository;
+  final BudgetRepository _budgetRepository;
   late final StreamSubscription<List<Transaction>> _transactionsSubscription;
   late final StreamSubscription<List<Transfer>> _transfersSubscription;
 
   TransactionsCubit({
     required TransactionsRepository transactionsRepository,
-    required CategoriesRepository categoriesRepository,
-    required SubcategoriesRepository subcategoriesRepository,
-    required AccountsRepository accountsRepository,
+    required BudgetRepository budgetRepository,
     required TransactionsViewFilter filter,
   })  : _transactionsRepository = transactionsRepository,
-        _categoriesRepository = categoriesRepository,
-        _subcategoriesRepository = subcategoriesRepository,
-        _accountsRepository = accountsRepository,
+        _budgetRepository = budgetRepository,
         super(TransactionsState(filter: filter)) {
     _transactionsSubscription =
-        _transactionsRepository.transactions.listen((_) {
-      _onSomethingChanged();
+        _transactionsRepository.transactions.listen((transactions) {
+      _onSomethingChanged(transactions);
     });
-    _transfersSubscription =
+    /*_transfersSubscription =
         _transactionsRepository.getTransfers().skip(1).listen((_) {
       _onSomethingChanged();
-    });
+    });*/
   }
 
-  Future<void> _onSomethingChanged() async {
+  Future<void> _onSomethingChanged(List<Transaction> transactions) async {
     var trTiles = <TransactionTile>[];
 
-    final transactions = await _transactionsRepository.transactions.first;
-    final transfers = await _transactionsRepository.getTransfers().first;
-    final categories = await _categoriesRepository.getCategories().first;
-    final subcategories =
-        await _subcategoriesRepository.getSubcategories().first;
-    final accounts = await _accountsRepository.getAccounts().first;
-
-    transactions.forEach((element) {
-      /*final cat = categories.where((c) => element.category!.name == c.id).first;
+    transactions.forEach((tr) {
+      final cat = _budgetRepository.getCategoryById(tr.categoryId!);
       final subcategory =
-          subcategories.where((sc) => element.subcategory!.name == sc.id).first;
-      final acc = accounts.where((a) => element.accountId == a.id).first;*/
-      /*trTiles.add(element.toTile(
-          account: null, category: nu, subcategory: subcategory));*/
+          cat.subcategoryList.where((sc) => tr.subcategoryName == sc.name).first;
+      final acc = _budgetRepository.getAccountById(tr.accountId!);
+      trTiles.add(tr.toTile(
+          account: acc, category: cat, subcategory: subcategory));
     });
 
-    transfers.forEach((element) {
+    /*transfers.forEach((element) {
       final fromAcc =
           accounts.where((a) => element.fromAccountId == a.id).first;
       final toAcc = accounts.where((a) => element.toAccountId == a.id).first;
       trTiles.addAll(element.toTiles(fromAccount: fromAcc, toAccount: toAcc));
-    });
+    });*/
 
     trTiles.sort(
       (a, b) => a.dateTime.compareTo(b.dateTime),
@@ -78,7 +63,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> filterChanged({required TransactionsViewFilter filter}) async {
     emit(state.copyWith(filter: filter));
-    _onSomethingChanged();
+   // _onSomethingChanged();
   }
 
   Future<void> deleteTransaction({required String transactionId}) async {

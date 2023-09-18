@@ -80,11 +80,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
         .collection('budgets')
         .doc(budgetId)
         .collection('transactions');
-
-    ref.add(transaction.toJson()).then((documentSnapshot) {
-      ref.doc(documentSnapshot.id).set(
-          {'id': documentSnapshot.id}, cloudFirestore.SetOptions(merge: true));
-    });
+    ref.add(transaction.toFirestore());
   }
 
   @override

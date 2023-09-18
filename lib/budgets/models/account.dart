@@ -9,7 +9,7 @@ part 'account.g.dart';
 class Account extends Equatable{
   final String id;
   final String name;
-  final String categoryName;
+  final String categoryId;
   final String currency;
   final double balance;
   final double initialBalance;
@@ -19,7 +19,7 @@ class Account extends Equatable{
   const Account({
     this.id = '',
     required this.name,
-    required this.categoryName,
+    required this.categoryId,
     this.currency = 'USD',
     required this.balance,
     required this.initialBalance,
@@ -40,7 +40,7 @@ class Account extends Equatable{
     return Account(
         id: id ?? this.id,
         name: name ?? this.name,
-        categoryName: categoryId ?? this.categoryName,
+        categoryId: categoryId ?? this.categoryId,
         currency: currency ?? this.currency,
         balance: balance ?? this.balance,
         initialBalance: initialBalance ?? this.initialBalance,
@@ -50,7 +50,7 @@ class Account extends Equatable{
   }
 
   String extendName(List<Category> categories){
-    final category = categories.where((element) => element.name == this.categoryName).first;
+    final category = categories.where((element) => element.name == this.categoryId).first;
     return '${category.name} / ${this.name}';
   }
 

@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/shared/models/summary_tile.dart';
-import 'package:budget_app/subcategories/repository/subcategories_repository.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import "package:collection/collection.dart";
@@ -26,8 +24,6 @@ class HomeCubit extends Cubit<HomeState> {
     required BudgetRepository budgetRepository,
     required TransactionsRepository transactionsRepository,
     required AccountsRepository accountsRepository,
-    required CategoriesRepository categoriesRepository,
-    required SubcategoriesRepository subcategoriesRepository,
   })  : _budgetRepository = budgetRepository,
         _transactionsRepository = transactionsRepository,
         super(HomeState(selectedDate: DateTime.now())) {
@@ -115,20 +111,20 @@ class HomeCubit extends Cubit<HomeState> {
   List<SummaryTile> _getSummariesByCategory(
       {required List<Transaction> transactions}) {
     final groupedTrByCat =
-        groupBy(transactions, (Transaction tr) => tr.category!.name);
+        groupBy(transactions, (Transaction tr) => tr.categoryId!);
 
     List<SummaryTile> summaries = [];
     double allTotal = 0;
 
     if (state.categories.isNotEmpty) {
       groupedTrByCat.forEach((key, value) {
-        final cat = state.categories.where((cat) => cat.name == key).first;
+        final cat = state.categories.where((cat) => cat.id == key).first;
         final double sum = value.fold<double>(
             0.0, (previousValue, element) => previousValue + element.amount!);
         if (cat.type.name == state.tab.name) {
           allTotal = allTotal + sum;
           summaries.add(SummaryTile(
-              id: cat.name,
+              id: cat.id,
               name: cat.name,
               total: sum,
               iconCodePoint: cat.iconCode));
@@ -140,18 +136,18 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<List<SummaryTile>> _getSummariesByAccounts() async {
     final groupedAccByCat =
-        groupBy(state.accounts, (Account acc) => acc.categoryName);
+        groupBy(state.accounts, (Account acc) => acc.categoryId);
 
     double allTotal = 0;
     List<SummaryTile> summaries = [];
     if (state.categories.isNotEmpty) {
       groupedAccByCat.forEach((key, value) {
-        final cat = state.categories.where((cat) => cat.name == key).first;
+        final cat = state.categories.where((cat) => cat.id == key).first;
         final double sum = value.fold<double>(
             0.0, (previousValue, element) => previousValue + element.balance);
         allTotal = allTotal + sum;
         summaries.add(SummaryTile(
-            id: cat.name,
+            id: cat.id,
             name: cat.name,
             total: sum,
             iconCodePoint: cat.iconCode));

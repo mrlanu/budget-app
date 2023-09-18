@@ -9,7 +9,7 @@ part of 'account.dart';
 Account _$AccountFromJson(Map<String, dynamic> json) => Account(
       id: json['id'] as String? ?? '',
       name: json['name'] as String,
-      categoryName: json['categoryName'] as String,
+      categoryId: json['categoryId'] as String,
       currency: json['currency'] as String? ?? 'USD',
       balance: (json['balance'] as num).toDouble(),
       initialBalance: (json['initialBalance'] as num).toDouble(),
@@ -20,7 +20,7 @@ Account _$AccountFromJson(Map<String, dynamic> json) => Account(
 Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'categoryName': instance.categoryName,
+      'categoryId': instance.categoryId,
       'currency': instance.currency,
       'balance': instance.balance,
       'initialBalance': instance.initialBalance,

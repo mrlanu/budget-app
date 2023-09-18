@@ -13,12 +13,8 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       type: $enumDecodeNullable(_$TransactionTypeEnumMap, json['type']),
       description: json['description'] as String? ?? '',
       amount: (json['amount'] as num?)?.toDouble(),
-      category: json['category'] == null
-          ? null
-          : Category.fromJson(json['category'] as Map<String, dynamic>),
-      subcategory: json['subcategory'] == null
-          ? null
-          : Subcategory.fromJson(json['subcategory'] as Map<String, dynamic>),
+      categoryId: json['categoryId'] as String?,
+      subcategoryName: json['subcategoryName'] as String?,
       accountId: json['accountId'] as String?,
     );
 
@@ -29,8 +25,8 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'type': _$TransactionTypeEnumMap[instance.type],
       'description': instance.description,
       'amount': instance.amount,
-      'category': instance.category?.toJson(),
-      'subcategory': instance.subcategory?.toJson(),
+      'categoryId': instance.categoryId,
+      'subcategoryName': instance.subcategoryName,
       'accountId': instance.accountId,
     };
 
