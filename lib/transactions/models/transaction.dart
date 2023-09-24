@@ -15,7 +15,7 @@ class Transaction {
   final String? description;
   final double? amount;
   final String? categoryId;
-  final String? subcategoryName;
+  final String? subcategoryId;
   final String? accountId;
 
   Transaction(
@@ -25,7 +25,7 @@ class Transaction {
       this.description = '',
       this.amount,
       this.categoryId,
-      this.subcategoryName,
+      this.subcategoryId,
       this.accountId});
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
@@ -42,7 +42,7 @@ class Transaction {
       description: data?['description'] as String? ?? '',
       amount: (data?['amount'] as num?)?.toDouble(),
       categoryId: data?['categoryId'] as String?,
-      subcategoryName: data?['subcategoryName'] as String?,
+      subcategoryId: data?['subcategoryId'] as String?,
       accountId: data?['accountId'] as String?,
     );
   }
@@ -53,7 +53,7 @@ class Transaction {
     'description': description,
     'amount': amount,
     'categoryId': categoryId,
-    'subcategoryName': subcategoryName,
+    'subcategoryId': subcategoryId,
     'accountId': accountId,
   };
 
@@ -78,6 +78,6 @@ class Transaction {
 
   @override
   String toString() {
-    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryName, acc: $accountId';
+    return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
   }
 }

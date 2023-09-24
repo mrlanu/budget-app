@@ -1,4 +1,5 @@
 import 'package:budget_app/colors.dart';
+import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +37,8 @@ class HomeMobileView extends StatelessWidget {
             );
         }
       },
-      child: BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+      child: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
         return SafeArea(
             child: Scaffold(
                 backgroundColor: BudgetColors.teal50,
@@ -63,8 +65,7 @@ class HomeMobileView extends StatelessWidget {
                                 transactionType: TransactionType.EXPENSE));
                             break;
                           case HomeTab.accounts:
-                            Navigator.of(context).push(AccountsListPage.route(
-                                homeCubit: context.read<HomeCubit>()));
+                            Navigator.of(context).push(AccountsListPage.route());
                             break;
                         }
                       },
@@ -74,9 +75,7 @@ class HomeMobileView extends StatelessWidget {
                 drawer: MainDrawer(),
                 floatingActionButton:
                     HomeFloatingActionButton(selectedTab: state.tab),
-                body: state.status == HomeStatus.loading
-                    ? Center(child: CircularProgressIndicator())
-                    : state.tab == HomeTab.accounts
+                body: state.tab == HomeTab.accounts
                         ? AccountsSummaries()
                         : CategorySummaries(),
                 bottomNavigationBar: HomeBottomNavBar(

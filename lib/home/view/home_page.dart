@@ -1,4 +1,5 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,25 +20,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) => HomeCubit(
-              budgetRepository: context.read<BudgetRepository>(),
-              transactionsRepository:
-              context.read<TransactionsRepositoryImpl>(),
-            )),
-        BlocProvider(
+    final trRepo = context.read<TransactionsRepositoryImpl>();
+    final budgetRepo = context.read<BudgetRepository>();
+    return MultiBlocProvider(providers: [
+      BlocProvider(
+          create: (context) => HomeCubit(
+              transactionsRepository: trRepo, budgetRepository: budgetRepo)),
+      BlocProvider(
           create: (context) => TransactionsCubit(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            budgetRepository: context.read<BudgetRepository>(),
-            filter: TransactionsViewFilter(
-                type: TransactionsViewFilterTypes.allExpenses),
-          ),
-        ),
-      ],
-      child: isDisplayDesktop(context) ? HomeDesktopPage() : HomeMobilePage()
-    );
-
+              transactionsRepository: trRepo,
+              budgetRepository: budgetRepo,
+              filter: TransactionsViewFilter(
+                  type: TransactionsViewFilterTypes.allExpenses)))
+    ], child: isDisplayDesktop(context) ? HomeDesktopPage() : HomeMobilePage());
   }
 }

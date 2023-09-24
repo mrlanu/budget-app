@@ -80,7 +80,11 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
         .collection('budgets')
         .doc(budgetId)
         .collection('transactions');
-    ref.add(transaction.toFirestore());
+    if(transaction.id == null) {
+      ref.add(transaction.toFirestore());
+    } else {
+      ref.doc(transaction.id).set(transaction.toFirestore());
+    }
   }
 
   @override

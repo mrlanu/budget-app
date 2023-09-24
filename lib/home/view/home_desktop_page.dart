@@ -4,6 +4,7 @@ import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
+import 'package:budget_app/transactions/cubit/transactions_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
@@ -16,6 +17,7 @@ import '../../shared/widgets/paginator/month_paginator.dart';
 import '../../transactions/repository/transactions_repository.dart';
 import '../../transactions/transaction/bloc/transaction_bloc.dart';
 import '../../transfer/bloc/transfer_bloc.dart';
+import '../cubit/home_cubit.dart';
 import '../home.dart';
 
 class HomeDesktopPage extends StatelessWidget {
@@ -31,7 +33,7 @@ class HomeDesktopPage extends StatelessWidget {
             budgetRepository: context.read<BudgetRepository>()
           )..add(TransactionFormLoaded(
               transactionType: TransactionType.EXPENSE,
-              date: context.read<HomeCubit>().state.selectedDate!)),
+              date: context.read<TransactionsCubit>().state.selectedDate!)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
@@ -94,14 +96,14 @@ class HomeViewDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: h * 0.03),
-      child: BlocListener<HomeCubit, HomeState>(
+      child: BlocListener<TransactionsCubit, TransactionsState>(
         listenWhen: (previous, current) =>
             previous.tab != current.tab && current.tab == HomeTab.accounts,
         listener: (context, state) {
           // it has been added for update accounts during first tab open
           //context.read<AccountsCubit>().budgetChanged();
         },
-        child: BlocBuilder<HomeCubit, HomeState>(
+        child: BlocBuilder<TransactionsCubit, TransactionsState>(
             builder: (context, state) => Column(
                   children: [
                     Container(
@@ -116,9 +118,9 @@ class HomeViewDesktop extends StatelessWidget {
                         fontSize: 20,
                         color: BudgetColors.teal50,
                         onLeft: (date) =>
-                            context.read<HomeCubit>().changeDate(date),
+                            context.read<TransactionsCubit>().changeDate(date),
                         onRight: (date) =>
-                            context.read<HomeCubit>().changeDate(date),
+                            context.read<TransactionsCubit>().changeDate(date),
                       ),
                     ),
                     Row(
@@ -134,7 +136,7 @@ class HomeViewDesktop extends StatelessWidget {
                                   padding: EdgeInsets.all(20),
                                   width: w * 0.3,
                                   height: h * 0.7,
-                                  child: state.status == HomeStatus.loading
+                                  child: state.status == TransactionsStatus.loading
                                       ? Center(
                                           child: CircularProgressIndicator())
                                       : state.tab == HomeTab.accounts
@@ -180,7 +182,7 @@ class HomeViewDesktop extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
                         child: HomeBottomNavBar(
-                            selectedTab: state.tab,
+                            //selectedTab: state.tab,
                             sectionsSum: state.sectionsSum),
                       ),
                     )

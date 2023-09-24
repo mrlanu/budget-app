@@ -1,6 +1,6 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../accounts/models/account.dart';
 import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../bloc/transfer_bloc.dart';
@@ -14,8 +14,7 @@ class ToAccountInputField extends StatelessWidget {
             icon: GestureDetector(
               child: Icon(Icons.edit_note),
               onTap: () {
-                Navigator.of(context).push(AccountsListPage.route(
-                    homeCubit: context.read<HomeCubit>()));
+                Navigator.of(context).push(AccountsListPage.route());
               },
             ),
             items: state.accounts

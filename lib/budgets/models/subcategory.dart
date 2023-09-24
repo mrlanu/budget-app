@@ -1,9 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'subcategory.g.dart';
 
 @JsonSerializable()
-class Subcategory {
+class Subcategory extends Equatable{
   final String id;
   final String name;
 
@@ -17,4 +18,7 @@ class Subcategory {
   }
 
   Map<String, dynamic> toJson() => _$SubcategoryToJson(this);
+
+  @override
+  List<Object?> get props => [id, name];
 }

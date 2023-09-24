@@ -1,4 +1,3 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
@@ -10,7 +9,7 @@ import '../../transactions/models/transaction_type.dart';
 class TransferPage extends StatelessWidget {
   const TransferPage({Key? key}) : super(key: key);
 
-  static Route<void> route({required HomeCubit homeCubit, TransactionTile? transactionTile}) {
+  static Route<void> route({TransactionTile? transactionTile}) {
     return MaterialPageRoute(builder: (context) {
       return MultiBlocProvider(
         providers: [
@@ -21,7 +20,6 @@ class TransferPage extends StatelessWidget {
             )
               ..add(TransferFormLoaded(transactionTile: transactionTile)),
           ),
-          BlocProvider.value(value: homeCubit),
         ],
         child: TransferPage(),
       );

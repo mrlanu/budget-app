@@ -2,7 +2,6 @@ import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/colors.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,19 +12,14 @@ import '../cubit/accounts_list_cubit.dart';
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
-  static Route<void> route({required HomeCubit homeCubit}) {
+  static Route<void> route() {
     return MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
+          return BlocProvider(
                 create: (context) => AccountsListCubit(
                   budgetRepository: context.read<BudgetRepository>()
                 ),
-              ),
-              BlocProvider.value(value: homeCubit),
-            ],
             child: AccountsListPage(),
           );
         });

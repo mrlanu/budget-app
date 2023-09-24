@@ -5,14 +5,12 @@ import 'package:budget_app/accounts/models/accounts_view_filter.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/shared.dart';
-import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:equatable/equatable.dart';
 
 part 'accounts_state.dart';
 
 class AccountsCubit extends Cubit<AccountsState> {
   final BudgetRepository _budgetRepository;
-  late final StreamSubscription<List<Transaction>> _transactionsSubscription;
   late final StreamSubscription<Budget> _budgetSubscription;
 
   AccountsCubit(
@@ -39,7 +37,6 @@ class AccountsCubit extends Cubit<AccountsState> {
 
   @override
   Future<void> close() {
-    _transactionsSubscription.cancel();
     _budgetSubscription.cancel();
     return super.close();
   }

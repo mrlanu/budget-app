@@ -1,4 +1,3 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/models/transactions_view_filter.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
@@ -49,9 +48,7 @@ class TransactionsList extends StatelessWidget {
                                   ? context.read<TransferBloc>().add(
                                       TransferFormLoaded(transactionTile: tr))
                                   : Navigator.of(context).push(
-                                      TransferPage.route(
-                                          homeCubit: context.read<HomeCubit>(),
-                                          transactionTile: tr),
+                                      TransferPage.route(transactionTile: tr),
                                     )
                             }
                           else
@@ -62,17 +59,16 @@ class TransactionsList extends StatelessWidget {
                                             transactionType: tr.type,
                                             transaction: tr,
                                             date: context
-                                                .read<HomeCubit>()
+                                                .read<TransactionsCubit>()
                                                 .state
                                                 .selectedDate!),
                                       )
                                   : Navigator.of(context).push(
                                       TransactionPage.route(
                                           transaction: tr,
-                                          homeCubit: context.read<HomeCubit>(),
                                           transactionType: tr.type,
                                           date: context
-                                              .read<HomeCubit>()
+                                              .read<TransactionsCubit>()
                                               .state
                                               .selectedDate!),
                                     )

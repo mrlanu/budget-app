@@ -21,20 +21,18 @@ class HomeFloatingActionButton extends StatelessWidget {
           case HomeTab.expenses:
             Navigator.of(context).push(
               TransactionPage.route(
-                  homeCubit: homeCubit,
                   transactionType: TransactionType.EXPENSE,
                   date: homeCubit.state.selectedDate!),
             );
           case HomeTab.income:
             Navigator.of(context).push(
               TransactionPage.route(
-                  homeCubit: context.read<HomeCubit>(),
                   transactionType: TransactionType.INCOME,
                   date: homeCubit.state.selectedDate!),
             );
           case HomeTab.accounts:
             Navigator.of(context).push(
-              TransferPage.route(homeCubit: context.read<HomeCubit>()),
+              TransferPage.route(),
             );
         }
         ;

@@ -13,9 +13,12 @@ abstract class BudgetRepository {
 
   List<Category> getCategoriesByType(TransactionType type);
 
+  List<Category> getCategories();
+
   Category getCategoryById(String name);
 
   Account getAccountById(String accountId);
+  List<Account> getAccounts();
 
   Future<void> saveCategory(Category category);
 
@@ -74,6 +77,11 @@ class BudgetRepositoryImpl extends BudgetRepository {
       _budgetStreamController.value.categoryList
           .where((cat) => cat.type == type)
           .toList();
+
+  List<Category> getCategories() =>
+      _budgetStreamController.value.categoryList;
+
+  List<Account> getAccounts() => _budgetStreamController.value.accountList;
 
   Account getAccountById(String accountId) =>
       _budgetStreamController.value.accountList

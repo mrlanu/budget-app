@@ -75,10 +75,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       id = tr.id;
       category = _budgetRepository
           .getCategoriesByType(event.transactionType)
-          .where((cat) => cat.id == tr.category)
+          .where((cat) => cat.id == tr.category!.id)
           .first;
       subcategory = category.subcategoryList
-          .where((element) => element.name == tr.subcategory)
+          .where((sc) => sc.id == tr.subcategory!.id)
           .first;
       account = _budgetRepository.getAccountById(tr.fromAccount!.id);
     }
@@ -91,7 +91,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
         date: tr?.dateTime ?? event.date,
         category: category,
+        categories: _budgetRepository.getCategoriesByType(event.transactionType),
         subcategory: subcategory,
+        subcategories: category != null ? category.subcategoryList : [],
         account: account,
         description: tr?.description ?? '',
         accountCategories:
@@ -150,7 +152,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       type: state.transactionType,
       amount: double.parse(state.amount.value),
       categoryId: state.category?.id,
-      subcategoryName: state.subcategory?.name,
+      subcategoryId: state.subcategory?.id,
       accountId: state.account!.id,
     );
     try {
