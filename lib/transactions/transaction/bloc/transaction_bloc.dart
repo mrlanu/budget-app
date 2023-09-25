@@ -86,12 +86,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     await Future.delayed(Duration(milliseconds: 100));
 
     emit(TransactionState(
+        editedTransaction: tr,
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
         date: tr?.dateTime ?? event.date,
         category: category,
-        categories: _budgetRepository.getCategoriesByType(event.transactionType),
+        categories:
+            _budgetRepository.getCategoriesByType(event.transactionType),
         subcategory: subcategory,
         subcategories: category != null ? category.subcategoryList : [],
         account: account,
@@ -156,7 +158,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       accountId: state.account!.id,
     );
     try {
-      await _transactionsRepository.createTransaction(transaction);
+      await _transactionsRepository.saveTransaction(
+          transaction: transaction,
+          editedTransaction: state.editedTransaction,
+          budget: await _budgetRepository.budget.first);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransactionFormLoaded(

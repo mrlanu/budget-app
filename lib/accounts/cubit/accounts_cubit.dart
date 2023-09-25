@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:budget_app/accounts/models/accounts_view_filter.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/shared/shared.dart';
 import 'package:equatable/equatable.dart';
 
 part 'accounts_state.dart';
@@ -26,7 +25,7 @@ class AccountsCubit extends Cubit<AccountsState> {
 
   Future<void> budgetChanged(Budget budget) async {
     emit(
-        state.copyWith(status: DataStatus.success, accountList: budget.accountList));
+        state.copyWith(status: AccountsStatus.success, accountList: budget.accountList));
   }
 
   Future<void> changeExpanded(int index)async{

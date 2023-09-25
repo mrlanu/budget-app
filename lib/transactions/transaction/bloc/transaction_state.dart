@@ -3,6 +3,7 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
+  final TransactionTile? editedTransaction;
   final String? id;
   final TransactionType transactionType;
   final Amount amount;
@@ -23,7 +24,8 @@ class TransactionState extends Equatable {
   final String? errorMessage;
 
   TransactionState(
-      {this.id,
+      {this.editedTransaction,
+      this.id,
       this.transactionType = TransactionType.EXPENSE,
       this.amount = const Amount.pure(),
       this.date,
@@ -41,6 +43,7 @@ class TransactionState extends Equatable {
       this.errorMessage});
 
   TransactionState copyWith({
+    TransactionTile? editedTransaction,
     Amount? amount,
     DateTime? date,
     Category? Function()? category,
@@ -57,6 +60,7 @@ class TransactionState extends Equatable {
     String? errorMessage,
   }) {
     return TransactionState(
+      editedTransaction: editedTransaction ?? this.editedTransaction,
       id: this.id,
       transactionType: this.transactionType,
       amount: amount ?? this.amount,
@@ -65,9 +69,12 @@ class TransactionState extends Equatable {
       subcategory: subcategory != null ? subcategory() : this.subcategory,
       account: account ?? this.account,
       description: description ?? this.description,
-      accountCategories: accountCategories != null ? accountCategories() : this.accountCategories,
+      accountCategories: accountCategories != null
+          ? accountCategories()
+          : this.accountCategories,
       categories: categories != null ? categories() : this.categories,
-      subcategories: subcategories != null ? subcategories() : this.subcategories,
+      subcategories:
+          subcategories != null ? subcategories() : this.subcategories,
       accounts: accounts != null ? accounts() : this.accounts,
       trStatus: trStatus ?? this.trStatus,
       status: status ?? this.status,
@@ -78,6 +85,7 @@ class TransactionState extends Equatable {
 
   @override
   List<Object?> get props => [
+        editedTransaction,
         trStatus,
         amount,
         date,

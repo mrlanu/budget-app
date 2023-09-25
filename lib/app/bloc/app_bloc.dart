@@ -38,6 +38,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (event.user.isNotEmpty) {
       _setValue('userId', event.user.id!);
       await _fetchAvailableBudgets(event.user.id!);
+      await _budgetRepository.init();
       emit(AppState.authenticated(event.user));
     } else {
       emit(const AppState.unauthenticated());

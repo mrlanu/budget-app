@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:budget_app/budgets/budgets.dart';
+import 'package:budget_app/shared/shared.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as cloudFirestore;
 import 'package:http/http.dart' as http;
@@ -9,14 +12,16 @@ import 'package:rxdart/rxdart.dart';
 import '../../constants/api.dart';
 
 abstract class TransactionsRepository {
-
   void initTransactions();
 
   Stream<List<Transaction>> get transactions;
 
   Stream<List<Transfer>> getTransfers();
 
-  Future<void> createTransaction(Transaction transaction);
+  Future<void> saveTransaction(
+      {required Transaction transaction,
+        TransactionTile? editedTransaction,
+        required Budget budget});
 
   Future<void> createTransfer(Transfer transfer);
 
@@ -45,22 +50,14 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       : _firebaseFirestore =
             firebaseFirestore ?? cloudFirestore.FirebaseFirestore.instance {}
 
-  void initTransactions() async {
-    final userId = await getUserId();
-    final budgetId = await getCurrentBudgetId();
-    _firebaseFirestore
-        .collection('users')
-        .doc(userId)
-        .collection('budgets')
-        .doc(budgetId)
-        .collection('transactions')
-        .snapshots()
-        .listen((event) {
-      final transactions =
-          event.docs.map((e) => Transaction.fromFirestore(e)).toList();
-      _transactionsStreamController.add(transactions);
-    });
-  }
+  void initTransactions() async =>
+      (await _firebaseFirestore.budgetTransactions())
+          .snapshots()
+          .listen((event) {
+        final transactions =
+            event.docs.map((e) => Transaction.fromFirestore(e)).toList();
+        _transactionsStreamController.add(transactions);
+      });
 
   @override
   Stream<List<Transaction>> get transactions =>
@@ -71,21 +68,14 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       _transfersStreamController.asBroadcastStream();
 
   @override
-  Future<void> createTransaction(Transaction transaction) async {
-    final userId = await getUserId();
-    final budgetId = await getCurrentBudgetId();
-    final ref = await _firebaseFirestore
-        .collection('users')
-        .doc(userId)
-        .collection('budgets')
-        .doc(budgetId)
-        .collection('transactions');
-    if(transaction.id == null) {
-      ref.add(transaction.toFirestore());
-    } else {
-      ref.doc(transaction.id).set(transaction.toFirestore());
-    }
-  }
+  Future<void> saveTransaction(
+          {required Transaction transaction,
+          TransactionTile? editedTransaction,
+          required Budget budget}) async =>
+      _firebaseFirestore.saveTransaction(
+          transaction: transaction,
+          editedTransaction: editedTransaction,
+          budget: budget);
 
   @override
   Future<void> createTransfer(Transfer transfer) async {

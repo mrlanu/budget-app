@@ -1,13 +1,15 @@
 part of 'accounts_cubit.dart';
 
+enum AccountsStatus { loading, success, failure }
+
 class AccountsState extends Equatable {
-  final DataStatus status;
+  final AccountsStatus status;
   final List<Account> accountList;
   final AccountsViewFilter filter;
   final String? errorMessage;
 
   const AccountsState(
-      {this.status = DataStatus.loading,
+      {this.status = AccountsStatus.loading,
       this.accountList = const [],
         required this.filter,
       this.errorMessage});
@@ -16,7 +18,7 @@ class AccountsState extends Equatable {
 
   AccountsState copyWith({
     String? budgetId,
-    DataStatus? status,
+    AccountsStatus? status,
     List<Account>? accountList,
     AccountsViewFilter? filter,
     String? errorMessage,
