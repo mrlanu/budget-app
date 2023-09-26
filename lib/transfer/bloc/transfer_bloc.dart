@@ -24,12 +24,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   late final StreamSubscription<Budget> _budgetSubscription;
 
   TransferBloc(
-      {required TransactionsRepository transactionsRepository, required BudgetRepository budgetRepository})
-      : _transactionsRepository = transactionsRepository, _budgetRepository = budgetRepository,
+      {required TransactionsRepository transactionsRepository,
+      required BudgetRepository budgetRepository})
+      : _transactionsRepository = transactionsRepository,
+        _budgetRepository = budgetRepository,
         super(TransferState()) {
     on<TransferEvent>(_onEvent, transformer: sequential());
-    _budgetSubscription =
-        _budgetRepository.budget.listen((budget) {
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
       add(TransferBudgetChanged(budget: budget));
     });
   }
@@ -52,18 +53,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onFormLoaded(
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
-    final filteredCategories = _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
+    final filteredCategories =
+        _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
     final transactionTile = event.transactionTile;
     String? id;
     Account? fromAccount;
     Account? toAccount;
     if (transactionTile != null) {
       id = transactionTile.id;
-      fromAccount = _budgetRepository.getAccountById(transactionTile.fromAccount!.id);
-      toAccount = _budgetRepository.getAccountById(transactionTile.toAccount!.id);
+      fromAccount =
+          _budgetRepository.getAccountById(transactionTile.fromAccount!.id);
+      toAccount =
+          _budgetRepository.getAccountById(transactionTile.toAccount!.id);
     }
     await Future.delayed(Duration(milliseconds: 100));
     emit(state.copyWith(
+      editedTransfer: transactionTile,
       id: id,
       amount: transactionTile == null
           ? Amount.pure()
@@ -81,7 +86,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   void _onBudgetChanged(
       TransferBudgetChanged event, Emitter<TransferState> emit) {
-    //emit(state.copyWith(accountCategories: event.categories));
+    emit(state.copyWith(accounts: event.budget.accountList,
+        accountCategories: event.budget.categoryList
+            .where((cat) => cat.type == TransactionType.ACCOUNT)
+            .toList()));
   }
 
   void _onAmountChanged(
@@ -133,11 +141,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       notes: state.notes,
     );
     try {
-      if (state.id == null) {
-        await _transactionsRepository.saveTransfer(transfer);
-      } else {
-        await _transactionsRepository.editTransfer(transfer);
-      }
+      await _transactionsRepository.saveTransfer(
+          transfer: transfer,
+          budget: await _budgetRepository.budget.first,
+          editedTransaction: state.editedTransfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransferFormLoaded())

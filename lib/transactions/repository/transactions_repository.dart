@@ -21,12 +21,13 @@ abstract class TransactionsRepository {
 
   Future<void> saveTransaction(
       {required Transaction transaction,
-        TransactionTile? editedTransaction,
-        required Budget budget});
+      TransactionTile? editedTransaction,
+      required Budget budget});
 
-  Future<void> saveTransfer(Transfer transfer);
-
-  Future<void> editTransfer(Transfer transfer);
+  Future<void> saveTransfer(
+      {required Transfer transfer,
+      required Budget budget,
+      TransactionTile? editedTransaction});
 
   Future<void> fetchTransfers({
     required DateTime dateTime,
@@ -55,14 +56,15 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       (await _firebaseFirestore.budgetTransactions())
           .snapshots()
           .listen((event) {
-        final transactions =
-            event.docs.map((e) {
-              if(e.data()['type'] != null){
-                return Transaction.fromFirestore(e);
-              } else {
-                return Transfer.fromFirestore(e);
-              }
-            },).toList();
+        final transactions = event.docs.map(
+          (e) {
+            if (e.data()['type'] != null) {
+              return Transaction.fromFirestore(e);
+            } else {
+              return Transfer.fromFirestore(e);
+            }
+          },
+        ).toList();
         _transactionsStreamController.add(transactions);
       });
 
@@ -85,27 +87,11 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
           budget: budget);
 
   @override
-  Future<void> saveTransfer(Transfer transfer) async {
-    _firebaseFirestore.saveTransfer(transfer: transfer);
-  }
-
-  @override
-  Future<void> editTransfer(Transfer transfer) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers')
-        : Uri.https(baseURL, '/api/transfers');
-    final transferResponse = await http.put(url,
-        headers: await getHeaders(), body: json.encode(transfer.toJson()));
-    final editedTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
-    final transfers = [..._transfersStreamController.value];
-    final trIndex = transfers.indexWhere((t) => t.id == editedTransfer.id);
-    if (trIndex == -1) {
-      //throw TodoNotFoundException();
-    } else {
-      transfers.removeAt(trIndex);
-      transfers.insert(trIndex, editedTransfer);
-      _transfersStreamController.add(transfers);
-    }
+  Future<void> saveTransfer(
+      {required Transfer transfer,
+      required Budget budget,
+      TransactionTile? editedTransaction}) async {
+    _firebaseFirestore.saveTransfer(transfer: transfer, budget: budget, editedTransfer: editedTransaction);
   }
 
   @override

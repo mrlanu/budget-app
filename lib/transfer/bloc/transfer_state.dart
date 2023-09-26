@@ -3,6 +3,7 @@ part of 'transfer_bloc.dart';
 enum TransferStatus { loading, success, failure }
 
 class TransferState extends Equatable {
+  final TransactionTile? editedTransfer;
   final String? id;
   final Amount amount;
   final DateTime? date;
@@ -16,21 +17,22 @@ class TransferState extends Equatable {
   final bool isValid;
   final String? errorMessage;
 
-  TransferState(
-      {this.id,
-      this.amount = const Amount.pure(),
-      this.date,
-      this.fromAccount,
-      this.toAccount,
-      this.notes = '',
-      this.accounts = const <Account>[],
-      this.accountCategories = const <Category>[],
-      this.trStatus = TransferStatus.loading,
-      this.status = FormzSubmissionStatus.initial,
-      this.isValid = false,
-      this.errorMessage});
+  TransferState({this.editedTransfer,
+    this.id,
+    this.amount = const Amount.pure(),
+    this.date,
+    this.fromAccount,
+    this.toAccount,
+    this.notes = '',
+    this.accounts = const <Account>[],
+    this.accountCategories = const <Category>[],
+    this.trStatus = TransferStatus.loading,
+    this.status = FormzSubmissionStatus.initial,
+    this.isValid = false,
+    this.errorMessage});
 
   TransferState copyWith({
+    TransactionTile? editedTransfer,
     String? id,
     Amount? amount,
     DateTime? date,
@@ -45,6 +47,7 @@ class TransferState extends Equatable {
     String? errorMessage,
   }) {
     return TransferState(
+      editedTransfer: editedTransfer ?? this.editedTransfer,
       id: id ?? this.id,
       trStatus: trStatus ?? this.trStatus,
       amount: amount ?? this.amount,
@@ -61,7 +64,9 @@ class TransferState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
+        editedTransfer,
         id,
         trStatus,
         amount,
