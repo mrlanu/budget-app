@@ -1,12 +1,13 @@
-import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
-import 'package:budget_app/account_edit/view/widgets/balance_input_field.dart';
-import 'package:budget_app/account_edit/view/widgets/category_input_field.dart';
-import 'package:budget_app/account_edit/view/widgets/include_switch.dart';
-import 'package:budget_app/account_edit/view/widgets/name_input_field.dart';
+import 'package:budget_app/accounts_list/account_edit/view/widgets/balance_input_field.dart';
+import 'package:budget_app/accounts_list/account_edit/view/widgets/category_input_field.dart';
+import 'package:budget_app/accounts_list/account_edit/view/widgets/include_switch.dart';
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+
+import '../bloc/account_edit_bloc.dart';
+import 'widgets/name_input_field.dart';
 
 class AccountEditDialog extends StatelessWidget {
   @override

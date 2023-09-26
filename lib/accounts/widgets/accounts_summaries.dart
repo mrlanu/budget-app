@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../accounts/cubit/accounts_cubit.dart';
-import '../../../accounts/models/accounts_view_filter.dart';
-import '../../../colors.dart';
-import '../../../constants/constants.dart';
-import '../../../transactions/models/transactions_view_filter.dart';
-import '../../../transactions/view/transactions_list.dart';
+import '../../colors.dart';
+import '../../constants/constants.dart';
+import '../../transactions/models/transactions_view_filter.dart';
+import '../../transactions/view/transactions_list.dart';
+import '../cubit/accounts_cubit.dart';
+import '../models/accounts_view_filter.dart';
 
 class AccountsSummaries extends StatelessWidget {
   AccountsSummaries({super.key});

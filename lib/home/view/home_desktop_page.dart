@@ -1,8 +1,8 @@
+import 'package:budget_app/accounts/widgets/accounts_summaries.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
-import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transactions/cubit/transactions_cubit.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';

@@ -1,6 +1,6 @@
+import 'package:budget_app/accounts/widgets/accounts_summaries.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
-import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,5 +1,4 @@
-import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
-import 'package:budget_app/account_edit/view/account_edit_form.dart';
+import 'package:budget_app/accounts/cubit/accounts_cubit.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../budgets/budgets.dart';
-import '../cubit/accounts_list_cubit.dart';
+import '../account_edit/bloc/account_edit_bloc.dart';
+import '../account_edit/view/account_edit_form.dart';
 
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class AccountsListPage extends StatelessWidget {
         fullscreenDialog: true,
         builder: (context) {
           return BlocProvider(
-                create: (context) => AccountsListCubit(
+                create: (context) => AccountsCubit(
                   budgetRepository: context.read<BudgetRepository>()
                 ),
             child: AccountsListPage(),
@@ -38,11 +38,11 @@ class AccountsListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
         listeners: [
-          BlocListener<AccountsListCubit, AccountsListState>(
+          BlocListener<AccountsCubit, AccountsState>(
             listenWhen: (previous, current) =>
                 previous.status != current.status,
             listener: (context, state) {
-              if (state.status == AccountsListStatus.failure) {
+              if (state.status == AccountsStatus.failure) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
@@ -54,7 +54,7 @@ class AccountsListView extends StatelessWidget {
             },
           ),
         ],
-        child: BlocBuilder<AccountsListCubit, AccountsListState>(
+        child: BlocBuilder<AccountsCubit, AccountsState>(
           builder: (context, state) {
             final scheme = Theme.of(context).colorScheme;
             return Scaffold(
@@ -68,9 +68,9 @@ class AccountsListView extends StatelessWidget {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: state.accounts.length,
+                      itemCount: state.accountList.length,
                       itemBuilder: (context, index) {
-                        final account = state.accounts[index];
+                        final account = state.accountList[index];
                         return Card(
                           elevation: Theme.of(context).cardTheme.elevation,
                           child: ListTile(
@@ -101,7 +101,7 @@ class AccountsListView extends StatelessWidget {
                                   color: Theme.of(context).colorScheme.error),
                               onPressed: () {
                                 context
-                                    .read<AccountsListCubit>()
+                                    .read<AccountsCubit>()
                                     .onAccountDeleted(account);
                               },
                             ),
