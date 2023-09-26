@@ -1,3 +1,4 @@
+import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
@@ -17,6 +18,7 @@ class TransferPage extends StatelessWidget {
             create: (context) =>
             TransferBloc(
               transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+              budgetRepository: context.read<BudgetRepository>()
             )
               ..add(TransferFormLoaded(transactionTile: transactionTile)),
           ),

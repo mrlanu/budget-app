@@ -1,20 +1,21 @@
-import 'package:budget_app/accounts/models/account.dart';
+import 'package:budget_app/shared/models/transaction_interface.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../budgets/budgets.dart';
 import '../../transactions/models/transaction_tile.dart';
 import '../../transactions/models/transaction_type.dart';
 
 part 'transfer.g.dart';
 
-@JsonSerializable()
-class Transfer extends Equatable {
+@JsonSerializable(explicitToJson: true)
+class Transfer extends Equatable implements ITransaction {
   final String? id;
   final DateTime date;
   final String fromAccountId;
   final String toAccountId;
   final double amount;
-  final String budgetId;
   final String? notes;
 
   Transfer(
@@ -23,7 +24,6 @@ class Transfer extends Equatable {
       required this.fromAccountId,
       required this.toAccountId,
       required this.amount,
-      required this.budgetId,
       this.notes});
 
   Transfer copyWith(
@@ -40,7 +40,6 @@ class Transfer extends Equatable {
       fromAccountId: fromAccountId ?? this.fromAccountId,
       toAccountId: toAccountId ?? this.toAccountId,
       amount: amount ?? this.amount,
-      budgetId: budgetId ?? this.budgetId,
       notes: notes ?? this.notes,
     );
   }
@@ -48,10 +47,32 @@ class Transfer extends Equatable {
   factory Transfer.fromJson(Map<String, dynamic> json) =>
       _$TransferFromJson(json);
 
+  factory Transfer.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final data = snapshot.data();
+    return Transfer(
+      id: snapshot.id,
+      date: DateTime.parse(data?['date'] as String),
+      fromAccountId: data?['fromAccountId'] as String,
+      toAccountId: data?['toAccountId'] as String,
+      amount: (data?['amount'] as num).toDouble(),
+      notes: data?['notes'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toFirestore() => <String, dynamic>{
+    'date': date.toIso8601String(),
+    'fromAccountId': fromAccountId,
+    'toAccountId': toAccountId,
+    'amount': amount,
+    'notes': notes,
+  };
+
+
   Map<String, dynamic> toJson() => _$TransferToJson(this);
 
   @override
-  List<Object?> get props => [id, budgetId];
+  List<Object?> get props => [id];
 
   List<TransactionTile> toTiles({required Account fromAccount, required Account toAccount}) {
     return List.of(
@@ -63,8 +84,8 @@ class Transfer extends Equatable {
         subtitle: 'from ${fromAccount.name}',
         dateTime: date,
         description: this.notes!,
-        fromAccount: null,
-        toAccount: null),
+        fromAccount: fromAccount,
+        toAccount: toAccount),
     TransactionTile(
         id: this.id!,
         type: TransactionType.TRANSFER,
@@ -73,7 +94,10 @@ class Transfer extends Equatable {
         subtitle: 'to ${toAccount.name}',
         dateTime: date,
         description: this.notes!,
-        fromAccount: null,
-        toAccount: null)]);
+        fromAccount: fromAccount,
+        toAccount: toAccount)]);
   }
+
+  @override
+  bool isTransaction() => false;
 }

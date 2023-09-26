@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import "package:collection/collection.dart";
@@ -15,7 +16,7 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final BudgetRepository _budgetRepository;
   final TransactionsRepository _transactionsRepository;
-  late final StreamSubscription<List<Transaction>> _transactionsSubscription;
+  late final StreamSubscription<List<ITransaction>> _transactionsSubscription;
   late final StreamSubscription<Budget> _budgetsSubscription;
 
   HomeCubit({
@@ -47,8 +48,9 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> _onTransactionsChanged(List<Transaction> transactions) async {
-    final sectionsSum = _recalculateSections(transactions: transactions);
+  Future<void> _onTransactionsChanged(List<ITransaction> transactions) async {
+    final trans = transactions.where((tr) => tr.isTransaction()).map((tr) => tr as Transaction).toList();
+    final sectionsSum = _recalculateSections(transactions: trans);
     emit(state.copyWith(sectionsSum: sectionsSum));
   }
 

@@ -57,11 +57,11 @@ final class TransferNotesChanged extends TransferEvent {
   List<Object?> get props => [notes];
 }
 
-final class TransferCategoriesChanged extends TransferEvent {
-  final List<Category> categories;
-  const TransferCategoriesChanged({required this.categories});
+final class TransferBudgetChanged extends TransferEvent {
+  final Budget budget;
+  const TransferBudgetChanged({required this.budget});
   @override
-  List<Object?> get props => [categories];
+  List<Object?> get props => [budget];
 }
 
 final class TransferFormSubmitted extends TransferEvent {

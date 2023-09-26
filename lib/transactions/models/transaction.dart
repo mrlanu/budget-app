@@ -1,3 +1,4 @@
+import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,7 @@ import '../../budgets/budgets.dart';
 part 'transaction.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Transaction {
+class Transaction implements ITransaction{
   final String? id;
   final DateTime? date;
   final TransactionType? type;
@@ -80,4 +81,7 @@ class Transaction {
   String toString() {
     return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
   }
+
+  @override
+  bool isTransaction() => true;
 }

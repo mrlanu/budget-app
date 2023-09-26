@@ -14,7 +14,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       description: json['description'] as String? ?? '',
       amount: (json['amount'] as num?)?.toDouble(),
       categoryId: json['categoryId'] as String?,
-      subcategoryId: json['subcategoryName'] as String?,
+      subcategoryId: json['subcategoryId'] as String?,
       accountId: json['accountId'] as String?,
     );
 
@@ -26,7 +26,7 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'description': instance.description,
       'amount': instance.amount,
       'categoryId': instance.categoryId,
-      'subcategoryName': instance.subcategoryId,
+      'subcategoryId': instance.subcategoryId,
       'accountId': instance.accountId,
     };
 

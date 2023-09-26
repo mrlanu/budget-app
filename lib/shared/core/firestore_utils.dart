@@ -1,5 +1,6 @@
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transactions/models/transaction.dart';
+import 'package:budget_app/transfer/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 
 import '../../constants/api.dart';
@@ -23,6 +24,12 @@ extension FirestoreX on firestore.FirebaseFirestore {
         transaction.toFirestore());
     batch.set(await userBudget(), updatedBudget.toFirestore());
     batch.commit();
+  }
+
+  Future<void> saveTransfer(
+      {required Transfer transfer}) async {
+    final transactionsRef = await budgetTransactions();
+    transactionsRef.add(transfer.toFirestore());
   }
 
   Future<firestore.DocumentReference<Map<String, dynamic>>> userBudget() async {

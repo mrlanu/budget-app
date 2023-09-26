@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:equatable/equatable.dart';
@@ -10,8 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../accounts/models/account.dart';
-import '../../categories/models/category.dart';
 import '../../constants/constants.dart';
 
 part 'transfer_event.dart';
@@ -19,23 +20,24 @@ part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final TransactionsRepository _transactionsRepository;
-  late final StreamSubscription<List<Account>> _accountsSubscription;
-  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  final BudgetRepository _budgetRepository;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
   TransferBloc(
-      {required TransactionsRepository transactionsRepository})
-      : _transactionsRepository = transactionsRepository,
+      {required TransactionsRepository transactionsRepository, required BudgetRepository budgetRepository})
+      : _transactionsRepository = transactionsRepository, _budgetRepository = budgetRepository,
         super(TransferState()) {
     on<TransferEvent>(_onEvent, transformer: sequential());
-    /*_categoriesSubscription =
-        _categoriesRepository.getCategories().skip(1).listen((categories) {
-      add(TransferCategoriesChanged(categories: categories));
-    });*/
+    _budgetSubscription =
+        _budgetRepository.budget.listen((budget) {
+      add(TransferBudgetChanged(budget: budget));
+    });
   }
 
   Future<void> _onEvent(
       TransferEvent event, Emitter<TransferState> emit) async {
     return switch (event) {
+      final TransferBudgetChanged e => _onBudgetChanged(e, emit),
       final TransferFormLoaded e => _onFormLoaded(e, emit),
       final TransferAmountChanged e => _onAmountChanged(e, emit),
       final TransferDateChanged e => _onDateChanged(e, emit),
@@ -43,7 +45,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final TransferFromAccountChanged e => _onFromAccountChanged(e, emit),
       final TransferToAccountChanged e => _onToAccountChanged(e, emit),
       final TransferNotesChanged e => _onNotesChanged(e, emit),
-      final TransferCategoriesChanged e => _onCategoriesChanged(e, emit),
       final TransferFormSubmitted e => _onFormSubmitted(e, emit),
     };
   }
@@ -51,26 +52,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onFormLoaded(
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
-    //final accCategories = await _categoriesRepository.getCategories().first;
-    /*final filteredCategories = accCategories
-        .where((aC) => aC.transactionType == TransactionType.ACCOUNT)
-        .toList();*/
-    /*final transactionTile = event.transactionTile;
-    var id;
-    var fromAccount;
-    var toAccount;
+    final filteredCategories = _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
+    final transactionTile = event.transactionTile;
+    String? id;
+    Account? fromAccount;
+    Account? toAccount;
     if (transactionTile != null) {
       id = transactionTile.id;
-      fromAccount = accounts
-          .where((acc) => acc.id == transactionTile.fromAccount!.id)
-          .first;
-      toAccount = accounts
-          .where((acc) => acc.id == transactionTile.toAccount!.id)
-          .first;
+      fromAccount = _budgetRepository.getAccountById(transactionTile.fromAccount!.id);
+      toAccount = _budgetRepository.getAccountById(transactionTile.toAccount!.id);
     }
     await Future.delayed(Duration(milliseconds: 100));
     emit(state.copyWith(
-      budgetId: await getBudgetId(),
       id: id,
       amount: transactionTile == null
           ? Amount.pure()
@@ -80,15 +73,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       toAccount: toAccount,
       date: transactionTile?.dateTime ?? DateTime.now(),
       notes: transactionTile?.description ?? '',
-      //accountCategories: filteredCategories,
-      accounts: accounts,
+      accountCategories: filteredCategories,
+      accounts: _budgetRepository.getAccounts(),
       isValid: transactionTile == null ? false : true,
-    ));*/
+    ));
   }
 
-  void _onCategoriesChanged(
-      TransferCategoriesChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(accountCategories: event.categories));
+  void _onBudgetChanged(
+      TransferBudgetChanged event, Emitter<TransferState> emit) {
+    //emit(state.copyWith(accountCategories: event.categories));
   }
 
   void _onAmountChanged(
@@ -133,16 +126,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transfer = Transfer(
       id: state.id,
-      budgetId: state.budgetId!,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),
-      fromAccountId: state.fromAccount!.id!,
-      toAccountId: state.toAccount!.id!,
+      fromAccountId: state.fromAccount!.id,
+      toAccountId: state.toAccount!.id,
       notes: state.notes,
     );
     try {
       if (state.id == null) {
-        await _transactionsRepository.createTransfer(transfer);
+        await _transactionsRepository.saveTransfer(transfer);
       } else {
         await _transactionsRepository.editTransfer(transfer);
       }
@@ -157,8 +149,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   @override
   Future<void> close() {
-    _accountsSubscription.cancel();
-    _categoriesSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }
