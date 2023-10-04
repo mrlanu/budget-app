@@ -8,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../colors.dart';
 import '../../../constants/constants.dart';
-import '../../../transactions/models/transactions_view_filter.dart';
 import '../../../transactions/view/transactions_list.dart';
 import '../../cubit/home_cubit.dart';
 
@@ -80,10 +79,7 @@ class CategorySummaries extends StatelessWidget {
                       ),
                     );
                   },
-                  body: TransactionsList(
-                      filter: TransactionsViewFilter(
-                          type: TransactionsViewFilterTypes.categoryId,
-                          filterId: tile.id)),
+                  body: TransactionsList(transactionTiles: tile.transactionTiles),
                   isExpanded: tile.isExpanded);
             }).toList(),
           );

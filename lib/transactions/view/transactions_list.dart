@@ -1,5 +1,5 @@
+import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/models/transactions_view_filter.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
@@ -12,27 +12,26 @@ import '../cubit/transactions_cubit.dart';
 import '../transaction/view/transaction_page.dart';
 
 class TransactionsList extends StatelessWidget {
-  final TransactionsViewFilter filter;
+  final List<TransactionTile> transactionTiles;
 
-  const TransactionsList({super.key, required this.filter});
+  const TransactionsList({super.key, required this.transactionTiles});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionsCubit, TransactionsState>(
       builder: (context, state) {
-        state = state.copyWith(filter: filter);
         final maxHeight = h * 0.55;
         return state.status == TransactionsStatus.loading
             ? Center(child: CircularProgressIndicator())
             : Container(
                 margin: EdgeInsets.only(bottom: 10),
-                height: state.filteredTiles.length * 80 > maxHeight
+                height: transactionTiles.length * 80 > maxHeight
                     ? maxHeight
-                    : state.filteredTiles.length * 80,
+                    : transactionTiles.length * 80,
                 child: ListView.separated(
-                    itemCount: state.filteredTiles.length,
+                    itemCount: transactionTiles.length,
                     itemBuilder: (context, index) {
-                      final tr = state.filteredTiles[state.filteredTiles.length - index - 1];
+                      final tr = transactionTiles[transactionTiles.length - index - 1];
                       return TransactionListTile(
                         transactionTile: tr,
                         onDismissed: (_) {

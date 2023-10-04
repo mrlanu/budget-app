@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/accounts/models/accounts_view_filter.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
@@ -14,10 +13,9 @@ class AccountsCubit extends Cubit<AccountsState> {
   final BudgetRepository _budgetRepository;
   late final StreamSubscription<Budget> _budgetSubscription;
 
-  AccountsCubit(
-      {AccountsViewFilter? filter, required BudgetRepository budgetRepository})
+  AccountsCubit({required BudgetRepository budgetRepository})
       : _budgetRepository = budgetRepository,
-        super(AccountsState(filter: filter)) {
+        super(AccountsState()) {
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
       budgetChanged(budget);
     });
@@ -30,13 +28,6 @@ class AccountsCubit extends Cubit<AccountsState> {
         accountCategories: budget.categoryList
             .where((cat) => cat.type == TransactionType.ACCOUNT)
             .toList()));
-  }
-
-  Future<void> changeExpanded(int index) async {
-    var accounts = [...state.accountList];
-    accounts[index] =
-        accounts[index].copyWith(isExpanded: !accounts[index].isExpanded);
-    emit(state.copyWith(accountList: accounts));
   }
 
   Future<void> onAccountDeleted(Account account) async {

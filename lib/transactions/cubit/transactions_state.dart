@@ -4,10 +4,7 @@ enum TransactionsStatus { initial, loading, success, failure }
 
 class TransactionsState extends Equatable {
   final TransactionsStatus status;
-  final List<Transaction> transactions;
-  final List<TransactionTile> transactionList;
-  final TransactionsViewFilter filter;
-  final Map<String, double> sectionsSum;
+  final List<TransactionTile> transactionTiles;
   final List<SummaryTile> summaryList;
   final DateTime? selectedDate;
   final HomeTab tab;
@@ -15,11 +12,8 @@ class TransactionsState extends Equatable {
   final Transaction? lastDeletedTransaction;
 
   const TransactionsState({
-    this.transactions = const [],
     this.status = TransactionsStatus.initial,
-    this.transactionList = const [],
-    required this.filter,
-    this.sectionsSum = const {'incomes': 0.0, 'expenses': 0.0, 'accounts': 0.0},
+    this.transactionTiles = const [],
     this.summaryList = const [],
     this.selectedDate,
     this.tab = HomeTab.expenses,
@@ -27,14 +21,10 @@ class TransactionsState extends Equatable {
     this.lastDeletedTransaction,
   });
 
-  List<TransactionTile> get filteredTiles => filter.applyAll(transactionList);
-
   TransactionsState copyWith({
-    List<Transaction>? transactions,
     TransactionsStatus? status,
-    List<TransactionTile>? transactionList,
+    List<TransactionTile>? transactionTiles,
     TransactionsViewFilter? filter,
-    Map<String, double>? sectionsSum,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
     HomeTab? tab,
@@ -43,11 +33,8 @@ class TransactionsState extends Equatable {
     Transfer? Function()? lastDeletedTransfer,
   }) {
     return TransactionsState(
-      transactions: transactions ?? this.transactions,
       status: status ?? this.status,
-      transactionList: transactionList ?? this.transactionList,
-      filter: filter ?? this.filter,
-      sectionsSum: sectionsSum ?? this.sectionsSum,
+      transactionTiles: transactionTiles ?? this.transactionTiles,
       summaryList: summaryList ?? this.summaryList,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
@@ -60,12 +47,9 @@ class TransactionsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        transactions,
         status,
-        transactionList,
-        filter,
-        sectionsSum,
         summaryList,
+        transactionTiles,
         selectedDate,
         tab,
         errorMessage,

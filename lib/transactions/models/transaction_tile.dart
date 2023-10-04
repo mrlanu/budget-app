@@ -1,8 +1,12 @@
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import '../../budgets/budgets.dart';
 
+part 'transaction_tile.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class TransactionTile extends Equatable {
   final String id;
   final TransactionType type;
@@ -28,6 +32,11 @@ class TransactionTile extends Equatable {
       this.toAccount,
       required this.dateTime,
       required this.description});
+
+  factory TransactionTile.fromJson(Map<String, dynamic> json) =>
+      _$TransactionTileFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TransactionTileToJson(this);
 
   @override
   List<Object?> get props => [id, amount, fromAccount, toAccount, dateTime];

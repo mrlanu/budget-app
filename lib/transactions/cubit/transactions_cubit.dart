@@ -5,6 +5,7 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
+import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
@@ -12,7 +13,6 @@ import 'package:equatable/equatable.dart';
 import '../../home/cubit/home_cubit.dart';
 import '../../shared/models/summary_tile.dart';
 import '../models/transaction.dart';
-import '../models/transaction_type.dart';
 import '../models/transactions_view_filter.dart';
 import '../repository/transactions_repository.dart';
 
@@ -30,7 +30,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required TransactionsViewFilter filter,
   })  : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
-        super(TransactionsState(filter: filter, selectedDate: DateTime.now())) {
+        super(TransactionsState(selectedDate: DateTime.now())) {
     _transactionsRepository.initTransactions();
     _transactionsSubscription =
         _transactionsRepository.transactions.listen((transactions) {
@@ -41,10 +41,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     });
   }
 
-  Future<void> _onBudgetChanged(Budget budget) async {
-    final sections = _recalculateSections(accounts: budget.accountList);
-    emit(state.copyWith(sectionsSum: sections));
-  }
+  Future<void> _onBudgetChanged(Budget budget) async {}
 
   Future<void> _onTransactionsChanged(List<ITransaction> transactions) async {
     emit(state.copyWith(status: TransactionsStatus.loading));
@@ -74,93 +71,73 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       (a, b) => a.dateTime.compareTo(b.dateTime),
     );
 
-    final trans = transactions
-        .where((tr) => tr.isTransaction())
-        .map((e) => e as Transaction)
-        .toList();
-    final sectionsSum = _recalculateSections(transactions: trans);
-    final summaries = _getSummariesByCategory(transactions: trans);
-
     emit(state.copyWith(
-        transactions: trans,
         status: TransactionsStatus.success,
-        sectionsSum: sectionsSum,
-        summaryList: summaries,
-        transactionList: trTiles));
+        summaryList: _switchSummaries(trTiles),
+        transactionTiles: trTiles));
   }
+
+  List<SummaryTile> _switchSummaries([List<TransactionTile>? transactionTiles]) => switch (state.tab) {
+    HomeTab.accounts => _getSummariesByAccounts(transactionTiles: transactionTiles ?? state.transactionTiles),
+    HomeTab.expenses =>
+        _getSummariesByCategory(
+            transactionTiles: (transactionTiles ?? state.transactionTiles)
+                .where((tr) => tr.type == TransactionType.EXPENSE)
+                .toList()),
+    HomeTab.income =>
+        _getSummariesByCategory(
+            transactionTiles: (transactionTiles ?? state.transactionTiles)
+                .where((tr) => tr.type == TransactionType.INCOME)
+                .toList()),
+  };
 
   List<SummaryTile> _getSummariesByCategory(
-      {required List<Transaction> transactions}) {
-    final groupedTrByCat =
-        groupBy(transactions, (Transaction tr) => tr.categoryId!);
-
+      {required List<TransactionTile> transactionTiles}) {
     List<SummaryTile> summaries = [];
+    final transactions =
+        transactionTiles.where((tr) => tr.toAccount == null).toList();
+    final groupedTrByCat =
+        groupBy(transactions, (TransactionTile tr) => tr.category!);
 
     groupedTrByCat.forEach((key, value) {
-      final cat =
-          _budgetRepository.getCategories().where((cat) => cat.id == key).first;
       final double sum = value.fold<double>(
-          0.0, (previousValue, element) => previousValue + element.amount!);
-      if (cat.type.name == state.tab.name) {
-        summaries.add(SummaryTile(
-            id: cat.id,
-            name: cat.name,
-            total: sum,
-            iconCodePoint: cat.iconCode));
-      }
+          0.0, (previousValue, element) => previousValue + element.amount);
+
+      summaries.add(SummaryTile(
+          id: key.id,
+          name: key.name,
+          total: sum,
+          transactionTiles: value,
+          iconCodePoint: key.iconCode));
     });
     return summaries;
   }
 
-  Future<List<SummaryTile>> _getSummariesByAccounts() async {
-    final groupedAccByCat = groupBy(
-        _budgetRepository.getAccounts(), (Account acc) => acc.categoryId);
-
-    double allTotal = 0;
+  List<SummaryTile> _getSummariesByAccounts(
+      {required List<TransactionTile> transactionTiles}) {
     List<SummaryTile> summaries = [];
 
-    groupedAccByCat.forEach((key, value) {
-      final cat =
-          _budgetRepository.getCategories().where((cat) => cat.id == key).first;
-      final double sum = value.fold<double>(
-          0.0, (previousValue, element) => previousValue + element.balance);
-      allTotal = allTotal + sum;
+    _budgetRepository.getAccounts().forEach((acc) {
       summaries.add(SummaryTile(
-          id: cat.id, name: cat.name, total: sum, iconCodePoint: cat.iconCode));
+          id: acc.id,
+          name: acc.name,
+          total: acc.balance,
+          transactionTiles: transactionTiles
+              .where((tr) =>
+                  tr.toAccount == acc.id || tr.fromAccount?.id == acc.id)
+              .toList(),
+          iconCodePoint:
+              _budgetRepository.getCategoryById(acc.categoryId).iconCode));
     });
 
     return summaries;
-  }
-
-  Map<String, double> _recalculateSections(
-      {List<Transaction>? transactions, List<Account>? accounts}) {
-    final groupedTransactions = groupBy(
-      transactions ?? state.transactions,
-      (Transaction p0) => p0.type,
-    );
-    final double expSum = groupedTransactions[TransactionType.EXPENSE]
-            ?.fold<double>(0,
-                (previousValue, element) => previousValue + element.amount!) ??
-        0;
-    final double incSum = groupedTransactions[TransactionType.INCOME]
-            ?.fold<double>(0,
-                (previousValue, element) => previousValue + element.amount!) ??
-        0;
-    final double accSum = (_budgetRepository.getAccounts())
-        .where((acc) => acc.includeInTotal)
-        .fold<double>(
-            0.0, (previousValue, element) => previousValue + element.balance);
-    return {'expenses': expSum, 'incomes': incSum, 'accounts': accSum};
   }
 
   Future<void> setTab(int tabIndex) async {
     emit(state.copyWith(
         status: TransactionsStatus.loading, tab: HomeTab.values[tabIndex]));
-    final summaries = tabIndex == HomeTab.accounts.index
-        ? await _getSummariesByAccounts()
-        : _getSummariesByCategory(transactions: state.transactions);
     emit(state.copyWith(
-        status: TransactionsStatus.success, summaryList: summaries));
+        status: TransactionsStatus.success, summaryList: _switchSummaries()));
   }
 
   Future<void> changeDate(DateTime dateTime) async {
@@ -175,11 +152,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     summaryList[index] =
         summaryList[index].copyWith(isExpanded: !summaryList[index].isExpanded);
     emit(state.copyWith(summaryList: summaryList));
-  }
-
-  Future<void> filterChanged({required TransactionsViewFilter filter}) async {
-    emit(state.copyWith(filter: filter));
-    // _onSomethingChanged();
   }
 
   Future<void> deleteTransaction({required String transactionId}) async {

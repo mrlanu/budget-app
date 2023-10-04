@@ -1,4 +1,3 @@
-import 'package:budget_app/accounts/widgets/accounts_summaries.dart';
 import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
@@ -75,9 +74,7 @@ class HomeMobileView extends StatelessWidget {
                 drawer: MainDrawer(),
                 floatingActionButton:
                     HomeFloatingActionButton(selectedTab: state.tab),
-                body: state.tab == HomeTab.accounts
-                        ? AccountsSummaries()
-                        : CategorySummaries(),
+                body: CategorySummaries(),
                 bottomNavigationBar: HomeBottomNavBar(
                     selectedTab: state.tab, sectionsSum: state.sectionsSum)));
       }),

@@ -1,4 +1,3 @@
-import 'package:budget_app/accounts/widgets/accounts_summaries.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
@@ -140,9 +139,7 @@ class HomeViewDesktop extends StatelessWidget {
                                   child: state.status == TransactionsStatus.loading
                                       ? Center(
                                           child: CircularProgressIndicator())
-                                      : state.tab == HomeTab.accounts
-                                          ? AccountsSummaries()
-                                          : CategorySummaries(),
+                                      : CategorySummaries(),
                                 ),
                               )
                             ],
@@ -184,7 +181,7 @@ class HomeViewDesktop extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(15))),
                         child: HomeBottomNavBar(
                             //selectedTab: state.tab,
-                            sectionsSum: state.sectionsSum),
+                            sectionsSum: context.read<HomeCubit>().state.sectionsSum),
                       ),
                     )
                   ],
