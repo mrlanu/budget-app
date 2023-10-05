@@ -33,12 +33,9 @@ extension FirestoreX on firestore.FirebaseFirestore {
     final batch = firestore.FirebaseFirestore.instance.batch();
     final transactionsRef = await budgetTransactions();
     final updatedBudget = _updateBudgetOnTransfer(
-        transfer: transfer,
-        editedTransfer: editedTransfer,
-        budget: budget);
+        transfer: transfer, editedTransfer: editedTransfer, budget: budget);
     batch.set(
-        transactionsRef
-            .doc(editedTransfer != null ? editedTransfer.id : null),
+        transactionsRef.doc(editedTransfer != null ? editedTransfer.id : null),
         transfer.toFirestore());
     batch.set(await userBudget(), updatedBudget.toFirestore());
     batch.commit();
@@ -64,6 +61,22 @@ extension FirestoreX on firestore.FirebaseFirestore {
         .collection('budgets')
         .doc(budgetId)
         .collection('transactions');
+  }
+
+  Future<firestore.Query<Map<String, dynamic>>> budgetTransactionsByDate(
+      DateTime dateTime) async {
+    final userId = await getUserId();
+    final budgetId = await getCurrentBudgetId();
+    return await firestore.FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('budgets')
+        .doc(budgetId)
+        .collection('transactions')
+        .where('date',
+        isGreaterThanOrEqualTo: firestore.Timestamp.fromDate(
+            DateTime(dateTime.year, dateTime.month)),
+        isLessThan: firestore.Timestamp.fromDate(DateTime(dateTime.year, dateTime.month + 1)));
   }
 
   Budget _updateBudgetOnTransaction(
@@ -106,8 +119,8 @@ extension FirestoreX on firestore.FirebaseFirestore {
 
   Budget _updateBudgetOnTransfer(
       {required Transfer transfer,
-        TransactionTile? editedTransfer,
-        required Budget budget}) {
+      TransactionTile? editedTransfer,
+      required Budget budget}) {
     List<Account> updatedAccounts = [];
 
     //find the acc from editedTransaction and return amount
@@ -115,16 +128,14 @@ extension FirestoreX on firestore.FirebaseFirestore {
     if (editedTransfer != null) {
       updatedAccounts = budget.accountList.map((acc) {
         if (acc.id == editedTransfer.fromAccount!.id) {
-          return acc.copyWith(
-              balance: acc.balance + editedTransfer.amount);
+          return acc.copyWith(balance: acc.balance + editedTransfer.amount);
         } else {
           return acc;
         }
       }).toList();
       updatedAccounts = updatedAccounts.map((acc) {
         if (acc.id == editedTransfer.toAccount!.id) {
-          return acc.copyWith(
-              balance: acc.balance - editedTransfer.amount);
+          return acc.copyWith(balance: acc.balance - editedTransfer.amount);
         } else {
           return acc;
         }
@@ -135,16 +146,14 @@ extension FirestoreX on firestore.FirebaseFirestore {
 
     updatedAccounts = updatedAccounts.map((acc) {
       if (acc.id == transfer.fromAccountId) {
-        return acc.copyWith(
-            balance: acc.balance - transfer.amount);
+        return acc.copyWith(balance: acc.balance - transfer.amount);
       } else {
         return acc;
       }
     }).toList();
     updatedAccounts = updatedAccounts.map((acc) {
       if (acc.id == transfer.toAccountId) {
-        return acc.copyWith(
-            balance: acc.balance + transfer.amount);
+        return acc.copyWith(balance: acc.balance + transfer.amount);
       } else {
         return acc;
       }

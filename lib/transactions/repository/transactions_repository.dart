@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:budget_app/budgets/budgets.dart';
@@ -13,7 +14,7 @@ import 'package:rxdart/rxdart.dart';
 import '../../constants/api.dart';
 
 abstract class TransactionsRepository {
-  void initTransactions();
+  void initTransactions(DateTime dateTime);
 
   Stream<List<ITransaction>> get transactions;
 
@@ -46,27 +47,29 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       BehaviorSubject<List<Transfer>>.seeded(const []);
 
   final cloudFirestore.FirebaseFirestore _firebaseFirestore;
+  StreamSubscription<cloudFirestore.QuerySnapshot<Map<String, dynamic>>>? _fireSubscription;
 
   TransactionsRepositoryImpl(
       {cloudFirestore.FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore =
             firebaseFirestore ?? cloudFirestore.FirebaseFirestore.instance {}
 
-  void initTransactions() async =>
-      (await _firebaseFirestore.budgetTransactions())
-          .snapshots()
-          .listen((event) {
-        final transactions = event.docs.map(
-          (e) {
-            if (e.data()['type'] != null) {
-              return Transaction.fromFirestore(e);
-            } else {
-              return Transfer.fromFirestore(e);
-            }
-          },
-        ).toList();
-        _transactionsStreamController.add(transactions);
-      });
+  void initTransactions(DateTime dateTime) async {
+    await _fireSubscription?.cancel();
+    final snapshots = (await _firebaseFirestore.budgetTransactionsByDate(dateTime)).snapshots();
+    _fireSubscription = snapshots.listen((event) {
+      final transactions = event.docs.map(
+            (e) {
+          if (e.data()['type'] != null) {
+            return Transaction.fromFirestore(e);
+          } else {
+            return Transfer.fromFirestore(e);
+          }
+        },
+      ).toList();
+      _transactionsStreamController.add(transactions);
+    });
+  }
 
   @override
   Stream<List<ITransaction>> get transactions =>

@@ -89,12 +89,12 @@ class AuthenticationRepository {
         .set(User(id: user.uid).toFirestore());
   }
 
-  Future<User> getUserFromFirestore(String? userId) {
-    return _firestore.collection('users').doc(userId).get().then((snap) {
-      if (snap.exists) {
-        return User.fromFirestore(snap);
-      }
-      return User.empty;
-    });
+  Future<User> getUserFromFirestore(String? userId) async {
+    if (userId == null) return User.empty;
+    final snap = await _firestore.collection('users').doc(userId).get();
+    if (snap.exists) {
+      return User.fromFirestore(snap);
+    }
+    return User.empty;
   }
 }

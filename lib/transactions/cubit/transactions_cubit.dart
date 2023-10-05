@@ -31,7 +31,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   })  : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
         super(TransactionsState(selectedDate: DateTime.now())) {
-    _transactionsRepository.initTransactions();
+    _transactionsRepository.initTransactions(DateTime.now());
     _transactionsSubscription =
         _transactionsRepository.transactions.listen((transactions) {
       _onTransactionsChanged(transactions);
@@ -143,8 +143,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> changeDate(DateTime dateTime) async {
     emit(state.copyWith(
         status: TransactionsStatus.loading, selectedDate: dateTime));
-    //_transactionsRepository.fetchTransactions(dateTime: dateTime);
-    //_transactionsRepository.fetchTransfers(dateTime: dateTime);
+    _transactionsRepository.initTransactions(dateTime);
   }
 
   Future<void> changeExpanded(int index) async {

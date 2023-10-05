@@ -52,7 +52,7 @@ class Transfer extends Equatable implements ITransaction {
     final data = snapshot.data();
     return Transfer(
       id: snapshot.id,
-      date: DateTime.parse(data?['date'] as String),
+      date: (data?['date'] as Timestamp).toDate(),
       fromAccountId: data?['fromAccountId'] as String,
       toAccountId: data?['toAccountId'] as String,
       amount: (data?['amount'] as num).toDouble(),
@@ -61,7 +61,7 @@ class Transfer extends Equatable implements ITransaction {
   }
 
   Map<String, dynamic> toFirestore() => <String, dynamic>{
-    'date': date.toIso8601String(),
+    'date': Timestamp.fromDate(date),
     'fromAccountId': fromAccountId,
     'toAccountId': toAccountId,
     'amount': amount,

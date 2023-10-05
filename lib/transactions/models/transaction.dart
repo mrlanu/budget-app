@@ -38,7 +38,7 @@ class Transaction implements ITransaction{
     return Transaction(
       id: snapshot.id,
       date:
-      data?['date'] == null ? null : DateTime.parse(data?['date'] as String),
+      data?['date'] == null ? null : (data?['date'] as Timestamp).toDate(),
       type: $enumDecodeNullable(_$TransactionTypeEnumMap, data?['type']),
       description: data?['description'] as String? ?? '',
       amount: (data?['amount'] as num?)?.toDouble(),
@@ -49,7 +49,7 @@ class Transaction implements ITransaction{
   }
 
   Map<String, dynamic> toFirestore() => <String, dynamic>{
-    'date': date?.toIso8601String(),
+    'date': Timestamp.fromDate(date!),
     'type': _$TransactionTypeEnumMap[type],
     'description': description,
     'amount': amount,
