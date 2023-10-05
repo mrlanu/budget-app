@@ -77,19 +77,20 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         transactionTiles: trTiles));
   }
 
-  List<SummaryTile> _switchSummaries([List<TransactionTile>? transactionTiles]) => switch (state.tab) {
-    HomeTab.accounts => _getSummariesByAccounts(transactionTiles: transactionTiles ?? state.transactionTiles),
-    HomeTab.expenses =>
-        _getSummariesByCategory(
+  List<SummaryTile> _switchSummaries(
+          [List<TransactionTile>? transactionTiles]) =>
+      switch (state.tab) {
+        HomeTab.accounts => _getSummariesByAccounts(
+            transactionTiles: transactionTiles ?? state.transactionTiles),
+        HomeTab.expenses => _getSummariesByCategory(
             transactionTiles: (transactionTiles ?? state.transactionTiles)
                 .where((tr) => tr.type == TransactionType.EXPENSE)
                 .toList()),
-    HomeTab.income =>
-        _getSummariesByCategory(
+        HomeTab.income => _getSummariesByCategory(
             transactionTiles: (transactionTiles ?? state.transactionTiles)
                 .where((tr) => tr.type == TransactionType.INCOME)
                 .toList()),
-  };
+      };
 
   List<SummaryTile> _getSummariesByCategory(
       {required List<TransactionTile> transactionTiles}) {
@@ -124,7 +125,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
           total: acc.balance,
           transactionTiles: transactionTiles
               .where((tr) =>
-                  tr.toAccount == acc.id || tr.fromAccount?.id == acc.id)
+                  (tr.fromAccount!.id == acc.id &&
+                      tr.type != TransactionType.TRANSFER) ||
+                  (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
+                  (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
               .toList(),
           iconCodePoint:
               _budgetRepository.getCategoryById(acc.categoryId).iconCode));
