@@ -100,4 +100,7 @@ class Transfer extends Equatable implements ITransaction {
 
   @override
   bool isTransaction() => false;
+
+  @override
+  String get getId => id!;
 }

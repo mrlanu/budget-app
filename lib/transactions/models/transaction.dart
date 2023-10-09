@@ -84,4 +84,7 @@ class Transaction implements ITransaction{
 
   @override
   bool isTransaction() => true;
+
+  @override
+  String get getId => id!;
 }

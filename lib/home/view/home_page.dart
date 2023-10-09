@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../constants/constants.dart';
 import '../../transactions/cubit/transactions_cubit.dart';
-import '../../transactions/models/transactions_view_filter.dart';
 import '../../transactions/repository/transactions_repository.dart';
 
 class HomePage extends StatelessWidget {
@@ -29,9 +28,7 @@ class HomePage extends StatelessWidget {
       BlocProvider(
           create: (context) => TransactionsCubit(
               transactionsRepository: trRepo,
-              budgetRepository: budgetRepo,
-              filter: TransactionsViewFilter(
-                  type: TransactionsViewFilterTypes.allExpenses)))
+              budgetRepository: budgetRepo))
     ], child: isDisplayDesktop(context) ? HomeDesktopPage() : HomeMobilePage());
   }
 }

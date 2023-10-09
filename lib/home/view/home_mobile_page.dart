@@ -36,8 +36,7 @@ class HomeMobileView extends StatelessWidget {
             );
         }
       },
-      child: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) {
+      child: BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
         return SafeArea(
             child: Scaffold(
                 backgroundColor: BudgetColors.teal50,
@@ -64,7 +63,8 @@ class HomeMobileView extends StatelessWidget {
                                 transactionType: TransactionType.EXPENSE));
                             break;
                           case HomeTab.accounts:
-                            Navigator.of(context).push(AccountsListPage.route());
+                            Navigator.of(context)
+                                .push(AccountsListPage.route());
                             break;
                         }
                       },

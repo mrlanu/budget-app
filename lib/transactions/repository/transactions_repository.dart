@@ -34,7 +34,7 @@ abstract class TransactionsRepository {
     required DateTime dateTime,
   });
 
-  Future<Transaction> deleteTransaction(String transactionId);
+  Future<Transaction> deleteTransaction({required TransactionTile transaction, required Budget budget});
 
   Future<Transfer> deleteTransfer(String transferId);
 }
@@ -115,26 +115,8 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<Transaction> deleteTransaction(String transactionId) async {
-    /*final url = isTestMode
-        ? Uri.http(
-            baseURL, '/api/transactions', {'transactionId': transactionId})
-        : Uri.https(
-            baseURL, '/api/transactions', {'transactionId': transactionId});
-    final deletedTransactionResponse =
-        await http.delete(url, headers: await getHeaders());
-    final deletedTransaction =
-        Transaction.fromJson(jsonDecode(deletedTransactionResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    final transactionIndex =
-        transactions.indexWhere((t) => t.id == transactionId);
-    if (transactionIndex == -1) {
-      //throw TodoNotFoundException();
-    } else {
-      transactions.removeAt(transactionIndex);
-      _transactionsStreamController.add(transactions);
-    }
-    return deletedTransaction;*/
+  Future<Transaction> deleteTransaction({required TransactionTile transaction, required Budget budget}) async {
+    _firebaseFirestore.deleteTransaction(transaction: transaction, budget: budget);
     return Transaction();
   }
 

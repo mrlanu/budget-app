@@ -22,14 +22,47 @@ class CategorySummaries extends StatelessWidget {
       listeners: [
         BlocListener<homeCubit.HomeCubit, homeCubit.HomeState>(
           listenWhen: (previous, current) => previous.tab != current.tab,
-            listener: (context, state) {
-              BlocProvider.of<TransactionsCubit>(context).setTab(state.tab.index);
-            },),
+          listener: (context, state) {
+            BlocProvider.of<TransactionsCubit>(context).setTab(state.tab.index);
+          },
+        ),
         BlocListener<homeCubit.HomeCubit, homeCubit.HomeState>(
-          listenWhen: (previous, current) => previous.selectedDate != current.selectedDate,
-            listener: (context, state) {
-              BlocProvider.of<TransactionsCubit>(context).changeDate(state.selectedDate!);
-            },),
+          listenWhen: (previous, current) =>
+              previous.selectedDate != current.selectedDate,
+          listener: (context, state) {
+            BlocProvider.of<TransactionsCubit>(context)
+                .changeDate(state.selectedDate!);
+          },
+        ),
+        BlocListener<TransactionsCubit, TransactionsState>(
+          listenWhen: (previous, current) =>
+              previous.lastDeletedTransaction !=
+                  current.lastDeletedTransaction &&
+              current.lastDeletedTransaction != null,
+          listener: (context, state) {
+            final deletedTodo = state.lastDeletedTransaction!;
+            final messenger = ScaffoldMessenger.of(context);
+            messenger
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  backgroundColor: BudgetColors.red800,
+                  content: Text('Transaction has been deleted.',
+                      style: TextStyle(
+                          color: BudgetColors.teal900, fontWeight: FontWeight.bold, fontSize: 20)),
+                  action: SnackBarAction(
+                    textColor: Colors.black,
+                    label: 'UNDO',
+                    onPressed: () {
+                      messenger.hideCurrentSnackBar();
+                      context.read<TransactionsCubit>().undoDelete();
+                    },
+                  ),
+                ),
+              );
+          },
+          child: CategorySummaries(),
+        ),
       ],
       child: SingleChildScrollView(
           child: BlocBuilder<TransactionsCubit, TransactionsState>(
@@ -79,7 +112,8 @@ class CategorySummaries extends StatelessWidget {
                       ),
                     );
                   },
-                  body: TransactionsList(transactionTiles: tile.transactionTiles),
+                  body:
+                      TransactionsList(transactionTiles: tile.transactionTiles),
                   isExpanded: tile.isExpanded);
             }).toList(),
           );

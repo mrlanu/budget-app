@@ -7,7 +7,7 @@ import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../categories/models/category.dart';
+import '../../budgets/models/category.dart';
 import '../charts.dart';
 
 class CategoryChartPage extends StatelessWidget {

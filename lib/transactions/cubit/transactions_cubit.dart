@@ -27,7 +27,6 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     required TransactionsRepository transactionsRepository,
     required BudgetRepository budgetRepository,
-    required TransactionsViewFilter filter,
   })  : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
         super(TransactionsState(selectedDate: DateTime.now())) {
@@ -74,7 +73,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     emit(state.copyWith(
         status: TransactionsStatus.success,
         summaryList: _switchSummaries(trTiles),
-        transactionTiles: trTiles));
+        transactionTiles: trTiles,
+        transactions: transactions));
   }
 
   List<SummaryTile> _switchSummaries(
@@ -157,28 +157,26 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     emit(state.copyWith(summaryList: summaryList));
   }
 
-  Future<void> deleteTransaction({required String transactionId}) async {
-    final deletedTransaction =
-        await _transactionsRepository.deleteTransaction(transactionId);
-    emit(state.copyWith(lastDeletedTransaction: () => deletedTransaction));
-  }
-
-  Future<void> deleteTransfer({required String transferId}) async {
-    final deletedTransfer =
-        await _transactionsRepository.deleteTransfer(transferId);
-    emit(state.copyWith(lastDeletedTransfer: () => deletedTransfer));
+  Future<void> deleteTransaction(
+      {required TransactionTile transactionTile}) async {
+    await _transactionsRepository.deleteTransaction(
+        transaction: transactionTile,
+        budget: await _budgetRepository.budget.first);
+    final lastDeleted =
+        state.transactions.where((tr) => tr.getId == transactionTile.id).first;
+    final newSummary = _getSummariesByCategory(
+        transactionTiles: state.transactionTiles
+            .where((trT) => trT.id != transactionTile.id)
+            .toList());
+    emit(state.copyWith(summaryList: newSummary, lastDeletedTransaction: () => lastDeleted));
   }
 
   Future<void> undoDelete() async {
-    /*final transaction = state.lastDeletedTransaction;
-    final transfer = state.lastDeletedTransfer;
-    if (transaction == null) {
-      emit(state.copyWith(lastDeletedTransfer: () => null));
-      await _transactionsRepository.createTransfer(transfer!);
-    } else {
-      emit(state.copyWith(lastDeletedTransaction: () => null));
-      await _transactionsRepository.createTransaction(transaction);
-    }*/
+    if (state.lastDeletedTransaction!.isTransaction()) {
+      await _transactionsRepository.saveTransaction(
+          transaction: state.lastDeletedTransaction! as Transaction,
+          budget: await _budgetRepository.budget.first);
+    }
   }
 
   @override

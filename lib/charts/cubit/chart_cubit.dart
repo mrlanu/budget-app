@@ -2,10 +2,11 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../budgets/models/category.dart';
 
 part 'chart_state.dart';
 

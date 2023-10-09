@@ -1,4 +1,5 @@
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../budgets.dart';
@@ -6,7 +7,7 @@ import '../budgets.dart';
 part 'category.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Category {
+class Category extends Equatable {
   final String id;
   final String name;
   final int iconCode;
@@ -38,4 +39,7 @@ class Category {
         iconCode: iconCode ?? this.iconCode,
         subcategoryList: subcategoryList ?? this.subcategoryList);
   }
+
+  @override
+  List<Object?> get props => [id, name, subcategoryList];
 }

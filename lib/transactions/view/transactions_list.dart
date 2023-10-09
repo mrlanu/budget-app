@@ -18,67 +18,60 @@ class TransactionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionsCubit, TransactionsState>(
-      builder: (context, state) {
-        final maxHeight = h * 0.55;
-        return state.status == TransactionsStatus.loading
-            ? Center(child: CircularProgressIndicator())
-            : Container(
-                margin: EdgeInsets.only(bottom: 10),
-                height: transactionTiles.length * 80 > maxHeight
-                    ? maxHeight
-                    : transactionTiles.length * 80,
-                child: ListView.separated(
-                    itemCount: transactionTiles.length,
-                    itemBuilder: (context, index) {
-                      final tr = transactionTiles[transactionTiles.length - index - 1];
-                      return TransactionListTile(
-                        transactionTile: tr,
-                        onDismissed: (_) {
-                          final trCub = context.read<TransactionsCubit>();
-                          tr.type == TransactionType.TRANSFER
-                              ? trCub.deleteTransfer(transferId: tr.id)
-                              : trCub.deleteTransaction(transactionId: tr.id);
-                        },
-                        onTap: () => {
-                          if (tr.type == TransactionType.TRANSFER)
-                            {
-                              isDisplayDesktop(context)
-                                  ? context.read<TransferBloc>().add(
-                                      TransferFormLoaded(transactionTile: tr))
-                                  : Navigator.of(context).push(
-                                      TransferPage.route(transactionTile: tr),
-                                    )
-                            }
-                          else
-                            {
-                              isDisplayDesktop(context)
-                                  ? context.read<TransactionBloc>().add(
-                                        TransactionFormLoaded(
-                                            transactionType: tr.type,
-                                            transaction: tr,
-                                            date: context
-                                                .read<TransactionsCubit>()
-                                                .state
-                                                .selectedDate!),
-                                      )
-                                  : Navigator.of(context).push(
-                                      TransactionPage.route(
-                                          transaction: tr,
-                                          transactionType: tr.type,
-                                          date: context
-                                              .read<TransactionsCubit>()
-                                              .state
-                                              .selectedDate!),
-                                    )
-                            }
-                        },
-                      );
-                    },
-                    separatorBuilder: (context, index) =>
-                        Divider(indent: 30, endIndent: 30)),
-              );
-      },
+    final maxHeight = h * 0.55;
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      height: transactionTiles.length * 80 > maxHeight
+          ? maxHeight
+          : transactionTiles.length * 80,
+      child: ListView.separated(
+          itemCount: transactionTiles.length,
+          itemBuilder: (context, index) {
+            final tr = transactionTiles[transactionTiles.length - index - 1];
+            return TransactionListTile(
+              transactionTile: tr,
+              onDismissed: (_) {
+                final trCub = context.read<TransactionsCubit>();
+                trCub.deleteTransaction(transactionTile: tr);
+              },
+              onTap: () => {
+                if (tr.type == TransactionType.TRANSFER)
+                  {
+                    isDisplayDesktop(context)
+                        ? context
+                            .read<TransferBloc>()
+                            .add(TransferFormLoaded(transactionTile: tr))
+                        : Navigator.of(context).push(
+                            TransferPage.route(transactionTile: tr),
+                          )
+                  }
+                else
+                  {
+                    isDisplayDesktop(context)
+                        ? context.read<TransactionBloc>().add(
+                              TransactionFormLoaded(
+                                  transactionType: tr.type,
+                                  transaction: tr,
+                                  date: context
+                                      .read<TransactionsCubit>()
+                                      .state
+                                      .selectedDate!),
+                            )
+                        : Navigator.of(context).push(
+                            TransactionPage.route(
+                                transaction: tr,
+                                transactionType: tr.type,
+                                date: context
+                                    .read<TransactionsCubit>()
+                                    .state
+                                    .selectedDate!),
+                          )
+                  }
+              },
+            );
+          },
+          separatorBuilder: (context, index) =>
+              Divider(indent: 30, endIndent: 30)),
     );
   }
 }

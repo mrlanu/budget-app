@@ -5,15 +5,17 @@ enum TransactionsStatus { initial, loading, success, failure }
 class TransactionsState extends Equatable {
   final TransactionsStatus status;
   final List<TransactionTile> transactionTiles;
+  final List<ITransaction> transactions;
   final List<SummaryTile> summaryList;
   final DateTime? selectedDate;
   final HomeTab tab;
   final String? errorMessage;
-  final Transaction? lastDeletedTransaction;
+  final ITransaction? lastDeletedTransaction;
 
   const TransactionsState({
     this.status = TransactionsStatus.initial,
     this.transactionTiles = const [],
+    this.transactions = const [],
     this.summaryList = const [],
     this.selectedDate,
     this.tab = HomeTab.expenses,
@@ -24,17 +26,18 @@ class TransactionsState extends Equatable {
   TransactionsState copyWith({
     TransactionsStatus? status,
     List<TransactionTile>? transactionTiles,
+    List<ITransaction>? transactions,
     TransactionsViewFilter? filter,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,
-    Transaction? Function()? lastDeletedTransaction,
-    Transfer? Function()? lastDeletedTransfer,
+    ITransaction? Function()? lastDeletedTransaction,
   }) {
     return TransactionsState(
       status: status ?? this.status,
       transactionTiles: transactionTiles ?? this.transactionTiles,
+      transactions: transactions ?? this.transactions,
       summaryList: summaryList ?? this.summaryList,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
@@ -53,6 +56,6 @@ class TransactionsState extends Equatable {
         selectedDate,
         tab,
         errorMessage,
-        lastDeletedTransaction,
+    lastDeletedTransaction
       ];
 }

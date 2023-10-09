@@ -14,7 +14,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
       required Budget budget}) async {
     final batch = firestore.FirebaseFirestore.instance.batch();
     final transactionsRef = await budgetTransactions();
-    final updatedBudget = _updateBudgetOnTransaction(
+    final updatedBudget = _updateBudgetOnAddOrEditTransaction(
         transaction: transaction,
         editedTransaction: editedTransaction,
         budget: budget);
@@ -22,6 +22,17 @@ extension FirestoreX on firestore.FirebaseFirestore {
         transactionsRef
             .doc(editedTransaction != null ? editedTransaction.id : null),
         transaction.toFirestore());
+    batch.set(await userBudget(), updatedBudget.toFirestore());
+    batch.commit();
+  }
+
+  Future<void> deleteTransaction(
+      {required TransactionTile transaction, required Budget budget}) async {
+    final batch = firestore.FirebaseFirestore.instance.batch();
+    final transactionsRef = await budgetTransactions();
+    final updatedBudget = _updateBudgetOnDeleteTransaction(
+        transaction: transaction, budget: budget);
+    batch.delete(transactionsRef.doc(transaction.id));
     batch.set(await userBudget(), updatedBudget.toFirestore());
     batch.commit();
   }
@@ -79,7 +90,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
         isLessThan: firestore.Timestamp.fromDate(DateTime(dateTime.year, dateTime.month + 1)));
   }
 
-  Budget _updateBudgetOnTransaction(
+  Budget _updateBudgetOnAddOrEditTransaction(
       {required Transaction transaction,
       TransactionTile? editedTransaction,
       required Budget budget}) {
@@ -109,6 +120,24 @@ extension FirestoreX on firestore.FirebaseFirestore {
                 (transaction.type == TransactionType.EXPENSE
                     ? -transaction.amount!
                     : transaction.amount!));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    return budget.copyWith(accountList: updatedAccounts);
+  }
+
+  Budget _updateBudgetOnDeleteTransaction(
+      {required TransactionTile transaction, required Budget budget}) {
+    List<Account> updatedAccounts = [...budget.accountList];
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? transaction.amount
+                    : -transaction.amount));
       } else {
         return acc;
       }
