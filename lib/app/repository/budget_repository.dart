@@ -41,7 +41,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
   BudgetRepositoryImpl({FirebaseFirestore? firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance {}
 
-  Future<void> init() async => (await _firebaseFirestore.userBudget())
+  Future<void> init() async => (await _firebaseFirestore.getRefToCurrentBudget())
           .snapshots()
           .map((event) => Budget.fromFirestore(event))
           .listen((budget) {
@@ -135,7 +135,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
 
   @override
   Future<void> saveBudget(Budget budget) async =>
-      (await _firebaseFirestore.userBudget()).set(budget.toFirestore());
+      (await _firebaseFirestore.getRefToCurrentBudget()).set(budget.toFirestore());
 
   @override
   Future<void> createBeginningBudget({required String userId}) async {

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
@@ -8,17 +7,12 @@ import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as cloudFirestore;
-import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
-
-import '../../constants/api.dart';
 
 abstract class TransactionsRepository {
   void initTransactions(DateTime dateTime);
 
   Stream<List<ITransaction>> get transactions;
-
-  Stream<List<Transfer>> getTransfers();
 
   Future<void> saveTransaction(
       {required Transaction transaction,
@@ -30,20 +24,13 @@ abstract class TransactionsRepository {
       required Budget budget,
       TransactionTile? editedTransaction});
 
-  Future<void> fetchTransfers({
-    required DateTime dateTime,
-  });
-
-  Future<Transaction> deleteTransaction(
+  Future<Transaction> deleteTransactionOrTransfer(
       {required TransactionTile transaction, required Budget budget});
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
   final _transactionsStreamController =
       BehaviorSubject<List<ITransaction>>.seeded(const []);
-
-  final _transfersStreamController =
-      BehaviorSubject<List<Transfer>>.seeded(const []);
 
   final cloudFirestore.FirebaseFirestore _firebaseFirestore;
   StreamSubscription<cloudFirestore.QuerySnapshot<Map<String, dynamic>>>?
@@ -57,7 +44,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   void initTransactions(DateTime dateTime) async {
     await _fireSubscription?.cancel();
     final snapshots =
-        (await _firebaseFirestore.budgetTransactionsByDate(dateTime))
+        (await _firebaseFirestore.queryTransactionsByDate(dateTime))
             .snapshots();
     _fireSubscription = snapshots.listen((event) {
       final transactions = event.docs.map(
@@ -76,10 +63,6 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   @override
   Stream<List<ITransaction>> get transactions =>
       _transactionsStreamController.asBroadcastStream();
-
-  @override
-  Stream<List<Transfer>> getTransfers() =>
-      _transfersStreamController.asBroadcastStream();
 
   @override
   Future<void> saveTransaction(
@@ -101,24 +84,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<void> fetchTransfers({
-    required DateTime dateTime,
-  }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers',
-            {'budgetId': await getBudgetId(), 'date': dateTime.toString()})
-        : Uri.https(baseURL, '/api/transfers',
-            {'budgetId': await getBudgetId(), 'date': dateTime.toString()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
-    _transfersStreamController.add(result);
-  }
-
-  @override
-  Future<Transaction> deleteTransaction(
+  Future<Transaction> deleteTransactionOrTransfer(
       {required TransactionTile transaction, required Budget budget}) async {
     _firebaseFirestore.deleteTransaction(
         transaction: transaction, budget: budget);

@@ -159,7 +159,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> deleteTransaction(
       {required TransactionTile transactionTile}) async {
-    await _transactionsRepository.deleteTransaction(
+    await _transactionsRepository.deleteTransactionOrTransfer(
         transaction: transactionTile,
         budget: await _budgetRepository.budget.first);
     final lastDeleted =

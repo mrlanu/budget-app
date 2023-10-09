@@ -13,7 +13,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
       TransactionTile? editedTransaction,
       required Budget budget}) async {
     final batch = firestore.FirebaseFirestore.instance.batch();
-    final transactionsRef = await budgetTransactions();
+    final transactionsRef = await getRefToAllBudgetTransactions();
     final updatedBudget = _updateBudgetOnAddOrEditTransaction(
         transaction: transaction,
         editedTransaction: editedTransaction,
@@ -22,21 +22,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
         transactionsRef
             .doc(editedTransaction != null ? editedTransaction.id : null),
         transaction.toFirestore());
-    batch.set(await userBudget(), updatedBudget.toFirestore());
-    batch.commit();
-  }
-
-  Future<void> deleteTransaction(
-      {required TransactionTile transaction, required Budget budget}) async {
-    final batch = firestore.FirebaseFirestore.instance.batch();
-    final transactionsRef = await budgetTransactions();
-    final updatedBudget = transaction.type != TransactionType.TRANSFER
-        ? _updateBudgetOnDeleteTransaction(
-            transaction: transaction, budget: budget)
-        : _updateBudgetOnDeleteTransfer(
-            transaction: transaction, budget: budget);
-    batch.delete(transactionsRef.doc(transaction.id));
-    batch.set(await userBudget(), updatedBudget.toFirestore());
+    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
     batch.commit();
   }
 
@@ -45,17 +31,31 @@ extension FirestoreX on firestore.FirebaseFirestore {
       TransactionTile? editedTransfer,
       required Budget budget}) async {
     final batch = firestore.FirebaseFirestore.instance.batch();
-    final transactionsRef = await budgetTransactions();
+    final transactionsRef = await getRefToAllBudgetTransactions();
     final updatedBudget = _updateBudgetOnTransfer(
         transfer: transfer, editedTransfer: editedTransfer, budget: budget);
     batch.set(
         transactionsRef.doc(editedTransfer != null ? editedTransfer.id : null),
         transfer.toFirestore());
-    batch.set(await userBudget(), updatedBudget.toFirestore());
+    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
     batch.commit();
   }
 
-  Future<firestore.DocumentReference<Map<String, dynamic>>> userBudget() async {
+  Future<void> deleteTransaction(
+      {required TransactionTile transaction, required Budget budget}) async {
+    final batch = firestore.FirebaseFirestore.instance.batch();
+    final transactionsRef = await getRefToAllBudgetTransactions();
+    final updatedBudget = transaction.type != TransactionType.TRANSFER
+        ? _updateBudgetOnDeleteTransaction(
+        transaction: transaction, budget: budget)
+        : _updateBudgetOnDeleteTransfer(
+        transaction: transaction, budget: budget);
+    batch.delete(transactionsRef.doc(transaction.id));
+    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
+    batch.commit();
+  }
+
+  Future<firestore.DocumentReference<Map<String, dynamic>>> getRefToCurrentBudget() async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();
     return firestore.FirebaseFirestore.instance
@@ -66,7 +66,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
   }
 
   Future<firestore.CollectionReference<Map<String, dynamic>>>
-      budgetTransactions() async {
+      getRefToAllBudgetTransactions() async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();
     return await firestore.FirebaseFirestore.instance
@@ -77,7 +77,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
         .collection('transactions');
   }
 
-  Future<firestore.Query<Map<String, dynamic>>> budgetTransactionsByDate(
+  Future<firestore.Query<Map<String, dynamic>>> queryTransactionsByDate(
       DateTime dateTime) async {
     final userId = await getUserId();
     final budgetId = await getCurrentBudgetId();

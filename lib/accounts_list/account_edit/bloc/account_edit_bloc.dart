@@ -23,7 +23,10 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(AccountCategoriesChanged(categories: budget.categoryList));
+      add(AccountCategoriesChanged(
+          categories: budget.categoryList
+              .where((cat) => cat.type == TransactionType.ACCOUNT)
+              .toList()));
     });
   }
 
@@ -47,8 +50,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
     if (event.account != null) {
       Account account = event.account!;
-      final category =
-          _budgetRepository.getCategoryById(account.categoryId);
+      final category = _budgetRepository.getCategoryById(account.categoryId);
       emit(state.copyWith(
           id: account.id,
           category: category,
