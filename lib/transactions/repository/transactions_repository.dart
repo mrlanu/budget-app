@@ -34,9 +34,8 @@ abstract class TransactionsRepository {
     required DateTime dateTime,
   });
 
-  Future<Transaction> deleteTransaction({required TransactionTile transaction, required Budget budget});
-
-  Future<Transfer> deleteTransfer(String transferId);
+  Future<Transaction> deleteTransaction(
+      {required TransactionTile transaction, required Budget budget});
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
@@ -47,7 +46,8 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       BehaviorSubject<List<Transfer>>.seeded(const []);
 
   final cloudFirestore.FirebaseFirestore _firebaseFirestore;
-  StreamSubscription<cloudFirestore.QuerySnapshot<Map<String, dynamic>>>? _fireSubscription;
+  StreamSubscription<cloudFirestore.QuerySnapshot<Map<String, dynamic>>>?
+      _fireSubscription;
 
   TransactionsRepositoryImpl(
       {cloudFirestore.FirebaseFirestore? firebaseFirestore})
@@ -56,10 +56,12 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   void initTransactions(DateTime dateTime) async {
     await _fireSubscription?.cancel();
-    final snapshots = (await _firebaseFirestore.budgetTransactionsByDate(dateTime)).snapshots();
+    final snapshots =
+        (await _firebaseFirestore.budgetTransactionsByDate(dateTime))
+            .snapshots();
     _fireSubscription = snapshots.listen((event) {
       final transactions = event.docs.map(
-            (e) {
+        (e) {
           if (e.data()['type'] != null) {
             return Transaction.fromFirestore(e);
           } else {
@@ -94,7 +96,8 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       {required Transfer transfer,
       required Budget budget,
       TransactionTile? editedTransaction}) async {
-    _firebaseFirestore.saveTransfer(transfer: transfer, budget: budget, editedTransfer: editedTransaction);
+    _firebaseFirestore.saveTransfer(
+        transfer: transfer, budget: budget, editedTransfer: editedTransaction);
   }
 
   @override
@@ -115,28 +118,10 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<Transaction> deleteTransaction({required TransactionTile transaction, required Budget budget}) async {
-    _firebaseFirestore.deleteTransaction(transaction: transaction, budget: budget);
+  Future<Transaction> deleteTransaction(
+      {required TransactionTile transaction, required Budget budget}) async {
+    _firebaseFirestore.deleteTransaction(
+        transaction: transaction, budget: budget);
     return Transaction();
-  }
-
-  @override
-  Future<Transfer> deleteTransfer(String transferId) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers', {'transferId': transferId})
-        : Uri.https(baseURL, '/api/transfers', {'transferId': transferId});
-    final deletedTransferResponse =
-        await http.delete(url, headers: await getHeaders());
-    final deletedTransfer =
-        Transfer.fromJson(jsonDecode(deletedTransferResponse.body));
-    final transfers = [..._transfersStreamController.value];
-    final transferIndex = transfers.indexWhere((t) => t.id == transferId);
-    if (transferIndex == -1) {
-      //throw TodoNotFoundException();
-    } else {
-      transfers.removeAt(transferIndex);
-      _transfersStreamController.add(transfers);
-    }
-    return deletedTransfer;
   }
 }

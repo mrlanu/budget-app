@@ -168,13 +168,18 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         transactionTiles: state.transactionTiles
             .where((trT) => trT.id != transactionTile.id)
             .toList());
-    emit(state.copyWith(summaryList: newSummary, lastDeletedTransaction: () => lastDeleted));
+    emit(state.copyWith(
+        summaryList: newSummary, lastDeletedTransaction: () => lastDeleted));
   }
 
   Future<void> undoDelete() async {
     if (state.lastDeletedTransaction!.isTransaction()) {
       await _transactionsRepository.saveTransaction(
           transaction: state.lastDeletedTransaction! as Transaction,
+          budget: await _budgetRepository.budget.first);
+    } else {
+      await _transactionsRepository.saveTransfer(
+          transfer: state.lastDeletedTransaction! as Transfer,
           budget: await _budgetRepository.budget.first);
     }
   }

@@ -30,8 +30,11 @@ extension FirestoreX on firestore.FirebaseFirestore {
       {required TransactionTile transaction, required Budget budget}) async {
     final batch = firestore.FirebaseFirestore.instance.batch();
     final transactionsRef = await budgetTransactions();
-    final updatedBudget = _updateBudgetOnDeleteTransaction(
-        transaction: transaction, budget: budget);
+    final updatedBudget = transaction.type != TransactionType.TRANSFER
+        ? _updateBudgetOnDeleteTransaction(
+            transaction: transaction, budget: budget)
+        : _updateBudgetOnDeleteTransfer(
+            transaction: transaction, budget: budget);
     batch.delete(transactionsRef.doc(transaction.id));
     batch.set(await userBudget(), updatedBudget.toFirestore());
     batch.commit();
@@ -85,9 +88,10 @@ extension FirestoreX on firestore.FirebaseFirestore {
         .doc(budgetId)
         .collection('transactions')
         .where('date',
-        isGreaterThanOrEqualTo: firestore.Timestamp.fromDate(
-            DateTime(dateTime.year, dateTime.month)),
-        isLessThan: firestore.Timestamp.fromDate(DateTime(dateTime.year, dateTime.month + 1)));
+            isGreaterThanOrEqualTo: firestore.Timestamp.fromDate(
+                DateTime(dateTime.year, dateTime.month)),
+            isLessThan: firestore.Timestamp.fromDate(
+                DateTime(dateTime.year, dateTime.month + 1)));
   }
 
   Budget _updateBudgetOnAddOrEditTransaction(
@@ -120,6 +124,30 @@ extension FirestoreX on firestore.FirebaseFirestore {
                 (transaction.type == TransactionType.EXPENSE
                     ? -transaction.amount!
                     : transaction.amount!));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    return budget.copyWith(accountList: updatedAccounts);
+  }
+
+  Budget _updateBudgetOnDeleteTransfer(
+      {required TransactionTile transaction, required Budget budget}) {
+    List<Account> updatedAccounts = [];
+
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    updatedAccounts = budget.accountList.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(balance: acc.balance + transaction.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.toAccount!.id) {
+        return acc.copyWith(balance: acc.balance - transaction.amount);
       } else {
         return acc;
       }
