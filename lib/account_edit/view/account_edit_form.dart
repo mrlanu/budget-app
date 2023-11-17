@@ -28,19 +28,15 @@ class AccountEditDialog extends StatelessWidget {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              color: BudgetColors.teal50,
                             ),
                             padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
                             child: Column(
                               children: [
                                 Text(
                                   'New Account',
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
+                                  style: Theme.of(context)
                                           .textTheme
-                                          .titleLarge
-                                          ?.fontSize),
-                                ),
+                                          .titleLarge),
                                 SizedBox(
                                   height: 20,
                                 ),

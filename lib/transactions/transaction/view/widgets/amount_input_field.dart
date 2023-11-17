@@ -1,3 +1,4 @@
+import 'package:budget_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,9 +18,8 @@ class AmountInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.attach_money,
-              color: Theme.of(context).colorScheme.tertiary,
+              color: BudgetColors.accent,
             ),
-            border: OutlineInputBorder(),
             labelText: 'Amount',
             errorText:
             state.amount.displayError != null ? 'invalid amount' : null,

@@ -1,5 +1,6 @@
-import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,7 +58,9 @@ class _DebtControllerState extends State<DebtController> {
         final total =
             sumMinPayments + _parseString(_textEditingController.text);
         return Container(
-            color: BudgetColors.teal100,
+            color: BudgetTheme.isDarkMode(context)
+                ? BudgetColors.primary
+                : BudgetColors.lightContainer,
             padding: EdgeInsets.all(15),
             width: double.infinity,
             height: 80,
@@ -65,16 +68,16 @@ class _DebtControllerState extends State<DebtController> {
               children: [
                 Column(
                   children: [
-                    Text('min'),
+                    Text('min', style: Theme.of(context).textTheme.titleMedium),
                     Text('\$ ${sumMinPayments} +',
-                        style: Theme.of(context).textTheme.titleLarge)
+                        style: Theme.of(context).textTheme.titleMedium)
                   ],
                 ),
                 SizedBox(width: 15),
                 Expanded(
                   child: TextFormField(
                     keyboardType: TextInputType.number,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleMedium,
                     controller: _textEditingController,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(), labelText: 'extra'),
@@ -84,9 +87,9 @@ class _DebtControllerState extends State<DebtController> {
                 SizedBox(width: 15),
                 Column(
                   children: [
-                    Text('total'),
+                    Text('total', style: Theme.of(context).textTheme.titleMedium),
                     Text('= \$ $total',
-                        style: Theme.of(context).textTheme.titleLarge),
+                        style: Theme.of(context).textTheme.titleMedium),
                   ],
                 ),
               ],

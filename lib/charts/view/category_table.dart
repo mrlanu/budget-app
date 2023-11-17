@@ -1,3 +1,5 @@
+import 'package:budget_app/constants/colors.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +19,10 @@ class CategoryTable extends StatelessWidget {
           child: Column(
             children: [
               Table(
-                border: TableBorder.all(color: Colors.grey),
+                border: TableBorder.all(
+                    color: BudgetTheme.isDarkMode(context)
+                        ? BudgetColors.darkerGrey
+                        : Colors.grey),
                 columnWidths: const <int, TableColumnWidth>{
                   0: FlexColumnWidth(),
                   2: FlexColumnWidth(),
@@ -26,24 +31,23 @@ class CategoryTable extends StatelessWidget {
                 children: [
                   TableRow(
                       decoration: BoxDecoration(
-                          color: Colors.white60
-                      ),
+                          color: BudgetTheme.isDarkMode(context)
+                              ? BudgetColors.darkerGrey
+                              : Colors.white60),
                       children: [
-                    Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: TextStyle(fontSize: 18),
-                            'Date')),
-                    Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                            style: TextStyle(fontSize: 18),
-                            'Spent')),
-                  ]),
+                        Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                                style: Theme.of(context).textTheme.titleLarge,
+                                'Date')),
+                        Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                                style: Theme.of(context).textTheme.titleLarge,
+                                'Spent')),
+                      ]),
                   TableRow(
-                      decoration: BoxDecoration(
-                        color: Colors.white54
-                      ),
+                      decoration: BoxDecoration(color: Colors.white54),
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(5.0),
@@ -96,11 +100,9 @@ class CategoryTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: TextStyle(
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .fontSize),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium,
                                               '${e.date}'),
                                         ))),
                                 TableCell(
@@ -111,11 +113,9 @@ class CategoryTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: TextStyle(
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .fontSize),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium,
                                               '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
                               ],

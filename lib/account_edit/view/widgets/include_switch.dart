@@ -1,4 +1,6 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
+import 'package:budget_app/constants/colors.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,21 +14,19 @@ class IncludeSwitch extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Include in totals',
-              style: TextStyle(
-                  fontSize: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.fontSize),
-            ),
+            Text('Include in totals',
+                style: Theme.of(context).textTheme.titleLarge),
             SizedBox(width: 10),
             Switch(
+              activeColor: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.primary
+                  : BudgetColors.primary600,
               thumbIcon: _thumbIcon,
               value: state.isIncludeInTotals,
               onChanged: (bool value) {
-                context.read<AccountEditBloc>().add(
-                    AccountIncludeInTotalsChanged(value: value));
+                context
+                    .read<AccountEditBloc>()
+                    .add(AccountIncludeInTotalsChanged(value: value));
               },
             ),
           ],
@@ -37,8 +37,8 @@ class IncludeSwitch extends StatelessWidget {
 }
 
 final MaterialStateProperty<Icon?> _thumbIcon =
-MaterialStateProperty.resolveWith<Icon?>(
-      (Set<MaterialState> states) {
+    MaterialStateProperty.resolveWith<Icon?>(
+  (Set<MaterialState> states) {
     if (states.contains(MaterialState.selected)) {
       return const Icon(Icons.check);
     }

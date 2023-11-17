@@ -1,4 +1,4 @@
-import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
 import 'package:budget_app/transactions/transaction/view/widgets/amount_input_field.dart';
@@ -69,9 +69,8 @@ class _NotesInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
-              border: OutlineInputBorder(),
               labelText: 'Notes',
             ),
             onChanged: (description) => context.read<TransactionBloc>().add(
@@ -94,8 +93,8 @@ class _SubmitButton extends StatelessWidget {
                     state.category != null &&
                     state.subcategory != null &&
                     state.account != null
-                    ? BudgetColors.amber800
-                    : BudgetColors.grey400,
+                    ? BudgetColors.accent
+                    : BudgetColors.grey,
                 title: Center(
                   child: Text(
                     'Save',

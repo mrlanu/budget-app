@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/colors.dart';
+import 'package:budget_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../constants/api.dart';
 
@@ -98,7 +99,6 @@ class SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.titleLarge;
-    final theme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -117,8 +117,10 @@ class SummaryTile extends StatelessWidget {
                       Text('Income', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${income.toStringAsFixed(2)}',
-                          style:
-                              textStyle!.copyWith(color: BudgetColors.teal900)),
+                          style: textStyle!.copyWith(
+                              color: BudgetTheme.isDarkMode(context)
+                                  ? BudgetColors.lightContainer
+                                  : BudgetColors.primary)),
                     ],
                   ),
                   Divider(),
@@ -127,7 +129,7 @@ class SummaryTile extends StatelessWidget {
                       Text('Expenses', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${expenses.toStringAsFixed(2)}',
-                          style: textStyle.copyWith(color: theme.error)),
+                          style: textStyle.copyWith(color: BudgetColors.error)),
                     ],
                   ),
                   Divider(),
@@ -138,8 +140,10 @@ class SummaryTile extends StatelessWidget {
                       Text('\$ ${(income - expenses).toStringAsFixed(2)}',
                           style: textStyle.copyWith(
                               color: (income - expenses) < 0
-                                  ? theme.error
-                                  : BudgetColors.teal900)),
+                                  ? BudgetColors.error
+                                  : BudgetTheme.isDarkMode(context)
+                                  ? BudgetColors.lightContainer
+                                  : BudgetColors.primary)),
                     ],
                   )
                 ],

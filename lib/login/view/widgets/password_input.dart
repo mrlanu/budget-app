@@ -1,7 +1,8 @@
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
+import '../../../utils/utils.dart';
 import '../../cubit/login_cubit.dart';
 
 class PasswordInput extends StatelessWidget {
@@ -19,7 +20,9 @@ class PasswordInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.key,
-              color: BudgetColors.teal900,
+              color: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.accentDark
+                  : BudgetColors.primary,
             ),
             border: OutlineInputBorder(),
             labelText: 'Password',

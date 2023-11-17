@@ -1,3 +1,4 @@
+import 'package:budget_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -15,11 +16,10 @@ class DateInput extends StatelessWidget {
                 text: state.date != null
                     ? DateFormat('MM-dd-yyyy').format(state.date!)
                     : DateFormat('MM-dd-yyyy').format(DateTime.now())),
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+            decoration: InputDecoration(
                 icon: Icon(
                   Icons.calendar_today,
-                  color: Color(0xFFEAAA00),
+                  color: BudgetColors.accent,
                 ),
                 labelText: "Date"),
             readOnly: true,

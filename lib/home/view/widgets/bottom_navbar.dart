@@ -3,7 +3,7 @@ import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 import '../../../constants/constants.dart';
 import '../../../shared/models/section.dart';
 import '../../cubit/home_cubit.dart';
@@ -19,7 +19,6 @@ class HomeBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Container(
       height: 80,
       child: Theme(
@@ -28,7 +27,6 @@ class HomeBottomNavBar extends StatelessWidget {
           highlightColor: Colors.transparent,
         ),
         child: BottomNavigationBar(
-          backgroundColor: scheme.primary,
           currentIndex: selectedTab.index,
           onTap: (value) {
             context.read<HomeCubit>().setTab(value);
@@ -47,13 +45,13 @@ class HomeBottomNavBar extends StatelessWidget {
           elevation: 0,
           showSelectedLabels: true,
           showUnselectedLabels: false,
-          selectedItemColor: BudgetColors.amber800,
-          unselectedItemColor: scheme.surfaceVariant,
+          selectedItemColor: BudgetColors.accent,
+          unselectedItemColor: BudgetColors.light,
           items: [
             _buildBottomNavigationBarItem(
                 label: 'expenses',
                 icon: Icons.account_balance_wallet,
-                color: scheme.onPrimary,
+                color: BudgetColors.light,
                 section: Section.EXPENSES,
                 selectedTab: selectedTab,
                 amount: sectionsSum['expenses']!,
@@ -61,7 +59,7 @@ class HomeBottomNavBar extends StatelessWidget {
             _buildBottomNavigationBarItem(
                 label: 'income',
                 icon: Icons.monetization_on_outlined,
-                color: scheme.onPrimary,
+                color: BudgetColors.light,
                 section: Section.INCOME,
                 selectedTab: selectedTab,
                 amount: sectionsSum['incomes']!,
@@ -69,7 +67,7 @@ class HomeBottomNavBar extends StatelessWidget {
             _buildBottomNavigationBarItem(
                 label: 'accounts',
                 icon: Icons.account_balance_outlined,
-                color: scheme.onPrimary,
+                color: BudgetColors.light,
                 section: Section.ACCOUNTS,
                 amount: sectionsSum['accounts']!,
                 selectedTab: selectedTab,

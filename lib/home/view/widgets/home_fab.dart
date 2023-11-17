@@ -15,7 +15,6 @@ class HomeFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
     return FloatingActionButton(
-      backgroundColor: Theme.of(context).colorScheme.tertiary,
       onPressed: () {
         switch (selectedTab) {
           case HomeTab.expenses:
@@ -41,7 +40,6 @@ class HomeFloatingActionButton extends StatelessWidget {
       },
       child: const Icon(
         Icons.add,
-        color: Colors.black,
       ),
     );
   }

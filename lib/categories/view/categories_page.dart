@@ -1,12 +1,13 @@
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/categories/view/widgets/categories_grid.dart';
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../constants/colors.dart';
 import '../../constants/constants.dart';
 
 class CategoriesPage extends StatelessWidget {
@@ -36,7 +37,6 @@ class CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
@@ -70,17 +70,13 @@ class CategoriesView extends StatelessWidget {
                       child: ListTile(
                         title: Row(
                           children: [
-                            Text(
-                              category.name,
-                              style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .fontSize),
-                            ),
+                            Text(category.name,
+                                style: Theme.of(context).textTheme.titleLarge),
                             Expanded(child: Container()),
                             FaIcon(
-                                color: scheme.primary,
+                                color: BudgetTheme.isDarkMode(context)
+                                    ? BudgetColors.lightContainer
+                                    : BudgetColors.primary,
                                 IconData(category.iconCode ?? 0,
                                     fontFamily: 'FontAwesomeSolid')),
                           ],
@@ -107,16 +103,14 @@ class CategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: BudgetColors.amber800,
-                title: Text(
-                  'Add category',
-                  style: TextStyle(
-                      fontSize:
-                          Theme.of(context).textTheme.titleLarge!.fontSize),
-                ),
+                tileColor: BudgetTheme.isDarkMode(context)
+                    ? BudgetColors.accentDark
+                    : BudgetColors.accent,
+                title: Text('Add category',
+                    style: Theme.of(context).textTheme.titleLarge),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetColors.teal900,
+                  color: BudgetColors.primary,
                 ),
                 onTap: () {
                   context.read<CategoriesCubit>().onNewCategory();
@@ -186,7 +180,7 @@ class CategoriesView extends StatelessWidget {
                                               state.name?.length == 0 ||
                                               state.iconCode < 0
                                           ? Colors.grey
-                                          : BudgetColors.amber800)),
+                                          : BudgetColors.accent)),
                             )
                           ],
                         ),
