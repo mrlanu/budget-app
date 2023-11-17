@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../accounts/cubit/accounts_cubit.dart';
 import '../../../accounts/models/accounts_view_filter.dart';
 import '../../../accounts/repository/accounts_repository.dart';
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 import '../../../constants/constants.dart';
 import '../../../transactions/models/transactions_view_filter.dart';
 import '../../../transactions/repository/transactions_repository.dart';
@@ -33,12 +33,11 @@ class AccountsSummariesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
         child: BlocBuilder<AccountsCubit, AccountsState>(
       builder: (context, state) {
         return ExpansionPanelList(
-          dividerColor: BudgetColors.teal900,
+          dividerColor: BudgetColors.primary,
           expansionCallback: (int index, bool isExpanded) {
             context.read<AccountsCubit>().changeExpanded(index);
             if (isDisplayDesktop(context)) {
@@ -48,14 +47,14 @@ class AccountsSummariesView extends StatelessWidget {
           children: state.accountList.map<ExpansionPanel>((acc) {
             return ExpansionPanel(
                 canTapOnHeader: true,
-                backgroundColor: BudgetColors.teal100,
+                backgroundColor: BudgetColors.lightContainer,
                 headerBuilder: (BuildContext context, bool isExpanded) {
                   return ListTile(
                     leading: Builder(builder: (context) {
                       final categories = context
                           .select((HomeCubit cubit) => cubit.state.categories);
                       return FaIcon(
-                          color: scheme.primary,
+                          color: BudgetColors.primary,
                           IconData(
                               categories.firstWhere((element) =>
                                           element.id == acc.categoryId)
@@ -70,7 +69,7 @@ class AccountsSummariesView extends StatelessWidget {
                           style: TextStyle(
                               fontSize: textTheme.titleLarge!.fontSize,
                               fontWeight: FontWeight.bold,
-                              color: scheme.primary),
+                              color: BudgetColors.primary),
                         ),
                       ],
                     ),
@@ -79,7 +78,7 @@ class AccountsSummariesView extends StatelessWidget {
                       style: TextStyle(
                           fontSize: textTheme.titleLarge!.fontSize,
                           fontWeight: FontWeight.bold,
-                          color: scheme.primary),
+                          color: BudgetColors.primary),
                     ),
                   );
                 },

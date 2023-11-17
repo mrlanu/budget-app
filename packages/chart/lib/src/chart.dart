@@ -136,6 +136,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isThemeDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onPanDown: (details) {
         final barWidth = (widget.width - 40) / _dataPoints.length;
@@ -148,7 +149,12 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
       },
       child: CustomPaint(
         size: Size(widget.width, widget.height),
-        painter: GridPainter(maxHeight: maxBarHeight, labels: _labels),
+        painter: GridPainter(
+            maxHeight: maxBarHeight,
+            labels: _labels,
+            labelsColor: isThemeDark
+                ? Color(0xFFB2DFDB)
+                : Colors.black.withOpacity(0.5)),
         foregroundPainter: BarChartPainter(tween.animate(controller),
             isGrouped: _isGrouped,
             tappedIndex: _tappedIndex,
@@ -343,8 +349,12 @@ class BarChartPainter extends CustomPainter {
 class GridPainter extends CustomPainter {
   final double maxHeight;
   final List<String> labels;
+  final Color labelsColor;
 
-  GridPainter({required this.maxHeight, required this.labels});
+  GridPainter(
+      {required this.maxHeight,
+      required this.labels,
+      required this.labelsColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -397,7 +407,7 @@ class GridPainter extends CustomPainter {
     }
 
     var labelStyle = TextStyle(
-      color: Colors.black.withOpacity(0.5),
+      color: labelsColor,
       fontSize: 15,
       fontWeight: FontWeight.bold,
     );

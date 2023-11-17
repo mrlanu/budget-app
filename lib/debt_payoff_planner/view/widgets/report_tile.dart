@@ -1,7 +1,9 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_report_item.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
+
+import '../../../constants/colors.dart';
 
 class ReportTile extends StatelessWidget {
   final DebtStrategyReport report;
@@ -10,7 +12,6 @@ class ReportTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 15),
@@ -26,7 +27,9 @@ class ReportTile extends StatelessWidget {
                       bottomRight: Radius.zero,
                       topLeft: Radius.circular(10.0),
                       bottomLeft: Radius.zero),
-                  color: BudgetColors.teal200),
+                  color: BudgetTheme.isDarkMode(context)
+                      ? BudgetColors.primary600
+                      : BudgetColors.lightContainer),
               child: Text('DURATION ${report.duration} MONTHS',
                   style: Theme.of(context).textTheme.titleSmall)),
           Container(
@@ -42,20 +45,17 @@ class ReportTile extends StatelessWidget {
                     children: [
                       Text('${item.name}',
                           style: item.paid
-                              ? textTheme.titleMedium!.copyWith(
-                                  color: BudgetColors.teal900,
-                                  fontWeight: FontWeight.bold)
+                              ? textTheme.titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold)
                               : textTheme.titleMedium!),
                       item.paid
                           ? Text('LAST PAYMENT',
-                              style: textTheme.titleSmall!.copyWith(
-                                  color: BudgetColors.teal900,
-                                  fontWeight: FontWeight.bold))
+                              style: textTheme.titleSmall!
+                                  .copyWith(fontWeight: FontWeight.bold))
                           : Container(),
                       Text('\$ ${item.amount.toStringAsFixed(2)}',
                           style: item.paid
                               ? textTheme.titleMedium!.copyWith(
-                                  color: BudgetColors.teal900,
                                   fontWeight: FontWeight.bold)
                               : textTheme.titleMedium!),
                     ],

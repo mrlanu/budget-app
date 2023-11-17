@@ -1,14 +1,15 @@
 import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
 import 'package:budget_app/account_edit/view/account_edit_form.dart';
 import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../accounts/models/account.dart';
 import '../../categories/repository/categories_repository.dart';
+import '../../constants/colors.dart';
 import '../cubit/accounts_list_cubit.dart';
 
 class AccountsListPage extends StatelessWidget {
@@ -65,7 +66,6 @@ class AccountsListView extends StatelessWidget {
         ],
         child: BlocBuilder<AccountsListCubit, AccountsListState>(
           builder: (context, state) {
-            final scheme = Theme.of(context).colorScheme;
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
@@ -86,16 +86,14 @@ class AccountsListView extends StatelessWidget {
                             title: Row(
                               children: [
                                 Text(
-                                  account.extendName(state.accountCategories),
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .fontSize),
-                                ),
+                                    account.extendName(state.accountCategories),
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge),
                                 Expanded(child: Container()),
                                 FaIcon(
-                                    color: scheme.primary,
+                                    color: BudgetTheme.isDarkMode(context)
+                                        ? BudgetColors.lightContainer
+                                        : BudgetColors.primary,
                                     IconData(
                                         state.accountCategories
                                                 .firstWhere((element) =>
@@ -125,16 +123,14 @@ class AccountsListView extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    tileColor: BudgetColors.amber800,
-                    title: Text(
-                      'Add Account',
-                      style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.titleLarge!.fontSize),
-                    ),
+                    tileColor: BudgetTheme.isDarkMode(context)
+                        ? BudgetColors.accentDark
+                        : BudgetColors.accent,
+                    title: Text('Add Account',
+                        style: Theme.of(context).textTheme.titleLarge),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetColors.teal900,
+                      color: BudgetColors.primary,
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

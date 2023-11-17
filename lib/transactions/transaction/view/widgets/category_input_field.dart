@@ -1,4 +1,5 @@
 import 'package:budget_app/categories/view/categories_page.dart';
+import 'package:budget_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,9 +37,8 @@ class CategoryInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
-              border: OutlineInputBorder(),
               labelText: 'Category',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
             ));

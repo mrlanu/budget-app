@@ -1,7 +1,8 @@
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
+import '../../../utils/utils.dart';
 import '../../cubit/sign_up_cubit.dart';
 
 class ConfirmPasswordInput extends StatelessWidget {
@@ -9,7 +10,7 @@ class ConfirmPasswordInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpCubit, SignUpState>(
       buildWhen: (previous, current) =>
-      previous.password != current.password ||
+          previous.password != current.password ||
           previous.confirmedPassword != current.confirmedPassword,
       builder: (context, state) {
         return TextField(
@@ -19,7 +20,12 @@ class ConfirmPasswordInput extends StatelessWidget {
               .confirmedPasswordChanged(confirmPassword),
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.password, color: BudgetColors.teal900,),
+            icon: Icon(
+              Icons.password,
+              color: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.accentDark
+                  : BudgetColors.primary,
+            ),
             border: OutlineInputBorder(),
             labelText: 'Confirm password',
             helperText: '',

@@ -1,4 +1,3 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
@@ -86,7 +85,6 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: BudgetColors.teal50,
       appBar: AppBar(
         title: Text('Debt payoff planner'),
         centerTitle: true,
