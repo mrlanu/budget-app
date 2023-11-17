@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BudgetColors {
+
+  //system colors
+  static const Color systemBar = Color(0xFF00695C);
+  static const Color statusBar = Color(0xFF00695C);
+
   // App theme colors
   static const Color primary = Color(0xFF004D40);
   static const Color primary600 = Color(0xFF00897B);

@@ -2,7 +2,7 @@ import 'package:budget_app/shared/models/awesome_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 
 class CategoriesGrid extends StatelessWidget {
   final Function(int) onSelect;
@@ -26,11 +26,11 @@ class CategoriesGrid extends StatelessWidget {
               child: CircleAvatar(
                 backgroundColor:
                     selectedIconCode == appIconsList[index].iconData.codePoint
-                        ? BudgetColors.amber800
-                        : BudgetColors.teal100,
+                        ? BudgetColors.accent
+                        : BudgetColors.lightContainer,
                 child: Center(
                     child: FaIcon(appIconsList[index].iconData,
-                        color: BudgetColors.teal900)),
+                        color: BudgetColors.primary)),
               ),
             ),
           );

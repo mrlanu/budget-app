@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../accounts/cubit/accounts_cubit.dart';
 import '../../accounts/repository/accounts_repository.dart';
 import '../../categories/repository/categories_repository.dart';
-import '../../colors.dart';
+import '../../constants/colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
 import '../../subcategories/repository/subcategories_repository.dart';
@@ -47,7 +47,7 @@ class HomeDesktopPage extends StatelessWidget {
           )..add(TransferFormLoaded()),
         ),
       ],
-      child: Scaffold(backgroundColor: BudgetColors.teal50, body: HomeGrid()),
+      child: Scaffold(backgroundColor: BudgetColors.lightContainer, body: HomeGrid()),
     );
   }
 }
@@ -118,11 +118,11 @@ class HomeViewDesktop extends StatelessWidget {
                       width: w * 0.3,
                       height: 80,
                       decoration: BoxDecoration(
-                          color: BudgetColors.teal900,
+                          color: BudgetColors.primary,
                           borderRadius: BorderRadius.circular(15)),
                       child: MonthPaginator(
                         fontSize: 20,
-                        color: BudgetColors.teal50,
+                        color: BudgetColors.lightContainer,
                         onLeft: (date) =>
                             context.read<HomeCubit>().changeDate(date),
                         onRight: (date) =>
@@ -136,7 +136,7 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                color: BudgetColors.teal50,
+                                color: BudgetColors.lightContainer,
                                 elevation: 5,
                                 child: Container(
                                   padding: EdgeInsets.all(20),
@@ -157,7 +157,7 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                  color: BudgetColors.teal50,
+                                  color: BudgetColors.lightContainer,
                                   elevation: 5,
                                   child: Container(
                                     padding:
@@ -181,7 +181,7 @@ class HomeViewDesktop extends StatelessWidget {
                       margin: EdgeInsets.only(top: 10),
                       width: w * 0.3,
                       decoration: BoxDecoration(
-                          color: BudgetColors.teal900,
+                          color: BudgetColors.primary,
                           borderRadius: BorderRadius.circular(15)),
                       child: ClipPath(
                         clipper: ShapeBorderClipper(

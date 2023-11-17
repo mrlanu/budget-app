@@ -1,9 +1,9 @@
+import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-import '../../colors.dart';
 import '../../constants/constants.dart';
 import '../widgets/to_account_input_field.dart';
 
@@ -60,8 +60,8 @@ class _SubmitButton extends StatelessWidget {
                 tileColor: state.isValid &&
                         state.fromAccount != null &&
                         state.toAccount != null
-                    ? BudgetColors.amber800
-                    : BudgetColors.grey400,
+                    ? BudgetColors.accent
+                    : BudgetColors.grey,
                 title: Center(
                   child: Text(
                     'Save',
