@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../colors.dart';
+import '../../constants/colors.dart';
 import '../../constants/constants.dart';
 import '../../sign_up/cubit/sign_up_cubit.dart';
 import '../../sign_up/sign_up.dart' as signup;
@@ -84,7 +84,7 @@ class _DesktopViewState extends State<DesktopView> {
       width: w * 0.3,
       height: h * 0.43,
       decoration: BoxDecoration(
-          color: BudgetColors.teal50.withOpacity(0.85), borderRadius: BorderRadius.circular(25)),
+          color: BudgetColors.lightContainer.withOpacity(0.85), borderRadius: BorderRadius.circular(25)),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: w * 0.02, vertical: h * 0.06),
         child: Column(
@@ -113,7 +113,7 @@ class _DesktopViewState extends State<DesktopView> {
         width: w * 0.3,
         height: h * 0.53,
         decoration: BoxDecoration(
-            color: BudgetColors.teal50.withOpacity(0.85),
+            color: BudgetColors.lightContainer.withOpacity(0.85),
             borderRadius: BorderRadius.circular(25)),
         child: Padding(
             padding:
@@ -147,7 +147,7 @@ class _DesktopViewState extends State<DesktopView> {
             _changeIndex(index);
           },
         text: text,
-        style: TextStyle(color: BudgetColors.teal900, fontSize: 20),
+        style: TextStyle(color: BudgetColors.primary, fontSize: 20),
       ),
     );
   }

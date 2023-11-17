@@ -1,8 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 import '../../../sign_up/view/sign_up_page.dart';
+import '../../../utils/utils.dart';
 
 class SignUpButton extends StatelessWidget {
 
@@ -17,7 +18,9 @@ class SignUpButton extends StatelessWidget {
               () => Navigator.of(context).pushNamed(SignUpPage.routeName),
         text: '  Register',
         style: TextStyle(
-            color: BudgetColors.teal900, fontSize: 20),
+            color: BudgetTheme.isDarkMode(context)
+                ? BudgetColors.primary600
+                : BudgetColors.primary, fontSize: 20),
       ),
     );
   }

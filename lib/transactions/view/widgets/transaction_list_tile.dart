@@ -1,8 +1,9 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../constants/colors.dart';
 
 class TransactionListTile extends StatelessWidget {
   final TransactionTile transactionTile;
@@ -15,14 +16,13 @@ class TransactionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Dismissible(
       key: Key('transaction_dismissible_${transactionTile.id}'),
       onDismissed: onDismissed,
       direction: DismissDirection.startToEnd,
       background: Container(
-        color: theme.error,
+        color: BudgetColors.error,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: const Icon(
           Icons.delete,
@@ -30,42 +30,45 @@ class TransactionListTile extends StatelessWidget {
         ),
       ),
       child: ListTile(
-              leading: Icon(Icons.clear_all),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '\$ ${transactionTile.amount.toString()}',
-                    style: TextStyle(
-                        color:
-                            (transactionTile.type == TransactionType.EXPENSE ||
-                                    transactionTile.title ==
-                                        'Transfer out')
-                                ? theme.error
-                                : BudgetColors.teal900,
-                        fontSize: textTheme.titleLarge!.fontSize,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Icon(Icons.chevron_right),
-                ],
-              ),
-              title: Text(
-                transactionTile.title,
-                style: TextStyle(
+        leading: Icon(
+          Icons.clear_all,
+          color: BudgetColors.darkerGrey,
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '\$ ${transactionTile.amount.toString()}',
+              style: TextStyle(
+                  color: (transactionTile.type == TransactionType.EXPENSE ||
+                          transactionTile.title == 'Transfer out')
+                      ? BudgetColors.error
+                      : BudgetColors.primary,
                   fontSize: textTheme.titleLarge!.fontSize,
-                  color: transactionTile.type == TransactionType.EXPENSE
-                      ? theme.primary
-                      : theme.primary,
-                ),
-              ),
-              subtitle: Text(
-                  '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}'),
-              isThreeLine: false,
-              onTap: onTap,
+                  fontWeight: FontWeight.bold),
             ),
-          );
+            SizedBox(
+              width: 10,
+            ),
+            Icon(Icons.chevron_right),
+          ],
+        ),
+        title: Text(
+          transactionTile.title,
+          style: TextStyle(
+            fontSize: textTheme.titleLarge!.fontSize,
+            color: transactionTile.type == TransactionType.EXPENSE
+                ? BudgetColors.primary
+                : BudgetColors.primary,
+          ),
+        ),
+        subtitle: Text(
+          '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}',
+          style: TextStyle(color: BudgetColors.primary),
+        ),
+        isThreeLine: false,
+        onTap: onTap,
+      ),
+    );
   }
 }

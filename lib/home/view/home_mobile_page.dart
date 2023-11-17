@@ -1,4 +1,3 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +38,6 @@ class HomeMobileView extends StatelessWidget {
       child: BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
         return SafeArea(
             child: Scaffold(
-                backgroundColor: BudgetColors.teal50,
                 appBar: AppBar(
                   title: MonthPaginator(
                     onLeft: (date) =>

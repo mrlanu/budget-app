@@ -1,6 +1,8 @@
+import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../accounts/models/account.dart';
 import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../../bloc/transaction_bloc.dart';
@@ -30,11 +32,12 @@ class AccountInput extends StatelessWidget {
                   .add(TransactionAccountChanged(account: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.accounts.contains(state.account) ? state.account : null,
+            value:
+                state.accounts.contains(state.account) ? state.account : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
               labelText: 'Account',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),

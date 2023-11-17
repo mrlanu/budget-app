@@ -1,7 +1,8 @@
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
+import '../../../utils/utils.dart';
 import '../../cubit/sign_up_cubit.dart';
 
 class PasswordInput extends StatelessWidget {
@@ -16,12 +17,17 @@ class PasswordInput extends StatelessWidget {
               context.read<SignUpCubit>().passwordChanged(password),
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.key, color: BudgetColors.teal900,),
+            icon: Icon(
+              Icons.key,
+              color: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.accentDark
+                  : BudgetColors.primary,
+            ),
             border: OutlineInputBorder(),
             labelText: 'Password',
             helperText: '',
             errorText:
-            state.password.displayError != null ? 'invalid password' : null,
+                state.password.displayError != null ? 'invalid password' : null,
           ),
         );
       },

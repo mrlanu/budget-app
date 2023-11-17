@@ -3,10 +3,11 @@ import 'package:budget_app/account_edit/view/widgets/balance_input_field.dart';
 import 'package:budget_app/account_edit/view/widgets/category_input_field.dart';
 import 'package:budget_app/account_edit/view/widgets/include_switch.dart';
 import 'package:budget_app/account_edit/view/widgets/name_input_field.dart';
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+
+import '../../constants/colors.dart';
 
 class AccountEditDialog extends StatelessWidget {
   @override
@@ -28,19 +29,15 @@ class AccountEditDialog extends StatelessWidget {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              color: BudgetColors.teal50,
                             ),
                             padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
                             child: Column(
                               children: [
                                 Text(
                                   'New Account',
-                                  style: TextStyle(
-                                      fontSize: Theme.of(context)
+                                  style: Theme.of(context)
                                           .textTheme
-                                          .titleLarge
-                                          ?.fontSize),
-                                ),
+                                          .titleLarge),
                                 SizedBox(
                                   height: 20,
                                 ),
@@ -92,7 +89,7 @@ class _SubmitButton extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: state.isValid && state.category != null
-                            ? BudgetColors.amber800
+                            ? BudgetColors.accent
                             : Colors.grey)),
               );
       },

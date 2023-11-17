@@ -1,7 +1,8 @@
-import 'package:budget_app/colors.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
 import '../../cubit/login_cubit.dart';
 
 class EmailInput extends StatelessWidget {
@@ -18,12 +19,15 @@ class EmailInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.email,
-              color: BudgetColors.teal900,
+              color: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.accentDark
+                  : BudgetColors.primary,
             ),
             border: OutlineInputBorder(),
             labelText: 'Email',
             helperText: '',
-            errorText: state.email.displayError != null ? 'invalid email' : null,
+            errorText:
+                state.email.displayError != null ? 'invalid email' : null,
           ),
         );
       },

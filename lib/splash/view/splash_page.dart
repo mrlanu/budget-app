@@ -1,4 +1,4 @@
-import 'package:budget_app/colors.dart';
+import 'package:budget_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -35,7 +35,7 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: BudgetColors.teal900,
+        backgroundColor: BudgetColors.primary,
         body: AnimatedLogo(animation: animation,));
   }
 }

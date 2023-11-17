@@ -1,3 +1,4 @@
+import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,9 +35,6 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
             icon: GestureDetector(
               child: Icon(
                 Icons.edit_note,
-                color: state.category != null
-                    ? Colors.black.withOpacity(0.6)
-                    : Colors.grey,
               ),
               onTap: state.category != null
                   ? () {
@@ -61,9 +59,8 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
-              border: OutlineInputBorder(),
               labelText: 'Subcategory',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
             ));

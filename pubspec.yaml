@@ -1,10 +1,10 @@
 name: budget_app
 description: A Budget app.
-version: 2.5.0
+version: 2.6.0
 publish_to: none
 
 environment:
-  sdk: ">=3.0.0-417.1.beta <3.0.6"
+  sdk: ">=3.0.0-417.1.beta <4.0.0"
 
 dependencies:
   intl:
