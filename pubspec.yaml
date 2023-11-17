@@ -1,6 +1,6 @@
 name: budget_app
 description: A Budget app.
-version: 2.5.0
+version: 2.6.0
 publish_to: none
 
 environment:
