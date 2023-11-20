@@ -6,6 +6,7 @@ import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,7 +48,7 @@ class HomeDesktopPage extends StatelessWidget {
           )..add(TransferFormLoaded()),
         ),
       ],
-      child: Scaffold(backgroundColor: BudgetColors.lightContainer, body: HomeGrid()),
+      child: Scaffold(body: HomeGrid()),
     );
   }
 }
@@ -84,7 +85,9 @@ class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
             controller: _tabController,
             children: [
               HomeViewDesktop(),
-              Center(child: Container(width: w * 0.5, height: h * 0.9, child: SummaryPage())),
+              Center(
+                  child: Container(
+                      width: w * 0.5, height: h * 0.9, child: SummaryPage())),
               TrendChartDesktopView(),
               DebtPayoffViewDesktop(),
             ],
@@ -136,7 +139,9 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                color: BudgetColors.lightContainer,
+                                color: BudgetTheme.isDarkMode(context)
+                                    ? BudgetColors.darkerGrey
+                                    : BudgetColors.lightContainer,
                                 elevation: 5,
                                 child: Container(
                                   padding: EdgeInsets.all(20),
@@ -157,7 +162,9 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                  color: BudgetColors.lightContainer,
+                                  color: BudgetTheme.isDarkMode(context)
+                                      ? BudgetColors.darkerGrey
+                                      : BudgetColors.lightContainer,
                                   elevation: 5,
                                   child: Container(
                                     padding:
