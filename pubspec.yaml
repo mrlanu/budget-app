@@ -34,6 +34,8 @@ dependencies:
   adaptive_breakpoints: ^0.1.6
   fl_chart: ^0.63.0
   font_awesome_flutter: ^10.5.0
+  flow_builder: ^0.0.10
+  flutter_native_splash: ^2.3.7
 
 dev_dependencies:
   bloc_test: ^9.0.0
