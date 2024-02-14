@@ -11,6 +11,8 @@ import '../../transactions/repository/transactions_repository.dart';
 class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
+  static Page<void> page() => const MaterialPage<void>(child: HomePage());
+
   static Route<void> route() {
     return MaterialPageRoute(builder: (context) => HomePage());
   }
@@ -19,7 +21,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final trRepo = context.read<TransactionsRepositoryImpl>();
+    final trRepo = context.read<TransactionsRepository>();
     final budgetRepo = context.read<BudgetRepository>();
     return MultiBlocProvider(providers: [
       BlocProvider(

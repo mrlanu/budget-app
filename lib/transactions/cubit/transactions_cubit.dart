@@ -173,7 +173,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   Future<void> undoDelete() async {
-    if (state.lastDeletedTransaction!.isTransaction()) {
+
+    /*if (state.lastDeletedTransaction!.isTransaction()) {
       await _transactionsRepository.saveTransaction(
           transaction: state.lastDeletedTransaction! as Transaction,
           budget: await _budgetRepository.budget.first);
@@ -181,7 +182,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       await _transactionsRepository.saveTransfer(
           transfer: state.lastDeletedTransaction! as Transfer,
           budget: await _budgetRepository.budget.first);
-    }
+    }*/
   }
 
   @override

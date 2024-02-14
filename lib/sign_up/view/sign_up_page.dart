@@ -8,6 +8,12 @@ class SignUpPage extends StatelessWidget {
 
   static const routeName = '/signup';
 
+  static Route<void> route() {
+    return MaterialPageRoute(builder: (context) {
+      return SignUpPage();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

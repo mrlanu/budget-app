@@ -10,28 +10,18 @@ class User extends Equatable {
   /// {@macro user}
   const User({
     this.id,
+    this.token,
     this.email,
     this.name,
     this.photo,
   });
-
-  factory User.fromJson(
-      Map<String, dynamic> json, [
-        String? id,
-      ]) {
-    return User(
-      id: id ?? json['id'] as String?,
-      email: json['email'] as String?,
-      name: json['name'] as String?,
-      photo: json['photo'] as String?,
-    );
-  }
 
   factory User.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,) {
     final data = snapshot.data();
     return User(
       id: data?['id'] as String?,
+      token: data?['token'] as String?,
       email: data?['email'] as String?,
       name: data?['name'] as String?,
       photo: data?['photo'] as String?,
@@ -41,6 +31,7 @@ class User extends Equatable {
   Map<String, dynamic> toFirestore() {
     return {
       if (id != null) 'id': id,
+      if (token != null) 'token': token,
       if (email != null) 'email': email,
       if (name != null) 'name': name,
       if (photo != null) 'photo': photo,
@@ -52,6 +43,9 @@ class User extends Equatable {
 
   /// The current user's id.
   final String? id;
+
+  /// The current user's token.
+  final String? token;
 
   /// The current user's name (display name).
   final String? name;
@@ -69,5 +63,5 @@ class User extends Equatable {
   bool get isNotEmpty => this != User.empty;
 
   @override
-  List<Object?> get props => [email, id, name, photo];
+  List<Object?> get props => [email, id, token, name, photo];
 }

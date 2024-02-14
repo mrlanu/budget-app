@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
@@ -138,7 +139,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       date: state.date ?? DateTime.now(),
       fromAccountId: state.fromAccount!.id,
       toAccountId: state.toAccount!.id,
-      notes: state.notes,
+      notes: state.notes, budgetId: await getCurrentBudgetId(),
     );
     try {
       await _transactionsRepository.saveTransfer(

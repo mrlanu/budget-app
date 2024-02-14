@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:budget_app/shared/models/budget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,9 +15,8 @@ final baseURL = isTestMode
         : 'qruto-budget-app-bd7e344cca5d.herokuapp.com';
 
 Future<Map<String, String>> getHeaders() async {
-  final currentUser = await FirebaseAuth.instance.currentUser;
-  final token = await currentUser?.getIdToken();
-
+  final instance = await SharedPreferences.getInstance();
+  final token = instance.getString('token') ?? '';
   return {"Content-Type": "application/json", "Authorization": "Bearer $token"};
 }
 
@@ -30,7 +28,6 @@ Future<String> getUserId() async {
 Future<String> getCurrentBudgetId() async {
   final instance = await SharedPreferences.getInstance();
   return instance.getString('currentBudgetId') ?? '';
-
 }
 
 Future<String> getBudgetId() async {

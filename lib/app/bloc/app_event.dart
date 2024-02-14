@@ -18,7 +18,3 @@ class _AppUserChanged extends AppEvent {
 
   final User user;
 }
-
-class AppSubscriptionRequested extends AppEvent {
-  const AppSubscriptionRequested();
-}

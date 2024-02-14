@@ -20,7 +20,7 @@ class TransactionPage extends StatelessWidget {
     return MaterialPageRoute(builder: (context) {
       return BlocProvider(
         create: (context) => TransactionBloc(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+            transactionsRepository: context.read<TransactionsRepository>(),
             budgetRepository: context.read<BudgetRepository>())
           ..add(TransactionFormLoaded(
               transaction: transaction,

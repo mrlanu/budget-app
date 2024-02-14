@@ -8,7 +8,7 @@ import '../../transactions/models/transaction_tile.dart';
 import '../../transactions/models/transaction_type.dart';
 
 extension FirestoreX on firestore.FirebaseFirestore {
-  Future<void> saveTransaction(
+  /*Future<void> saveTransaction(
       {required Transaction transaction,
       TransactionTile? editedTransaction,
       required Budget budget}) async {
@@ -22,7 +22,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
         transactionsRef
             .doc(editedTransaction != null ? editedTransaction.id : null),
         transaction.toFirestore());
-    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
+    //batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
     batch.commit();
   }
 
@@ -37,9 +37,9 @@ extension FirestoreX on firestore.FirebaseFirestore {
     batch.set(
         transactionsRef.doc(editedTransfer != null ? editedTransfer.id : null),
         transfer.toFirestore());
-    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
+    //batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
     batch.commit();
-  }
+  }*/
 
   Future<void> deleteTransaction(
       {required TransactionTile transaction, required Budget budget}) async {
@@ -51,7 +51,7 @@ extension FirestoreX on firestore.FirebaseFirestore {
         : _updateBudgetOnDeleteTransfer(
         transaction: transaction, budget: budget);
     batch.delete(transactionsRef.doc(transaction.id));
-    batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
+    //batch.set(await getRefToCurrentBudget(), updatedBudget.toFirestore());
     batch.commit();
   }
 

@@ -24,7 +24,9 @@ class SignUpButton extends StatelessWidget {
                     ),
                     onPressed: state.isValid
                         ? () =>
-                            context.read<SignUpCubit>().signUpFormSubmitted()
+                            context.read<SignUpCubit>().signUpFormSubmitted().then((value) {
+                              Navigator.of(context).pop();
+                            })
                         : null,
                     child: const Text('Register',
                         style: TextStyle(fontSize: 20))));

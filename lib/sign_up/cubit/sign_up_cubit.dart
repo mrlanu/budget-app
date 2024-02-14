@@ -67,12 +67,10 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (!state.isValid) return;
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
-      final user = await authenticationRepository.signUp(
+      await authenticationRepository.signUp(
         email: state.email.value,
         password: state.password.value,
       );
-      //await budgetRepository.createBeginningBudget(userId: user!.uid);
-      //emit(state.copyWith(status: FormzSubmissionStatus.success));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       emit(
         state.copyWith(

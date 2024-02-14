@@ -14,7 +14,7 @@ class SignUpButton extends StatelessWidget {
       text: TextSpan(
         recognizer: TapGestureRecognizer()
           ..onTap =
-              () => Navigator.of(context).pushNamed(SignUpPage.routeName),
+              () => Navigator.of(context).push(SignUpPage.route()),
         text: '  Register',
         style: TextStyle(
             color: BudgetColors.teal900, fontSize: 20),

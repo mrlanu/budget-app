@@ -1,21 +1,23 @@
-import 'package:budget_app/shared/shared.dart';
+import 'dart:convert';
+
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../budgets/budgets.dart';
+import '../../constants/api.dart';
 
 abstract class BudgetRepository {
-  Future<void> init();
+  Future<List<String>> fetchAvailableBudgets();
+
+  Future<void> fetchBudget(String budgetId);
 
   Stream<Budget> get budget;
 
-  Future<void> saveBudget(Budget budget);
+  Future<void> saveBudget({required Budget budget});
 
-  Future<void> createBeginningBudget({required String userId});
-
-  Future<List<Budget>> fetchAvailableBudgets(String userId);
+  Future<String> createBeginningBudget();
 
   Future<void> saveCategory(Category category);
 
@@ -35,32 +37,36 @@ abstract class BudgetRepository {
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
-  final FirebaseFirestore _firebaseFirestore;
   final _budgetStreamController = BehaviorSubject<Budget>.seeded(Budget());
-
-  BudgetRepositoryImpl({FirebaseFirestore? firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance {}
-
-  Future<void> init() async => (await _firebaseFirestore.getRefToCurrentBudget())
-          .snapshots()
-          .map((event) => Budget.fromFirestore(event))
-          .listen((budget) {
-        _budgetStreamController.add(budget);
-      });
 
   @override
   Stream<Budget> get budget => _budgetStreamController.asBroadcastStream();
 
   @override
-  Future<List<Budget>> fetchAvailableBudgets(String userId) async =>
-      (await _firebaseFirestore
-              .collection('users')
-              .doc(userId)
-              .collection('budgets')
-              .get())
-          .docs
-          .map((e) => Budget.fromFirestore(e))
-          .toList();
+  Future<List<String>> fetchAvailableBudgets() async {
+    final url = isTestMode
+        ? Uri.http(
+            baseURL,
+            '/api/budgets',
+          )
+        : Uri.https(baseURL, '/api/budgets');
+
+    final response = await http.get(url, headers: await getHeaders());
+    final result =
+        (json.decode(response.body) as List).map((b) => b as String).toList();
+    return result;
+  }
+
+  @override
+  Future<void> fetchBudget(String budgetId) async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets/$budgetId')
+        : Uri.https(baseURL, '/api/budgets/$budgetId');
+
+    final response = await http.get(url, headers: await getHeaders());
+    final budget = Budget.fromJson(jsonDecode(response.body));
+    _budgetStreamController.add(budget);
+  }
 
   @override
   Category getCategoryById(String id) =>
@@ -97,8 +103,8 @@ class BudgetRepositoryImpl extends BudgetRepository {
       categories.removeAt(catIndex);
       categories.insert(catIndex, category);
     }
-    saveBudget(
-        _budgetStreamController.value.copyWith(categoryList: categories));
+    /*saveBudget(
+        _budgetStreamController.value.copyWith(categoryList: categories));*/
   }
 
   @override
@@ -121,36 +127,36 @@ class BudgetRepositoryImpl extends BudgetRepository {
     categories.insert(
         catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
 
-    saveBudget(
-        _budgetStreamController.value.copyWith(categoryList: categories));
+    /*saveBudget(
+        _budgetStreamController.value.copyWith(categoryList: categories));*/
   }
 
   @override
   Future<void> createAccount(Account account) async {
     final accountsCopy = [..._budgetStreamController.value.accountList];
     accountsCopy.add(account);
-    saveBudget(
-        _budgetStreamController.value.copyWith(accountList: accountsCopy));
+    /*saveBudget(
+        _budgetStreamController.value.copyWith(accountList: accountsCopy));*/
   }
 
   @override
-  Future<void> saveBudget(Budget budget) async =>
-      (await _firebaseFirestore.getRefToCurrentBudget()).set(budget.toFirestore());
+  Future<void> saveBudget({required Budget budget}) async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets')
+        : Uri.https(baseURL, '/api/budgets');
+    final budgetResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(budget.toJson()));
+    final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
+  }
 
   @override
-  Future<void> createBeginningBudget({required String userId}) async {
-    final ref = await _firebaseFirestore
-        .collection('users')
-        .doc(userId)
-        .collection('budgets')
-        .add(Budget().toFirestore());
-
-    final beginningBudget = Budget(
-        id: ref.id, categoryList: _categoryList, accountList: accountList);
-
-    await _firebaseFirestore
-        .doc('users/$userId/budgets/${ref.id}')
-        .set(beginningBudget.toFirestore());
+  Future<String> createBeginningBudget() async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets')
+        : Uri.https(baseURL, '/api/budgets');
+    final budgetResponse = await http.post(url, headers: await getHeaders());
+    final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
+    return newBudget.id;
   }
 }
 

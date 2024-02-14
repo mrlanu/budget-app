@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
+import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:equatable/equatable.dart';
@@ -150,6 +151,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
+      budgetId: await getCurrentBudgetId(),
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),
@@ -158,14 +160,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       accountId: state.account!.id,
     );
     try {
-      await _transactionsRepository.saveTransaction(
-          transaction: transaction,
-          editedTransaction: state.editedTransaction,
-          budget: await _budgetRepository.budget.first);
+      await _transactionsRepository.createTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransactionFormLoaded(
-              transactionType: transaction.type!, date: transaction.date!))
+          transactionType: transaction.type!, date: transaction.date!))
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));

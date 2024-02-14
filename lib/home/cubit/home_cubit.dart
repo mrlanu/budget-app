@@ -7,6 +7,7 @@ import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../budgets/budgets.dart';
 import '../../transactions/models/transaction.dart';
@@ -30,6 +31,15 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _init() async {
     emit(state.copyWith(status: HomeStatus.loading));
+    final budgetIds = await _budgetRepository.fetchAvailableBudgets();
+    String currentBudgetId;
+    if (budgetIds.isEmpty) {
+      currentBudgetId = await _budgetRepository.createBeginningBudget();
+    } else {
+      currentBudgetId = budgetIds.first;
+    }
+    (await SharedPreferences.getInstance())
+        .setString('currentBudgetId', currentBudgetId);
     _budgetsSubscription = _budgetRepository.budget.listen((budget) {
       final sections = _recalculateSections(accounts: budget.accountList);
       emit(state.copyWith(sectionsSum: sections));
@@ -38,6 +48,7 @@ class HomeCubit extends Cubit<HomeState> {
           status: HomeStatus.failure,
           errorMessage: 'HomeCubit. Something went wrong'));
     });
+    _budgetRepository.fetchBudget(currentBudgetId);
     _transactionsSubscription =
         _transactionsRepository.transactions.listen((transactions) {
       _onTransactionsChanged(transactions);
@@ -49,32 +60,35 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> _onTransactionsChanged(List<ITransaction> transactions) async {
-    final trans = transactions.where((tr) => tr.isTransaction()).map((tr) => tr as Transaction).toList();
+    final trans = transactions
+        .where((tr) => tr.isTransaction())
+        .map((tr) => tr as Transaction)
+        .toList();
     final sectionsSum = _recalculateSections(transactions: trans);
     emit(state.copyWith(sectionsSum: sectionsSum));
   }
 
-  Map<String, double> _recalculateSections({List<Transaction>? transactions, List<Account>? accounts}) {
-
+  Map<String, double> _recalculateSections(
+      {List<Transaction>? transactions, List<Account>? accounts}) {
     double expSum = state.sectionsSum['expenses']!;
     double incSum = state.sectionsSum['incomes']!;
     double accSum = state.sectionsSum['accounts']!;
 
-    if(transactions != null) {
-      final groupedTransactions = groupBy(transactions, (Transaction p0) => p0.type);
-      expSum = groupedTransactions[TransactionType.EXPENSE]
-          ?.fold<double>(0,
-              (previousValue, element) => previousValue + element.amount!) ??
+    if (transactions != null) {
+      final groupedTransactions =
+          groupBy(transactions, (Transaction p0) => p0.type);
+      expSum = groupedTransactions[TransactionType.EXPENSE]?.fold<double>(
+              0, (previousValue, element) => previousValue + element.amount!) ??
           0;
-      incSum = groupedTransactions[TransactionType.INCOME]
-          ?.fold<double>(0,
-              (previousValue, element) => previousValue + element.amount!) ??
+      incSum = groupedTransactions[TransactionType.INCOME]?.fold<double>(
+              0, (previousValue, element) => previousValue + element.amount!) ??
           0;
     }
-    accSum = _budgetRepository.getAccounts()
+    accSum = _budgetRepository
+        .getAccounts()
         .where((acc) => acc.includeInTotal)
         .fold<double>(
-        0.0, (previousValue, element) => previousValue + element.balance);
+            0.0, (previousValue, element) => previousValue + element.balance);
 
     return {'expenses': expSum, 'incomes': incSum, 'accounts': accSum};
   }
@@ -94,3 +108,5 @@ class HomeCubit extends Cubit<HomeState> {
     return super.close();
   }
 }
+
+

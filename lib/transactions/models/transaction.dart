@@ -1,16 +1,15 @@
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import '../../budgets/budgets.dart';
 
 part 'transaction.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class Transaction implements ITransaction{
   final String? id;
+  final String? budgetId;
   final DateTime? date;
   final TransactionType? type;
   final String? description;
@@ -21,49 +20,22 @@ class Transaction implements ITransaction{
 
   Transaction(
       {this.id,
-      this.date,
-      this.type,
-      this.description = '',
-      this.amount,
-      this.categoryId,
-      this.subcategoryId,
-      this.accountId});
+        this.budgetId,
+        this.date,
+        this.type,
+        this.description = '',
+        this.amount,
+        this.categoryId,
+        this.subcategoryId,
+        this.accountId});
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
-  factory Transaction.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> snapshot,) {
-    final data = snapshot.data();
-    return Transaction(
-      id: snapshot.id,
-      date:
-      data?['date'] == null ? null : (data?['date'] as Timestamp).toDate(),
-      type: $enumDecodeNullable(_$TransactionTypeEnumMap, data?['type']),
-      description: data?['description'] as String? ?? '',
-      amount: (data?['amount'] as num?)?.toDouble(),
-      categoryId: data?['categoryId'] as String?,
-      subcategoryId: data?['subcategoryId'] as String?,
-      accountId: data?['accountId'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toFirestore() => <String, dynamic>{
-    'date': Timestamp.fromDate(date!),
-    'type': _$TransactionTypeEnumMap[type],
-    'description': description,
-    'amount': amount,
-    'categoryId': categoryId,
-    'subcategoryId': subcategoryId,
-    'accountId': accountId,
-  };
-
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
   TransactionTile toTile(
-      {required Category category,
-      required Account account,
-      required Subcategory subcategory}) {
+      {required Category category, required Account account, required Subcategory subcategory}) {
     return TransactionTile(
         id: this.id!,
         type: this.type!,
