@@ -96,13 +96,12 @@ class BudgetRepositoryImpl extends BudgetRepository {
   Future<void> saveCategory(Category category) async {
     final currentBudget = _budgetStreamController.value;
 
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/budgets/${currentBudget.id}/categories')
-        : Uri.https(baseURL, '/api/budgets/${currentBudget.id}/categories');
+    final path = '/api/budgets/${currentBudget.id}/categories';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(category.toJson()));
 
-    if(catResponse.statusCode == 200){
+    if (catResponse.statusCode == 200) {
       final newCategory = Category.fromJson(jsonDecode(catResponse.body));
       final categories = [...currentBudget.categoryList];
       final catIndex = categories.indexWhere((cat) => cat.id == category.id);
@@ -113,32 +112,44 @@ class BudgetRepositoryImpl extends BudgetRepository {
         categories.removeAt(catIndex);
         categories.insert(catIndex, category);
       }
-      _budgetStreamController.add(currentBudget.copyWith(categoryList: categories));
+      _budgetStreamController
+          .add(currentBudget.copyWith(categoryList: categories));
     }
   }
 
   @override
   Future<void> saveSubcategory(
       Category category, Subcategory subcategory) async {
-    final subcategoriesCopy = [...getCategoryById(category.id).subcategoryList];
-    final subCatIndex =
-        subcategoriesCopy.indexWhere((sc) => sc.id == subcategory.id);
-    if (subCatIndex == -1) {
-      subcategoriesCopy.add(subcategory);
-    } else {
-      subcategoriesCopy.removeAt(subCatIndex);
-      subcategoriesCopy.insert(subCatIndex, subcategory);
+    final currentBudget = _budgetStreamController.value;
+    final path =
+        '/api/budgets/${currentBudget.id}/categories/${category.id}/subcategories';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
+    final catResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(subcategory.toJson()));
+
+    if (catResponse.statusCode == 200) {
+      final subcategoriesCopy = [
+        ...getCategoryById(category.id).subcategoryList
+      ];
+      final subCatIndex =
+          subcategoriesCopy.indexWhere((sc) => sc.id == subcategory.id);
+      if (subCatIndex == -1) {
+        subcategoriesCopy.add(subcategory);
+      } else {
+        subcategoriesCopy.removeAt(subCatIndex);
+        subcategoriesCopy.insert(subCatIndex, subcategory);
+      }
+
+      final categories = [..._budgetStreamController.value.categoryList];
+      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+      categories.removeAt(catIndex);
+      categories.insert(
+          catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
+
+      _budgetStreamController
+          .add(currentBudget.copyWith(categoryList: categories));
     }
-
-    final categories = [..._budgetStreamController.value.categoryList];
-    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
-
-    categories.removeAt(catIndex);
-    categories.insert(
-        catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
-
-    /*saveBudget(
-        _budgetStreamController.value.copyWith(categoryList: categories));*/
   }
 
   @override
