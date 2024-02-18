@@ -94,17 +94,27 @@ class BudgetRepositoryImpl extends BudgetRepository {
 
   @override
   Future<void> saveCategory(Category category) async {
-    final categories = [..._budgetStreamController.value.categoryList];
-    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+    final currentBudget = _budgetStreamController.value;
 
-    if (catIndex == -1) {
-      categories.add(category);
-    } else {
-      categories.removeAt(catIndex);
-      categories.insert(catIndex, category);
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets/${currentBudget.id}/categories')
+        : Uri.https(baseURL, '/api/budgets/${currentBudget.id}/categories');
+    final catResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(category.toJson()));
+
+    if(catResponse.statusCode == 200){
+      final newCategory = Category.fromJson(jsonDecode(catResponse.body));
+      final categories = [...currentBudget.categoryList];
+      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+      if (catIndex == -1) {
+        categories.add(category);
+      } else {
+        categories.removeAt(catIndex);
+        categories.insert(catIndex, category);
+      }
+      _budgetStreamController.add(currentBudget.copyWith(categoryList: categories));
     }
-    /*saveBudget(
-        _budgetStreamController.value.copyWith(categoryList: categories));*/
   }
 
   @override
