@@ -1,11 +1,9 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../transactions/models/transaction_type.dart';
+import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
   const TransferPage({Key? key}) : super(key: key);

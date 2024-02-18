@@ -5,7 +5,7 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../transactions/models/transaction_type.dart';
+import '../../transaction/models/transaction_type.dart';
 
 part 'accounts_state.dart';
 

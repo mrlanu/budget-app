@@ -1,8 +1,8 @@
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../transaction.dart';
 
 part 'transaction.g.dart';
 

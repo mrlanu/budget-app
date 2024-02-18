@@ -1,8 +1,8 @@
 import 'package:budget_app/colors.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../transaction/transaction.dart';
 
 class TransactionListTile extends StatelessWidget {
   final TransactionTile transactionTile;

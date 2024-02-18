@@ -4,8 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../budgets/models/models.dart';
-import '../../transactions/models/transaction_tile.dart';
-import '../../transactions/models/transaction_type.dart';
+import '../../transaction/transaction.dart';
 
 part 'transfer.g.dart';
 

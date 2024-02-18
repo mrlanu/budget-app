@@ -1,5 +1,6 @@
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
+
+
+import '../transaction.dart';
 
 enum TransactionsViewFilterTypes {
   categoryId,

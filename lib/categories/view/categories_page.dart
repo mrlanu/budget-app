@@ -2,12 +2,12 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/view/widgets/categories_grid.dart';
 import 'package:budget_app/colors.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../constants/constants.dart';
+import '../../transaction/models/transaction_type.dart';
 
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({Key? key}) : super(key: key);

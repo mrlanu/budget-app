@@ -3,26 +3,17 @@ import 'dart:convert';
 
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
-import 'package:budget_app/transactions/models/transaction.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 import '../../constants/api.dart';
+import '../transaction.dart';
 
 abstract class TransactionsRepository {
-  void initTransactions(DateTime dateTime);
+  void fetchTransactions(DateTime dateTime);
 
   Stream<List<ITransaction>> get transactions;
-
-  Future<void> fetchTransactions({
-    required DateTime dateTime,
-  });
-
-  Future<List<Transfer>> fetchTransfers({
-    required DateTime dateTime,
-  });
 
   Future<void> createTransaction(Transaction transaction);
 
@@ -43,15 +34,15 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Stream<List<ITransaction>> get transactions =>
       _transactionsStreamController.asBroadcastStream();
 
-  void initTransactions(DateTime dateTime) async {
-    final transactions = await fetchTransactions(dateTime: dateTime);
-    final transfers = await fetchTransfers(dateTime: dateTime);
+  @override
+  void fetchTransactions(DateTime dateTime) async {
+    final transactions = await _fetchTransactions(dateTime: dateTime);
+    final transfers = await _fetchTransfers(dateTime: dateTime);
 
       _transactionsStreamController.add([...transactions, ...transfers]);
   }
 
-  @override
-  Future<List<Transaction>> fetchTransactions({
+  Future<List<Transaction>> _fetchTransactions({
     required DateTime dateTime,
   }) async {
     final url = isTestMode
@@ -67,8 +58,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     return result;
   }
 
-  @override
-  Future<List<Transfer>> fetchTransfers({
+  Future<List<Transfer>> _fetchTransfers({
     required DateTime dateTime,
   }) async {
     final url = isTestMode

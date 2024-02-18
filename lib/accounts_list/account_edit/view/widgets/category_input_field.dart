@@ -1,9 +1,9 @@
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../budgets/models/category.dart';
 import '../../../../categories/view/categories_page.dart';
+import '../../../../transaction/models/transaction_type.dart';
 import '../../bloc/account_edit_bloc.dart';
 
 class CategoryInputField extends StatelessWidget {

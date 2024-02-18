@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../transactions/models/transaction_tile.dart';
+import '../../transaction/transaction.dart';
 
 part 'summary_tile.g.dart';
 

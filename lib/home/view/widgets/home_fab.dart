@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../transactions/models/transaction_type.dart';
-import '../../../transactions/transaction/view/transaction_page.dart';
+import '../../../transaction/transaction.dart';
 import '../../../transfer/view/transfer_page.dart';
-import '../../cubit/home_cubit.dart';
+import '../../home.dart';
 
 class HomeFloatingActionButton extends StatelessWidget {
   const HomeFloatingActionButton({super.key, required this.selectedTab});

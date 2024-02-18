@@ -1,12 +1,10 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
-import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
-import 'package:budget_app/transactions/transaction/view/transaction_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/transaction_type.dart';
+import '../transaction.dart';
+
+
 
 class TransactionPage extends StatelessWidget {
   const TransactionPage({Key? key}) : super(key: key);

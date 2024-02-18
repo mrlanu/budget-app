@@ -1,15 +1,10 @@
 import 'package:budget_app/colors.dart';
-import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
-import 'package:budget_app/transactions/transaction/view/widgets/account_input_field.dart';
-import 'package:budget_app/transactions/transaction/view/widgets/amount_input_field.dart';
-import 'package:budget_app/transactions/transaction/view/widgets/category_input_field.dart';
-import 'package:budget_app/transactions/transaction/view/widgets/date_input_field.dart';
-import 'package:budget_app/transactions/transaction/view/widgets/subcategory_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import '../../../constants/constants.dart';
+import '../transaction.dart';
 
 class TransactionForm extends StatelessWidget {
   const TransactionForm({Key? key}) : super(key: key);

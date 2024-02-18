@@ -1,15 +1,11 @@
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
-import 'package:budget_app/transactions/view/widgets/transaction_list_tile.dart';
 import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../constants/constants.dart';
-import '../../transfer/view/transfer_page.dart';
-import '../cubit/transactions_cubit.dart';
-import '../transaction/view/transaction_page.dart';
+import '../../../constants/constants.dart';
+import '../../../transaction/transaction.dart';
+import '../../../transfer/view/transfer_page.dart';
+import '../../home.dart';
 
 class TransactionsList extends StatelessWidget {
   final List<TransactionTile> transactionTiles;
@@ -31,7 +27,7 @@ class TransactionsList extends StatelessWidget {
             return TransactionListTile(
               transactionTile: tr,
               onDismissed: (_) {
-                final trCub = context.read<TransactionsCubit>();
+                final trCub = context.read<HomeCubit>();
                 trCub.deleteTransaction(transactionTile: tr);
               },
               onTap: () => {
@@ -53,7 +49,7 @@ class TransactionsList extends StatelessWidget {
                                   transactionType: tr.type,
                                   transaction: tr,
                                   date: context
-                                      .read<TransactionsCubit>()
+                                      .read<HomeCubit>()
                                       .state
                                       .selectedDate!),
                             )
@@ -62,7 +58,7 @@ class TransactionsList extends StatelessWidget {
                                 transaction: tr,
                                 transactionType: tr.type,
                                 date: context
-                                    .read<TransactionsCubit>()
+                                    .read<HomeCubit>()
                                     .state
                                     .selectedDate!),
                           )

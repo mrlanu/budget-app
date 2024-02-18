@@ -3,9 +3,6 @@ import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/drawer/main_drawer.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
-import 'package:budget_app/transactions/cubit/transactions_cubit.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,10 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
-import '../../transactions/repository/transactions_repository.dart';
-import '../../transactions/transaction/bloc/transaction_bloc.dart';
+import '../../transaction/transaction.dart';
 import '../../transfer/bloc/transfer_bloc.dart';
-import '../cubit/home_cubit.dart';
 import '../home.dart';
 
 class HomeDesktopPage extends StatelessWidget {
@@ -32,7 +27,7 @@ class HomeDesktopPage extends StatelessWidget {
             budgetRepository: context.read<BudgetRepository>()
           )..add(TransactionFormLoaded(
               transactionType: TransactionType.EXPENSE,
-              date: context.read<TransactionsCubit>().state.selectedDate!)),
+              date: context.read<HomeCubit>().state.selectedDate!)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
@@ -96,14 +91,14 @@ class HomeViewDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: h * 0.03),
-      child: BlocListener<TransactionsCubit, TransactionsState>(
+      child: BlocListener<HomeCubit, HomeState>(
         listenWhen: (previous, current) =>
             previous.tab != current.tab && current.tab == HomeTab.accounts,
         listener: (context, state) {
           // it has been added for update accounts during first tab open
           //context.read<AccountsCubit>().budgetChanged();
         },
-        child: BlocBuilder<TransactionsCubit, TransactionsState>(
+        child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) => Column(
                   children: [
                     Container(
@@ -118,9 +113,9 @@ class HomeViewDesktop extends StatelessWidget {
                         fontSize: 20,
                         color: BudgetColors.teal50,
                         onLeft: (date) =>
-                            context.read<TransactionsCubit>().changeDate(date),
+                            context.read<HomeCubit>().changeDate(date),
                         onRight: (date) =>
-                            context.read<TransactionsCubit>().changeDate(date),
+                            context.read<HomeCubit>().changeDate(date),
                       ),
                     ),
                     Row(
@@ -136,10 +131,10 @@ class HomeViewDesktop extends StatelessWidget {
                                   padding: EdgeInsets.all(20),
                                   width: w * 0.3,
                                   height: h * 0.7,
-                                  child: state.status == TransactionsStatus.loading
+                                  child: state.status == HomeStatus.loading
                                       ? Center(
                                           child: CircularProgressIndicator())
-                                      : CategorySummaries(),
+                                      : CategorySummaryListView(),
                                 ),
                               )
                             ],
@@ -179,9 +174,7 @@ class HomeViewDesktop extends StatelessWidget {
                         clipper: ShapeBorderClipper(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        child: HomeBottomNavBar(
-                            //selectedTab: state.tab,
-                            sectionsSum: context.read<HomeCubit>().state.sectionsSum),
+                        child: HomeBottomNavBar(),
                       ),
                     )
                   ],

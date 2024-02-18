@@ -1,18 +1,25 @@
-import 'package:budget_app/home/cubit/home_cubit.dart' as homeCubit;
-import 'package:budget_app/transactions/cubit/transactions_cubit.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../colors.dart';
 import '../../../constants/constants.dart';
-import '../../../transactions/view/transactions_list.dart';
-import '../../cubit/home_cubit.dart';
+import '../../../transaction/transaction.dart';
+import '../../home.dart';
 
-class CategorySummaries extends StatelessWidget {
-  CategorySummaries({super.key});
+class CategorySummaryList extends StatelessWidget {
+  const CategorySummaryList({super.key, this.homeTab = HomeTab.expenses});
+
+  final HomeTab homeTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return CategorySummaryListView();
+  }
+}
+
+class CategorySummaryListView extends StatelessWidget {
+  CategorySummaryListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,27 +27,13 @@ class CategorySummaries extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return MultiBlocListener(
       listeners: [
-        BlocListener<homeCubit.HomeCubit, homeCubit.HomeState>(
-          listenWhen: (previous, current) => previous.tab != current.tab,
-          listener: (context, state) {
-            BlocProvider.of<TransactionsCubit>(context).setTab(state.tab.index);
-          },
-        ),
-        BlocListener<homeCubit.HomeCubit, homeCubit.HomeState>(
-          listenWhen: (previous, current) =>
-              previous.selectedDate != current.selectedDate,
-          listener: (context, state) {
-            BlocProvider.of<TransactionsCubit>(context)
-                .changeDate(state.selectedDate!);
-          },
-        ),
-        BlocListener<TransactionsCubit, TransactionsState>(
+        BlocListener<HomeCubit, HomeState>(
           listenWhen: (previous, current) =>
               previous.lastDeletedTransaction !=
                   current.lastDeletedTransaction &&
               current.lastDeletedTransaction != null,
           listener: (context, state) {
-            final deletedTodo = state.lastDeletedTransaction!;
+            final deletedTransaction = state.lastDeletedTransaction!;
             final messenger = ScaffoldMessenger.of(context);
             messenger
               ..hideCurrentSnackBar()
@@ -49,28 +42,29 @@ class CategorySummaries extends StatelessWidget {
                   backgroundColor: BudgetColors.red800,
                   content: Text('Transaction has been deleted.',
                       style: TextStyle(
-                          color: BudgetColors.teal900, fontWeight: FontWeight.bold, fontSize: 20)),
+                          color: BudgetColors.teal900,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20)),
                   action: SnackBarAction(
                     textColor: Colors.black,
                     label: 'UNDO',
                     onPressed: () {
                       messenger.hideCurrentSnackBar();
-                      context.read<TransactionsCubit>().undoDelete();
+                      context.read<HomeCubit>().undoDelete();
                     },
                   ),
                 ),
               );
           },
-          child: CategorySummaries(),
         ),
       ],
       child: SingleChildScrollView(
-          child: BlocBuilder<TransactionsCubit, TransactionsState>(
+          child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           return ExpansionPanelList(
             dividerColor: BudgetColors.teal900,
             expansionCallback: (int index, bool isExpanded) {
-              final transactionsCubit = context.read<TransactionsCubit>()
+              final transactionsCubit = context.read<HomeCubit>()
                 ..changeExpanded(index);
               if (isDisplayDesktop(context)) {
                 context.read<TransactionBloc>().add(TransactionFormLoaded(

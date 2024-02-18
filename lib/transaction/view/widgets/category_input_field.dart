@@ -1,42 +1,45 @@
+import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../../../../budgets/budgets.dart';
-import '../../bloc/transaction_bloc.dart';
+import '../../transaction.dart';
 
-class AccountInput extends StatelessWidget {
+class CategoryInput extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        return DropdownButtonFormField<Account>(
+        return DropdownButtonFormField<Category>(
             icon: GestureDetector(
               child: Icon(Icons.edit_note),
               onTap: () {
-                Navigator.of(context).push(AccountsListPage.route());
+                //_openDialog(context);
+                Navigator.of(context).push(CategoriesPage.route(
+                    transactionType: state.transactionType));
               },
             ),
-            items: state.accounts.map((Account account) {
+            items: state.categories.map((Category category) {
               return DropdownMenuItem(
-                value: account,
-                //child: Text(account.extendName(state.accountCategories)),
-                child: Text(account.name),
+                value: category,
+                child: Text(category.name),
               );
             }).toList(),
             onChanged: (newValue) {
               context
                   .read<TransactionBloc>()
-                  .add(TransactionAccountChanged(account: newValue));
+                  .add(TransactionCategoryChanged(category: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.accounts.contains(state.account) ? state.account : null,
+            value: state.categories.contains(state.category) ? state.category : null,
             decoration: InputDecoration(
               icon: Icon(
-                Icons.account_balance,
+                Icons.category,
                 color: Theme.of(context).colorScheme.tertiary,
               ),
-              labelText: 'Account',
+              border: OutlineInputBorder(),
+              labelText: 'Category',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
             ));
       },

@@ -1,5 +1,4 @@
 import 'package:budget_app/colors.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,7 +6,7 @@ import '../../accounts_list/view/accounts_list_page.dart';
 import '../../categories/view/categories_page.dart';
 import '../../drawer/main_drawer.dart';
 import '../../shared/widgets/paginator/month_paginator.dart';
-import '../../transactions/models/transaction_type.dart';
+import '../../transaction/models/transaction_type.dart';
 import '../home.dart';
 
 class HomeMobilePage extends StatelessWidget {
@@ -24,19 +23,8 @@ class HomeMobileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomeCubit, HomeState>(
-      listener: (context, state) {
-        if (state.status == HomeStatus.failure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'Something went wrong'),
-              ),
-            );
-        }
-      },
-      child: BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
         return SafeArea(
             child: Scaffold(
                 backgroundColor: BudgetColors.teal50,
@@ -73,11 +61,10 @@ class HomeMobileView extends StatelessWidget {
                 ),
                 drawer: MainDrawer(),
                 floatingActionButton:
-                    HomeFloatingActionButton(selectedTab: state.tab),
-                body: CategorySummaries(),
-                bottomNavigationBar: HomeBottomNavBar(
-                    selectedTab: state.tab, sectionsSum: state.sectionsSum)));
-      }),
+                HomeFloatingActionButton(selectedTab: state.tab),
+                body: CategorySummaryList(homeTab: state.tab),
+                bottomNavigationBar: HomeBottomNavBar()));
+      },
     );
   }
 }

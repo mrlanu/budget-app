@@ -1,7 +1,7 @@
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../transaction/transaction.dart';
 import '../budgets.dart';
 
 part 'category.g.dart';

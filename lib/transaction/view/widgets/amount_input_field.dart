@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../bloc/transaction_bloc.dart';
+import '../../transaction.dart';
+
 
 class AmountInput extends StatelessWidget {
   @override

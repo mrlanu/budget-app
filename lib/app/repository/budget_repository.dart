@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../budgets/budgets.dart';
 import '../../constants/api.dart';
+import '../../transaction/transaction.dart';
 
 abstract class BudgetRepository {
   Future<List<String>> fetchAvailableBudgets();

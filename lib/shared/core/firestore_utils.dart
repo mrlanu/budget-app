@@ -1,11 +1,9 @@
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/transactions/models/transaction.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 
 import '../../constants/api.dart';
-import '../../transactions/models/transaction_tile.dart';
-import '../../transactions/models/transaction_type.dart';
+import '../../transaction/transaction.dart';
 
 extension FirestoreX on firestore.FirebaseFirestore {
   /*Future<void> saveTransaction(
