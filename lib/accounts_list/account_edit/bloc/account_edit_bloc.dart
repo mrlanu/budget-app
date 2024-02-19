@@ -114,7 +114,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         includeInTotal: state.isIncludeInTotals);
     isIdExist
         ? _budgetRepository.updateAccount(account)
-        : _budgetRepository.saveAccount(account);
+        : _budgetRepository.createAccount(account);
     Navigator.of(event.context).pop();
   }
 

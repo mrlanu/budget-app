@@ -60,7 +60,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
           name: state.name!,
           iconCode: state.iconCode,
           type: state.transactionType);
-      _budgetRepository.saveCategory(category);
+      _budgetRepository.createCategory(category);
     } else {
       final category = state.editCategory!
           .copyWith(name: state.name, iconCode: state.iconCode);

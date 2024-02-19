@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../budgets/budgets.dart';
 import '../../constants/api.dart';
@@ -17,38 +16,30 @@ class BudgetFailure implements Exception {
 }
 
 abstract class BudgetRepository {
+  // BUDGETS
   Future<List<String>> fetchAvailableBudgets();
-
   Future<void> fetchBudget(String budgetId);
-
   Stream<Budget> get budget;
-
-  Future<void> saveBudget({required Budget budget});
-
   Future<String> createBeginningBudget();
 
-  Future<void> saveCategory(Category category);
-
-  Future<void> updateCategory(Category category);
-
-  List<Category> getCategoriesByType(TransactionType type);
-
-  List<Category> getCategories();
-
-  Category getCategoryById(String name);
-
-  Account getAccountById(String accountId);
-
+  //ACCOUNTS
   List<Account> getAccounts();
-
-  Future<void> saveAccount(Account account);
-
+  Account getAccountById(String accountId);
+  Future<void> createAccount(Account account);
   Future<void> updateAccount(Account account);
 
-  Future<void> saveSubcategory(Category category, Subcategory subcategory);
+  //CATEGORIES
+  List<Category> getCategories();
+  Category getCategoryById(String name);
+  List<Category> getCategoriesByType(TransactionType type);
+  Future<void> createCategory(Category category);
+  Future<void> updateCategory(Category category);
 
+  //SUBCATEGORIES
+  Future<void> createSubcategory(Category category, Subcategory subcategory);
   Future<void> updateSubcategory(Category category, Subcategory subcategory);
 
+  //OTHER
   void pushUpdatedAccounts(List<Account> accounts);
 }
 
@@ -85,19 +76,14 @@ class BudgetRepositoryImpl extends BudgetRepository {
   }
 
   @override
-  Category getCategoryById(String id) =>
-      _budgetStreamController.value.categoryList
-          .where((cat) => cat.id == id)
-          .first;
-
-  @override
-  List<Category> getCategoriesByType(TransactionType type) =>
-      _budgetStreamController.value.categoryList
-          .where((cat) => cat.type == type)
-          .toList();
-
-  @override
-  List<Category> getCategories() => _budgetStreamController.value.categoryList;
+  Future<String> createBeginningBudget() async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets')
+        : Uri.https(baseURL, '/api/budgets');
+    final budgetResponse = await http.post(url, headers: await getHeaders());
+    final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
+    return newBudget.id;
+  }
 
   @override
   List<Account> getAccounts() => _budgetStreamController.value.accountList;
@@ -109,7 +95,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
           .first;
 
   @override
-  Future<void> saveAccount(Account account) async {
+  Future<void> createAccount(Account account) async {
     final currentBudget = _budgetStreamController.value;
     final path = '/api/budgets/${currentBudget.id}/accounts';
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
@@ -143,7 +129,22 @@ class BudgetRepositoryImpl extends BudgetRepository {
   }
 
   @override
-  Future<void> saveCategory(Category category) async {
+  List<Category> getCategories() => _budgetStreamController.value.categoryList;
+
+  @override
+  Category getCategoryById(String id) =>
+      _budgetStreamController.value.categoryList
+          .where((cat) => cat.id == id)
+          .first;
+
+  @override
+  List<Category> getCategoriesByType(TransactionType type) =>
+      _budgetStreamController.value.categoryList
+          .where((cat) => cat.type == type)
+          .toList();
+
+  @override
+  Future<void> createCategory(Category category) async {
     final currentBudget = _budgetStreamController.value;
 
     final path = '/api/budgets/${currentBudget.id}/categories';
@@ -181,7 +182,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
   }
 
   @override
-  Future<void> saveSubcategory(
+  Future<void> createSubcategory(
       Category category, Subcategory subcategory) async {
     final currentBudget = _budgetStreamController.value;
     final path =
@@ -241,63 +242,8 @@ class BudgetRepositoryImpl extends BudgetRepository {
   }
 
   @override
-  Future<void> saveBudget({required Budget budget}) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/budgets')
-        : Uri.https(baseURL, '/api/budgets');
-    final budgetResponse = await http.post(url,
-        headers: await getHeaders(), body: json.encode(budget.toJson()));
-    final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
-  }
-
-  @override
   void pushUpdatedAccounts(List<Account> accounts) {
     final currentBudget = _budgetStreamController.value;
     _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
   }
-
-  @override
-  Future<String> createBeginningBudget() async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/budgets')
-        : Uri.https(baseURL, '/api/budgets');
-    final budgetResponse = await http.post(url, headers: await getHeaders());
-    final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
-    return newBudget.id;
-  }
 }
-
-final _categoryList = <Category>[
-  Category(
-      id: Uuid().v4(),
-      name: 'Fun',
-      iconCode: 62922,
-      subcategoryList: [
-        Subcategory(id: Uuid().v4(), name: 'Alcohol'),
-        Subcategory(id: Uuid().v4(), name: 'Girls')
-      ],
-      type: TransactionType.EXPENSE),
-  Category(
-      id: Uuid().v4(),
-      name: 'Bills',
-      iconCode: 61675,
-      subcategoryList: [
-        Subcategory(id: Uuid().v4(), name: 'Gas'),
-        Subcategory(id: Uuid().v4(), name: 'Electricity')
-      ],
-      type: TransactionType.EXPENSE),
-  Category(
-      id: Uuid().v4(),
-      name: 'Checking',
-      iconCode: 61675,
-      subcategoryList: [],
-      type: TransactionType.ACCOUNT),
-];
-final accountList = <Account>[
-  Account(
-      id: Uuid().v4(),
-      name: 'Chase',
-      categoryId: _categoryList[2].id,
-      balance: 2000.0,
-      initialBalance: 2000.0)
-];

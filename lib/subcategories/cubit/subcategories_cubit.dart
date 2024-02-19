@@ -55,7 +55,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
         id: Uuid().v4(),
         name: state.name!,
       );
-      _budgetRepository.saveSubcategory(state.category!, subcategory);
+      _budgetRepository.createSubcategory(state.category!, subcategory);
     } else {
       final subcategory = state.editSubcategory!.copyWith(name: state.name);
       _budgetRepository.updateSubcategory(state.category!, subcategory);
