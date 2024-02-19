@@ -49,16 +49,17 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
   }
 
   Future<void> onSubmit() async {
-    var subcategory;
+
     if (state.editSubcategory == null) {
-      subcategory = Subcategory(
+      final subcategory = Subcategory(
         id: Uuid().v4(),
         name: state.name!,
       );
+      _budgetRepository.saveSubcategory(state.category!, subcategory);
     } else {
-      subcategory = state.editSubcategory!.copyWith(name: state.name);
+      final subcategory = state.editSubcategory!.copyWith(name: state.name);
+      _budgetRepository.updateSubcategory(state.category!, subcategory);
     }
-    _budgetRepository.saveSubcategory(state.category!, subcategory);
   }
 
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {

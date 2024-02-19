@@ -21,6 +21,8 @@ abstract class BudgetRepository {
 
   Future<void> saveCategory(Category category);
 
+  Future<void> updateCategory(Category category);
+
   List<Category> getCategoriesByType(TransactionType type);
 
   List<Category> getCategories();
@@ -34,6 +36,8 @@ abstract class BudgetRepository {
   Future<void> createAccount(Account account);
 
   Future<void> saveSubcategory(Category category, Subcategory subcategory);
+
+  Future<void> updateSubcategory(Category category, Subcategory subcategory);
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
@@ -104,14 +108,27 @@ class BudgetRepositoryImpl extends BudgetRepository {
     if (catResponse.statusCode == 200) {
       final newCategory = Category.fromJson(jsonDecode(catResponse.body));
       final categories = [...currentBudget.categoryList];
-      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+      categories.add(category);
+      _budgetStreamController
+          .add(currentBudget.copyWith(categoryList: categories));
+    }
+  }
 
-      if (catIndex == -1) {
-        categories.add(category);
-      } else {
-        categories.removeAt(catIndex);
-        categories.insert(catIndex, category);
-      }
+  @override
+  Future<void> updateCategory(Category category) async {
+    final currentBudget = _budgetStreamController.value;
+
+    final path = '/api/budgets/${currentBudget.id}/categories';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
+    final catResponse = await http.put(url,
+        headers: await getHeaders(), body: json.encode(category.toJson()));
+
+    if (catResponse.statusCode == 200) {
+      final updatedCategory = Category.fromJson(jsonDecode(catResponse.body));
+      final categories = [...currentBudget.categoryList];
+      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+      categories.removeAt(catIndex);
+      categories.insert(catIndex, category);
       _budgetStreamController
           .add(currentBudget.copyWith(categoryList: categories));
     }
@@ -125,6 +142,35 @@ class BudgetRepositoryImpl extends BudgetRepository {
         '/api/budgets/${currentBudget.id}/categories/${category.id}/subcategories';
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(subcategory.toJson()));
+
+    if (catResponse.statusCode == 200) {
+      final subcategoriesCopy = [
+        ...getCategoryById(category.id).subcategoryList
+      ];
+
+      subcategoriesCopy.add(subcategory);
+
+      final categories = [..._budgetStreamController.value.categoryList];
+      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+      categories.removeAt(catIndex);
+      categories.insert(
+          catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
+
+      _budgetStreamController
+          .add(currentBudget.copyWith(categoryList: categories));
+    }
+  }
+
+  @override
+  Future<void> updateSubcategory(
+      Category category, Subcategory subcategory) async {
+    final currentBudget = _budgetStreamController.value;
+    final path =
+        '/api/budgets/${currentBudget.id}/categories/${category.id}/subcategories';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
+    final catResponse = await http.put(url,
         headers: await getHeaders(), body: json.encode(subcategory.toJson()));
 
     if (catResponse.statusCode == 200) {

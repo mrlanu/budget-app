@@ -54,18 +54,18 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   }
 
   Future<void> onSubmit() async {
-    var category;
     if (state.editCategory == null) {
-      category = Category(
+      final category = Category(
           id: Uuid().v4(),
           name: state.name!,
           iconCode: state.iconCode,
           type: state.transactionType);
+      _budgetRepository.saveCategory(category);
     } else {
-      category = state.editCategory!
+      final category = state.editCategory!
           .copyWith(name: state.name, iconCode: state.iconCode);
+      _budgetRepository.updateCategory(category);
     }
-    _budgetRepository.saveCategory(category);
     emit(state.copyWith(status: CategoriesStatus.loading));
   }
 
