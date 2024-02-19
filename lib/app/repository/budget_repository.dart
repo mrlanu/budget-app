@@ -8,6 +8,14 @@ import '../../budgets/budgets.dart';
 import '../../constants/api.dart';
 import '../../transaction/transaction.dart';
 
+class BudgetFailure implements Exception {
+  final String message;
+
+  const BudgetFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+}
+
 abstract class BudgetRepository {
   Future<List<String>> fetchAvailableBudgets();
 
@@ -34,11 +42,14 @@ abstract class BudgetRepository {
   List<Account> getAccounts();
 
   Future<void> saveAccount(Account account);
+
   Future<void> updateAccount(Account account);
 
   Future<void> saveSubcategory(Category category, Subcategory subcategory);
 
   Future<void> updateSubcategory(Category category, Subcategory subcategory);
+
+  void pushUpdatedAccounts(List<Account> accounts);
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
@@ -104,13 +115,13 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final accResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(account.toJson()));
-    if (accResponse.statusCode == 200) {
-      final newCategory = Account.fromJson(jsonDecode(accResponse.body));
-      final accounts = [..._budgetStreamController.value.accountList];
-      accounts.add(account);
-      _budgetStreamController
-          .add(currentBudget.copyWith(accountList: accounts));
+    if (accResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(accResponse.body)['message']);
     }
+    final newCategory = Account.fromJson(jsonDecode(accResponse.body));
+    final accounts = [..._budgetStreamController.value.accountList];
+    accounts.add(account);
+    _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
   }
 
   @override
@@ -120,15 +131,15 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final accResponse = await http.put(url,
         headers: await getHeaders(), body: json.encode(account.toJson()));
-    if (accResponse.statusCode == 200) {
-      final updatedAccount = Account.fromJson(jsonDecode(accResponse.body));
-      final accounts = [...currentBudget.accountList];
-      final accIndex = accounts.indexWhere((acc) => acc.id == account.id);
-      accounts.removeAt(accIndex);
-      accounts.insert(accIndex, account);
-      _budgetStreamController
-          .add(currentBudget.copyWith(accountList: accounts));
+    if (accResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(accResponse.body)['message']);
     }
+    final updatedAccount = Account.fromJson(jsonDecode(accResponse.body));
+    final accounts = [...currentBudget.accountList];
+    final accIndex = accounts.indexWhere((acc) => acc.id == account.id);
+    accounts.removeAt(accIndex);
+    accounts.insert(accIndex, account);
+    _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
   }
 
   @override
@@ -139,14 +150,14 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(category.toJson()));
-
-    if (catResponse.statusCode == 200) {
-      final newCategory = Category.fromJson(jsonDecode(catResponse.body));
-      final categories = [...currentBudget.categoryList];
-      categories.add(category);
-      _budgetStreamController
-          .add(currentBudget.copyWith(categoryList: categories));
+    if (catResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(catResponse.body)['message']);
     }
+    final newCategory = Category.fromJson(jsonDecode(catResponse.body));
+    final categories = [...currentBudget.categoryList];
+    categories.add(category);
+    _budgetStreamController
+        .add(currentBudget.copyWith(categoryList: categories));
   }
 
   @override
@@ -157,16 +168,16 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.put(url,
         headers: await getHeaders(), body: json.encode(category.toJson()));
-
-    if (catResponse.statusCode == 200) {
-      final updatedCategory = Category.fromJson(jsonDecode(catResponse.body));
-      final categories = [...currentBudget.categoryList];
-      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
-      categories.removeAt(catIndex);
-      categories.insert(catIndex, category);
-      _budgetStreamController
-          .add(currentBudget.copyWith(categoryList: categories));
+    if (catResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(catResponse.body)['message']);
     }
+    final updatedCategory = Category.fromJson(jsonDecode(catResponse.body));
+    final categories = [...currentBudget.categoryList];
+    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+    categories.removeAt(catIndex);
+    categories.insert(catIndex, category);
+    _budgetStreamController
+        .add(currentBudget.copyWith(categoryList: categories));
   }
 
   @override
@@ -178,24 +189,22 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(subcategory.toJson()));
-
-    if (catResponse.statusCode == 200) {
-      final subcategoriesCopy = [
-        ...getCategoryById(category.id).subcategoryList
-      ];
-
-      subcategoriesCopy.add(subcategory);
-
-      final categories = [..._budgetStreamController.value.categoryList];
-      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
-
-      categories.removeAt(catIndex);
-      categories.insert(
-          catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
-
-      _budgetStreamController
-          .add(currentBudget.copyWith(categoryList: categories));
+    if (catResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(catResponse.body)['message']);
     }
+    final subcategoriesCopy = [...getCategoryById(category.id).subcategoryList];
+
+    subcategoriesCopy.add(subcategory);
+
+    final categories = [..._budgetStreamController.value.categoryList];
+    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+    categories.removeAt(catIndex);
+    categories.insert(
+        catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
+
+    _budgetStreamController
+        .add(currentBudget.copyWith(categoryList: categories));
   }
 
   @override
@@ -207,30 +216,28 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
     final catResponse = await http.put(url,
         headers: await getHeaders(), body: json.encode(subcategory.toJson()));
-
-    if (catResponse.statusCode == 200) {
-      final subcategoriesCopy = [
-        ...getCategoryById(category.id).subcategoryList
-      ];
-      final subCatIndex =
-          subcategoriesCopy.indexWhere((sc) => sc.id == subcategory.id);
-      if (subCatIndex == -1) {
-        subcategoriesCopy.add(subcategory);
-      } else {
-        subcategoriesCopy.removeAt(subCatIndex);
-        subcategoriesCopy.insert(subCatIndex, subcategory);
-      }
-
-      final categories = [..._budgetStreamController.value.categoryList];
-      final catIndex = categories.indexWhere((cat) => cat.id == category.id);
-
-      categories.removeAt(catIndex);
-      categories.insert(
-          catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
-
-      _budgetStreamController
-          .add(currentBudget.copyWith(categoryList: categories));
+    if (catResponse.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(catResponse.body)['message']);
     }
+    final subcategoriesCopy = [...getCategoryById(category.id).subcategoryList];
+    final subCatIndex =
+        subcategoriesCopy.indexWhere((sc) => sc.id == subcategory.id);
+    if (subCatIndex == -1) {
+      subcategoriesCopy.add(subcategory);
+    } else {
+      subcategoriesCopy.removeAt(subCatIndex);
+      subcategoriesCopy.insert(subCatIndex, subcategory);
+    }
+
+    final categories = [..._budgetStreamController.value.categoryList];
+    final catIndex = categories.indexWhere((cat) => cat.id == category.id);
+
+    categories.removeAt(catIndex);
+    categories.insert(
+        catIndex, category.copyWith(subcategoryList: subcategoriesCopy));
+
+    _budgetStreamController
+        .add(currentBudget.copyWith(categoryList: categories));
   }
 
   @override
@@ -241,6 +248,12 @@ class BudgetRepositoryImpl extends BudgetRepository {
     final budgetResponse = await http.post(url,
         headers: await getHeaders(), body: json.encode(budget.toJson()));
     final newBudget = Budget.fromJson(jsonDecode(budgetResponse.body));
+  }
+
+  @override
+  void pushUpdatedAccounts(List<Account> accounts) {
+    final currentBudget = _budgetStreamController.value;
+    _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
   }
 
   @override

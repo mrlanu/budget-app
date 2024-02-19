@@ -85,7 +85,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   void _onBudgetChanged(
       TransferBudgetChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(accounts: event.budget.accountList,
+    emit(state.copyWith(
+        accounts: event.budget.accountList,
         accountCategories: event.budget.categoryList
             .where((cat) => cat.type == TransactionType.ACCOUNT)
             .toList()));
@@ -137,13 +138,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       date: state.date ?? DateTime.now(),
       fromAccountId: state.fromAccount!.id,
       toAccountId: state.toAccount!.id,
-      notes: state.notes, budgetId: await getCurrentBudgetId(),
+      notes: state.notes,
+      budgetId: await getCurrentBudgetId(),
     );
     try {
-      await _transactionsRepository.saveTransfer(
-          transfer: transfer,
-          budget: await _budgetRepository.budget.first,
-          editedTransaction: state.editedTransfer);
+      await state.editedTransfer == null
+          ? _transactionsRepository.createTransfer(transfer)
+          : _transactionsRepository.updateTransfer(transfer);
+      _updateBudgetOnTransfer(transfer: transfer, editedTransfer: state.editedTransfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransferFormLoaded())
@@ -151,6 +153,51 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
+  }
+
+  void _updateBudgetOnTransfer(
+      {required Transfer transfer,
+        TransactionTile? editedTransfer}) {
+    List<Account> updatedAccounts = [];
+
+    final accounts = _budgetRepository.getAccounts();
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (editedTransfer != null) {
+      updatedAccounts = accounts.map((acc) {
+        if (acc.id == editedTransfer.fromAccount!.id) {
+          return acc.copyWith(balance: acc.balance + editedTransfer.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+      updatedAccounts = updatedAccounts.map((acc) {
+        if (acc.id == editedTransfer.toAccount!.id) {
+          return acc.copyWith(balance: acc.balance - editedTransfer.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...accounts];
+    }
+
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.fromAccountId) {
+        return acc.copyWith(balance: acc.balance - transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.toAccountId) {
+        return acc.copyWith(balance: acc.balance + transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
   @override

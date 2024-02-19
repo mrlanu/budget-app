@@ -160,15 +160,55 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       accountId: state.account!.id,
     );
     try {
-      await _transactionsRepository.createTransaction(transaction);
+      await state.editedTransaction == null
+          ? _transactionsRepository.createTransaction(transaction)
+          : _transactionsRepository.updateTransaction(transaction);
+      _updateBudgetOnAddOrEditTransaction(
+          transaction: transaction, editedTransaction: state.editedTransaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransactionFormLoaded(
-          transactionType: transaction.type!, date: transaction.date!))
+              transactionType: transaction.type!, date: transaction.date!))
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
+  }
+
+  void _updateBudgetOnAddOrEditTransaction(
+      {required Transaction transaction, TransactionTile? editedTransaction}) {
+    List<Account> updatedAccounts = [];
+    final accounts = _budgetRepository.getAccounts();
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (editedTransaction != null) {
+      updatedAccounts = accounts.map((acc) {
+        if (acc.id == editedTransaction.fromAccount!.id) {
+          return acc.copyWith(
+              balance: acc.balance +
+                  (editedTransaction.type == TransactionType.EXPENSE
+                      ? editedTransaction.amount
+                      : -editedTransaction.amount));
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...accounts];
+    }
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.accountId) {
+        return acc.copyWith(
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? -transaction.amount!
+                    : transaction.amount!));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
   @override
