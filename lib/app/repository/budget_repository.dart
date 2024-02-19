@@ -33,7 +33,8 @@ abstract class BudgetRepository {
 
   List<Account> getAccounts();
 
-  Future<void> createAccount(Account account);
+  Future<void> saveAccount(Account account);
+  Future<void> updateAccount(Account account);
 
   Future<void> saveSubcategory(Category category, Subcategory subcategory);
 
@@ -95,6 +96,40 @@ class BudgetRepositoryImpl extends BudgetRepository {
       _budgetStreamController.value.accountList
           .where((acc) => acc.id == accountId)
           .first;
+
+  @override
+  Future<void> saveAccount(Account account) async {
+    final currentBudget = _budgetStreamController.value;
+    final path = '/api/budgets/${currentBudget.id}/accounts';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
+    final accResponse = await http.post(url,
+        headers: await getHeaders(), body: json.encode(account.toJson()));
+    if (accResponse.statusCode == 200) {
+      final newCategory = Account.fromJson(jsonDecode(accResponse.body));
+      final accounts = [..._budgetStreamController.value.accountList];
+      accounts.add(account);
+      _budgetStreamController
+          .add(currentBudget.copyWith(accountList: accounts));
+    }
+  }
+
+  @override
+  Future<void> updateAccount(Account account) async {
+    final currentBudget = _budgetStreamController.value;
+    final path = '/api/budgets/${currentBudget.id}/accounts';
+    final url = isTestMode ? Uri.http(baseURL, path) : Uri.https(baseURL, path);
+    final accResponse = await http.put(url,
+        headers: await getHeaders(), body: json.encode(account.toJson()));
+    if (accResponse.statusCode == 200) {
+      final updatedAccount = Account.fromJson(jsonDecode(accResponse.body));
+      final accounts = [...currentBudget.accountList];
+      final accIndex = accounts.indexWhere((acc) => acc.id == account.id);
+      accounts.removeAt(accIndex);
+      accounts.insert(accIndex, account);
+      _budgetStreamController
+          .add(currentBudget.copyWith(accountList: accounts));
+    }
+  }
 
   @override
   Future<void> saveCategory(Category category) async {
@@ -196,14 +231,6 @@ class BudgetRepositoryImpl extends BudgetRepository {
       _budgetStreamController
           .add(currentBudget.copyWith(categoryList: categories));
     }
-  }
-
-  @override
-  Future<void> createAccount(Account account) async {
-    final accountsCopy = [..._budgetStreamController.value.accountList];
-    accountsCopy.add(account);
-    /*saveBudget(
-        _budgetStreamController.value.copyWith(accountList: accountsCopy));*/
   }
 
   @override

@@ -63,7 +63,6 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
           isValid: true));
     } else {
       emit(state.copyWith(
-          id: Uuid().v4(),
           categories: filteredCategories,
           accStatus: AccountEditStatus.success));
     }
@@ -105,14 +104,17 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   Future<void> _onFormSubmitted(
       AccountFormSubmitted event, Emitter<AccountEditState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+    final isIdExist = state.id != null;
     final account = Account(
-        id: state.id!,
+        id: isIdExist ? state.id! : Uuid().v4(),
         name: state.name!,
         categoryId: state.category!.id,
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals);
-    _budgetRepository.createAccount(account);
+    isIdExist
+        ? _budgetRepository.updateAccount(account)
+        : _budgetRepository.saveAccount(account);
     Navigator.of(event.context).pop();
   }
 

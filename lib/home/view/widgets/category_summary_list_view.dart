@@ -75,7 +75,7 @@ class CategorySummaryListView extends StatelessWidget {
                     date: transactionsCubit.state.selectedDate!));
               }
             },
-            children: state.summaryList.map<ExpansionPanel>((tile) {
+            children: state.summaryList.map<ExpansionPanel>((summary) {
               return ExpansionPanel(
                   canTapOnHeader: true,
                   backgroundColor: BudgetColors.teal100,
@@ -83,13 +83,13 @@ class CategorySummaryListView extends StatelessWidget {
                     return ListTile(
                       leading: FaIcon(
                           color: scheme.primary,
-                          IconData(tile.iconCodePoint,
+                          IconData(summary.iconCodePoint,
                               fontFamily: 'FontAwesomeSolid')),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '\$ ${tile.total.toStringAsFixed(2)}',
+                            '\$ ${summary.total.toStringAsFixed(2)}',
                             style: TextStyle(
                                 fontSize: textTheme.titleLarge!.fontSize,
                                 fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class CategorySummaryListView extends StatelessWidget {
                         ],
                       ),
                       title: Text(
-                        tile.name,
+                        summary.name,
                         style: TextStyle(
                             fontSize: textTheme.titleLarge!.fontSize,
                             fontWeight: FontWeight.bold,
@@ -107,8 +107,8 @@ class CategorySummaryListView extends StatelessWidget {
                     );
                   },
                   body:
-                      TransactionsList(transactionTiles: tile.transactionTiles),
-                  isExpanded: tile.isExpanded);
+                      TransactionsList(transactionTiles: summary.transactionTiles),
+                  isExpanded: summary.isExpanded);
             }).toList(),
           );
         },

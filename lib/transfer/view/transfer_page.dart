@@ -15,7 +15,7 @@ class TransferPage extends StatelessWidget {
           BlocProvider(
             create: (context) =>
             TransferBloc(
-              transactionsRepository: context.read<TransactionsRepositoryImpl>(),
+              transactionsRepository: context.read<TransactionsRepository>(),
               budgetRepository: context.read<BudgetRepository>()
             )
               ..add(TransferFormLoaded(transactionTile: transactionTile)),
