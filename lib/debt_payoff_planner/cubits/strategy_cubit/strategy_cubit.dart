@@ -17,12 +17,12 @@ class StrategyCubit extends Cubit<StrategyState> {
     emit(LoadingStrategyState());
     final url = isTestMode
         ? Uri.http(baseURL, '/api/debts/payoff', {
-            'budgetId': await getBudgetId(),
+            'budgetId': await getCurrentBudgetId(),
             'extraPayment': extraPayment,
             'strategy': strategyName,
           })
         : Uri.https(baseURL, '/api/debts/payoff', {
-            'budgetId': await getBudgetId(),
+            'budgetId': await getCurrentBudgetId(),
             'extraPayment': extraPayment,
             'strategy': strategyName,
           });

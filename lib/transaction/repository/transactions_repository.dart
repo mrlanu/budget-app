@@ -19,12 +19,10 @@ class TransactionFailure implements Exception {
 }
 
 abstract class TransactionsRepository {
-  void fetchTransactions(DateTime dateTime);
-
   Stream<List<ITransaction>> get transactions;
 
+  void fetchTransactions(DateTime dateTime);
   Future<void> createTransaction(Transaction transaction);
-
   Future<void> updateTransaction(Transaction transaction);
 
   Future<void> createTransfer(Transfer transfer);
@@ -48,46 +46,6 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     final transfers = await _fetchTransfers(dateTime: dateTime);
 
     _transactionsStreamController.add([...transactions, ...transfers]);
-  }
-
-  Future<List<Transaction>> _fetchTransactions({
-    required DateTime dateTime,
-  }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          })
-        : Uri.https(baseURL, '/api/transactions', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          });
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transaction.fromJson(jsonMap)).toList();
-    return result;
-  }
-
-  Future<List<Transfer>> _fetchTransfers({
-    required DateTime dateTime,
-  }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          })
-        : Uri.https(baseURL, '/api/transfers', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          });
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
-    return result;
   }
 
   @override
@@ -166,5 +124,45 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   Future<Transaction> deleteTransactionOrTransfer(
       {required TransactionTile transaction, required Budget budget}) async {
     return Transaction();
+  }
+
+  Future<List<Transaction>> _fetchTransactions({
+    required DateTime dateTime,
+  }) async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/transactions', {
+      'budgetId': await getCurrentBudgetId(),
+      'date': dateTime.toString()
+    })
+        : Uri.https(baseURL, '/api/transactions', {
+      'budgetId': await getCurrentBudgetId(),
+      'date': dateTime.toString()
+    });
+
+    final response = await http.get(url, headers: await getHeaders());
+    final result = List<Map<String, dynamic>>.from(
+      json.decode(response.body) as List,
+    ).map((jsonMap) => Transaction.fromJson(jsonMap)).toList();
+    return result;
+  }
+
+  Future<List<Transfer>> _fetchTransfers({
+    required DateTime dateTime,
+  }) async {
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/transfers', {
+      'budgetId': await getCurrentBudgetId(),
+      'date': dateTime.toString()
+    })
+        : Uri.https(baseURL, '/api/transfers', {
+      'budgetId': await getCurrentBudgetId(),
+      'date': dateTime.toString()
+    });
+
+    final response = await http.get(url, headers: await getHeaders());
+    final result = List<Map<String, dynamic>>.from(
+      json.decode(response.body) as List,
+    ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
+    return result;
   }
 }

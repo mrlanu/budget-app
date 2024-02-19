@@ -12,7 +12,6 @@ import '../../repository/debts_repository.dart';
 import '../debt_form.dart';
 
 part 'debt_event.dart';
-
 part 'debt_state.dart';
 
 class DebtBloc extends Bloc<DebtEvent, DebtState> {
@@ -94,7 +93,7 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
               startBalance: double.parse(state.balance.value),
               currentBalance: double.parse(state.balance.value),
               nextPaymentDue: DateTime.now(),
-              budgetId: await getBudgetId(),
+              budgetId: await getCurrentBudgetId(),
               apr: double.parse(state.apr.value),
               minimumPayment: double.parse(state.minPayment.value)));
       emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));

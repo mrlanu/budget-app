@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../constants/api.dart';
 
@@ -39,8 +39,8 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
 
   Future<void> _fetchData() async {
     final url = isTestMode
-        ? Uri.http(baseURL, '/api/summary', {'budgetId': await getBudgetId()})
-        : Uri.https(baseURL, '/api/summary', {'budgetId': await getBudgetId()});
+        ? Uri.http(baseURL, '/api/summary', {'budgetId': await getCurrentBudgetId()})
+        : Uri.https(baseURL, '/api/summary', {'budgetId': await getCurrentBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result =

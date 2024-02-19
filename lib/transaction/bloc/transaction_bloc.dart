@@ -211,6 +211,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
+  void _updateBudgetOnDeleteTransaction(
+      {required TransactionTile transaction}) {
+    final accounts = _budgetRepository.getAccounts();
+    List<Account> updatedAccounts = [...accounts];
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? transaction.amount
+                    : -transaction.amount));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+  }
+
   @override
   Future<void> close() {
     _budgetSubscription.cancel();

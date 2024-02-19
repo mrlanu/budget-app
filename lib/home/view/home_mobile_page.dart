@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../accounts_list/view/accounts_list_page.dart';
 import '../../categories/view/categories_page.dart';
 import '../../drawer/main_drawer.dart';
-import '../../shared/widgets/paginator/month_paginator.dart';
+import '../../shared/widgets/month_paginator.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../home.dart';
 

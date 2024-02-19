@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+
 import '../../constants/api.dart';
 import '../models/models.dart';
-import 'package:http/http.dart' as http;
 
 class DebtFailure implements Exception {
   final String message;
@@ -24,8 +25,8 @@ class DebtRepositoryImpl extends DebtsRepository {
   @override
   Future<List<Debt>> fetchAllDebts() async {
     final url = isTestMode
-        ? Uri.http(baseURL, '/api/debts', {'budgetId': await getBudgetId()})
-        : Uri.https(baseURL, '/api/debts', {'budgetId': await getBudgetId()});
+        ? Uri.http(baseURL, '/api/debts', {'budgetId': await getCurrentBudgetId()})
+        : Uri.https(baseURL, '/api/debts', {'budgetId': await getCurrentBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(

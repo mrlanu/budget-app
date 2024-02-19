@@ -15,9 +15,9 @@ class ChartRepositoryImpl extends ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData() async {
     final url = isTestMode
         ? Uri.http(baseURL, '/api/charts/trend-chart',
-            {'budgetId': await getBudgetId()})
+            {'budgetId': await getCurrentBudgetId()})
         : Uri.https(baseURL, '/api/charts/trend-chart',
-            {'budgetId': await getBudgetId()});
+            {'budgetId': await getCurrentBudgetId()});
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(

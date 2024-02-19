@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
-import '../../shared/widgets/paginator/month_paginator.dart';
+import '../../shared/widgets/month_paginator.dart';
 import '../../transaction/transaction.dart';
 import '../../transfer/bloc/transfer_bloc.dart';
 import '../home.dart';

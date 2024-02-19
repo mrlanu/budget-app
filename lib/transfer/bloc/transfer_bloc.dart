@@ -200,6 +200,31 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
+  void _updateBudgetOnDeleteTransfer(
+      {required TransactionTile transaction}) {
+    final accounts = _budgetRepository.getAccounts();
+    List<Account> updatedAccounts = [];
+
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    updatedAccounts = accounts.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(balance: acc.balance + transaction.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.toAccount!.id) {
+        return acc.copyWith(balance: acc.balance - transaction.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+  }
+
   @override
   Future<void> close() {
     _budgetSubscription.cancel();

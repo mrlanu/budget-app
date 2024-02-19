@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../colors.dart';
 import '../../../constants/constants.dart';
-import '../../../shared/models/section.dart';
+import '../../../shared/shared.dart';
 import '../../../transaction/transaction.dart';
 import '../../home.dart';
 

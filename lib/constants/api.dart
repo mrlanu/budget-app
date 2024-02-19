@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:budget_app/shared/models/budget.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,14 +27,14 @@ Future<String> getCurrentBudgetId() async {
   return instance.getString('currentBudgetId') ?? '';
 }
 
-Future<String> getBudgetId() async {
+/*Future<String> getBudgetId() async {
   final instance = await SharedPreferences.getInstance();
   final budgetJson = instance.getString('budget');
   Budget budget;
   if (budgetJson != null) {
     budget = Budget.fromJson(jsonDecode(budgetJson));
   } else {
-    budget = Budget(id: '', userId: '');
+    budget = Budget();
   }
   return budget.id;
-}
+}*/
