@@ -41,6 +41,7 @@ abstract class BudgetRepository {
 
   //OTHER
   void pushUpdatedAccounts(List<Account> accounts);
+  Future<void> deleteBudget();
 }
 
 class BudgetRepositoryImpl extends BudgetRepository {
@@ -240,6 +241,19 @@ class BudgetRepositoryImpl extends BudgetRepository {
     _budgetStreamController
         .add(currentBudget.copyWith(categoryList: categories));
   }
+
+  @override
+  Future<void> deleteBudget() async {
+    final currentBudget = _budgetStreamController.value;
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/budgets/${currentBudget.id}')
+        : Uri.https(baseURL, '/api/budgets/${currentBudget.id}');
+    final response = await http.delete(url, headers: await getHeaders());
+    if (response.statusCode != 200) {
+      throw BudgetFailure(jsonDecode(response.body)['message']);
+    }
+  }
+
 
   @override
   void pushUpdatedAccounts(List<Account> accounts) {

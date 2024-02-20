@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:http/http.dart' as http;
@@ -22,14 +21,17 @@ abstract class TransactionsRepository {
   Stream<List<ITransaction>> get transactions;
 
   void fetchTransactions(DateTime dateTime);
+
   Future<void> createTransaction(Transaction transaction);
+
   Future<void> updateTransaction(Transaction transaction);
 
   Future<void> createTransfer(Transfer transfer);
+
   Future<void> updateTransfer(Transfer transfer);
 
-  Future<Transaction> deleteTransactionOrTransfer(
-      {required TransactionTile transaction, required Budget budget});
+  Future<void> deleteTransactionOrTransfer(
+      {required TransactionTile transaction});
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
@@ -94,8 +96,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     if (transferResponse.statusCode != 200) {
       throw TransactionFailure(jsonDecode(transferResponse.body)['message']);
     }
-    final newTransfer =
-    Transfer.fromJson(jsonDecode(transferResponse.body));
+    final newTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
     final transactions = [..._transactionsStreamController.value];
     transactions.add(newTransfer);
     _transactionsStreamController.add(transactions);
@@ -112,7 +113,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       throw TransactionFailure(jsonDecode(transferResponse.body)['message']);
     }
     final updatedTransfer =
-    Transfer.fromJson(jsonDecode(transferResponse.body));
+        Transfer.fromJson(jsonDecode(transferResponse.body));
     final transactions = [..._transactionsStreamController.value];
     final trIndex = transactions.indexWhere((t) => t.getId == transfer.id);
     transactions.removeAt(trIndex);
@@ -121,9 +122,21 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<Transaction> deleteTransactionOrTransfer(
-      {required TransactionTile transaction, required Budget budget}) async {
-    return Transaction();
+  Future<void> deleteTransactionOrTransfer({required TransactionTile transaction}) async {
+    final partUrl = transaction.type == TransactionType.TRANSFER
+        ? 'transfers'
+        : 'transactions';
+    final url = isTestMode
+        ? Uri.http(baseURL, '/api/$partUrl/${transaction.id}')
+        : Uri.https(baseURL, '/api/$partUrl/${transaction.id}');
+    final response = await http.delete(url, headers: await getHeaders());
+    if (response.statusCode != 200) {
+      throw TransactionFailure(jsonDecode(response.body)['message']);
+    }
+    final transactions = [..._transactionsStreamController.value];
+    final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
+    transactions.removeAt(trIndex);
+    _transactionsStreamController.add(transactions);
   }
 
   Future<List<Transaction>> _fetchTransactions({
@@ -131,13 +144,13 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }) async {
     final url = isTestMode
         ? Uri.http(baseURL, '/api/transactions', {
-      'budgetId': await getCurrentBudgetId(),
-      'date': dateTime.toString()
-    })
+            'budgetId': await getCurrentBudgetId(),
+            'date': dateTime.toString()
+          })
         : Uri.https(baseURL, '/api/transactions', {
-      'budgetId': await getCurrentBudgetId(),
-      'date': dateTime.toString()
-    });
+            'budgetId': await getCurrentBudgetId(),
+            'date': dateTime.toString()
+          });
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(
@@ -151,13 +164,13 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }) async {
     final url = isTestMode
         ? Uri.http(baseURL, '/api/transfers', {
-      'budgetId': await getCurrentBudgetId(),
-      'date': dateTime.toString()
-    })
+            'budgetId': await getCurrentBudgetId(),
+            'date': dateTime.toString()
+          })
         : Uri.https(baseURL, '/api/transfers', {
-      'budgetId': await getCurrentBudgetId(),
-      'date': dateTime.toString()
-    });
+            'budgetId': await getCurrentBudgetId(),
+            'date': dateTime.toString()
+          });
 
     final response = await http.get(url, headers: await getHeaders());
     final result = List<Map<String, dynamic>>.from(

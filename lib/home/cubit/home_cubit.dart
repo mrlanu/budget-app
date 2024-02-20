@@ -50,8 +50,8 @@ class HomeCubit extends Cubit<HomeState> {
     });
     _transactionsSubscription =
         _transactionsRepository.transactions.listen((transactions) {
-          _onTransactionsChanged(transactions);
-        });
+      _onTransactionsChanged(transactions);
+    });
     _transactionsRepository.fetchTransactions(DateTime.now());
     try {} catch (e) {
       emit(state.copyWith(
@@ -162,8 +162,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> changeDate(DateTime dateTime) async {
-    emit(state.copyWith(
-        status: HomeStatus.loading, selectedDate: dateTime));
+    emit(state.copyWith(status: HomeStatus.loading, selectedDate: dateTime));
     _transactionsRepository.fetchTransactions(dateTime);
   }
 
@@ -177,14 +176,16 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> deleteTransaction(
       {required TransactionTile transactionTile}) async {
     await _transactionsRepository.deleteTransactionOrTransfer(
-        transaction: transactionTile,
-        budget: await _budgetRepository.budget.first);
+        transaction: transactionTile);
     final lastDeleted =
         state.transactions.where((tr) => tr.getId == transactionTile.id).first;
     final newSummary = _getSummariesByCategory(
         transactionTiles: state.transactionTiles
             .where((trT) => trT.id != transactionTile.id)
             .toList());
+    transactionTile.type == TransactionType.TRANSFER
+        ? _updateBudgetOnDeleteTransfer(transaction: transactionTile)
+        : _updateBudgetOnDeleteTransaction(transaction: transactionTile);
     emit(state.copyWith(
         summaryList: newSummary, lastDeletedTransaction: () => lastDeleted));
   }
@@ -199,6 +200,52 @@ class HomeCubit extends Cubit<HomeState> {
           transfer: state.lastDeletedTransaction! as Transfer,
           budget: await _budgetRepository.budget.first);
     }*/
+  }
+
+  void _updateBudgetOnDeleteTransaction(
+      {required TransactionTile transaction}) {
+    final accounts = _budgetRepository.getAccounts();
+    List<Account> updatedAccounts = [...accounts];
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? transaction.amount
+                    : -transaction.amount));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+  }
+
+  void _updateBudgetOnDeleteTransfer({required TransactionTile transaction}) {
+    List<Account> updatedAccounts = [];
+    final accounts = _budgetRepository.getAccounts();
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    updatedAccounts = accounts.map((acc) {
+      if (acc.id == transaction.fromAccount!.id) {
+        return acc.copyWith(balance: acc.balance + transaction.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.toAccount!.id) {
+        return acc.copyWith(balance: acc.balance - transaction.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+  }
+
+  Future<void> deleteBudget() async {
+    await _budgetRepository.deleteBudget();
   }
 
   @override
