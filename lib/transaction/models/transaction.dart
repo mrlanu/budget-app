@@ -50,6 +50,11 @@ class Transaction implements ITransaction{
   }
 
   @override
+  DateTime getDate(){
+    return date!;
+  }
+
+  @override
   String toString() {
     return 'Transaction {id: $id, date: $date, type: $type, description: $description, amount: $amount, categoryId: $categoryId, sub: $subcategoryId, acc: $accountId';
   }

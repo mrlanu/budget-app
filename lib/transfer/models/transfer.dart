@@ -82,5 +82,10 @@ class Transfer extends Equatable implements ITransaction {
   String get getId => id!;
 
   @override
+  DateTime getDate(){
+    return date;
+  }
+
+  @override
   bool isTransaction() => false;
 }
