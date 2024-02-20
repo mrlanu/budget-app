@@ -76,6 +76,9 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
     _labels = widget.labels;
     _isGrouped = widget.isGrouped;
     maxBarHeight = _dataPoints.reduce(max);
+    if(maxBarHeight == 0.0){
+      maxBarHeight = 1.0;
+    }
     final multiplier = widget.height / maxBarHeight;
     tween = BarChartTween(
         BarChartModel.empty(

@@ -6,7 +6,8 @@ import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../budgets/models/category.dart';
+import '../../budgets/budgets.dart';
+import '../../transaction/models/transaction_type.dart';
 
 part 'chart_state.dart';
 
@@ -32,21 +33,21 @@ class ChartCubit extends Cubit<ChartState> {
   }
 
   Future<void> fetchCategoryChart([Category? category]) async {
-    /*final categories = await _categoriesRepository.getCategories().first;
+    final categories = await _budgetRepository.getCategories();
     final filteredCategories = categories
-        .where((element) =>
-            element.transactionType ==
+        .where((cat) =>
+            cat.type ==
             (state.categoryType == 'Expenses'
                 ? TransactionType.EXPENSE
                 : TransactionType.INCOME))
         .toList();
     final chartData = await _chartRepository
-        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id!);
+        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id);
     emit(state.copyWith(
         status: ChartStatus.success,
         data: chartData,
         categories: filteredCategories,
-        category: category != null ? category : filteredCategories[0]));*/
+        category: category != null ? category : filteredCategories[0]));
   }
 
   void changeCategoryType({required String categoryType}) {
