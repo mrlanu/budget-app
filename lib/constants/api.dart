@@ -5,11 +5,11 @@ const bool isTestMode = true;
 
 final baseURL = isTestMode
     ? kIsWeb
-        ? 'localhost:8080'
-        : '10.0.2.2:8080'
+        ? 'http://localhost:8080'
+        : 'http://10.0.2.2:8080'
     : kIsWeb
-        ? 'qruto-budget-app-bd7e344cca5d.herokuapp.com'
-        : 'qruto-budget-app-bd7e344cca5d.herokuapp.com';
+        ? 'https://qruto-budget-app-bd7e344cca5d.herokuapp.com'
+        : 'https://qruto-budget-app-bd7e344cca5d.herokuapp.com';
 
 Future<Map<String, String>> getHeaders() async {
   final instance = await SharedPreferences.getInstance();

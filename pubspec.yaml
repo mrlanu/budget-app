@@ -26,6 +26,10 @@ dependencies:
     path: packages/authentication_repository
   form_inputs:
     path: packages/form_inputs
+  network:
+    path: packages/network
+  cache_client:
+    path: packages/cache_client
   bloc_concurrency: ^0.2.1
   shared_preferences: ^2.1.2
   firebase_core: ^2.15.0

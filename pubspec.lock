@@ -168,13 +168,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.9.0"
-  cache:
-    dependency: transitive
+  cache_client:
+    dependency: "direct main"
     description:
-      path: "packages/cache"
+      path: "packages/cache_client"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "0.1.0+1"
   carousel_slider:
     dependency: "direct main"
     description:
@@ -302,6 +302,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.1"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: "50fec96118958b97c727d0d8f67255d3683f16cc1f90d9bc917b5d4fe3abeca9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.2"
   equatable:
     dependency: "direct main"
     description:
@@ -419,6 +427,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.7"
+  flutter_secure_storage:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage
+      sha256: "9f3dd2ac3b6875b0fde5b04734789c3ef35ba3965c18e99dd564a7a2f8056df6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -452,6 +468,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  foundation:
+    dependency: transitive
+    description:
+      name: foundation
+      sha256: "6f1fda07bd2a422145724b0f94ee68fabac95fabff982d5f334fe1a38cbed6a7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -676,6 +708,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  network:
+    dependency: "direct main"
+    description:
+      path: "packages/network"
+      relative: true
+    source: path
+    version: "0.1.0+1"
   node_preamble:
     dependency: transitive
     description:
@@ -796,6 +835,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  pretty_dio_logger:
+    dependency: transitive
+    description:
+      name: pretty_dio_logger
+      sha256: "00b80053063935cf9a6190da344c5373b9d0e92da4c944c878ff2fbef0ef6dc2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.1"
   provider:
     dependency: transitive
     description:

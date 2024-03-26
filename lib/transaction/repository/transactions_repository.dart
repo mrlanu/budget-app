@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transfer/models/models.dart';
-import 'package:http/http.dart' as http;
+import 'package:network/network.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../constants/api.dart';
@@ -35,6 +34,10 @@ abstract class TransactionsRepository {
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
+  TransactionsRepositoryImpl({NetworkClient? networkClient})
+      : _networkClient = networkClient ?? NetworkClient.instance;
+
+  final NetworkClient _networkClient;
   final _transactionsStreamController =
       BehaviorSubject<List<ITransaction>>.seeded(const []);
 
@@ -52,130 +55,122 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> createTransaction(Transaction transaction) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions')
-        : Uri.https(baseURL, '/api/transactions');
-    final transactionResponse = await http.post(url,
-        headers: await getHeaders(), body: json.encode(transaction.toJson()));
-    if (transactionResponse.statusCode != 200) {
-      throw TransactionFailure(jsonDecode(transactionResponse.body)['message']);
+    try {
+      final response = await _networkClient.post<Map<String, dynamic>>(
+          baseURL + '/api/transactions',
+          data: transaction.toJson());
+      final newTransaction = Transaction.fromJson(response.data!);
+      final transactions = [..._transactionsStreamController.value];
+      transactions.add(newTransaction);
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final newTransaction =
-        Transaction.fromJson(jsonDecode(transactionResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    transactions.add(newTransaction);
-    _transactionsStreamController.add(transactions);
   }
 
   @override
   Future<void> updateTransaction(Transaction transaction) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions')
-        : Uri.https(baseURL, '/api/transactions');
-    final transactionResponse = await http.put(url,
-        headers: await getHeaders(), body: json.encode(transaction.toJson()));
-    if (transactionResponse.statusCode != 200) {
-      throw TransactionFailure(jsonDecode(transactionResponse.body)['message']);
+    try {
+      final response = await _networkClient.put<Map<String, dynamic>>(
+          baseURL + '/api/transactions',
+          data: transaction.toJson());
+      final updatedTransaction = Transaction.fromJson(response.data!);
+      final transactions = [..._transactionsStreamController.value];
+      final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
+      transactions.removeAt(trIndex);
+      transactions.insert(trIndex, transaction);
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final updatedTransaction =
-        Transaction.fromJson(jsonDecode(transactionResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
-    transactions.removeAt(trIndex);
-    transactions.insert(trIndex, transaction);
-    _transactionsStreamController.add(transactions);
   }
 
   @override
   Future<void> createTransfer(Transfer transfer) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers')
-        : Uri.https(baseURL, '/api/transfers');
-    final transferResponse = await http.post(url,
-        headers: await getHeaders(), body: json.encode(transfer.toJson()));
-    if (transferResponse.statusCode != 200) {
-      throw TransactionFailure(jsonDecode(transferResponse.body)['message']);
+    try {
+      final response = await _networkClient.post<Map<String, dynamic>>(
+          baseURL + '/api/transfers',
+          data: transfer.toJson());
+      final newTransfer = Transfer.fromJson(response.data!);
+      final transactions = [..._transactionsStreamController.value];
+      transactions.add(newTransfer);
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final newTransfer = Transfer.fromJson(jsonDecode(transferResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    transactions.add(newTransfer);
-    _transactionsStreamController.add(transactions);
   }
 
   @override
   Future<void> updateTransfer(Transfer transfer) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers')
-        : Uri.https(baseURL, '/api/transfers');
-    final transferResponse = await http.put(url,
-        headers: await getHeaders(), body: json.encode(transfer.toJson()));
-    if (transferResponse.statusCode != 200) {
-      throw TransactionFailure(jsonDecode(transferResponse.body)['message']);
+
+    try {
+      final response = await _networkClient.put<Map<String, dynamic>>(
+          baseURL + '/api/transfers',
+          data: transfer.toJson());
+      final updatedTransfer =
+      Transfer.fromJson(response.data!);
+      final transactions = [..._transactionsStreamController.value];
+      final trIndex = transactions.indexWhere((t) => t.getId == transfer.id);
+      transactions.removeAt(trIndex);
+      transactions.insert(trIndex, transfer);
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final updatedTransfer =
-        Transfer.fromJson(jsonDecode(transferResponse.body));
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.getId == transfer.id);
-    transactions.removeAt(trIndex);
-    transactions.insert(trIndex, transfer);
-    _transactionsStreamController.add(transactions);
   }
 
   @override
-  Future<void> deleteTransactionOrTransfer({required TransactionTile transaction}) async {
+  Future<void> deleteTransactionOrTransfer(
+      {required TransactionTile transaction}) async {
     final partUrl = transaction.type == TransactionType.TRANSFER
         ? 'transfers'
         : 'transactions';
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/$partUrl/${transaction.id}')
-        : Uri.https(baseURL, '/api/$partUrl/${transaction.id}');
-    final response = await http.delete(url, headers: await getHeaders());
-    if (response.statusCode != 200) {
-      throw TransactionFailure(jsonDecode(response.body)['message']);
+
+    try {
+      final response = await _networkClient.delete(
+          baseURL + '/api/$partUrl/${transaction.id}');
+      final transactions = [..._transactionsStreamController.value];
+      final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
+      transactions.removeAt(trIndex);
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
-    transactions.removeAt(trIndex);
-    _transactionsStreamController.add(transactions);
   }
 
   Future<List<Transaction>> _fetchTransactions({
     required DateTime dateTime,
   }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transactions', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          })
-        : Uri.https(baseURL, '/api/transactions', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          });
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transaction.fromJson(jsonMap)).toList();
-    return result;
+    try {
+      final response = await _networkClient
+          .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
+        'budgetId': await getCurrentBudgetId(),
+        'date': dateTime.toString()
+      });
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => Transaction.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   Future<List<Transfer>> _fetchTransfers({
     required DateTime dateTime,
   }) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/transfers', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          })
-        : Uri.https(baseURL, '/api/transfers', {
-            'budgetId': await getCurrentBudgetId(),
-            'date': dateTime.toString()
-          });
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Transfer.fromJson(jsonMap)).toList();
-    return result;
+    try {
+      final response = await _networkClient
+          .get<List<dynamic>>(baseURL + '/api/transfers', queryParameters: {
+        'budgetId': await getCurrentBudgetId(),
+        'date': dateTime.toString()
+      });
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => Transfer.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 }

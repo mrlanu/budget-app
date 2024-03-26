@@ -209,7 +209,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   @override
   Future<void> close() {
-    print('DISPOSED');
     _budgetSubscription.cancel();
     return super.close();
   }

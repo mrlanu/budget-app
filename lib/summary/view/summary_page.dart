@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:network/network.dart';
 
 import '../../constants/api.dart';
 
@@ -38,16 +36,17 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
   }
 
   Future<void> _fetchData() async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/summary', {'budgetId': await getCurrentBudgetId()})
-        : Uri.https(baseURL, '/api/summary', {'budgetId': await getCurrentBudgetId()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result =
-        (json.decode(response.body) as List).map((e) => e as double).toList();
-    setState(() {
-      _data = result;
-    });
+    try {
+      final response = await NetworkClient.instance.get<List<dynamic>>(
+          baseURL + '/api/summary',
+          queryParameters: {'budgetId': await getCurrentBudgetId()});
+      final result = (response.data!).map((e) => e as double).toList();
+      setState(() {
+        _data = result;
+      });
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   @override
