@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
+import '../../../utils/theme/budget_theme.dart';
 import '../../cubit/login_cubit.dart';
 
 class LoginButton extends StatelessWidget {
@@ -16,11 +17,13 @@ class LoginButton extends StatelessWidget {
             child: ElevatedButton(
               key: const Key('loginForm_continue_raisedButton'),
               style: ElevatedButton.styleFrom(
+                foregroundColor: BudgetColors.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                backgroundColor:
-                BudgetColors.amber800,
+                backgroundColor: BudgetTheme.isDarkMode(context)
+                    ? BudgetColors.accentDark
+                    : BudgetColors.accent,
               ),
               onPressed: state.isValid
                   ? () => context.read<LoginCubit>().logInWithCredentials()

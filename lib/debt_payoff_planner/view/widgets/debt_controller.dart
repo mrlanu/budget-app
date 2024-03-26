@@ -1,8 +1,9 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
+import '../../../utils/theme/budget_theme.dart';
 import '../../cubits/debt_cubit/debts_cubit.dart';
 
 class DebtController extends StatefulWidget {
@@ -57,7 +58,9 @@ class _DebtControllerState extends State<DebtController> {
         final total =
             sumMinPayments + _parseString(_textEditingController.text);
         return Container(
-            color: BudgetColors.teal100,
+            color: BudgetTheme.isDarkMode(context)
+                ? BudgetColors.primary
+                : BudgetColors.lightContainer,
             padding: EdgeInsets.all(15),
             width: double.infinity,
             height: 80,

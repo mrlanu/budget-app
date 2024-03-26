@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 import '../../../constants/constants.dart';
 import '../../../transaction/transaction.dart';
 import '../../home.dart';
@@ -39,10 +39,9 @@ class CategorySummaryListView extends StatelessWidget {
               ..hideCurrentSnackBar()
               ..showSnackBar(
                 SnackBar(
-                  backgroundColor: BudgetColors.red800,
+                  backgroundColor: BudgetColors.warning,
                   content: Text('Transaction has been deleted.',
                       style: TextStyle(
-                          color: BudgetColors.teal900,
                           fontWeight: FontWeight.bold,
                           fontSize: 20)),
                   action: SnackBarAction(
@@ -62,7 +61,8 @@ class CategorySummaryListView extends StatelessWidget {
           child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           return ExpansionPanelList(
-            dividerColor: BudgetColors.teal900,
+            expandIconColor: Colors.black,
+            dividerColor: BudgetColors.primary,
             expansionCallback: (int index, bool isExpanded) {
               final transactionsCubit = context.read<HomeCubit>()
                 ..changeExpanded(index);
@@ -77,11 +77,11 @@ class CategorySummaryListView extends StatelessWidget {
             children: state.summaryList.map<ExpansionPanel>((summary) {
               return ExpansionPanel(
                   canTapOnHeader: true,
-                  backgroundColor: BudgetColors.teal100,
+                  backgroundColor: BudgetColors.lightContainer,
                   headerBuilder: (BuildContext context, bool isExpanded) {
                     return ListTile(
                       leading: FaIcon(
-                          color: scheme.primary,
+                          color: BudgetColors.primary,
                           IconData(summary.iconCodePoint,
                               fontFamily: 'FontAwesomeSolid')),
                       trailing: Row(
@@ -92,7 +92,7 @@ class CategorySummaryListView extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: textTheme.titleLarge!.fontSize,
                                 fontWeight: FontWeight.bold,
-                                color: scheme.primary),
+                              color: BudgetColors.primary,),
                           ),
                         ],
                       ),
@@ -101,7 +101,7 @@ class CategorySummaryListView extends StatelessWidget {
                         style: TextStyle(
                             fontSize: textTheme.titleLarge!.fontSize,
                             fontWeight: FontWeight.bold,
-                            color: scheme.primary),
+                          color: BudgetColors.primary,),
                       ),
                     );
                   },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../colors.dart';
+import '../../../constants/colors.dart';
 import '../../home.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
@@ -23,7 +23,6 @@ class HomeBottomNavBar extends StatelessWidget {
         child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             return BottomNavigationBar(
-              backgroundColor: scheme.primary,
               currentIndex: navigationShell.currentIndex,
               onTap: (index) {
                 navigationShell.goBranch(
@@ -46,27 +45,27 @@ class HomeBottomNavBar extends StatelessWidget {
               elevation: 0,
               showSelectedLabels: true,
               showUnselectedLabels: false,
-              selectedItemColor: BudgetColors.amber800,
-              unselectedItemColor: scheme.surfaceVariant,
+              selectedItemColor: BudgetColors.accent,
+              unselectedItemColor: BudgetColors.light,
               items: [
                 _buildBottomNavigationBarItem(
                     label: 'expenses',
                     icon: Icons.account_balance_wallet,
-                    color: scheme.onPrimary,
+                    color: BudgetColors.light,
                     selectedTab: state.tab,
                     amount: state.expenses,
                     tab: HomeTab.expenses),
                 _buildBottomNavigationBarItem(
                     label: 'income',
                     icon: Icons.monetization_on_outlined,
-                    color: scheme.onPrimary,
+                    color: BudgetColors.light,
                     selectedTab: state.tab,
                     amount: state.incomes,
                     tab: HomeTab.income),
                 _buildBottomNavigationBarItem(
                     label: 'accounts',
                     icon: Icons.account_balance_outlined,
-                    color: scheme.onPrimary,
+                    color: BudgetColors.light,
                     amount: state.accountsTotal,
                     selectedTab: state.tab,
                     tab: HomeTab.accounts),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../constants/colors.dart';
 import '../../transaction.dart';
 
 
@@ -20,7 +21,7 @@ class DateInput extends StatelessWidget {
                 border: OutlineInputBorder(),
                 icon: Icon(
                   Icons.calendar_today,
-                  color: Color(0xFFEAAA00),
+                  color: BudgetColors.accent,
                 ),
                 labelText: "Date"),
             readOnly: true,

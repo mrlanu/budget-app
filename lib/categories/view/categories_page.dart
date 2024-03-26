@@ -1,13 +1,14 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/view/widgets/categories_grid.dart';
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../constants/colors.dart';
 import '../../constants/constants.dart';
 import '../../transaction/models/transaction_type.dart';
+import '../../utils/theme/budget_theme.dart';
 
 class CategoriesPage extends StatelessWidget {
   CategoriesPage({Key? key, required this.transactionType})
@@ -102,7 +103,9 @@ class CategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: BudgetColors.amber800,
+                tileColor: BudgetTheme.isDarkMode(context)
+                  ? BudgetColors.accentDark
+                  : BudgetColors.accent,
                 title: Text(
                   'Add category',
                   style: TextStyle(
@@ -111,7 +114,7 @@ class CategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetColors.teal900,
+                  color: BudgetColors.primary,
                 ),
                 onTap: () {
                   context.read<CategoriesCubit>().onNewCategory();
@@ -181,7 +184,7 @@ class CategoriesView extends StatelessWidget {
                                               state.name?.length == 0 ||
                                               state.iconCode < 0
                                           ? Colors.grey
-                                          : BudgetColors.amber800)),
+                                          : BudgetColors.accent)),
                             )
                           ],
                         ),

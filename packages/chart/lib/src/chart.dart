@@ -12,11 +12,11 @@ class BarChart extends StatelessWidget {
 
   const BarChart(
       {super.key,
-      required this.dataPoints,
-      required this.labels,
-      required this.isGrouped,
-      this.firstColor = Colors.green,
-      this.secondColor = Colors.red});
+        required this.dataPoints,
+        required this.labels,
+        required this.isGrouped,
+        this.firstColor = Colors.green,
+        this.secondColor = Colors.red});
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +45,12 @@ class _BarChart extends StatefulWidget {
 
   const _BarChart(
       {required this.dataPoints,
-      required this.labels,
-      required this.width,
-      required this.height,
-      required this.isGrouped,
-      required this.firstColor,
-      required this.secondColor});
+        required this.labels,
+        required this.width,
+        required this.height,
+        required this.isGrouped,
+        required this.firstColor,
+        required this.secondColor});
 
   @override
   _BarChartState createState() => _BarChartState();
@@ -76,9 +76,6 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
     _labels = widget.labels;
     _isGrouped = widget.isGrouped;
     maxBarHeight = _dataPoints.reduce(max);
-    if(maxBarHeight == 0.0){
-      maxBarHeight = 1.0;
-    }
     final multiplier = widget.height / maxBarHeight;
     tween = BarChartTween(
         BarChartModel.empty(
@@ -139,6 +136,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isThemeDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onPanDown: (details) {
         final barWidth = (widget.width - 40) / _dataPoints.length;
@@ -151,7 +149,12 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
       },
       child: CustomPaint(
         size: Size(widget.width, widget.height),
-        painter: GridPainter(maxHeight: maxBarHeight, labels: _labels),
+        painter: GridPainter(
+            maxHeight: maxBarHeight,
+            labels: _labels,
+            labelsColor: isThemeDark
+                ? Color(0xFFB2DFDB)
+                : Colors.black.withOpacity(0.5)),
         foregroundPainter: BarChartPainter(tween.animate(controller),
             isGrouped: _isGrouped,
             tappedIndex: _tappedIndex,
@@ -189,37 +192,37 @@ class BarChartModel {
 
   factory BarChartModel.empty(
       {required int amount,
-      required bool isGrouped,
-      required Color firstColor,
-      required Color secondColor}) {
+        required bool isGrouped,
+        required Color firstColor,
+        required Color secondColor}) {
     return BarChartModel(
         bars: List.generate(
             amount,
-            (index) => BarModel(
+                (index) => BarModel(
                 height: 0.0,
                 color: isGrouped
                     ? index % 2 == 0
-                        ? secondColor
-                        : firstColor
+                    ? secondColor
+                    : firstColor
                     : firstColor)));
   }
 
   factory BarChartModel.fromArray(
       {required List<double> scaledData,
-      required List<double> dataPoints,
-      required bool isGrouped,
-      required Color firstColor,
-      required Color secondColor}) {
+        required List<double> dataPoints,
+        required bool isGrouped,
+        required Color firstColor,
+        required Color secondColor}) {
     return BarChartModel(
         dataPoints: dataPoints,
         bars: List.generate(
             scaledData.length,
-            (index) => BarModel(
+                (index) => BarModel(
                 height: scaledData[index],
                 color: isGrouped
                     ? index % 2 == 0
-                        ? secondColor
-                        : firstColor
+                    ? secondColor
+                    : firstColor
                     : firstColor)));
   }
 
@@ -228,7 +231,7 @@ class BarChartModel {
         dataPoints: end.dataPoints,
         bars: List.generate(
             begin.bars.length,
-            (i) =>
+                (i) =>
                 BarModel.lerp(begin: begin.bars[i], end: end.bars[i], t: t)));
   }
 }
@@ -251,8 +254,8 @@ class BarChartPainter extends CustomPainter {
 
   BarChartPainter(Animation<BarChartModel> animation,
       {required this.isGrouped,
-      this.tappedIndex = -1,
-      required double maxWidth})
+        this.tappedIndex = -1,
+        required double maxWidth})
       : animation = animation,
         barDistance = isGrouped ? maxWidth / 31 : maxWidth / 20,
         barWidth = isGrouped ? maxWidth / 34 : maxWidth / 20,
@@ -293,7 +296,7 @@ class BarChartPainter extends CustomPainter {
       Canvas canvas) {
     final textSpan = TextSpan(text: text, style: style);
     final textPainter =
-        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout(minWidth: 0, maxWidth: width);
     textPainter.paint(canvas, position);
   }
@@ -346,8 +349,12 @@ class BarChartPainter extends CustomPainter {
 class GridPainter extends CustomPainter {
   final double maxHeight;
   final List<String> labels;
+  final Color labelsColor;
 
-  GridPainter({required this.maxHeight, required this.labels});
+  GridPainter(
+      {required this.maxHeight,
+        required this.labels,
+        required this.labelsColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -372,7 +379,7 @@ class GridPainter extends CustomPainter {
         String text) {
       final textSpan = TextSpan(text: text, style: style);
       final textPainter =
-          TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+      TextPainter(text: textSpan, textDirection: TextDirection.ltr);
       textPainter.layout(minWidth: 0, maxWidth: width);
       textPainter.paint(canvas, position);
     }
@@ -400,7 +407,7 @@ class GridPainter extends CustomPainter {
     }
 
     var labelStyle = TextStyle(
-      color: Colors.black.withOpacity(0.5),
+      color: labelsColor,
       fontSize: 15,
       fontWeight: FontWeight.bold,
     );

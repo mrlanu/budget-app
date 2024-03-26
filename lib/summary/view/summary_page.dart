@@ -1,10 +1,11 @@
-import 'package:budget_app/colors.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:network/network.dart';
 
 import '../../constants/api.dart';
+import '../../constants/colors.dart';
+import '../../utils/theme/budget_theme.dart';
 
 class SummaryPage extends StatelessWidget {
   const SummaryPage({super.key});
@@ -118,7 +119,9 @@ class SummaryTile extends StatelessWidget {
                       Expanded(child: Container()),
                       Text('\$ ${income.toStringAsFixed(2)}',
                           style:
-                              textStyle!.copyWith(color: BudgetColors.teal900)),
+                              textStyle!.copyWith(color: BudgetTheme.isDarkMode(context)
+                                  ? BudgetColors.lightContainer
+                                  : BudgetColors.primary)),
                     ],
                   ),
                   Divider(),
@@ -138,8 +141,10 @@ class SummaryTile extends StatelessWidget {
                       Text('\$ ${(income - expenses).toStringAsFixed(2)}',
                           style: textStyle.copyWith(
                               color: (income - expenses) < 0
-                                  ? theme.error
-                                  : BudgetColors.teal900)),
+                                  ? BudgetColors.error
+                                  : BudgetTheme.isDarkMode(context)
+                                  ? BudgetColors.lightContainer
+                                  : BudgetColors.primary)),
                     ],
                   )
                 ],

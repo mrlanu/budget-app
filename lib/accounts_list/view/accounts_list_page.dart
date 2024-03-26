@@ -1,10 +1,11 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../budgets/budgets.dart';
+import '../../constants/colors.dart';
+import '../../utils/theme/budget_theme.dart';
 import '../account_edit/bloc/account_edit_bloc.dart';
 import '../account_edit/view/account_edit_form.dart';
 import '../cubit/accounts_cubit.dart';
@@ -115,7 +116,9 @@ class AccountsListView extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    tileColor: BudgetColors.amber800,
+                    tileColor: BudgetTheme.isDarkMode(context)
+                        ? BudgetColors.accentDark
+                        : BudgetColors.accent,
                     title: Text(
                       'Add Account',
                       style: TextStyle(
@@ -124,7 +127,7 @@ class AccountsListView extends StatelessWidget {
                     ),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetColors.teal900,
+                      color: BudgetColors.primary,
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

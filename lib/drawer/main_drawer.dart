@@ -1,6 +1,5 @@
 import 'package:budget_app/charts/view/category_chart_page.dart';
 import 'package:budget_app/charts/view/trend_chart_page.dart';
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../app/bloc/app_bloc.dart';
+import '../constants/colors.dart';
 import '../summary/view/summary_page.dart';
+import '../utils/theme/budget_theme.dart';
 
 class MainDrawer extends StatefulWidget {
   final TabController? tabController;
@@ -23,15 +24,14 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: BudgetColors.teal50,
       child: Column(
         children: [
           DrawerHeader(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                BudgetColors.teal600,
-                BudgetColors.teal900,
+                    BudgetColors.primary600,
+                    BudgetColors.primary,
               ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
               child: Container(
                   width: double.infinity,
@@ -54,21 +54,21 @@ class _MainDrawerState extends State<MainDrawer> {
                         menuIndex: 1,
                         title: 'Summary',
                         icon: FaIcon(FontAwesomeIcons.listUl,
-                            color: BudgetColors.teal900),
+                            color: _getColor()),
                         route: SummaryPage.route()),
-                    Divider(color: BudgetColors.teal900),
+                    Divider(color: _getColor()),
                     ExpansionTile(
                       shape: Border.all(color: Colors.transparent),
                       title: Row(
                         children: [
                           FaIcon(FontAwesomeIcons.chartSimple,
-                              color: BudgetColors.teal900),
+                              color: _getColor()),
                           SizedBox(width: 20),
                           Text('Charts',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge!
-                                  .copyWith(color: BudgetColors.teal900)),
+                                  .copyWith(color: _getColor())),
                         ],
                       ),
                       children: [
@@ -88,12 +88,12 @@ class _MainDrawerState extends State<MainDrawer> {
                                 route: CategoryChartPage.route())),
                       ],
                     ),
-                    Divider(color: BudgetColors.teal900),
+                    Divider(color: _getColor()),
                     _buildMenuItem(
                         menuIndex: 3,
                         title: 'Debt payoff planner',
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
-                            color: BudgetColors.teal900),
+                            color: _getColor()),
                         route: DebtPayoffPage.route()),
                     /*Divider(color: BudgetColors.teal900),
                     ListTile(
@@ -106,20 +106,20 @@ class _MainDrawerState extends State<MainDrawer> {
                               .copyWith(color: BudgetColors.teal900)),
                       onTap: () {},
                     ),*/
-                    Divider(color: BudgetColors.teal900),
+                    Divider(color: _getColor()),
                     ListTile(
                       leading: FaIcon(FontAwesomeIcons.rightFromBracket,
-                          color: BudgetColors.teal900),
+                          color: _getColor()),
                       title: Text('Log out',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
+                              .copyWith(color: _getColor())),
                       onTap: () {
                         context.read<AppBloc>().add(const AppLogoutRequested());
                       },
                     ),
-                    Divider(color: BudgetColors.teal900)
+                    Divider(color: _getColor())
                   ],
                 ),
               ),
@@ -137,14 +137,14 @@ class _MainDrawerState extends State<MainDrawer> {
       required Route route}) {
     return ListTile(
       tileColor: widget.tabController?.index == menuIndex
-          ? BudgetColors.teal100
+          ? BudgetColors.light
           : null,
       leading: icon,
       title: Text(title,
           style: Theme.of(context)
               .textTheme
               .titleLarge!
-              .copyWith(color: BudgetColors.teal900)),
+              .copyWith(color: _getColor())),
       onTap: () {
         isDisplayDesktop(context)
             ? {widget.tabController?.index = menuIndex, setState(() {})}
@@ -152,4 +152,8 @@ class _MainDrawerState extends State<MainDrawer> {
       },
     );
   }
+
+  Color _getColor() => BudgetTheme.isDarkMode(context)
+      ? BudgetColors.lightContainer
+      : BudgetColors.primary;
 }

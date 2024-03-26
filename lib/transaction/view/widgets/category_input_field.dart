@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../budgets/budgets.dart';
+import '../../../constants/colors.dart';
 import '../../transaction.dart';
 
 class CategoryInput extends StatelessWidget {
@@ -39,7 +40,7 @@ class CategoryInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
               border: OutlineInputBorder(),
               labelText: 'Category',

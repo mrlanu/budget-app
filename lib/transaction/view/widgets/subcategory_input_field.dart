@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../budgets/budgets.dart';
+import '../../../constants/colors.dart';
 import '../../transaction.dart';
 
 class SubcategoryInput extends StatefulWidget {
@@ -70,7 +71,7 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
               border: OutlineInputBorder(),
               labelText: 'Subcategory',

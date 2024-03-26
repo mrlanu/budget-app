@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../../../../budgets/budgets.dart';
+import '../../../constants/colors.dart';
 import '../../transaction.dart';
 
 class AccountInput extends StatelessWidget {
@@ -34,7 +35,7 @@ class AccountInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
               labelText: 'Account',
               //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../constants/colors.dart';
 import '../../transaction.dart';
 
 
@@ -18,7 +19,7 @@ class AmountInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.attach_money,
-              color: Theme.of(context).colorScheme.tertiary,
+              color: BudgetColors.accent,
             ),
             border: OutlineInputBorder(),
             labelText: 'Amount',

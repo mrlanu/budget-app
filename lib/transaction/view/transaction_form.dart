@@ -1,9 +1,9 @@
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import '../../../constants/constants.dart';
+import '../../constants/colors.dart';
 import '../transaction.dart';
 
 class TransactionForm extends StatelessWidget {
@@ -64,7 +64,7 @@ class _NotesInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: BudgetColors.accent,
               ),
               border: OutlineInputBorder(),
               labelText: 'Notes',
@@ -85,21 +85,21 @@ class _SubmitButton extends StatelessWidget {
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ListTile(
-                tileColor: state.isValid &&
-                    state.category != null &&
-                    state.subcategory != null &&
-                    state.account != null
-                    ? BudgetColors.amber800
-                    : BudgetColors.grey400,
+          tileColor: state.isValid &&
+              state.category != null &&
+              state.subcategory != null &&
+              state.account != null
+              ? BudgetColors.accent
+              : BudgetColors.grey,
                 title: Center(
                   child: Text(
                     'Save',
                     style: TextStyle(
                         color: state.isValid &&
-                                state.category != null &&
-                                state.subcategory != null &&
-                                state.account != null
-                            ? Colors.black
+                            state.category != null &&
+                            state.subcategory != null &&
+                            state.account != null
+                            ? BudgetColors.primary
                             : Colors.grey,
                         fontSize:
                             Theme.of(context).textTheme.titleLarge!.fontSize),

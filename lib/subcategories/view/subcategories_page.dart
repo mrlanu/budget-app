@@ -1,9 +1,10 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../budgets/budgets.dart';
+import '../../constants/colors.dart';
+import '../../utils/theme/budget_theme.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
@@ -95,7 +96,9 @@ class SubcategoriesView extends StatelessWidget {
                 ),
               ),
               ListTile(
-                tileColor: BudgetColors.amber800,
+                tileColor: BudgetTheme.isDarkMode(context)
+                    ? BudgetColors.accentDark
+                    : BudgetColors.accent,
                 title: Text(
                   'New Subcategory',
                   style: TextStyle(
@@ -104,7 +107,7 @@ class SubcategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetColors.teal900,
+                  color:BudgetColors.primary,
                 ),
                 onTap: () {
                   context.read<SubcategoriesCubit>().onNewSubcategory();

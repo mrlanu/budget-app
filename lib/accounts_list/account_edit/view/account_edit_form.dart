@@ -1,8 +1,8 @@
-import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
+import '../../../constants/colors.dart';
 import '../account_edit.dart';
 
 class AccountEditDialog extends StatelessWidget {
@@ -25,7 +25,6 @@ class AccountEditDialog extends StatelessWidget {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              color: BudgetColors.teal50,
                             ),
                             padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
                             child: Column(
@@ -89,7 +88,7 @@ class _SubmitButton extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: state.isValid && state.category != null
-                            ? BudgetColors.amber800
+                            ? BudgetColors.accent
                             : Colors.grey)),
               );
       },

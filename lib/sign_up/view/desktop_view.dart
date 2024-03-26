@@ -1,7 +1,7 @@
 import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:flutter/material.dart';
 
-import '../../colors.dart';
+import '../../constants/colors.dart';
 import '../../constants/constants.dart';
 
 class DesktopView extends StatelessWidget {
@@ -46,7 +46,7 @@ class DesktopView extends StatelessWidget {
               width: w * 0.3,
               height: h * 0.49,
               decoration: BoxDecoration(
-                  color: BudgetColors.teal50,
+                  color: BudgetColors.lightContainer,
                   borderRadius: BorderRadius.circular(25)
               ),
               child: Padding(

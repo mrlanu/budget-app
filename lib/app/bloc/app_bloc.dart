@@ -37,6 +37,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onLogoutRequested(AppLogoutRequested event, Emitter<AppState> emit) {
+    CacheClient.instance.deleteAccessToken();
     unawaited(_authenticationRepository.logOut());
   }
 

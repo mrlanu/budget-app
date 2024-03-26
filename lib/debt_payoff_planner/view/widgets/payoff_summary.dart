@@ -1,9 +1,11 @@
-import 'package:budget_app/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_payoff_strategy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
+import '../../../constants/colors.dart';
+import '../../../utils/theme/budget_theme.dart';
 
 class PayoffSummary extends StatelessWidget {
   final DebtPayoffStrategy debtPayoffStrategy;
@@ -17,7 +19,9 @@ class PayoffSummary extends StatelessWidget {
     return BlocBuilder<StrategyCubit, StrategyState>(
       builder: (context, state) {
         return Card(
-          color: BudgetColors.amber800,
+          color: BudgetTheme.isDarkMode(context)
+              ? BudgetColors.accentDark
+              : BudgetColors.accent,
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
