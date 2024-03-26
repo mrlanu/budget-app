@@ -2,6 +2,7 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
+import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transaction/transaction.dart';
 import 'package:budget_app/transfer/repository/transfer_repository.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,12 @@ final GoRouter _router = GoRouter(
       path: '/signup',
       builder: (BuildContext context, GoRouterState state) {
         return const SignUpPage();
+      },
+    ),
+    GoRoute(
+      path: '/splash',
+      builder: (BuildContext context, GoRouterState state) {
+        return SplashPage();
       },
     ),
     ShellRoute(
@@ -131,10 +138,14 @@ final GoRouter _router = GoRouter(
 );
 
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
+  final authStatus = context.read<AppBloc>().state.status;
   final bool signedIn =
-      context.read<AppBloc>().state.status == AppStatus.authenticated;
+      authStatus == AppStatus.authenticated;
+  if (authStatus == AppStatus.unknown) {
+    return '/splash';
+  }
   final bool signingIn =
-      ['/login', '/login/signup'].contains(state.matchedLocation);
+      ['/login', '/login/signup', '/splash'].contains(state.matchedLocation);
   if (!signedIn && !signingIn) {
     return '/login';
   } else if (signedIn && signingIn) {
