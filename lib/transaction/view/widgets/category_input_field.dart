@@ -1,12 +1,11 @@
-import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../budgets/budgets.dart';
 import '../../transaction.dart';
 
 class CategoryInput extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
@@ -16,11 +15,13 @@ class CategoryInput extends StatelessWidget {
               child: Icon(Icons.edit_note),
               onTap: () {
                 //_openDialog(context);
-                Navigator.of(context).push(CategoriesPage.route(
-                    transactionType: state.transactionType));
+                context.push(
+                    '/categories?typeIndex=${state.transactionType.index}');
               },
             ),
-            items: state.budget.categoryList.map((Category category) {
+            items: state.budget.categoryList
+                .where((cat) => cat.type == state.transactionType)
+                .map((Category category) {
               return DropdownMenuItem(
                 value: category,
                 child: Text(category.name),
@@ -32,7 +33,9 @@ class CategoryInput extends StatelessWidget {
                   .add(TransactionCategoryChanged(category: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.budget.categoryList.contains(state.category) ? state.category : null,
+            value: state.budget.categoryList.contains(state.category)
+                ? state.category
+                : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,

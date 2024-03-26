@@ -1,4 +1,5 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/login/login.dart';
 import 'package:budget_app/sign_up/sign_up.dart';
@@ -129,6 +130,15 @@ final GoRouter _router = GoRouter(
                   transaction: transaction,
                   transactionType: TransactionType.values[
                       int.parse(state.uri.queryParameters['typeIndex']!)]);
+            },
+          ),
+          GoRoute(
+            path: '/categories',
+            builder: (BuildContext context, GoRouterState state) {
+              return CategoriesPage(
+                  key: UniqueKey(),
+                  transactionType: TransactionType.values[
+                  int.parse(state.uri.queryParameters['typeIndex']!)]);
             },
           ),
         ]),

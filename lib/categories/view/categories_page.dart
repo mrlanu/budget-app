@@ -10,24 +10,19 @@ import '../../constants/constants.dart';
 import '../../transaction/models/transaction_type.dart';
 
 class CategoriesPage extends StatelessWidget {
-  const CategoriesPage({Key? key}) : super(key: key);
+  CategoriesPage({Key? key, required this.transactionType})
+      : super(key: key);
 
-  static Route<void> route({required TransactionType transactionType}) {
-    return MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return BlocProvider(
-            create: (context) => CategoriesCubit(
-                budgetRepository: context.read<BudgetRepository>(),
-                transactionType: transactionType),
-            child: CategoriesPage(),
-          );
-        });
-  }
+  final TransactionType transactionType;
 
   @override
   Widget build(BuildContext context) {
-    return const CategoriesView();
+    return BlocProvider(
+      create: (context) => CategoriesCubit(
+          budgetRepository: context.read<BudgetRepository>(),
+          transactionType: transactionType),
+      child: CategoriesView(),
+    );
   }
 }
 

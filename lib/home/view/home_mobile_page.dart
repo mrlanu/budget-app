@@ -4,10 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../accounts_list/view/accounts_list_page.dart';
-import '../../categories/view/categories_page.dart';
 import '../../drawer/main_drawer.dart';
 import '../../shared/widgets/month_paginator.dart';
-import '../../transaction/models/transaction_type.dart';
 import '../home.dart';
 
 class HomeMobilePage extends StatelessWidget {
@@ -47,12 +45,10 @@ class HomeMobilePage extends StatelessWidget {
                       onPressed: () {
                         switch (navigationShell.currentIndex) {
                           case 0:
-                            Navigator.of(context).push(CategoriesPage.route(
-                                transactionType: TransactionType.INCOME));
+                            context.push('/categories?typeIndex=0');
                             break;
                           case 1:
-                            Navigator.of(context).push(CategoriesPage.route(
-                                transactionType: TransactionType.EXPENSE));
+                            context.push('/categories?typeIndex=0');
                             break;
                           case 2:
                             Navigator.of(context)
