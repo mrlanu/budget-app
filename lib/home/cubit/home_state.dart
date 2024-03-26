@@ -16,7 +16,7 @@ class HomeState extends Equatable {
   final HomeStatus status;
   final List<TransactionTile> transactionTiles;
   final List<ITransaction> transactions;
-  final List<Account> accounts;
+  final Budget budget;
   final List<SummaryTile> summaryList;
   final DateTime? selectedDate;
   final HomeTab tab;
@@ -24,25 +24,21 @@ class HomeState extends Equatable {
   final ITransaction? lastDeletedTransaction;
 
   double get expenses {
-    return transactions
-        .where((tr) => tr.isTransaction())
-        .map((tr) => tr as Transaction)
+    return transactionTiles
         .where((tr) => tr.type == TransactionType.EXPENSE)
         .fold<double>(
-            0, (previousValue, element) => previousValue + element.amount!);
+            0, (previousValue, element) => previousValue + element.amount);
   }
 
   double get incomes {
-    return transactions
-        .where((tr) => tr.isTransaction())
-        .map((tr) => tr as Transaction)
+    return transactionTiles
         .where((tr) => tr.type == TransactionType.INCOME)
         .fold<double>(
             0, (previousValue, element) => previousValue + element.amount!);
   }
 
   double get accountsTotal {
-    return accounts.where((acc) => acc.includeInTotal).fold<double>(
+    return budget.accountList.where((acc) => acc.includeInTotal).fold<double>(
         0.0, (previousValue, element) => previousValue + element.balance);
   }
 
@@ -50,7 +46,7 @@ class HomeState extends Equatable {
     this.status = HomeStatus.initial,
     this.transactionTiles = const [],
     this.transactions = const [],
-    this.accounts = const [],
+    this.budget = const Budget(),
     this.summaryList = const [],
     this.selectedDate,
     this.tab = HomeTab.expenses,
@@ -62,7 +58,7 @@ class HomeState extends Equatable {
     HomeStatus? status,
     List<TransactionTile>? transactionTiles,
     List<ITransaction>? transactions,
-    List<Account>? accounts,
+    Budget? budget,
     TransactionsViewFilter? filter,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
@@ -74,7 +70,7 @@ class HomeState extends Equatable {
       status: status ?? this.status,
       transactionTiles: transactionTiles ?? this.transactionTiles,
       transactions: transactions ?? this.transactions,
-      accounts: accounts ?? this.accounts,
+      budget: budget ?? this.budget,
       summaryList: summaryList ?? this.summaryList,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
@@ -89,8 +85,7 @@ class HomeState extends Equatable {
   List<Object?> get props => [
         status,
         summaryList,
-        transactionTiles,
-        accounts,
+        budget,
         selectedDate,
         tab,
         errorMessage,

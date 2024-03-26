@@ -26,8 +26,7 @@ class HomeDesktopPage extends StatelessWidget {
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
             budgetRepository: context.read<BudgetRepository>()
           )..add(TransactionFormLoaded(
-              transactionType: TransactionType.EXPENSE,
-              date: context.read<HomeCubit>().state.selectedDate!)),
+              transactionType: TransactionType.EXPENSE,)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
@@ -174,7 +173,7 @@ class HomeViewDesktop extends StatelessWidget {
                         clipper: ShapeBorderClipper(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        child: HomeBottomNavBar(),
+                        child: Container(),
                       ),
                     )
                   ],

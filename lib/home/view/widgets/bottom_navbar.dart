@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../colors.dart';
-import '../../../constants/constants.dart';
-import '../../../shared/shared.dart';
-import '../../../transaction/transaction.dart';
 import '../../home.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
+  const HomeBottomNavBar({super.key, required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -22,10 +24,14 @@ class HomeBottomNavBar extends StatelessWidget {
           builder: (context, state) {
             return BottomNavigationBar(
               backgroundColor: scheme.primary,
-              currentIndex: state.tab.index,
-              onTap: (value) {
-                context.read<HomeCubit>().setTab(value);
-                if (isDisplayDesktop(context)) {
+              currentIndex: navigationShell.currentIndex,
+              onTap: (index) {
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
+                context.read<HomeCubit>().setTab(index);
+                /*if (isDisplayDesktop(context)) {
                   final tab = HomeTab.values[value];
                   var tType = switch (tab) {
                     HomeTab.expenses => TransactionType.EXPENSE,
@@ -35,7 +41,7 @@ class HomeBottomNavBar extends StatelessWidget {
                   context.read<TransactionBloc>().add(TransactionFormLoaded(
                       transactionType: tType,
                       date: context.read<HomeCubit>().state.selectedDate!));
-                }
+                }*/
               },
               elevation: 0,
               showSelectedLabels: true,
@@ -47,7 +53,6 @@ class HomeBottomNavBar extends StatelessWidget {
                     label: 'expenses',
                     icon: Icons.account_balance_wallet,
                     color: scheme.onPrimary,
-                    section: Section.EXPENSES,
                     selectedTab: state.tab,
                     amount: state.expenses,
                     tab: HomeTab.expenses),
@@ -55,7 +60,6 @@ class HomeBottomNavBar extends StatelessWidget {
                     label: 'income',
                     icon: Icons.monetization_on_outlined,
                     color: scheme.onPrimary,
-                    section: Section.INCOME,
                     selectedTab: state.tab,
                     amount: state.incomes,
                     tab: HomeTab.income),
@@ -63,7 +67,6 @@ class HomeBottomNavBar extends StatelessWidget {
                     label: 'accounts',
                     icon: Icons.account_balance_outlined,
                     color: scheme.onPrimary,
-                    section: Section.ACCOUNTS,
                     amount: state.accountsTotal,
                     selectedTab: state.tab,
                     tab: HomeTab.accounts),
@@ -79,7 +82,6 @@ class HomeBottomNavBar extends StatelessWidget {
       {required String label,
       required IconData icon,
       required Color color,
-      required Section section,
       required HomeTab selectedTab,
       required double amount,
       required HomeTab tab}) {

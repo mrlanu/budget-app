@@ -1,6 +1,7 @@
 import 'package:budget_app/transfer/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../constants/constants.dart';
 import '../../../transaction/transaction.dart';
@@ -46,22 +47,9 @@ class TransactionsList extends StatelessWidget {
                     isDisplayDesktop(context)
                         ? context.read<TransactionBloc>().add(
                               TransactionFormLoaded(
-                                  transactionType: tr.type,
-                                  transaction: tr,
-                                  date: context
-                                      .read<HomeCubit>()
-                                      .state
-                                      .selectedDate!),
+                                  transactionType: tr.type,),
                             )
-                        : Navigator.of(context).push(
-                            TransactionPage.route(
-                                transaction: tr,
-                                transactionType: tr.type,
-                                date: context
-                                    .read<HomeCubit>()
-                                    .state
-                                    .selectedDate!),
-                          )
+                        : context.push('/transaction/${tr.id}?typeIndex=${tr.type.index}')
                   }
               },
             );

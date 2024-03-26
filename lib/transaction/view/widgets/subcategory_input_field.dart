@@ -30,6 +30,11 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
     return BlocBuilder<TransactionBloc, TransactionState>(
       //buildWhen: (previous, current) => previous.selectedSubcategory != current.selectedSubcategory,
       builder: (context, state) {
+        final subcategories = state.budget.categoryList.contains(state.category)
+            ? state.budget.categoryList
+                .firstWhere((cat) => cat.id == state.category!.id)
+                .subcategoryList
+            : <Subcategory>[];
         return DropdownButtonFormField<Subcategory>(
             icon: GestureDetector(
               child: Icon(
@@ -45,7 +50,8 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
                     }
                   : null,
             ),
-            items: state.subcategories.map((Subcategory subcategory) {
+            items: subcategories
+                .map((Subcategory subcategory) {
               return DropdownMenuItem(
                 value: subcategory,
                 child: Text(subcategory.name),
@@ -57,7 +63,10 @@ class _SubcategoryInputState extends State<SubcategoryInput> {
                   .add(TransactionSubcategoryChanged(subcategory: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.subcategories.contains(state.subcategory) ? state.subcategory : null,
+            value: subcategories
+                    .contains(state.subcategory)
+                ? state.subcategory
+                : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,

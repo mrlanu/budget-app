@@ -12,7 +12,6 @@ import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
 import '../models/transaction.dart';
-import '../models/transaction_tile.dart';
 import '../models/transaction_type.dart';
 import '../repository/transactions_repository.dart';
 
@@ -30,18 +29,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
         super(TransactionState()) {
-    on<TransactionEvent>(_onEvent, transformer: sequential());
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(TransactionBudgetChanged(
-          categories: budget.categoryList, accounts: budget.accountList));
+      add(TransactionBudgetChanged(budget: budget));
     });
+    /*on<TransactionBudgetChanged>(_onBudgetChanged);
+    on<TransactionFormLoaded>(_onFormLoaded);
+    on<TransactionAmountChanged>(_onAmountChanged);
+    on<TransactionDateChanged>(_onDateChanged);
+    on<TransactionCategoryChanged>(_onCategoryChanged);
+    on<TransactionSubcategoryChanged>(_onSubcategoryChanged);
+    on<TransactionAccountChanged>(_onAccountChanged);
+    on<TransactionNotesChanged>(_onNotesChanged);
+    on<TransactionFormSubmitted>(_onFormSubmitted);*/
+    on<TransactionEvent>(_onEvent, transformer: sequential());
   }
 
   Future<void> _onEvent(
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
-      final TransactionFormLoaded e => _onFormLoaded(e, emit),
       final TransactionBudgetChanged e => _onBudgetChanged(e, emit),
+      final TransactionFormLoaded e => _onFormLoaded(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
       final TransactionDateChanged e => _onDateChanged(e, emit),
       final TransactionCategoryChanged e => _onCategoryChanged(e, emit),
@@ -56,10 +63,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionBudgetChanged event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(state.copyWith(
-        categories: () =>
-            _budgetRepository.getCategoriesByType(state.transactionType),
-        accounts: () => event.accounts!));
+    emit(state.copyWith(budget: event.budget));
   }
 
   Future<void> _onFormLoaded(
@@ -76,12 +80,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       id = tr.id;
       category = _budgetRepository
           .getCategoriesByType(event.transactionType)
-          .where((cat) => cat.id == tr.category!.id)
+          .where((cat) => cat.id == tr.categoryId!)
           .first;
       subcategory = category.subcategoryList
-          .where((sc) => sc.id == tr.subcategory!.id)
+          .where((sc) => sc.id == tr.subcategoryId!)
           .first;
-      account = _budgetRepository.getAccountById(tr.fromAccount!.id);
+      account = _budgetRepository.getAccountById(tr.accountId!);
     }
     //for amount update on desktop view
     await Future.delayed(Duration(milliseconds: 100));
@@ -91,16 +95,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
-        date: tr?.dateTime ?? event.date,
+        date: tr?.date ?? DateTime.now(),
         category: category,
-        categories:
-            _budgetRepository.getCategoriesByType(event.transactionType),
         subcategory: subcategory,
-        subcategories: category != null ? category.subcategoryList : [],
         account: account,
         description: tr?.description ?? '',
-        accountCategories:
-            _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT),
         trStatus: TransactionStatus.success,
         isValid: tr == null ? false : true));
   }
@@ -126,9 +125,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(
-        category: () => event.category,
-        subcategory: () => null,
-        subcategories: () => event.category!.subcategoryList));
+        category: () => event.category, subcategory: () => null));
   }
 
   void _onSubcategoryChanged(
@@ -167,8 +164,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           transaction: transaction, editedTransaction: state.editedTransaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(
-              transactionType: transaction.type!, date: transaction.date!))
+          ? add(TransactionFormLoaded(transactionType: transaction.type!))
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
@@ -176,19 +172,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction, TransactionTile? editedTransaction}) {
+      {required Transaction transaction, Transaction? editedTransaction}) {
     List<Account> updatedAccounts = [];
     final accounts = _budgetRepository.getAccounts();
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     if (editedTransaction != null) {
       updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransaction.fromAccount!.id) {
+        if (acc.id == editedTransaction.accountId!) {
           return acc.copyWith(
               balance: acc.balance +
                   (editedTransaction.type == TransactionType.EXPENSE
-                      ? editedTransaction.amount
-                      : -editedTransaction.amount));
+                      ? editedTransaction.amount!
+                      : -editedTransaction.amount!));
         } else {
           return acc;
         }
@@ -213,6 +209,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   @override
   Future<void> close() {
+    print('DISPOSED');
     _budgetSubscription.cancel();
     return super.close();
   }

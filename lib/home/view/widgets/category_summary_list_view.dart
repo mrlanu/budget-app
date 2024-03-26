@@ -71,8 +71,7 @@ class CategorySummaryListView extends StatelessWidget {
                     transactionType:
                         transactionsCubit.state.tab == HomeTab.expenses
                             ? TransactionType.EXPENSE
-                            : TransactionType.INCOME,
-                    date: transactionsCubit.state.selectedDate!));
+                            : TransactionType.INCOME,));
               }
             },
             children: state.summaryList.map<ExpansionPanel>((summary) {

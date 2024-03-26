@@ -20,7 +20,7 @@ class CategoryInput extends StatelessWidget {
                     transactionType: state.transactionType));
               },
             ),
-            items: state.categories.map((Category category) {
+            items: state.budget.categoryList.map((Category category) {
               return DropdownMenuItem(
                 value: category,
                 child: Text(category.name),
@@ -32,7 +32,7 @@ class CategoryInput extends StatelessWidget {
                   .add(TransactionCategoryChanged(category: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.categories.contains(state.category) ? state.category : null,
+            value: state.budget.categoryList.contains(state.category) ? state.category : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category,

@@ -1,30 +1,21 @@
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../constants/constants.dart';
-import '../../transaction/transaction.dart';
 import '../home.dart';
 
 class HomePage extends StatelessWidget {
-  static const routeName = '/home';
+  HomePage({
+    Key? key,
+    required this.navigationShell,
+  }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
-  static Page<void> page() => const MaterialPage<void>(child: HomePage());
-
-  static Route<void> route() {
-    return MaterialPageRoute(builder: (context) => HomePage());
-  }
-
-  const HomePage({Key? key}) : super(key: key);
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
-    final trRepo = context.read<TransactionsRepository>();
-    final budgetRepo = context.read<BudgetRepository>();
-    return BlocProvider(
-        create: (context) => HomeCubit(
-            budgetRepository: budgetRepo, transactionsRepository: trRepo),
-        child:
-            isDisplayDesktop(context) ? HomeDesktopPage() : HomeMobilePage());
+    return isDisplayDesktop(context)
+        ? HomeDesktopPage()
+        : HomeMobilePage(navigationShell: navigationShell);
   }
 }

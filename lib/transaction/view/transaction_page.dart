@@ -4,30 +4,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../transaction.dart';
 
-
-
 class TransactionPage extends StatelessWidget {
-  const TransactionPage({Key? key}) : super(key: key);
+  const TransactionPage(
+      {super.key, this.transaction, required this.transactionType});
 
-  static const routeName = '/transaction';
+  final Transaction? transaction;
+  final TransactionType transactionType;
 
-  static Route<void> route(
-      {TransactionTile? transaction,
-      required TransactionType transactionType,
-      required DateTime date}) {
-    return MaterialPageRoute(builder: (context) {
-      return BlocProvider(
-        create: (context) => TransactionBloc(
-            transactionsRepository: context.read<TransactionsRepository>(),
-            budgetRepository: context.read<BudgetRepository>())
-          ..add(TransactionFormLoaded(
-              transaction: transaction,
-              transactionType: transactionType,
-              date: date)),
-        child: TransactionPage(),
-      );
-    });
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TransactionBloc(
+          transactionsRepository: context.read<TransactionsRepository>(),
+          budgetRepository: context.read<BudgetRepository>())
+        ..add(TransactionFormLoaded(
+          transaction: transaction,
+          transactionType: transactionType,
+        )),
+      child: TransactionView(
+        transaction: transaction,
+        transactionType: transactionType,
+      ),
+    );
   }
+}
+
+class TransactionView extends StatelessWidget {
+  const TransactionView(
+      {super.key, this.transaction, required this.transactionType});
+
+  final Transaction? transaction;
+  final TransactionType transactionType;
 
   @override
   Widget build(BuildContext context) {

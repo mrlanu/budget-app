@@ -1,11 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../transaction/models/transaction_type.dart';
 import '../budgets.dart';
 
 part 'budget.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Budget {
+class Budget extends Equatable{
   final String id;
   final List<Category> categoryList;
   final List<Account> accountList;
@@ -14,6 +16,24 @@ class Budget {
       {this.id = '',
       this.categoryList = const [],
       this.accountList = const []});
+
+  Category getCategoryById(String id) =>
+      categoryList
+          .where((cat) => cat.id == id)
+          .first;
+
+  Account getAccountById(String accountId) {
+    final acc = accountList
+        .where((acc) => acc.id == accountId)
+        .toList();
+    return acc[0];
+  }
+
+  List<Category> getCategoriesByType(TransactionType type) =>
+      categoryList
+          .where((cat) => cat.type == type)
+          .toList();
+
 
   Budget copyWith(
       {String? id, List<Category>? categoryList, List<Account>? accountList}) {
@@ -26,4 +46,7 @@ class Budget {
   factory Budget.fromJson(Map<String, dynamic> json) => _$BudgetFromJson(json);
 
   Map<String, dynamic> toJson() => _$BudgetToJson(this);
+
+  @override
+  List<Object?> get props => [id, categoryList, accountList];
 }

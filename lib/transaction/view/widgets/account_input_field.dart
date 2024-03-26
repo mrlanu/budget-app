@@ -17,7 +17,7 @@ class AccountInput extends StatelessWidget {
                 Navigator.of(context).push(AccountsListPage.route());
               },
             ),
-            items: state.accounts.map((Account account) {
+            items: state.budget.accountList.map((Account account) {
               return DropdownMenuItem(
                 value: account,
                 //child: Text(account.extendName(state.accountCategories)),
@@ -30,7 +30,7 @@ class AccountInput extends StatelessWidget {
                   .add(TransactionAccountChanged(account: newValue));
               //setState(() => selectedValue = newValue);
             },
-            value: state.accounts.contains(state.account) ? state.account : null,
+            value: state.budget.accountList.contains(state.account) ? state.account : null,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,

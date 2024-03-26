@@ -3,7 +3,7 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
-  final TransactionTile? editedTransaction;
+  final Transaction? editedTransaction;
   final String? id;
   final TransactionType transactionType;
   final Amount amount;
@@ -13,10 +13,7 @@ class TransactionState extends Equatable {
   final Account? account;
   final String? description;
 
-  final List<Category> accountCategories;
-  final List<Category> categories;
-  final List<Subcategory> subcategories;
-  final List<Account> accounts;
+  final Budget budget;
 
   final TransactionStatus trStatus;
   final FormzSubmissionStatus status;
@@ -33,27 +30,21 @@ class TransactionState extends Equatable {
       this.subcategory,
       this.account,
       this.description = '',
-      this.accountCategories = const <Category>[],
-      this.categories = const <Category>[],
-      this.subcategories = const <Subcategory>[],
-      this.accounts = const <Account>[],
+      this.budget = const Budget(),
       this.trStatus = TransactionStatus.loading,
       this.status = FormzSubmissionStatus.initial,
       this.isValid = false,
       this.errorMessage});
 
   TransactionState copyWith({
-    TransactionTile? editedTransaction,
+    Transaction? editedTransaction,
     Amount? amount,
     DateTime? date,
     Category? Function()? category,
     Subcategory? Function()? subcategory,
     Account? account,
     String? description,
-    List<Category> Function()? accountCategories,
-    List<Category> Function()? categories,
-    List<Subcategory> Function()? subcategories,
-    List<Account> Function()? accounts,
+    Budget? budget,
     TransactionStatus? trStatus,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -69,13 +60,7 @@ class TransactionState extends Equatable {
       subcategory: subcategory != null ? subcategory() : this.subcategory,
       account: account ?? this.account,
       description: description ?? this.description,
-      accountCategories: accountCategories != null
-          ? accountCategories()
-          : this.accountCategories,
-      categories: categories != null ? categories() : this.categories,
-      subcategories:
-          subcategories != null ? subcategories() : this.subcategories,
-      accounts: accounts != null ? accounts() : this.accounts,
+      budget: budget ?? this.budget,
       trStatus: trStatus ?? this.trStatus,
       status: status ?? this.status,
       isValid: isValid ?? this.isValid,
@@ -89,14 +74,11 @@ class TransactionState extends Equatable {
         trStatus,
         amount,
         date,
-        accountCategories,
-        categories,
         category,
-        subcategories,
         subcategory,
-        accounts,
         account,
         description,
+        budget,
         status,
         isValid,
         errorMessage

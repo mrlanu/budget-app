@@ -26,10 +26,20 @@ class HomeCubit extends Cubit<HomeState> {
   })  : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
         super(HomeState(selectedDate: DateTime.now())) {
-    _init();
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
+      emit(state.copyWith(budget: budget));
+    }, onError: (err) {
+      emit(state.copyWith(
+          status: HomeStatus.failure,
+          errorMessage: 'HomeCubit. Something went wrong'));
+    });
+    _transactionsSubscription =
+        _transactionsRepository.transactions.listen((transactions) {
+          _onTransactionsChanged(transactions);
+        });
   }
 
-  Future<void> _init() async {
+  Future<void> initRequested() async {
     emit(state.copyWith(status: HomeStatus.loading));
     final budgetIds = await _budgetRepository.fetchAvailableBudgets();
     String currentBudgetId;
@@ -41,17 +51,6 @@ class HomeCubit extends Cubit<HomeState> {
     (await SharedPreferences.getInstance())
         .setString('currentBudgetId', currentBudgetId);
     await _budgetRepository.fetchBudget(currentBudgetId);
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      emit(state.copyWith(accounts: budget.accountList));
-    }, onError: (err) {
-      emit(state.copyWith(
-          status: HomeStatus.failure,
-          errorMessage: 'HomeCubit. Something went wrong'));
-    });
-    _transactionsSubscription =
-        _transactionsRepository.transactions.listen((transactions) {
-      _onTransactionsChanged(transactions);
-    });
     _transactionsRepository.fetchTransactions(DateTime.now());
     try {} catch (e) {
       emit(state.copyWith(
@@ -65,28 +64,22 @@ class HomeCubit extends Cubit<HomeState> {
 
     var trTiles = <TransactionTile>[];
 
-    final transactions = newTransactions
-        .where((tr) =>
-            tr.getDate().month == state.selectedDate!.month &&
-            tr.getDate().year == state.selectedDate!.year)
-        .toList();
-
-    transactions.forEach((tr) {
+    newTransactions.forEach((tr) {
       if (tr.isTransaction()) {
         final transaction = tr as Transaction;
-        final cat = _budgetRepository.getCategoryById(transaction.categoryId!);
+        final cat = state.budget.getCategoryById(transaction.categoryId!);
         final subcategory = cat.subcategoryList
             .where((sc) => transaction.subcategoryId == sc.id)
             .first;
-        final acc = _budgetRepository.getAccountById(transaction.accountId!);
+        final acc = state.budget.getAccountById(transaction.accountId!);
         trTiles.add(transaction.toTile(
             account: acc, category: cat, subcategory: subcategory));
       } else {
         final transfer = tr as Transfer;
         trTiles.addAll(transfer.toTiles(
             fromAccount:
-                _budgetRepository.getAccountById(transfer.fromAccountId),
-            toAccount: _budgetRepository.getAccountById(transfer.toAccountId)));
+                state.budget.getAccountById(transfer.fromAccountId),
+            toAccount: state.budget.getAccountById(transfer.toAccountId)));
       }
     });
 
@@ -94,9 +87,9 @@ class HomeCubit extends Cubit<HomeState> {
 
     emit(state.copyWith(
         status: HomeStatus.success,
+        transactions: newTransactions,
         summaryList: _switchSummaries(trTiles),
-        transactionTiles: trTiles,
-        transactions: transactions));
+        transactionTiles: trTiles,));
   }
 
   List<SummaryTile> _switchSummaries(

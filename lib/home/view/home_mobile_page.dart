@@ -1,6 +1,7 @@
 import 'package:budget_app/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../accounts_list/view/accounts_list_page.dart';
 import '../../categories/view/categories_page.dart';
@@ -10,16 +11,12 @@ import '../../transaction/models/transaction_type.dart';
 import '../home.dart';
 
 class HomeMobilePage extends StatelessWidget {
-  const HomeMobilePage({Key? key}) : super(key: key);
+  const HomeMobilePage({
+    required this.navigationShell,
+    Key? key,
+  }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
-  @override
-  Widget build(BuildContext context) {
-    return HomeMobileView();
-  }
-}
-
-class HomeMobileView extends StatelessWidget {
-  const HomeMobileView({super.key});
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +34,27 @@ class HomeMobileView extends StatelessWidget {
                   ),
                   centerTitle: true,
                   actions: <Widget>[
-                    IconButton(
+                    /*IconButton(
                       key: const Key('homePage_deleteBudget'),
                       icon: const Icon(Icons.delete_forever),
                       onPressed: () {
                         context.read<HomeCubit>().deleteBudget();
                       },
-                    ),
+                    ),*/
                     IconButton(
                       key: const Key('homePage_logout_iconButton'),
                       icon: const Icon(Icons.create_new_folder_outlined),
                       onPressed: () {
-                        switch (state.tab) {
-                          case HomeTab.income:
+                        switch (navigationShell.currentIndex) {
+                          case 0:
                             Navigator.of(context).push(CategoriesPage.route(
                                 transactionType: TransactionType.INCOME));
                             break;
-                          case HomeTab.expenses:
+                          case 1:
                             Navigator.of(context).push(CategoriesPage.route(
                                 transactionType: TransactionType.EXPENSE));
                             break;
-                          case HomeTab.accounts:
+                          case 2:
                             Navigator.of(context)
                                 .push(AccountsListPage.route());
                             break;
@@ -67,10 +64,12 @@ class HomeMobileView extends StatelessWidget {
                   ],
                 ),
                 drawer: MainDrawer(),
-                floatingActionButton:
-                HomeFloatingActionButton(selectedTab: state.tab),
-                body: CategorySummaryList(homeTab: state.tab),
-                bottomNavigationBar: HomeBottomNavBar()));
+                body: navigationShell,
+                floatingActionButton: HomeFloatingActionButton(
+                    selectedTab: HomeTab.values.firstWhere((element) =>
+                        element.index == navigationShell.currentIndex)),
+                bottomNavigationBar:
+                    HomeBottomNavBar(navigationShell: navigationShell)));
       },
     );
   }
