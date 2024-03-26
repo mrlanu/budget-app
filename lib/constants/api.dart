@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:shared_preferences/shared_preferences.dart';
 
 const bool isTestMode = true;
 
@@ -11,7 +10,7 @@ final baseURL = isTestMode
         ? 'https://qruto-budget-app-bd7e344cca5d.herokuapp.com'
         : 'https://qruto-budget-app-bd7e344cca5d.herokuapp.com';
 
-Future<Map<String, String>> getHeaders() async {
+/*Future<Map<String, String>> getHeaders() async {
   final instance = await SharedPreferences.getInstance();
   final token = instance.getString('token') ?? '';
   return {"Content-Type": "application/json", "Authorization": "Bearer $token"};
@@ -25,7 +24,7 @@ Future<String> getUserId() async {
 Future<String> getCurrentBudgetId() async {
   final instance = await SharedPreferences.getInstance();
   return instance.getString('currentBudgetId') ?? '';
-}
+}*/
 
 /*Future<String> getBudgetId() async {
   final instance = await SharedPreferences.getInstance();

@@ -1,4 +1,5 @@
 import 'package:budget_app/colors.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:network/network.dart';
@@ -39,7 +40,7 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
     try {
       final response = await NetworkClient.instance.get<List<dynamic>>(
           baseURL + '/api/summary',
-          queryParameters: {'budgetId': await getCurrentBudgetId()});
+          queryParameters: {'budgetId': await CacheClient.instance.getBudgetId(),});
       final result = (response.data!).map((e) => e as double).toList();
       setState(() {
         _data = result;

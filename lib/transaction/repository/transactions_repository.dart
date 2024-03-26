@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transfer/models/models.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:network/network.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -144,7 +145,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     try {
       final response = await _networkClient
           .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
-        'budgetId': await getCurrentBudgetId(),
+        'budgetId': await CacheClient.instance.getBudgetId(),
         'date': dateTime.toString()
       });
       final result = List<Map<String, dynamic>>.from(response.data!)
@@ -162,7 +163,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     try {
       final response = await _networkClient
           .get<List<dynamic>>(baseURL + '/api/transfers', queryParameters: {
-        'budgetId': await getCurrentBudgetId(),
+        'budgetId': await CacheClient.instance.getBudgetId(),
         'date': dateTime.toString()
       });
       final result = List<Map<String, dynamic>>.from(response.data!)

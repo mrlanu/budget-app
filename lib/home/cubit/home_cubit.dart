@@ -5,9 +5,9 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transfer/models/models.dart';
+import 'package:cache_client/cache_client.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../shared/models/summary_tile.dart';
 import '../../../transaction/transaction.dart';
@@ -48,8 +48,7 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       currentBudgetId = budgetIds.first;
     }
-    (await SharedPreferences.getInstance())
-        .setString('currentBudgetId', currentBudgetId);
+    CacheClient.instance.setBudgetId(budgetId: currentBudgetId);
     await _budgetRepository.fetchBudget(currentBudgetId);
     _transactionsRepository.fetchTransactions(DateTime.now());
     try {} catch (e) {

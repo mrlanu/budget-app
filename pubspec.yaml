@@ -31,7 +31,6 @@ dependencies:
   cache_client:
     path: packages/cache_client
   bloc_concurrency: ^0.2.1
-  shared_preferences: ^2.1.2
   firebase_core: ^2.15.0
   firebase_auth: ^4.7.1
   cloud_firestore: ^4.9.3

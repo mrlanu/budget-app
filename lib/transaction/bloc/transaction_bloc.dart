@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/constants/constants.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -148,7 +148,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
-      budgetId: await getCurrentBudgetId(),
+      budgetId: await CacheClient.instance.getBudgetId(),
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),

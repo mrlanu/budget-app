@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/constants/api.dart';
 import 'package:budget_app/transfer/transfer.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -139,7 +139,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       fromAccountId: state.fromAccount!.id,
       toAccountId: state.toAccount!.id,
       notes: state.notes,
-      budgetId: await getCurrentBudgetId(),
+      budgetId: await CacheClient.instance.getBudgetId()?? '',
     );
     try {
       await state.editedTransfer == null

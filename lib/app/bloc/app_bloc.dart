@@ -4,7 +4,6 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -14,7 +13,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     required AuthenticationRepository authenticationRepository,
     CacheClient? cacheClient,
   })  : _authenticationRepository = authenticationRepository,
-        _cacheClient = cacheClient ?? CacheClient.instance,
         super(AppState.unknown()) {
     on<_AppUserChanged>(_onUserChanged);
     on<AppLogoutRequested>(_onLogoutRequested);
@@ -27,16 +25,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   final AuthenticationRepository _authenticationRepository;
   late final StreamSubscription<User> _userSubscription;
-  final CacheClient _cacheClient;
 
   Future<void> _onUserChanged(
       _AppUserChanged event, Emitter<AppState> emit) async {
     if (event.user.isEmpty) {
       emit(const AppState.unauthenticated());
     } else {
-      await _cacheClient.setAccessToken(accessToken: event.user.token!);
-      (await SharedPreferences.getInstance())
-          .setString('token', event.user.token!);
+      await CacheClient.instance.setAccessToken(accessToken: event.user.token!);
       emit(AppState.authenticated(event.user));
     }
   }

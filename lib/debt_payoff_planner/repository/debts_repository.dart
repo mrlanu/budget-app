@@ -1,3 +1,4 @@
+import 'package:cache_client/cache_client.dart';
 import 'package:network/network.dart';
 
 import '../../constants/api.dart';
@@ -28,9 +29,10 @@ class DebtRepositoryImpl extends DebtsRepository {
   @override
   Future<List<Debt>> fetchAllDebts() async {
     try {
-      final response = await _networkClient.get<List<dynamic>>(
-        baseURL + '/api/debts',
-      );
+      final response = await _networkClient
+          .get<List<dynamic>>(baseURL + '/api/debts', queryParameters: {
+        'budgetId': await CacheClient.instance.getBudgetId()
+      });
       final result = List<Map<String, dynamic>>.from(response.data!)
           .map((jsonMap) => Debt.fromJson(jsonMap))
           .toList();
@@ -56,9 +58,8 @@ class DebtRepositoryImpl extends DebtsRepository {
   @override
   Future<void> deleteDebt({required String debtId}) async {
     try {
-      await _networkClient.delete(
-          baseURL + '/api/debts',
-          queryParameters: {'debtId': debtId});
+      await _networkClient
+          .delete(baseURL + '/api/debts', queryParameters: {'debtId': debtId});
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
     }
