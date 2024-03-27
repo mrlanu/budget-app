@@ -32,15 +32,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
       add(TransactionBudgetChanged(budget: budget));
     });
-    /*on<TransactionBudgetChanged>(_onBudgetChanged);
-    on<TransactionFormLoaded>(_onFormLoaded);
-    on<TransactionAmountChanged>(_onAmountChanged);
-    on<TransactionDateChanged>(_onDateChanged);
-    on<TransactionCategoryChanged>(_onCategoryChanged);
-    on<TransactionSubcategoryChanged>(_onSubcategoryChanged);
-    on<TransactionAccountChanged>(_onAccountChanged);
-    on<TransactionNotesChanged>(_onNotesChanged);
-    on<TransactionFormSubmitted>(_onFormSubmitted);*/
     on<TransactionEvent>(_onEvent, transformer: sequential());
   }
 
@@ -78,26 +69,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     final tr = event.transaction;
     if (tr != null) {
       id = tr.id;
-      category = _budgetRepository
+      category = state.budget
           .getCategoriesByType(event.transactionType)
           .where((cat) => cat.id == tr.categoryId!)
           .first;
       subcategory = category.subcategoryList
           .where((sc) => sc.id == tr.subcategoryId!)
           .first;
-      account = _budgetRepository.getAccountById(tr.accountId!);
+      account = state.budget.getAccountById(tr.accountId!);
     }
     //for amount update on desktop view
     await Future.delayed(Duration(milliseconds: 100));
 
-    emit(TransactionState(
+    emit(state.copyWith(
         editedTransaction: tr,
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
         date: tr?.date ?? DateTime.now(),
-        category: category,
-        subcategory: subcategory,
+        category: () => category,
+        subcategory: () => subcategory,
         account: account,
         description: tr?.description ?? '',
         trStatus: TransactionStatus.success,

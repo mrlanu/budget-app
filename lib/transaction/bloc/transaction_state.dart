@@ -38,6 +38,8 @@ class TransactionState extends Equatable {
 
   TransactionState copyWith({
     Transaction? editedTransaction,
+    String? id,
+    TransactionType? transactionType,
     Amount? amount,
     DateTime? date,
     Category? Function()? category,
@@ -52,8 +54,8 @@ class TransactionState extends Equatable {
   }) {
     return TransactionState(
       editedTransaction: editedTransaction ?? this.editedTransaction,
-      id: this.id,
-      transactionType: this.transactionType,
+      id: id ?? this.id,
+      transactionType: transactionType ?? this.transactionType,
       amount: amount ?? this.amount,
       date: date ?? this.date,
       category: category != null ? category() : this.category,

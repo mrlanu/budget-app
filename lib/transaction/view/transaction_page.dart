@@ -16,11 +16,7 @@ class TransactionPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => TransactionBloc(
           transactionsRepository: context.read<TransactionsRepository>(),
-          budgetRepository: context.read<BudgetRepository>())
-        ..add(TransactionFormLoaded(
-          transaction: transaction,
-          transactionType: transactionType,
-        )),
+          budgetRepository: context.read<BudgetRepository>()),
       child: TransactionView(
         transaction: transaction,
         transactionType: transactionType,
@@ -38,7 +34,15 @@ class TransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
+    return BlocConsumer<TransactionBloc, TransactionState>(
+      listenWhen: (previous, current) {
+        return previous.budget != current.budget;},
+      listener: (context, state) {
+        context.read<TransactionBloc>().add(TransactionFormLoaded(
+          transaction: transaction,
+          transactionType: transactionType,
+        ));
+      },
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
@@ -47,8 +51,8 @@ class TransactionView extends StatelessWidget {
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
                 : Center(
-                    child: CircularProgressIndicator(),
-                  ));
+              child: CircularProgressIndicator(),
+            ));
       },
     );
   }
@@ -71,8 +75,8 @@ class TransactionWindow extends StatelessWidget {
 
   static Widget window(
       {Key? key,
-      TransactionTile? transaction,
-      required TransactionType transactionType}) {
+        TransactionTile? transaction,
+        required TransactionType transactionType}) {
     return TransactionWindow(
       key: key,
     );
@@ -85,8 +89,8 @@ class TransactionWindow extends StatelessWidget {
         return state.trStatus == TransactionStatus.success
             ? TransactionForm()
             : Center(
-                child: CircularProgressIndicator(),
-              );
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
