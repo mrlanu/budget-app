@@ -22,12 +22,8 @@ class Budget extends Equatable{
           .where((cat) => cat.id == id)
           .first;
 
-  Account getAccountById(String accountId) {
-    final acc = accountList
-        .where((acc) => acc.id == accountId)
-        .toList();
-    return acc[0];
-  }
+  Account getAccountById(String accountId) => accountList
+        .firstWhere((acc) => acc.id == accountId);
 
   List<Category> getCategoriesByType(TransactionType type) =>
       categoryList

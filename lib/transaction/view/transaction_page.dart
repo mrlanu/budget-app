@@ -1,4 +1,5 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,33 +17,24 @@ class TransactionPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => TransactionBloc(
           transactionsRepository: context.read<TransactionsRepository>(),
-          budgetRepository: context.read<BudgetRepository>()),
-      child: TransactionView(
-        transaction: transaction,
-        transactionType: transactionType,
-      ),
+          budgetRepository: context.read<BudgetRepository>())
+        ..add(TransactionBudgetChanged(
+            budget: context.read<HomeCubit>().state.budget))
+        ..add(TransactionFormLoaded(
+          transaction: transaction,
+          transactionType: transactionType,
+        )),
+      child: TransactionView(),
     );
   }
 }
 
 class TransactionView extends StatelessWidget {
-  const TransactionView(
-      {super.key, this.transaction, required this.transactionType});
-
-  final Transaction? transaction;
-  final TransactionType transactionType;
+  const TransactionView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TransactionBloc, TransactionState>(
-      listenWhen: (previous, current) {
-        return previous.budget != current.budget;},
-      listener: (context, state) {
-        context.read<TransactionBloc>().add(TransactionFormLoaded(
-          transaction: transaction,
-          transactionType: transactionType,
-        ));
-      },
+    return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
@@ -51,8 +43,8 @@ class TransactionView extends StatelessWidget {
             body: state.trStatus == TransactionStatus.success
                 ? TransactionForm()
                 : Center(
-              child: CircularProgressIndicator(),
-            ));
+                    child: CircularProgressIndicator(),
+                  ));
       },
     );
   }
@@ -75,8 +67,8 @@ class TransactionWindow extends StatelessWidget {
 
   static Widget window(
       {Key? key,
-        TransactionTile? transaction,
-        required TransactionType transactionType}) {
+      TransactionTile? transaction,
+      required TransactionType transactionType}) {
     return TransactionWindow(
       key: key,
     );
@@ -89,8 +81,8 @@ class TransactionWindow extends StatelessWidget {
         return state.trStatus == TransactionStatus.success
             ? TransactionForm()
             : Center(
-          child: CircularProgressIndicator(),
-        );
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }
