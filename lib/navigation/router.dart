@@ -15,6 +15,8 @@ import 'package:go_router/go_router.dart';
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
 import '../app/bloc/app_bloc.dart';
 
+GoRouter get router => _router;
+
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _buildingsNavigatorKey =
@@ -30,28 +32,7 @@ final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   routes: [
-    GoRoute(
-      path: '/',
-      redirect: (_, __) => '/login',
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (BuildContext context, GoRouterState state) {
-        return const LoginPage();
-      },
-    ),
-    GoRoute(
-      path: '/signup',
-      builder: (BuildContext context, GoRouterState state) {
-        return const SignUpPage();
-      },
-    ),
-    GoRoute(
-      path: '/splash',
-      builder: (BuildContext context, GoRouterState state) {
-        return SplashPage();
-      },
-    ),
+    ..._authRoutes,
     ShellRoute(
         builder: (context, state, child) => MultiRepositoryProvider(
               providers: [
@@ -71,111 +52,8 @@ final GoRouter _router = GoRouter(
               ),
             ),
         routes: [
-          StatefulShellRoute.indexedStack(
-              builder: (BuildContext context, GoRouterState state,
-                      StatefulNavigationShell navigationShell) =>
-                  HomePage(navigationShell: navigationShell),
-              branches: [
-                StatefulShellBranch(
-                    navigatorKey: _buildingsNavigatorKey,
-                    routes: [
-                      GoRoute(
-                        path: '/expenses',
-                        builder: (BuildContext context, GoRouterState state) {
-                          return CategorySummaryList(
-                            key: UniqueKey(),
-                          );
-                        },
-                      ),
-                    ]),
-                StatefulShellBranch(routes: [
-                  GoRoute(
-                    path: '/incomes',
-                    builder: (BuildContext context, GoRouterState state) {
-                      return CategorySummaryList(
-                        key: UniqueKey(),
-                      );
-                    },
-                  ),
-                ]),
-                StatefulShellBranch(routes: [
-                  GoRoute(
-                    path: '/accounts',
-                    builder: (BuildContext context, GoRouterState state) {
-                      return CategorySummaryList(
-                        key: UniqueKey(),
-                      );
-                    },
-                  ),
-                ]),
-              ]),
-          GoRoute(
-            path: '/transaction',
-            builder: (BuildContext context, GoRouterState state) {
-              return TransactionPage(
-                  key: UniqueKey(),
-                  transactionType: TransactionType.values[
-                      int.parse(state.uri.queryParameters['typeIndex']!)]);
-            },
-          ),
-          GoRoute(
-            path: '/transaction/:id',
-            builder: (BuildContext context, GoRouterState state) {
-              final homeCubit = context.read<HomeCubit>();
-              final transaction = homeCubit.state.transactionList.firstWhere(
-                      (tr) => tr.id == state.pathParameters['id']!);
-              return TransactionPage(
-                  key: UniqueKey(),
-                  transaction: transaction,
-                  transactionType: TransactionType.values[
-                      int.parse(state.uri.queryParameters['typeIndex']!)]);
-            },
-          ),
-          GoRoute(
-            path: '/transfer',
-            builder: (BuildContext context, GoRouterState state) {
-              return TransferPage(key: UniqueKey());
-            },
-          ),
-          GoRoute(
-            path: '/transfer/:id',
-            builder: (BuildContext context, GoRouterState state) {
-              final homeCubit = context.read<HomeCubit>();
-              final transfer = homeCubit.state.transactionList.firstWhere(
-                      (tr) => tr.id == state.pathParameters['id']!);
-              return TransferPage(key: UniqueKey(), transaction: transfer);
-            },
-          ),
-          GoRoute(
-            path: '/categories',
-            builder: (BuildContext context, GoRouterState state) {
-              return CategoriesPage(
-                  key: UniqueKey(),
-                  transactionType: TransactionType.values[
-                  int.parse(state.uri.queryParameters['typeIndex']!)]);
-            },
-          ),
-          GoRoute(
-            path: '/accounts-list',
-            builder: (BuildContext context, GoRouterState state) {
-              return AccountsListPage(key: UniqueKey());
-            },
-          ),
-          GoRoute(
-            path: '/acc-modal',
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return DialogPage(builder: (_) => const AccountEditDialog());
-            },
-          ),
-          GoRoute(
-            path: '/acc-modal/:id',
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              final homeCubit = context.read<HomeCubit>();
-              final acc = homeCubit.state.budget.accountList.firstWhere(
-                      (acc) => acc.id == state.pathParameters['id']!);
-              return DialogPage(builder: (_) => AccountEditDialog(account: acc,));
-            },
-          ),
+          ..._homeTabsRoutes,
+          ..._individualRoutes,
         ]),
   ],
   redirect: _guard,
@@ -184,8 +62,7 @@ final GoRouter _router = GoRouter(
 
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
   final authStatus = context.read<AppBloc>().state.status;
-  final bool signedIn =
-      authStatus == AppStatus.authenticated;
+  final bool signedIn = authStatus == AppStatus.authenticated;
   if (authStatus == AppStatus.unknown) {
     return '/splash';
   }
@@ -199,9 +76,146 @@ Future<String?> _guard(BuildContext context, GoRouterState state) async {
   return null;
 }
 
-GoRouter get router => _router;
+final List<RouteBase> _authRoutes = [
+  GoRoute(
+    path: '/',
+    redirect: (_, __) => '/login',
+  ),
+  GoRoute(
+    path: '/login',
+    builder: (BuildContext context, GoRouterState state) {
+      return const LoginPage();
+    },
+  ),
+  GoRoute(
+    path: '/signup',
+    builder: (BuildContext context, GoRouterState state) {
+      return const SignUpPage();
+    },
+  ),
+  GoRoute(
+    path: '/splash',
+    builder: (BuildContext context, GoRouterState state) {
+      return SplashPage();
+    },
+  ),
+];
 
+final List<RouteBase> _homeTabsRoutes = [
+  StatefulShellRoute.indexedStack(
+      builder: (BuildContext context, GoRouterState state,
+          StatefulNavigationShell navigationShell) =>
+          HomePage(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+            navigatorKey: _buildingsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/expenses',
+                builder: (BuildContext context, GoRouterState state) {
+                  return CategorySummaryList(
+                    key: UniqueKey(),
+                  );
+                },
+              ),
+            ]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/incomes',
+            builder: (BuildContext context, GoRouterState state) {
+              return CategorySummaryList(
+                key: UniqueKey(),
+              );
+            },
+          ),
+        ]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/accounts',
+            builder: (BuildContext context, GoRouterState state) {
+              return CategorySummaryList(
+                key: UniqueKey(),
+              );
+            },
+          ),
+        ]),
+      ]),
+];
 
+final List<RouteBase> _individualRoutes = [
+  GoRoute(
+    path: '/transaction',
+    builder: (BuildContext context, GoRouterState state) {
+      return TransactionPage(
+          key: UniqueKey(),
+          transactionType: TransactionType
+              .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
+    },
+  ),
+  GoRoute(
+    path: '/transaction/:id',
+    builder: (BuildContext context, GoRouterState state) {
+      final homeCubit = context.read<HomeCubit>();
+      final transaction = homeCubit.state.transactionList
+          .firstWhere((tr) => tr.id == state.pathParameters['id']!);
+      return TransactionPage(
+          key: UniqueKey(),
+          transaction: transaction,
+          transactionType: TransactionType
+              .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
+    },
+  ),
+  GoRoute(
+    path: '/transfer',
+    builder: (BuildContext context, GoRouterState state) {
+      return TransferPage(key: UniqueKey());
+    },
+  ),
+  GoRoute(
+    path: '/transfer/:id',
+    builder: (BuildContext context, GoRouterState state) {
+      final homeCubit = context.read<HomeCubit>();
+      final transfer = homeCubit.state.transactionList
+          .firstWhere((tr) => tr.id == state.pathParameters['id']!);
+      return TransferPage(key: UniqueKey(), transaction: transfer);
+    },
+  ),
+  GoRoute(
+    path: '/categories',
+    builder: (BuildContext context, GoRouterState state) {
+      return CategoriesPage(
+          key: UniqueKey(),
+          transactionType: TransactionType
+              .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
+    },
+  ),
+  GoRoute(
+    path: '/accounts-list',
+    builder: (BuildContext context, GoRouterState state) {
+      return AccountsListPage(key: UniqueKey());
+    },
+  ),
+  GoRoute(
+    path: '/acc-modal',
+    pageBuilder: (BuildContext context, GoRouterState state) {
+      return DialogPage(builder: (_) => const AccountEditDialog());
+    },
+  ),
+  GoRoute(
+    path: '/acc-modal/:id',
+    pageBuilder: (BuildContext context, GoRouterState state) {
+      final homeCubit = context.read<HomeCubit>();
+      final acc = homeCubit.state.budget.accountList
+          .firstWhere((acc) => acc.id == state.pathParameters['id']!);
+      return DialogPage(
+          builder: (_) => AccountEditDialog(
+                account: acc,
+              ));
+    },
+  ),
+];
+
+///Wrapper for open Dialog with go_router
 class DialogPage<T> extends Page<T> {
   final Offset? anchorPoint;
   final Color? barrierColor;
