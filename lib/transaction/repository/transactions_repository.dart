@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:budget_app/transfer/models/models.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:network/network.dart';
@@ -18,7 +17,7 @@ class TransactionFailure implements Exception {
 }
 
 abstract class TransactionsRepository {
-  Stream<List<ITransaction>> get transactions;
+  Stream<List<Transaction>> get transactions;
 
   void fetchTransactions(DateTime dateTime);
 
@@ -26,12 +25,10 @@ abstract class TransactionsRepository {
 
   Future<void> updateTransaction(Transaction transaction);
 
-  Future<void> createTransfer(Transfer transfer);
-
   Future<void> updateTransfer(Transfer transfer);
 
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction});
+      {required ComprehensiveTransaction transaction});
 }
 
 class TransactionsRepositoryImpl extends TransactionsRepository {
@@ -40,18 +37,27 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   final NetworkClient _networkClient;
   final _transactionsStreamController =
-      BehaviorSubject<List<ITransaction>>.seeded(const []);
+      BehaviorSubject<List<Transaction>>();
 
   @override
-  Stream<List<ITransaction>> get transactions =>
+  Stream<List<Transaction>> get transactions =>
       _transactionsStreamController.asBroadcastStream();
 
   @override
   void fetchTransactions(DateTime dateTime) async {
-    final transactions = await _fetchTransactions(dateTime: dateTime);
-    final transfers = await _fetchTransfers(dateTime: dateTime);
-
-    _transactionsStreamController.add([...transactions, ...transfers]);
+    try {
+      final response = await _networkClient
+          .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
+        'budgetId': await CacheClient.instance.getBudgetId(),
+        'date': dateTime.toString()
+      });
+      final transactions = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => Transaction.fromJson(jsonMap))
+          .toList();
+      _transactionsStreamController.add(transactions);
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   @override
@@ -77,24 +83,9 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
           data: transaction.toJson());
       final updatedTransaction = Transaction.fromJson(response.data!);
       final transactions = [..._transactionsStreamController.value];
-      final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
+      final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
       transactions.removeAt(trIndex);
       transactions.insert(trIndex, transaction);
-      _transactionsStreamController.add(transactions);
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
-
-  @override
-  Future<void> createTransfer(Transfer transfer) async {
-    try {
-      final response = await _networkClient.post<Map<String, dynamic>>(
-          baseURL + '/api/transfers',
-          data: transfer.toJson());
-      final newTransfer = Transfer.fromJson(response.data!);
-      final transactions = [..._transactionsStreamController.value];
-      transactions.add(newTransfer);
       _transactionsStreamController.add(transactions);
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
@@ -111,9 +102,9 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       final updatedTransfer =
       Transfer.fromJson(response.data!);
       final transactions = [..._transactionsStreamController.value];
-      final trIndex = transactions.indexWhere((t) => t.getId == transfer.id);
+      final trIndex = transactions.indexWhere((t) => t.id == transfer.id);
       transactions.removeAt(trIndex);
-      transactions.insert(trIndex, transfer);
+      //transactions.insert(trIndex, transfer);
       _transactionsStreamController.add(transactions);
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
@@ -122,7 +113,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction}) async {
+      {required ComprehensiveTransaction transaction}) async {
     final partUrl = transaction.type == TransactionType.TRANSFER
         ? 'transfers'
         : 'transactions';
@@ -131,7 +122,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       final response = await _networkClient.delete(
           baseURL + '/api/$partUrl/${transaction.id}');
       final transactions = [..._transactionsStreamController.value];
-      final trIndex = transactions.indexWhere((t) => t.getId == transaction.id);
+      final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
       transactions.removeAt(trIndex);
       _transactionsStreamController.add(transactions);
     } on DioException catch (e) {

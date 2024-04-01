@@ -6,6 +6,7 @@ import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/transaction/transaction.dart';
 import 'package:budget_app/transfer/repository/transfer_repository.dart';
+import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -81,7 +82,6 @@ final GoRouter _router = GoRouter(
                         builder: (BuildContext context, GoRouterState state) {
                           return CategorySummaryList(
                             key: UniqueKey(),
-                            homeTab: HomeTab.expenses,
                           );
                         },
                       ),
@@ -92,7 +92,6 @@ final GoRouter _router = GoRouter(
                     builder: (BuildContext context, GoRouterState state) {
                       return CategorySummaryList(
                         key: UniqueKey(),
-                        homeTab: HomeTab.income,
                       );
                     },
                   ),
@@ -103,7 +102,6 @@ final GoRouter _router = GoRouter(
                     builder: (BuildContext context, GoRouterState state) {
                       return CategorySummaryList(
                         key: UniqueKey(),
-                        homeTab: HomeTab.accounts,
                       );
                     },
                   ),
@@ -122,14 +120,28 @@ final GoRouter _router = GoRouter(
             path: '/transaction/:id',
             builder: (BuildContext context, GoRouterState state) {
               final homeCubit = context.read<HomeCubit>();
-              final transaction = homeCubit.state.transactions.firstWhere(
-                      (tr) => tr.getId == state.pathParameters['id']!)
-                  as Transaction;
+              final transaction = homeCubit.state.transactionList.firstWhere(
+                      (tr) => tr.id == state.pathParameters['id']!);
               return TransactionPage(
                   key: UniqueKey(),
                   transaction: transaction,
                   transactionType: TransactionType.values[
                       int.parse(state.uri.queryParameters['typeIndex']!)]);
+            },
+          ),
+          GoRoute(
+            path: '/transfer',
+            builder: (BuildContext context, GoRouterState state) {
+              return TransferPage(key: UniqueKey());
+            },
+          ),
+          GoRoute(
+            path: '/transfer/:id',
+            builder: (BuildContext context, GoRouterState state) {
+              final homeCubit = context.read<HomeCubit>();
+              final transfer = homeCubit.state.transactionList.firstWhere(
+                      (tr) => tr.id == state.pathParameters['id']!);
+              return TransferPage(key: UniqueKey(), transaction: transfer);
             },
           ),
           GoRoute(

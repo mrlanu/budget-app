@@ -1,14 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'transaction_tile.dart';
+part of 'comprehensive_transaction.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TransactionTile _$TransactionTileFromJson(Map<String, dynamic> json) =>
-    TransactionTile(
+ComprehensiveTransaction _$ComprehensiveTransactionFromJson(
+        Map<String, dynamic> json) =>
+    ComprehensiveTransaction(
       id: json['id'] as String,
+      budgetId: json['budgetId'] as String,
       type: $enumDecode(_$TransactionTypeEnumMap, json['type']),
       amount: (json['amount'] as num).toDouble(),
       title: json['title'] as String,
@@ -29,9 +31,11 @@ TransactionTile _$TransactionTileFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
     );
 
-Map<String, dynamic> _$TransactionTileToJson(TransactionTile instance) =>
+Map<String, dynamic> _$ComprehensiveTransactionToJson(
+        ComprehensiveTransaction instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'budgetId': instance.budgetId,
       'type': _$TransactionTypeEnumMap[instance.type]!,
       'amount': instance.amount,
       'title': instance.title,

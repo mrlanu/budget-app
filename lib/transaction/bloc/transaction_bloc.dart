@@ -5,6 +5,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/constants/constants.dart';
+import 'package:budget_app/transaction/models/comprehensive_transaction.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -69,14 +70,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     final tr = event.transaction;
     if (tr != null) {
       id = tr.id;
-      category = state.budget
-          .getCategoriesByType(event.transactionType)
-          .where((cat) => cat.id == tr.categoryId!)
-          .first;
-      subcategory = category.subcategoryList
-          .where((sc) => sc.id == tr.subcategoryId!)
-          .first;
-      account = state.budget.getAccountById(tr.accountId!);
+      category = tr.category!;
+      subcategory = tr.subcategory!;
+      account = tr.fromAccount;
     }
     //for amount update on desktop view
     await Future.delayed(Duration(milliseconds: 100));
@@ -86,7 +82,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
-        date: tr?.date ?? DateTime.now(),
+        date: tr?.dateTime ?? DateTime.now(),
         category: () => category,
         subcategory: () => subcategory,
         account: account,
@@ -139,13 +135,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
-      budgetId: await CacheClient.instance.getBudgetId(),
+      budgetId: (await CacheClient.instance.getBudgetId())!,
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),
       categoryId: state.category?.id,
       subcategoryId: state.subcategory?.id,
-      accountId: state.account!.id,
+      fromAccountId: state.account!.id,
     );
     try {
       await state.editedTransaction == null
@@ -163,19 +159,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction, Transaction? editedTransaction}) {
+      {required Transaction transaction, ComprehensiveTransaction? editedTransaction}) {
     List<Account> updatedAccounts = [];
-    final accounts = _budgetRepository.getAccounts();
+    final accounts = state.budget.accountList;
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     if (editedTransaction != null) {
       updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransaction.accountId!) {
+        if (acc.id == editedTransaction.fromAccount!.id) {
           return acc.copyWith(
               balance: acc.balance +
                   (editedTransaction.type == TransactionType.EXPENSE
-                      ? editedTransaction.amount!
-                      : -editedTransaction.amount!));
+                      ? editedTransaction.amount
+                      : -editedTransaction.amount));
         } else {
           return acc;
         }
@@ -184,12 +180,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       updatedAccounts = [...accounts];
     }
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.accountId) {
+      if (acc.id == transaction.fromAccountId) {
         return acc.copyWith(
             balance: acc.balance +
                 (transaction.type == TransactionType.EXPENSE
-                    ? -transaction.amount!
-                    : transaction.amount!));
+                    ? -transaction.amount
+                    : transaction.amount));
       } else {
         return acc;
       }

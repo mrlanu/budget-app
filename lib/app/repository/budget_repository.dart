@@ -16,10 +16,6 @@ abstract class BudgetRepository {
   Future<String> createBeginningBudget();
 
   //ACCOUNTS
-  List<Account> getAccounts();
-
-  Account getAccountById(String accountId);
-
   Future<void> createAccount(Account account);
 
   Future<void> updateAccount(Account account);
@@ -52,7 +48,7 @@ class BudgetRepositoryImpl extends BudgetRepository {
 
   final NetworkClient _networkClient;
 
-  final _budgetStreamController = BehaviorSubject<Budget>.seeded(Budget());
+  final _budgetStreamController = BehaviorSubject<Budget>();
 
   @override
   Stream<Budget> get budget => _budgetStreamController.asBroadcastStream();

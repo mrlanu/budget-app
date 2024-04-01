@@ -1,4 +1,3 @@
-
 import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -54,10 +53,11 @@ class Transfer extends Equatable implements ITransaction {
   @override
   List<Object?> get props => [id, budgetId];
 
-  List<TransactionTile> toTiles({required Account fromAccount, required Account toAccount}) {
+  List<ComprehensiveTransaction> toTiles({required Account fromAccount, required Account toAccount}) {
     return List.of(
-        [TransactionTile(
+        [ComprehensiveTransaction(
             id: this.id!,
+            budgetId: budgetId,
             type: TransactionType.TRANSFER,
             amount: this.amount,
             title: 'Transfer in',
@@ -66,8 +66,9 @@ class Transfer extends Equatable implements ITransaction {
             description: this.notes!,
             fromAccount: fromAccount,
             toAccount: toAccount),
-          TransactionTile(
+          ComprehensiveTransaction(
               id: this.id!,
+              budgetId: budgetId,
               type: TransactionType.TRANSFER,
               amount: this.amount,
               title: 'Transfer out',

@@ -5,7 +5,7 @@ import '../../../constants/colors.dart';
 import '../../../transaction/transaction.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final TransactionTile transactionTile;
+  final ComprehensiveTransaction transactionTile;
   final DismissDirectionCallback? onDismissed;
   final VoidCallback? onTap;
 

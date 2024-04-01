@@ -3,28 +3,30 @@ import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../home/cubit/home_cubit.dart';
 import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
-  const TransferPage({Key? key}) : super(key: key);
+  const TransferPage({super.key, this.transaction});
 
-  static Route<void> route({TransactionTile? transactionTile}) {
-    return MaterialPageRoute(builder: (context) {
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) =>
-            TransferBloc(
-              transactionsRepository: context.read<TransactionsRepository>(),
-              budgetRepository: context.read<BudgetRepository>()
-            )
-              ..add(TransferFormLoaded(transactionTile: transactionTile)),
-          ),
-        ],
-        child: TransferPage(),
-      );
-    });
+  final ComprehensiveTransaction? transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TransferBloc(
+          transactionsRepository: context.read<TransactionsRepository>(),
+          budgetRepository: context.read<BudgetRepository>())
+          ..add(TransferBudgetChanged(
+          budget: context.read<HomeCubit>().state.budget))
+        ..add(TransferFormLoaded(transaction: transaction)),
+      child: TransferView(),
+    );
   }
+}
+
+class TransferView extends StatelessWidget {
+  const TransferView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +39,8 @@ class TransferPage extends StatelessWidget {
             body: state.trStatus == TransferStatus.success
                 ? TransferForm()
                 : Center(
-              child: CircularProgressIndicator(),
-            ));
+                    child: CircularProgressIndicator(),
+                  ));
       },
     );
   }
@@ -48,9 +50,12 @@ class TransferWindow extends StatelessWidget {
   const TransferWindow({Key? key}) : super(key: key);
 
   static Widget window(
-      {Key? key, TransactionTile? transaction,
-        required TransactionType transactionType}) {
-    return  TransferWindow(key: key,);
+      {Key? key,
+      ComprehensiveTransaction? transaction,
+      required TransactionType transactionType}) {
+    return TransferWindow(
+      key: key,
+    );
   }
 
   @override
@@ -59,8 +64,9 @@ class TransferWindow extends StatelessWidget {
       builder: (context, state) {
         return state.trStatus == TransferStatus.success
             ? TransferForm()
-            : Center(child: CircularProgressIndicator(),
-        );
+            : Center(
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }

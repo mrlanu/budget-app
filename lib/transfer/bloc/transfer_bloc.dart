@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/transfer/transfer.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +27,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       : _transactionsRepository = transactionsRepository,
         _budgetRepository = budgetRepository,
         super(TransferState()) {
-    on<TransferEvent>(_onEvent, transformer: sequential());
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
       add(TransferBudgetChanged(budget: budget));
     });
+    on<TransferEvent>(_onEvent, transformer: sequential());
   }
 
   Future<void> _onEvent(
@@ -53,39 +52,38 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
     final filteredCategories =
-        _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
-    final transactionTile = event.transactionTile;
+        state.budget.getCategoriesByType(TransactionType.ACCOUNT);
+    final transaction = event.transaction;
     String? id;
     Account? fromAccount;
     Account? toAccount;
-    if (transactionTile != null) {
-      id = transactionTile.id;
-      fromAccount =
-          _budgetRepository.getAccountById(transactionTile.fromAccount!.id);
-      toAccount =
-          _budgetRepository.getAccountById(transactionTile.toAccount!.id);
+    if (transaction != null) {
+      id = transaction.id;
+      fromAccount = transaction.fromAccount!;
+      toAccount = transaction.toAccount!;
     }
     await Future.delayed(Duration(milliseconds: 100));
     emit(state.copyWith(
-      editedTransfer: transactionTile,
+      editedTransfer: transaction,
       id: id,
-      amount: transactionTile == null
+      amount: transaction == null
           ? Amount.pure()
-          : Amount.dirty(transactionTile.amount.toString()),
+          : Amount.dirty(transaction.amount.toString()),
       trStatus: TransferStatus.success,
       fromAccount: fromAccount,
       toAccount: toAccount,
-      date: transactionTile?.dateTime ?? DateTime.now(),
-      notes: transactionTile?.description ?? '',
+      date: transaction?.dateTime ?? DateTime.now(),
+      notes: transaction?.description ?? '',
       accountCategories: filteredCategories,
-      accounts: _budgetRepository.getAccounts(),
-      isValid: transactionTile == null ? false : true,
+      accounts: state.budget.accountList,
+      isValid: transaction == null ? false : true,
     ));
   }
 
   void _onBudgetChanged(
       TransferBudgetChanged event, Emitter<TransferState> emit) {
     emit(state.copyWith(
+        budget: event.budget,
         accounts: event.budget.accountList,
         accountCategories: event.budget.categoryList
             .where((cat) => cat.type == TransactionType.ACCOUNT)
@@ -132,20 +130,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onFormSubmitted(
       TransferFormSubmitted event, Emitter<TransferState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    final transfer = Transfer(
+    final transfer = Transaction(
       id: state.id,
+      type: TransactionType.TRANSFER,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),
       fromAccountId: state.fromAccount!.id,
       toAccountId: state.toAccount!.id,
-      notes: state.notes,
-      budgetId: await CacheClient.instance.getBudgetId()?? '',
+      description: state.notes,
+      budgetId: await CacheClient.instance.getBudgetId() ?? '',
     );
     try {
       await state.editedTransfer == null
-          ? _transactionsRepository.createTransfer(transfer)
-          : _transactionsRepository.updateTransfer(transfer);
-      _updateBudgetOnTransfer(transfer: transfer, editedTransfer: state.editedTransfer);
+          ? _transactionsRepository.createTransaction(transfer)
+          : _transactionsRepository.updateTransaction(transfer);
+      _updateBudgetOnTransfer(
+          transfer: transfer, editedTransfer: state.editedTransfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransferFormLoaded())
@@ -156,11 +156,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   }
 
   void _updateBudgetOnTransfer(
-      {required Transfer transfer,
-        TransactionTile? editedTransfer}) {
+      {required Transaction transfer,
+      ComprehensiveTransaction? editedTransfer}) {
     List<Account> updatedAccounts = [];
 
-    final accounts = _budgetRepository.getAccounts();
+    final accounts = state.budget.accountList;
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     if (editedTransfer != null) {
@@ -199,7 +199,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
     _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
-
 
   @override
   Future<void> close() {

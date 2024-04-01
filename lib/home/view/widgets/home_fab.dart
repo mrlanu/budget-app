@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../transfer/view/transfer_page.dart';
 import '../../home.dart';
 
 class HomeFloatingActionButton extends StatelessWidget {
@@ -19,9 +18,7 @@ class HomeFloatingActionButton extends StatelessWidget {
           case HomeTab.income:
             context.push('/transaction/?typeIndex=1');
           case HomeTab.accounts:
-            Navigator.of(context).push(
-              TransferPage.route(),
-            );
+            context.push('/transfer');
         }
         ;
       },

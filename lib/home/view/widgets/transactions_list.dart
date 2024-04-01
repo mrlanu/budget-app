@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../constants/constants.dart';
 import '../../../transaction/transaction.dart';
-import '../../../transfer/view/transfer_page.dart';
 import '../../home.dart';
 
 class TransactionsList extends StatelessWidget {
-  final List<TransactionTile> transactionTiles;
+  final List<ComprehensiveTransaction> transactionTiles;
 
   const TransactionsList({super.key, required this.transactionTiles});
 
@@ -29,7 +28,7 @@ class TransactionsList extends StatelessWidget {
               transactionTile: tr,
               onDismissed: (_) {
                 final trCub = context.read<HomeCubit>();
-                trCub.deleteTransaction(transactionTile: tr);
+                trCub.deleteTransaction(transaction: tr);
               },
               onTap: () => {
                 if (tr.type == TransactionType.TRANSFER)
@@ -37,19 +36,19 @@ class TransactionsList extends StatelessWidget {
                     isDisplayDesktop(context)
                         ? context
                             .read<TransferBloc>()
-                            .add(TransferFormLoaded(transactionTile: tr))
-                        : Navigator.of(context).push(
-                            TransferPage.route(transactionTile: tr),
-                          )
+                            .add(TransferFormLoaded(transaction: tr))
+                        : context.push('/transfer/${tr.id}')
                   }
                 else
                   {
                     isDisplayDesktop(context)
                         ? context.read<TransactionBloc>().add(
                               TransactionFormLoaded(
-                                  transactionType: tr.type,),
+                                transactionType: tr.type,
+                              ),
                             )
-                        : context.push('/transaction/${tr.id}?typeIndex=${tr.type.index}')
+                        : context.push(
+                            '/transaction/${tr.id}?typeIndex=${tr.type.index}')
                   }
               },
             );

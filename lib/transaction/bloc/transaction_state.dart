@@ -3,7 +3,7 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
-  final Transaction? editedTransaction;
+  final ComprehensiveTransaction? editedTransaction;
   final String? id;
   final TransactionType transactionType;
   final Amount amount;
@@ -12,7 +12,6 @@ class TransactionState extends Equatable {
   final Subcategory? subcategory;
   final Account? account;
   final String? description;
-
   final Budget budget;
 
   final TransactionStatus trStatus;
@@ -37,7 +36,7 @@ class TransactionState extends Equatable {
       this.errorMessage});
 
   TransactionState copyWith({
-    Transaction? editedTransaction,
+    ComprehensiveTransaction? editedTransaction,
     String? id,
     TransactionType? transactionType,
     Amount? amount,

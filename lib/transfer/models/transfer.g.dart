@@ -14,7 +14,7 @@ Transfer _$TransferFromJson(Map<String, dynamic> json) => Transfer(
       amount: (json['amount'] as num).toDouble(),
       budgetId: json['budgetId'] as String,
       notes: json['notes'] as String?,
-);
+    );
 
 Map<String, dynamic> _$TransferToJson(Transfer instance) => <String, dynamic>{
       'id': instance.id,
@@ -24,4 +24,4 @@ Map<String, dynamic> _$TransferToJson(Transfer instance) => <String, dynamic>{
       'amount': instance.amount,
       'budgetId': instance.budgetId,
       'notes': instance.notes,
-};
+    };

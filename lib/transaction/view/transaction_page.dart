@@ -9,7 +9,7 @@ class TransactionPage extends StatelessWidget {
   const TransactionPage(
       {super.key, this.transaction, required this.transactionType});
 
-  final Transaction? transaction;
+  final ComprehensiveTransaction? transaction;
   final TransactionType transactionType;
 
   @override
@@ -67,7 +67,7 @@ class TransactionWindow extends StatelessWidget {
 
   static Widget window(
       {Key? key,
-      TransactionTile? transaction,
+      ComprehensiveTransaction? transaction,
       required TransactionType transactionType}) {
     return TransactionWindow(
       key: key,
