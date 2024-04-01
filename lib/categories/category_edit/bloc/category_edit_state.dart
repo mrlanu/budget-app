@@ -7,7 +7,7 @@ class CategoryEditState extends Equatable {
   final Budget? budget;
   final String? name;
   final int iconCode;
-  final TransactionType transactionType;
+  final TransactionType type;
   final FormzSubmissionStatus status;
   final bool isValid;
   final String? errorMessage;
@@ -17,7 +17,7 @@ class CategoryEditState extends Equatable {
     this.id,
     this.name,
     this.iconCode = -1,
-    this.transactionType = TransactionType.EXPENSE,
+    this.type = TransactionType.EXPENSE,
     this.budget,
     this.status = FormzSubmissionStatus.initial,
     this.isValid = false,
@@ -29,7 +29,7 @@ class CategoryEditState extends Equatable {
     String? id,
     String? name,
     int? iconCode,
-    TransactionType? transactionType,
+    TransactionType? type,
     Budget? budget,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -40,7 +40,7 @@ class CategoryEditState extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       iconCode: iconCode ?? this.iconCode,
-      transactionType: transactionType ?? this.transactionType,
+      type: type ?? this.type,
       budget: budget ?? this.budget,
       isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -54,7 +54,7 @@ class CategoryEditState extends Equatable {
         id,
         name,
         iconCode,
-        transactionType,
+        type,
         status,
         isValid,
         errorMessage,

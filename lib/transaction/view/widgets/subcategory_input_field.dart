@@ -1,6 +1,6 @@
-import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../budgets/budgets.dart';
 import '../../../constants/colors.dart';
@@ -22,10 +22,7 @@ class SubcategoryInput extends StatelessWidget {
                 category != null ? Colors.black.withOpacity(0.6) : Colors.grey,
           ),
           onTap: category != null
-              ? () {
-                  Navigator.of(context)
-                      .push(SubcategoriesPage.route(category: category));
-                }
+              ? () => context.push('/subcategories?categoryId=${category.id}')
               : null,
         ),
         items: category != null

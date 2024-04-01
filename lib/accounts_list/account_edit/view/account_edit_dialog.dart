@@ -2,6 +2,7 @@ import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/repository/budget_repository.dart';
 import '../../../budgets/models/account.dart';
@@ -94,9 +95,12 @@ class _SubmitButton extends StatelessWidget {
             ? const CircularProgressIndicator()
             : TextButton(
                 onPressed: state.isValid && state.category != null
-                    ? () => context
-                        .read<AccountEditBloc>()
-                        .add(AccountFormSubmitted(context: context))
+                    ? () {
+                        context
+                            .read<AccountEditBloc>()
+                            .add(AccountFormSubmitted());
+                        context.pop();
+                      }
                     : null,
                 child: Text('SAVE',
                     style: TextStyle(

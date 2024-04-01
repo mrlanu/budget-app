@@ -1,6 +1,7 @@
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../budgets/budgets.dart';
 import '../../constants/colors.dart';
@@ -8,25 +9,19 @@ import '../../utils/theme/budget_theme.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
-  const SubcategoriesPage({Key? key}) : super(key: key);
+  const SubcategoriesPage({Key? key, required this.category}) : super(key: key);
 
-  static Route<void> route({required Category category}) {
-    return MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return BlocProvider(
-            create: (context) => SubcategoriesCubit(
-                budgetRepository: context.read<BudgetRepository>(),
-                category: category)
-              ..onInit(category: category),
-            child: SubcategoriesPage(),
-          );
-        });
-  }
+  final Category category;
 
   @override
   Widget build(BuildContext context) {
-    return const SubcategoriesView();
+    return BlocProvider(
+      create: (context) => SubcategoriesCubit(
+          budgetRepository: context.read<BudgetRepository>(),
+          category: category)
+        ..onInit(category: category),
+      child: SubcategoriesView(),
+    );
   }
 }
 
@@ -85,10 +80,8 @@ class SubcategoriesView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context
-                              .read<SubcategoriesCubit>()
-                              .onSubcategoryEdit(subcategory);
-                          _openDialog(context);
+                          context.push('/subcategories/edit/${subcategory.id}'
+                              '?categoryId=${state.category!.id}');
                         },
                       ),
                     );
@@ -107,50 +100,16 @@ class SubcategoriesView extends StatelessWidget {
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color:BudgetColors.primary,
+                  color: BudgetColors.primary,
                 ),
-                onTap: () {
-                  context.read<SubcategoriesCubit>().onNewSubcategory();
-                  _openDialog(context);
-                },
+                onTap: () => context.push(
+                    '/subcategories/new?categoryId=${state.category!.id}'),
               ),
             ],
           ),
         );
       },
     );
-  }
-
-  Future<String?> _openDialog(BuildContext context) => showDialog<String>(
-      context: context,
-      builder: (_) => BlocProvider.value(
-          value: context.read<SubcategoriesCubit>(),
-          child: BlocBuilder<SubcategoriesCubit, SubcategoriesState>(
-            builder: (context, state) {
-              return AlertDialog(
-                title: Text(state.editSubcategory == null
-                    ? 'Add subcategory'
-                    : 'Edit subcategory'),
-                content: TextFormField(
-                  autofocus: true,
-                  initialValue: state.editSubcategory?.name,
-                  onChanged: (name) =>
-                      context.read<SubcategoriesCubit>().onNameChanged(name),
-                  decoration: InputDecoration(hintText: 'Enter name'),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => _submit(context),
-                    child: Text('SAVE'),
-                  )
-                ],
-              );
-            },
-          )));
-
-  void _submit(BuildContext context) {
-    context.read<SubcategoriesCubit>().onSubmit();
-    Navigator.of(context).pop();
   }
 
   Widget _buildTitle(Category category) {

@@ -51,8 +51,7 @@ final class AccountIncludeInTotalsChanged extends AccountEditEvent {
 }
 
 final class AccountFormSubmitted extends AccountEditEvent {
-  final BuildContext context;
-  const AccountFormSubmitted({required this.context});
+  const AccountFormSubmitted();
   @override
   List<Object?> get props => [];
 }

@@ -90,7 +90,9 @@ class CategoriesView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context.push('/categories/edit/${category.id}');
+                          context.push(
+                              '/categories/edit/${category.id}?'
+                                  'typeIndex=${state.transactionType.index}');
                         },
                       ),
                     );
@@ -112,7 +114,8 @@ class CategoriesView extends StatelessWidget {
                   color: BudgetColors.primary,
                 ),
                 onTap: () {
-                  context.push('/categories/new');
+                  context.push(
+                      '/categories/new?typeIndex=${state.transactionType.index}');
                 },
               ),
             ],

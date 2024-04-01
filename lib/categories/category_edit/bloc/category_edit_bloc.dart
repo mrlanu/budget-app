@@ -5,7 +5,6 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,16 +39,19 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
 
   Future<void> _onFormLoaded(
       CategoryEditFormLoaded event, Emitter<CategoryEditState> emit) async {
+    emit(state.copyWith(catStatus: CategoryEditStatus.loading));
     if (event.category != null) {
       Category category = event.category!;
       emit(state.copyWith(
           id: category.id,
           name: category.name,
           iconCode: category.iconCode,
-          transactionType: category.type,
-          isValid: true));
+          type: category.type,
+          isValid: true,
+          catStatus: CategoryEditStatus.success));
     } else {
-      emit(state.copyWith(catStatus: CategoryEditStatus.success));
+      emit(state.copyWith(
+          type: event.type, catStatus: CategoryEditStatus.success));
     }
   }
 
@@ -78,11 +80,10 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
         id: isIdExist ? state.id! : Uuid().v4(),
         name: state.name!,
         iconCode: state.iconCode,
-        type: state.transactionType);
+        type: state.type);
     isIdExist
         ? _budgetRepository.updateCategory(category)
         : _budgetRepository.createCategory(category);
-    Navigator.of(event.context).pop();
   }
 
   @override

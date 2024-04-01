@@ -5,7 +5,6 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
@@ -106,7 +105,6 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     isIdExist
         ? _budgetRepository.updateAccount(account)
         : _budgetRepository.createAccount(account);
-    Navigator.of(event.context).pop();
   }
 
   @override

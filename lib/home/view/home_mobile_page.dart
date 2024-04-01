@@ -45,7 +45,7 @@ class HomeMobilePage extends StatelessWidget {
                             context.push('/categories?typeIndex=0');
                             break;
                           case 1:
-                            context.push('/categories?typeIndex=0');
+                            context.push('/categories?typeIndex=1');
                             break;
                           case 2:
                             context.push('/accounts-list');

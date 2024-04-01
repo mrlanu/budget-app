@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../budgets/budgets.dart';
 
@@ -46,20 +45,6 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   void onSubcategoryEdit(Subcategory subcategory) {
     emit(state.copyWith(editSubcategory: subcategory));
-  }
-
-  Future<void> onSubmit() async {
-
-    if (state.editSubcategory == null) {
-      final subcategory = Subcategory(
-        id: Uuid().v4(),
-        name: state.name!,
-      );
-      _budgetRepository.createSubcategory(state.category!, subcategory);
-    } else {
-      final subcategory = state.editSubcategory!.copyWith(name: state.name);
-      _budgetRepository.updateSubcategory(state.category!, subcategory);
-    }
   }
 
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {

@@ -6,9 +6,10 @@ sealed class CategoryEditEvent extends Equatable {
 
 final class CategoryEditFormLoaded extends CategoryEditEvent {
   final Category? category;
-  CategoryEditFormLoaded({this.category});
+  final TransactionType type;
+  CategoryEditFormLoaded({this.category, required this.type});
   @override
-  List<Object?> get props => [category];
+  List<Object?> get props => [category, type];
 }
 
 final class CategoryNameChanged extends CategoryEditEvent {
@@ -40,8 +41,7 @@ final class CategoryBudgetChanged extends CategoryEditEvent {
 
 
 final class CategoryFormSubmitted extends CategoryEditEvent {
-  final BuildContext context;
-  const CategoryFormSubmitted({required this.context});
+  const CategoryFormSubmitted();
   @override
   List<Object?> get props => [];
 }
