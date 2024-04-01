@@ -8,10 +8,9 @@ import '../../transaction.dart';
 class AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        return TextFormField(
-          initialValue: state.amount.value,
+    final amount = context.select((TransactionBloc bloc) => bloc.state.amount);
+    return TextFormField(
+          initialValue: amount.value,
           onChanged: (amount) => context
               .read<TransactionBloc>()
               .add(TransactionAmountChanged(amount: amount)),
@@ -24,10 +23,8 @@ class AmountInput extends StatelessWidget {
             border: OutlineInputBorder(),
             labelText: 'Amount',
             errorText:
-            state.amount.displayError != null ? 'invalid amount' : null,
+            amount.displayError != null ? 'invalid amount' : null,
           ),
         );
-      },
-    );
   }
 }

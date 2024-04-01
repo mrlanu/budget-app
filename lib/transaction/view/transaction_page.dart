@@ -34,25 +34,25 @@ class TransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        return Scaffold(
-            appBar: AppBar(
-              title: Text(_buildTitle(state)),
-            ),
-            body: state.trStatus == TransactionStatus.success
-                ? TransactionForm()
-                : Center(
-                    child: CircularProgressIndicator(),
-                  ));
-      },
-    );
+    final transactionType =
+        context.select((TransactionBloc bloc) => bloc.state.transactionType);
+    final status =
+        context.select((TransactionBloc bloc) => bloc.state.trStatus);
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(_buildTitle(transactionType)),
+        ),
+        body: status == TransactionStatus.success
+            ? TransactionForm()
+            : Center(
+                child: CircularProgressIndicator(),
+              ));
   }
 
-  String _buildTitle(TransactionState state) {
+  String _buildTitle(TransactionType type) {
     //final prefix = state.isEdit ? 'Edit' : 'New';
     final prefix = 'New';
-    final body = switch (state.transactionType) {
+    final body = switch (type) {
       TransactionType.EXPENSE => 'Expense',
       TransactionType.INCOME => 'Income',
       TransactionType.TRANSFER => 'Transfer',

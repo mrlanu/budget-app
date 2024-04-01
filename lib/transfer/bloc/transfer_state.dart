@@ -10,8 +10,6 @@ class TransferState extends Equatable {
   final Account? fromAccount;
   final Account? toAccount;
   final String notes;
-  final List<Account> accounts;
-  final List<Category> accountCategories;
   final TransferStatus trStatus;
   final FormzSubmissionStatus status;
   final bool isValid;
@@ -26,8 +24,6 @@ class TransferState extends Equatable {
       this.fromAccount,
       this.toAccount,
       this.notes = '',
-      this.accounts = const <Account>[],
-      this.accountCategories = const <Category>[],
       this.budget = const Budget(),
       this.trStatus = TransferStatus.loading,
       this.status = FormzSubmissionStatus.initial,
@@ -43,8 +39,6 @@ class TransferState extends Equatable {
     Account? toAccount,
     Budget? budget,
     String? notes,
-    List<Account>? accounts,
-    List<Category>? accountCategories,
     TransferStatus? trStatus,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -56,8 +50,6 @@ class TransferState extends Equatable {
       trStatus: trStatus ?? this.trStatus,
       amount: amount ?? this.amount,
       date: date ?? this.date,
-      accounts: accounts ?? this.accounts,
-      accountCategories: accountCategories ?? this.accountCategories,
       budget: budget ?? this.budget,
       fromAccount: fromAccount ?? this.fromAccount,
       toAccount: toAccount ?? this.toAccount,
@@ -75,8 +67,6 @@ class TransferState extends Equatable {
         trStatus,
         amount,
         date,
-        accounts,
-        accountCategories,
         fromAccount,
         budget,
         toAccount,

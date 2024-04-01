@@ -29,13 +29,6 @@ final class TransferDateChanged extends TransferEvent {
   List<Object?> get props => [dateTime];
 }
 
-final class TransferAccountsChanged extends TransferEvent {
-  final List<Account> accounts;
-  const TransferAccountsChanged({required this.accounts});
-  @override
-  List<Object?> get props => [accounts];
-}
-
 final class TransferFromAccountChanged extends TransferEvent {
   final Account? account;
   const TransferFromAccountChanged({this.account});

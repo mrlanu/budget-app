@@ -40,7 +40,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final TransferFormLoaded e => _onFormLoaded(e, emit),
       final TransferAmountChanged e => _onAmountChanged(e, emit),
       final TransferDateChanged e => _onDateChanged(e, emit),
-      final TransferAccountsChanged e => _onAccountsChanged(e, emit),
       final TransferFromAccountChanged e => _onFromAccountChanged(e, emit),
       final TransferToAccountChanged e => _onToAccountChanged(e, emit),
       final TransferNotesChanged e => _onNotesChanged(e, emit),
@@ -51,8 +50,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   Future<void> _onFormLoaded(
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
-    final filteredCategories =
-        state.budget.getCategoriesByType(TransactionType.ACCOUNT);
     final transaction = event.transaction;
     String? id;
     Account? fromAccount;
@@ -74,20 +71,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       toAccount: toAccount,
       date: transaction?.dateTime ?? DateTime.now(),
       notes: transaction?.description ?? '',
-      accountCategories: filteredCategories,
-      accounts: state.budget.accountList,
       isValid: transaction == null ? false : true,
     ));
   }
 
   void _onBudgetChanged(
       TransferBudgetChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(
-        budget: event.budget,
-        accounts: event.budget.accountList,
-        accountCategories: event.budget.categoryList
-            .where((cat) => cat.type == TransactionType.ACCOUNT)
-            .toList()));
+    emit(state.copyWith(budget: event.budget));
   }
 
   void _onAmountChanged(
@@ -105,11 +95,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(
       state.copyWith(date: event.dateTime),
     );
-  }
-
-  void _onAccountsChanged(
-      TransferAccountsChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(accounts: event.accounts));
   }
 
   void _onFromAccountChanged(

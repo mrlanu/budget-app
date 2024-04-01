@@ -55,12 +55,9 @@ class TransactionForm extends StatelessWidget {
 class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      buildWhen: (previous, current) =>
-          previous.description != current.description,
-      builder: (context, state) {
-        return TextFormField(
-            initialValue: state.description,
+    final description = context.select((TransactionBloc bloc) => bloc.state.description);
+    return TextFormField(
+            initialValue: description,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
@@ -72,8 +69,6 @@ class _NotesInput extends StatelessWidget {
             onChanged: (description) => context.read<TransactionBloc>().add(
                   TransactionNotesChanged(description: description),
                 ));
-      },
-    );
   }
 }
 

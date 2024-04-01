@@ -6,10 +6,9 @@ import '../bloc/transfer_bloc.dart';
 class AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransferBloc, TransferState>(
-      builder: (context, state) {
-        return TextFormField(
-          initialValue: state.amount.value,
+    final amount = context.select((TransferBloc bloc) => bloc.state.amount);
+    return TextFormField(
+          initialValue: amount.value,
           onChanged: (amount) => context
               .read<TransferBloc>()
               .add(TransferAmountChanged(amount: amount)),
@@ -23,10 +22,8 @@ class AmountInput extends StatelessWidget {
             labelText: 'Amount',
             helperText: '',
             errorText:
-            state.amount.displayError != null ? 'invalid amount' : null,
+            amount.displayError != null ? 'invalid amount' : null,
           ),
         );
-      },
-    );
   }
 }
