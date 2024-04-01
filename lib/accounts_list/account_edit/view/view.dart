@@ -1,2 +1,2 @@
-export 'account_edit_form.dart';
+export 'account_edit_dialog.dart';
 export 'widgets/widgets.dart';

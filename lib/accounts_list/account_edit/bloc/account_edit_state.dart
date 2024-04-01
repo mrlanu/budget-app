@@ -4,9 +4,9 @@ enum AccountEditStatus { loading, success, failure }
 
 class AccountEditState extends Equatable {
   final String? id;
+  final Budget? budget;
   final String? name;
   final Amount balance;
-  final List<Category> categories;
   final Category? category;
   final bool isIncludeInTotals;
   final FormzSubmissionStatus status;
@@ -18,7 +18,7 @@ class AccountEditState extends Equatable {
     this.id,
     this.name,
     this.balance = const Amount.pure(),
-    this.categories = const [],
+    this.budget,
     this.category,
     this.isIncludeInTotals = true,
     this.status = FormzSubmissionStatus.initial,
@@ -30,8 +30,8 @@ class AccountEditState extends Equatable {
   AccountEditState copyWith({
     String? id,
     String? name,
+    Budget? budget,
     Amount? balance,
-    List<Category>? categories,
     Category? category,
     bool? isIncludeInTotals,
     FormzSubmissionStatus? status,
@@ -43,7 +43,7 @@ class AccountEditState extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       balance: balance ?? this.balance,
-      categories: categories ?? this.categories,
+      budget: budget ?? this.budget,
       category: category ?? this.category,
       isIncludeInTotals: isIncludeInTotals ?? this.isIncludeInTotals,
       isValid: isValid ?? this.isValid,
@@ -55,7 +55,7 @@ class AccountEditState extends Equatable {
   @override
   List<Object?> get props => [
         balance,
-        categories,
+        budget,
         id,
         name,
         category,

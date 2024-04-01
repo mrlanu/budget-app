@@ -2,33 +2,23 @@ import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../budgets/budgets.dart';
 import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
-import '../account_edit/bloc/account_edit_bloc.dart';
-import '../account_edit/view/account_edit_form.dart';
 import '../cubit/accounts_cubit.dart';
 
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
-  static Route<void> route() {
-    return MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return BlocProvider(
-                create: (context) => AccountsCubit(
-                  budgetRepository: context.read<BudgetRepository>()
-                ),
-            child: AccountsListPage(),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return const AccountsListView();
+    return BlocProvider(
+      create: (context) => AccountsCubit(
+          budgetRepository: context.read<BudgetRepository>()
+      ),
+      child: AccountsListView(),
+    );
   }
 }
 
@@ -108,7 +98,7 @@ class AccountsListView extends StatelessWidget {
                             ),
                             trailing: Icon(Icons.chevron_right),
                             onTap: () {
-                              _openDialog(context: context, account: account);
+                             context.push('/acc-modal/${account.id}');
                             },
                           ),
                         );
@@ -131,7 +121,7 @@ class AccountsListView extends StatelessWidget {
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();
-                      _openDialog(context: context);
+                      context.push('/acc-modal');
                     },
                   ),
                 ],
@@ -140,14 +130,5 @@ class AccountsListView extends StatelessWidget {
           },
         ));
   }
-
-  Future<String?> _openDialog(
-          {required BuildContext context, Account? account}) =>
-      showDialog<String>(
-          context: context,
-          builder: (_) => BlocProvider(
-                create: (context) => AccountEditBloc(budgetRepository: context.read<BudgetRepository>())
-                  ..add(AccountEditFormLoaded(account: account)),
-                child: AccountEditDialog(),
-              ));
 }
+

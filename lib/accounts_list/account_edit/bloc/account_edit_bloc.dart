@@ -10,8 +10,6 @@ import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../transaction/models/transaction_type.dart';
-
 part 'account_edit_event.dart';
 part 'account_edit_state.dart';
 
@@ -24,10 +22,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
     _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(AccountCategoriesChanged(
-          categories: budget.categoryList
-              .where((cat) => cat.type == TransactionType.ACCOUNT)
-              .toList()));
+      add(AccountBudgetChanged(budget: budget));
     });
   }
 
@@ -36,7 +31,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     return switch (event) {
       final AccountEditFormLoaded e => _onFormLoaded(e, emit),
       final AccountNameChanged e => _onNameChanged(e, emit),
-      final AccountCategoriesChanged e => _onCategoriesChanged(e, emit),
+      final AccountBudgetChanged e => _onBudgetChanged(e, emit),
       final AccountCategoryChanged e => _onCategoryChanged(e, emit),
       final AccountBalanceChanged e => _onBalanceChanged(e, emit),
       final AccountIncludeInTotalsChanged e =>
@@ -47,15 +42,12 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
-    final filteredCategories =
-        _budgetRepository.getCategoriesByType(TransactionType.ACCOUNT);
     if (event.account != null) {
       Account account = event.account!;
       final category = _budgetRepository.getCategoryById(account.categoryId);
       emit(state.copyWith(
           id: account.id,
           category: category,
-          categories: filteredCategories,
           name: account.name,
           balance: Amount.dirty(account.balance.toString()),
           isIncludeInTotals: account.includeInTotal,
@@ -63,7 +55,6 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
           isValid: true));
     } else {
       emit(state.copyWith(
-          categories: filteredCategories,
           accStatus: AccountEditStatus.success));
     }
   }
@@ -75,9 +66,9 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     );
   }
 
-  void _onCategoriesChanged(
-      AccountCategoriesChanged event, Emitter<AccountEditState> emit) {
-    emit(state.copyWith(categories: event.categories));
+  void _onBudgetChanged(
+      AccountBudgetChanged event, Emitter<AccountEditState> emit) {
+    emit(state.copyWith(budget: event.budget));
   }
 
   void _onCategoryChanged(

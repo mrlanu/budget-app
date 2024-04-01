@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../accounts_list/view/accounts_list_page.dart';
 import '../../drawer/main_drawer.dart';
 import '../../shared/widgets/month_paginator.dart';
 import '../home.dart';
@@ -49,8 +48,7 @@ class HomeMobilePage extends StatelessWidget {
                             context.push('/categories?typeIndex=0');
                             break;
                           case 2:
-                            Navigator.of(context)
-                                .push(AccountsListPage.route());
+                            context.push('/accounts-list');
                             break;
                         }
                       },

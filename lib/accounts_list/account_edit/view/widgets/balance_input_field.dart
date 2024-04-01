@@ -6,10 +6,9 @@ import '../../bloc/account_edit_bloc.dart';
 class BalanceInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountEditBloc, AccountEditState>(
-      builder: (context, state) {
-        return TextFormField(
-          initialValue: state.balance.value,
+    final balance = context.select((AccountEditBloc bloc) => bloc.state.balance);
+    return TextFormField(
+          initialValue: balance.value,
           onChanged: (balance) => context
               .read<AccountEditBloc>()
               .add(AccountBalanceChanged(balance: balance)),
@@ -23,10 +22,8 @@ class BalanceInputField extends StatelessWidget {
             labelText: 'Balance',
             helperText: '',
             errorText:
-            state.balance.displayError != null ? 'invalid balance' : null,
+            balance.displayError != null ? 'invalid balance' : null,
           ),
         );
-      },
-    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../accounts_list/account_edit/view/account_edit_dialog.dart';
 import '../app/bloc/app_bloc.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -153,6 +155,27 @@ final GoRouter _router = GoRouter(
                   int.parse(state.uri.queryParameters['typeIndex']!)]);
             },
           ),
+          GoRoute(
+            path: '/accounts-list',
+            builder: (BuildContext context, GoRouterState state) {
+              return AccountsListPage(key: UniqueKey());
+            },
+          ),
+          GoRoute(
+            path: '/acc-modal',
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return DialogPage(builder: (_) => const AccountEditDialog());
+            },
+          ),
+          GoRoute(
+            path: '/acc-modal/:id',
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              final homeCubit = context.read<HomeCubit>();
+              final acc = homeCubit.state.budget.accountList.firstWhere(
+                      (acc) => acc.id == state.pathParameters['id']!);
+              return DialogPage(builder: (_) => AccountEditDialog(account: acc,));
+            },
+          ),
         ]),
   ],
   redirect: _guard,
@@ -177,3 +200,40 @@ Future<String?> _guard(BuildContext context, GoRouterState state) async {
 }
 
 GoRouter get router => _router;
+
+
+class DialogPage<T> extends Page<T> {
+  final Offset? anchorPoint;
+  final Color? barrierColor;
+  final bool barrierDismissible;
+  final String? barrierLabel;
+  final bool useSafeArea;
+  final CapturedThemes? themes;
+  final WidgetBuilder builder;
+
+  const DialogPage({
+    required this.builder,
+    this.anchorPoint,
+    this.barrierColor = Colors.black54,
+    this.barrierDismissible = true,
+    this.barrierLabel,
+    this.useSafeArea = true,
+    this.themes,
+    super.key,
+    super.name,
+    super.arguments,
+    super.restorationId,
+  });
+
+  @override
+  Route<T> createRoute(BuildContext context) => DialogRoute<T>(
+      context: context,
+      settings: this,
+      builder: builder,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+      useSafeArea: useSafeArea,
+      themes: themes);
+}

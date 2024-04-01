@@ -1,8 +1,8 @@
 import 'package:budget_app/transaction/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../accounts_list/view/accounts_list_page.dart';
 import '../../budgets/budgets.dart';
 import '../bloc/transfer_bloc.dart';
 
@@ -18,7 +18,7 @@ class FromAccountInputField extends StatelessWidget {
         icon: GestureDetector(
           child: Icon(Icons.edit_note),
           onTap: () {
-            Navigator.of(context).push(AccountsListPage.route());
+            context.push('/accounts-list');
           },
         ),
         items: budget.accountList
