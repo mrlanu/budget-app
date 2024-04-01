@@ -98,7 +98,7 @@ class AccountsListView extends StatelessWidget {
                             ),
                             trailing: Icon(Icons.chevron_right),
                             onTap: () {
-                             context.push('/acc-modal/${account.id}');
+                             context.push('/accounts-list/edit/${account.id}');
                             },
                           ),
                         );
@@ -121,7 +121,7 @@ class AccountsListView extends StatelessWidget {
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();
-                      context.push('/acc-modal');
+                      context.push('/accounts-list/new');
                     },
                   ),
                 ],

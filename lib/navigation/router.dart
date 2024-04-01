@@ -1,5 +1,6 @@
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/app/repository/budget_repository.dart';
+import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/login/login.dart';
@@ -188,30 +189,52 @@ final List<RouteBase> _individualRoutes = [
           transactionType: TransactionType
               .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
     },
+    routes: [
+      GoRoute(
+        path: 'new',
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return DialogPage(builder: (_) => const CategoryEditDialog());
+        },
+      ),
+      GoRoute(
+        path: 'edit/:id',
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          final homeCubit = context.read<HomeCubit>();
+          final cat = homeCubit.state.budget.categoryList
+              .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+          return DialogPage(
+              builder: (_) => CategoryEditDialog(
+                category: cat,
+              ));
+        },
+      ),
+    ]
   ),
   GoRoute(
     path: '/accounts-list',
     builder: (BuildContext context, GoRouterState state) {
       return AccountsListPage(key: UniqueKey());
     },
-  ),
-  GoRoute(
-    path: '/acc-modal',
-    pageBuilder: (BuildContext context, GoRouterState state) {
-      return DialogPage(builder: (_) => const AccountEditDialog());
-    },
-  ),
-  GoRoute(
-    path: '/acc-modal/:id',
-    pageBuilder: (BuildContext context, GoRouterState state) {
-      final homeCubit = context.read<HomeCubit>();
-      final acc = homeCubit.state.budget.accountList
-          .firstWhere((acc) => acc.id == state.pathParameters['id']!);
-      return DialogPage(
-          builder: (_) => AccountEditDialog(
+    routes: [
+      GoRoute(
+        path: 'new',
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return DialogPage(builder: (_) => const AccountEditDialog());
+        },
+      ),
+      GoRoute(
+        path: 'edit/:id',
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          final homeCubit = context.read<HomeCubit>();
+          final acc = homeCubit.state.budget.accountList
+              .firstWhere((acc) => acc.id == state.pathParameters['id']!);
+          return DialogPage(
+              builder: (_) => AccountEditDialog(
                 account: acc,
               ));
-    },
+        },
+      ),
+    ]
   ),
 ];
 
