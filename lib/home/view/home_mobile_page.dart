@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../drawer/main_drawer.dart';
+import '../../navigation/main_drawer.dart';
 import '../../shared/widgets/month_paginator.dart';
 import '../home.dart';
 

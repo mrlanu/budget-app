@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../constants/colors.dart';
-import '../../../shared/models/summary_tile.dart';
 import '../../home.dart';
+import '../../models/summary_tile.dart';
 
 class CategorySummaryList extends StatelessWidget {
   const CategorySummaryList({super.key});

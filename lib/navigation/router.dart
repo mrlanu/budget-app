@@ -1,34 +1,30 @@
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
-import 'package:budget_app/login/login.dart';
-import 'package:budget_app/sign_up/sign_up.dart';
 import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:budget_app/transaction/transaction.dart';
-import 'package:budget_app/transfer/repository/transfer_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../app/bloc/app_bloc.dart';
+import '../auth/auth.dart';
+import '../budgets/repository/budget_repository.dart';
 
 GoRouter get router => _router;
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
-GlobalKey<NavigatorState>(debugLabel: 'root');
+    GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _buildingsNavigatorKey =
-GlobalKey<NavigatorState>(debugLabel: 'buildingsNav');
+    GlobalKey<NavigatorState>(debugLabel: 'buildingsNav');
 
 final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
 final TransactionsRepository _transactionsRepository =
-TransactionsRepositoryImpl();
-final TransferRepository _transferRepository = TransferRepositoryImpl();
+    TransactionsRepositoryImpl();
 
 /// The route configuration.
 final GoRouter _router = GoRouter(
@@ -37,19 +33,14 @@ final GoRouter _router = GoRouter(
   routes: [
     ..._authRoutes,
     ShellRoute(
-        builder: (context, state, child) =>
-            MultiRepositoryProvider(
+        builder: (context, state, child) => MultiRepositoryProvider(
               providers: [
                 RepositoryProvider(create: (context) => _budgetRepository),
                 RepositoryProvider(
                     create: (context) => _transactionsRepository),
-                RepositoryProvider(
-                  create: (context) => _transferRepository,
-                )
               ],
               child: BlocProvider(
-                create: (context) =>
-                HomeCubit(
+                create: (context) => HomeCubit(
                     transactionsRepository: _transactionsRepository,
                     budgetRepository: _budgetRepository)
                   ..initRequested(),
@@ -66,16 +57,13 @@ final GoRouter _router = GoRouter(
 );
 
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
-  final authStatus = context
-      .read<AppBloc>()
-      .state
-      .status;
-  final bool signedIn = authStatus == AppStatus.authenticated;
-  if (authStatus == AppStatus.unknown) {
+  final authStatus = context.read<AuthBloc>().state.status;
+  final bool signedIn = authStatus == AuthStatus.authenticated;
+  if (authStatus == AuthStatus.unknown) {
     return '/splash';
   }
   final bool signingIn =
-  ['/login', '/login/signup', '/splash'].contains(state.matchedLocation);
+      ['/login', '/login/signup', '/splash'].contains(state.matchedLocation);
   if (!signedIn && !signingIn) {
     return '/login';
   } else if (signedIn && signingIn) {
@@ -112,7 +100,7 @@ final List<RouteBase> _authRoutes = [
 final List<RouteBase> _homeTabsRoutes = [
   StatefulShellRoute.indexedStack(
       builder: (BuildContext context, GoRouterState state,
-          StatefulNavigationShell navigationShell) =>
+              StatefulNavigationShell navigationShell) =>
           HomePage(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(navigatorKey: _buildingsNavigatorKey, routes: [
@@ -189,9 +177,12 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'new',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final type = TransactionType.values[int.parse(
-                state.uri.queryParameters['typeIndex']!)];
-            return DialogPage(builder: (_) => CategoryEditDialog(type: type,));
+            final type = TransactionType
+                .values[int.parse(state.uri.queryParameters['typeIndex']!)];
+            return DialogPage(
+                builder: (_) => CategoryEditDialog(
+                      type: type,
+                    ));
           },
         ),
         GoRoute(
@@ -200,12 +191,12 @@ final List<RouteBase> _individualRoutes = [
             final homeCubit = context.read<HomeCubit>();
             final cat = homeCubit.state.budget.categoryList
                 .firstWhere((cat) => cat.id == state.pathParameters['id']!);
-            final type = TransactionType.values[int.parse(
-                state.uri.queryParameters['typeIndex']!)];
+            final type = TransactionType
+                .values[int.parse(state.uri.queryParameters['typeIndex']!)];
             return DialogPage(
-                builder: (_) =>
-                    CategoryEditDialog(
-                      category: cat, type: type,
+                builder: (_) => CategoryEditDialog(
+                      category: cat,
+                      type: type,
                     ));
           },
         ),
@@ -215,11 +206,7 @@ final List<RouteBase> _individualRoutes = [
       builder: (BuildContext context, GoRouterState state) {
         final catId = state.uri.queryParameters['categoryId']!;
         final category =
-        context
-            .read<HomeCubit>()
-            .state
-            .budget
-            .getCategoryById(catId);
+            context.read<HomeCubit>().state.budget.getCategoryById(catId);
         return SubcategoriesPage(
           category: category,
         );
@@ -230,14 +217,9 @@ final List<RouteBase> _individualRoutes = [
           pageBuilder: (BuildContext context, GoRouterState state) {
             final catId = state.uri.queryParameters['categoryId']!;
             final category =
-            context
-                .read<HomeCubit>()
-                .state
-                .budget
-                .getCategoryById(catId);
+                context.read<HomeCubit>().state.budget.getCategoryById(catId);
             return DialogPage(
-                builder: (_) =>
-                    SubcategoryEditDialog(
+                builder: (_) => SubcategoryEditDialog(
                       category: category,
                     ));
           },
@@ -247,17 +229,13 @@ final List<RouteBase> _individualRoutes = [
           pageBuilder: (BuildContext context, GoRouterState state) {
             final catId = state.uri.queryParameters['categoryId']!;
             final category =
-            context
-                .read<HomeCubit>()
-                .state
-                .budget
-                .getCategoryById(catId);
+                context.read<HomeCubit>().state.budget.getCategoryById(catId);
             final subcategory = category.subcategoryList
                 .firstWhere((cat) => cat.id == state.pathParameters['id']!);
             return DialogPage(
-                builder: (_) =>
-                    SubcategoryEditDialog(
-                      category: category, subcategory: subcategory,
+                builder: (_) => SubcategoryEditDialog(
+                      category: category,
+                      subcategory: subcategory,
                     ));
           },
         ),
@@ -281,8 +259,7 @@ final List<RouteBase> _individualRoutes = [
             final acc = homeCubit.state.budget.accountList
                 .firstWhere((acc) => acc.id == state.pathParameters['id']!);
             return DialogPage(
-                builder: (_) =>
-                    AccountEditDialog(
+                builder: (_) => AccountEditDialog(
                       account: acc,
                     ));
           },
@@ -315,15 +292,14 @@ class DialogPage<T> extends Page<T> {
   });
 
   @override
-  Route<T> createRoute(BuildContext context) =>
-      DialogRoute<T>(
-          context: context,
-          settings: this,
-          builder: builder,
-          anchorPoint: anchorPoint,
-          barrierColor: barrierColor,
-          barrierDismissible: barrierDismissible,
-          barrierLabel: barrierLabel,
-          useSafeArea: useSafeArea,
-          themes: themes);
+  Route<T> createRoute(BuildContext context) => DialogRoute<T>(
+      context: context,
+      settings: this,
+      builder: builder,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+      useSafeArea: useSafeArea,
+      themes: themes);
 }

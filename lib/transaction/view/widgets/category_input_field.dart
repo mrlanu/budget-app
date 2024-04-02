@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../budgets/budgets.dart';
+import '../../../categories/models/category.dart';
 import '../../../constants/colors.dart';
 import '../../transaction.dart';
 

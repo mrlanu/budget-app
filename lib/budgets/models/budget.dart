@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../accounts_list/models/account.dart';
+import '../../categories/models/category.dart';
 import '../../transaction/models/transaction_type.dart';
-import '../budgets.dart';
 
 part 'budget.g.dart';
 

@@ -1,9 +1,9 @@
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../budgets/budgets.dart';
+import '../../budgets/repository/budget_repository.dart';
+import '../../categories/models/category.dart';
 import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../cubit/subcategories_cubit.dart';

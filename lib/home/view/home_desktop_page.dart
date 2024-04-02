@@ -1,12 +1,12 @@
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/drawer/main_drawer.dart';
+import 'package:budget_app/navigation/main_drawer.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../budgets/repository/budget_repository.dart';
 import '../../constants/colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/month_paginator.dart';

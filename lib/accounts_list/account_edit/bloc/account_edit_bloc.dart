@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../budgets/repository/budget_repository.dart';
+import '../../../categories/models/category.dart';
+import '../../models/account.dart';
 
 part 'account_edit_event.dart';
 part 'account_edit_state.dart';
@@ -43,7 +46,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
     if (event.account != null) {
       Account account = event.account!;
-      final category = _budgetRepository.getCategoryById(account.categoryId);
+      final category = state.budget!.getCategoryById(account.categoryId);
       emit(state.copyWith(
           id: account.id,
           category: category,

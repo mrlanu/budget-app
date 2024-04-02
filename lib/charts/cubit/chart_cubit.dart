@@ -1,25 +1,25 @@
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../budgets/budgets.dart';
+import '../../categories/models/category.dart';
 import '../../transaction/models/transaction_type.dart';
 
 part 'chart_state.dart';
 
 class ChartCubit extends Cubit<ChartState> {
   final ChartRepository _chartRepository;
-  late final BudgetRepository _budgetRepository;
+  final Budget _budget;
 
   ChartCubit(
       {required ChartRepository chartRepository,
-      required BudgetRepository budgetRepository})
+      required Budget budget})
       : _chartRepository = chartRepository,
-        _budgetRepository = budgetRepository,
+        _budget = budget,
         super(ChartState());
 
   Future<void> changeCategory({required Category category}) async {
@@ -33,8 +33,7 @@ class ChartCubit extends Cubit<ChartState> {
   }
 
   Future<void> fetchCategoryChart([Category? category]) async {
-    final categories = await _budgetRepository.getCategories();
-    final filteredCategories = categories
+    final filteredCategories = _budget.categoryList
         .where((cat) =>
             cat.type ==
             (state.categoryType == 'Expenses'

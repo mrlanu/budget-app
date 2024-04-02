@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../budgets/budgets.dart';
+import '../../budgets/repository/budget_repository.dart';
+import '../../categories/models/category.dart';
+import '../models/subcategory.dart';
 
 part 'subcategories_state.dart';
 
@@ -30,7 +32,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   void _onBudgetChanged(Budget budget) {
     emit(state.copyWith(
-        subcategories: _budgetRepository
+        subcategories: budget
             .getCategoryById(state.category!.id)
             .subcategoryList));
   }

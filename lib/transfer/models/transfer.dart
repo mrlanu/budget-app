@@ -1,14 +1,13 @@
-import 'package:budget_app/shared/models/transaction_interface.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../budgets/models/models.dart';
+import '../../accounts_list/models/account.dart';
 import '../../transaction/transaction.dart';
 
 part 'transfer.g.dart';
 
 @JsonSerializable()
-class Transfer extends Equatable implements ITransaction {
+class Transfer extends Equatable {
   final String? id;
   final DateTime date;
   final String fromAccountId;
@@ -19,21 +18,21 @@ class Transfer extends Equatable implements ITransaction {
 
   Transfer(
       {this.id,
-        required this.date,
-        required this.fromAccountId,
-        required this.toAccountId,
-        required this.amount,
-        required this.budgetId,
-        this.notes});
+      required this.date,
+      required this.fromAccountId,
+      required this.toAccountId,
+      required this.amount,
+      required this.budgetId,
+      this.notes});
 
   Transfer copyWith(
       {String? id,
-        DateTime? date,
-        String? fromAccountId,
-        String? toAccountId,
-        double? amount,
-        String? budgetId,
-        String? notes}) {
+      DateTime? date,
+      String? fromAccountId,
+      String? toAccountId,
+      double? amount,
+      String? budgetId,
+      String? notes}) {
     return Transfer(
       id: id ?? this.id,
       date: date ?? this.date,
@@ -53,40 +52,31 @@ class Transfer extends Equatable implements ITransaction {
   @override
   List<Object?> get props => [id, budgetId];
 
-  List<ComprehensiveTransaction> toTiles({required Account fromAccount, required Account toAccount}) {
-    return List.of(
-        [ComprehensiveTransaction(
-            id: this.id!,
-            budgetId: budgetId,
-            type: TransactionType.TRANSFER,
-            amount: this.amount,
-            title: 'Transfer in',
-            subtitle: 'from ${fromAccount.name}',
-            dateTime: date,
-            description: this.notes!,
-            fromAccount: fromAccount,
-            toAccount: toAccount),
-          ComprehensiveTransaction(
-              id: this.id!,
-              budgetId: budgetId,
-              type: TransactionType.TRANSFER,
-              amount: this.amount,
-              title: 'Transfer out',
-              subtitle: 'to ${toAccount.name}',
-              dateTime: date,
-              description: this.notes!,
-              fromAccount: fromAccount,
-              toAccount: toAccount)]);
+  List<ComprehensiveTransaction> toTiles(
+      {required Account fromAccount, required Account toAccount}) {
+    return List.of([
+      ComprehensiveTransaction(
+          id: this.id!,
+          budgetId: budgetId,
+          type: TransactionType.TRANSFER,
+          amount: this.amount,
+          title: 'Transfer in',
+          subtitle: 'from ${fromAccount.name}',
+          dateTime: date,
+          description: this.notes!,
+          fromAccount: fromAccount,
+          toAccount: toAccount),
+      ComprehensiveTransaction(
+          id: this.id!,
+          budgetId: budgetId,
+          type: TransactionType.TRANSFER,
+          amount: this.amount,
+          title: 'Transfer out',
+          subtitle: 'to ${toAccount.name}',
+          dateTime: date,
+          description: this.notes!,
+          fromAccount: fromAccount,
+          toAccount: toAccount)
+    ]);
   }
-
-  @override
-  String get getId => id!;
-
-  @override
-  DateTime getDate(){
-    return date;
-  }
-
-  @override
-  bool isTransaction() => false;
 }

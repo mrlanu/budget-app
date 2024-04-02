@@ -1,8 +1,8 @@
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../auth/auth.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
 import '../../theme.dart';
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
     return RepositoryProvider(
       create: (context) => _authRepo,
       child: BlocProvider(
-        create: (_) => AppBloc(authenticationRepository: _authRepo),
+        create: (_) => AuthBloc(authenticationRepository: _authRepo),
         child: AppView(),
       ),
     );
@@ -38,7 +38,7 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
-    return BlocListener<AppBloc, AppState>(
+    return BlocListener<AuthBloc, AuthState>(
         listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           router.refresh();

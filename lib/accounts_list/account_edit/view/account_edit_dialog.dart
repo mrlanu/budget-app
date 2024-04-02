@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/repository/budget_repository.dart';
-import '../../../budgets/models/account.dart';
+import '../../../budgets/repository/budget_repository.dart';
 import '../../../constants/colors.dart';
+import '../../models/account.dart';
 import '../account_edit.dart';
 
 class AccountEditDialog extends StatelessWidget {

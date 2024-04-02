@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
 import 'package:budget_app/budgets/budgets.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../budgets/repository/budget_repository.dart';
 import '../../transaction/models/transaction_type.dart';
+import '../models/category.dart';
 
 part 'categories_state.dart';
 
@@ -27,7 +28,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(state.copyWith(
         status: CategoriesStatus.success,
         categories:
-            _budgetRepository.getCategoriesByType(state.transactionType)));
+            budget.getCategoriesByType(state.transactionType)));
   }
 
   Future<void> onCategoryDeleted(Category category) async {

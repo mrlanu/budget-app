@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:budget_app/transfer/models/models.dart';
 import 'package:cache_client/cache_client.dart';
 import 'package:network/network.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../constants/api.dart';
+import '../../transfer/models/transfer.dart';
 import '../transaction.dart';
 
 class TransactionFailure implements Exception {
