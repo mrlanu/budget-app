@@ -36,7 +36,9 @@ class ToAccountInputField extends StatelessWidget {
               .add(TransferToAccountChanged(account: newValue));
           //setState(() => selectedValue = newValue);
         },
-        value: toAccount,
+        value: toAccount == null
+            ? null
+            : budget.accountList.firstWhere((c) => c.id == toAccount.id),
         decoration: InputDecoration(
           icon: Icon(
             Icons.account_balance,

@@ -8,6 +8,7 @@ import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../budgets/repository/budget_repository.dart';
+import '../../../subcategories/models/subcategory.dart';
 import '../../../transaction/models/transaction_type.dart';
 import '../../models/category.dart';
 
@@ -47,6 +48,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
           id: category.id,
           name: category.name,
           iconCode: category.iconCode,
+          subcategoryList: category.subcategoryList,
           type: category.type,
           isValid: true,
           catStatus: CategoryEditStatus.success));
@@ -81,6 +83,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
         id: isIdExist ? state.id! : Uuid().v4(),
         name: state.name!,
         iconCode: state.iconCode,
+        subcategoryList: state.subcategoryList,
         type: state.type);
     isIdExist
         ? _budgetRepository.updateCategory(category)
