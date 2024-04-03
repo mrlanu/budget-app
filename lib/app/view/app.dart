@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../auth/auth.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
-import '../../theme.dart';
 import '../../utils/theme/budget_theme.dart';
 
 class App extends StatelessWidget {
@@ -31,8 +30,6 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-  ThemeMode themeMode = ThemeMode.system;
-  ColorSeed colorSelected = ColorSeed.baseColor;
 
   @override
   Widget build(BuildContext context) {
