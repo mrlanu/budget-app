@@ -3,12 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../accounts_list/models/account.dart';
-import '../../../constants/colors.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
 class AccountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
     final account =
         context.select((TransactionBloc bloc) => bloc.state.account);
@@ -38,8 +39,9 @@ class AccountInput extends StatelessWidget {
         decoration: InputDecoration(
           icon: Icon(
             Icons.account_balance,
-            color: BudgetColors.accent,
+            color: themeState.secondaryColor,
           ),
+          border: OutlineInputBorder(),
           labelText: 'Account',
           //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
         ));

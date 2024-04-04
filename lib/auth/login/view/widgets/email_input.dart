@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../constants/colors.dart';
-import '../../../../utils/theme/budget_theme.dart';
+import '../../../../utils/theme/cubit/theme_cubit.dart';
 import '../../../auth.dart';
 
 class EmailInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
@@ -19,14 +19,13 @@ class EmailInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.email,
-              color: BudgetTheme.isDarkMode(context)
-                  ? BudgetColors.accentDark
-                  : BudgetColors.primary,
+              color: themeState.secondaryColor,
             ),
             border: OutlineInputBorder(),
             labelText: 'Email',
             helperText: '',
-            errorText: state.email.displayError != null ? 'invalid email' : null,
+            errorText:
+                state.email.displayError != null ? 'invalid email' : null,
           ),
         );
       },

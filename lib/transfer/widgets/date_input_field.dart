@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../bloc/transfer_bloc.dart';
 
 class DateInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final date = context.select((TransferBloc bloc) => bloc.state.date);
     return TextFormField(
         controller: TextEditingController(
             text: date != null
                 ? DateFormat('MM-dd-yyyy').format(date)
                 : DateFormat('MM-dd-yyyy').format(DateTime.now())),
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
             border: OutlineInputBorder(),
             icon: Icon(
               Icons.calendar_today,
-              color: Colors.orangeAccent,
+              color: themeState.secondaryColor,
             ),
             labelText: "Date"),
         readOnly: true,

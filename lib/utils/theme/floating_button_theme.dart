@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/colors.dart';
+import '../utils.dart';
 
 class BudgetFloatingButtonTheme {
-  BudgetFloatingButtonTheme._();
 
-  static const FloatingActionButtonThemeData light =
+  final AppColors seedColors;
+
+  BudgetFloatingButtonTheme(this.seedColors);
+
+  FloatingActionButtonThemeData get light =>
   FloatingActionButtonThemeData(
-      backgroundColor: BudgetColors.accent,
-      foregroundColor: BudgetColors.dark
+      backgroundColor: seedColors.secondaryColor,
+      foregroundColor: Colors.white
   );
 
-  static const FloatingActionButtonThemeData dark =
+  FloatingActionButtonThemeData get dark =>
   FloatingActionButtonThemeData(
-      backgroundColor: BudgetColors.accentDark,
-      foregroundColor: BudgetColors.light
+      backgroundColor: seedColors.secondaryColor,
+      foregroundColor: seedColors.primaryColor[900]
   );
 }

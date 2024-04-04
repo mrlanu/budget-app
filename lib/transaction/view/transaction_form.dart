@@ -4,6 +4,7 @@ import 'package:formz/formz.dart';
 
 import '../../../constants/constants.dart';
 import '../../constants/colors.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../transaction.dart';
 
 class TransactionForm extends StatelessWidget {
@@ -55,13 +56,14 @@ class TransactionForm extends StatelessWidget {
 class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final description = context.select((TransactionBloc bloc) => bloc.state.description);
     return TextFormField(
             initialValue: description,
             decoration: InputDecoration(
               icon: Icon(
                 Icons.notes,
-                color: BudgetColors.accent,
+                color: themeState.secondaryColor,
               ),
               border: OutlineInputBorder(),
               labelText: 'Notes',
@@ -77,6 +79,7 @@ class _SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
+        final themeState = context.watch<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ListTile(
@@ -84,7 +87,7 @@ class _SubmitButton extends StatelessWidget {
               state.category != null &&
               state.subcategory != null &&
               state.account != null
-              ? BudgetColors.accent
+              ? themeState.secondaryColor
               : BudgetColors.grey,
                 title: Center(
                   child: Text(

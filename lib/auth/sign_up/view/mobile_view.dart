@@ -33,9 +33,9 @@ class MobileViewSignup extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: h * 0.06, horizontal: w * 0.06),
                   child: Column(
                     children: [
-                      EmailInput(),
+                      SignupEmailInput(),
                       SizedBox(height: h * 0.01),
-                      PasswordInput(),
+                      SignupPasswordInput(),
                       SizedBox(height: h * 0.01),
                       ConfirmPasswordInput(),
                       SizedBox(height: h * 0.01),

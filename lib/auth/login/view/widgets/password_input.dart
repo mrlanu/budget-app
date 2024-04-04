@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../constants/colors.dart';
-import '../../../../utils/theme/budget_theme.dart';
+import '../../../../utils/theme/cubit/theme_cubit.dart';
 import '../../../auth.dart';
 
 class PasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
@@ -20,9 +20,7 @@ class PasswordInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.key,
-              color: BudgetTheme.isDarkMode(context)
-                  ? BudgetColors.accentDark
-                  : BudgetColors.primary,
+              color: themeState.secondaryColor,
             ),
             border: OutlineInputBorder(),
             labelText: 'Password',

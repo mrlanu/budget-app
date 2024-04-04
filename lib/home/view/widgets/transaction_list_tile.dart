@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/colors.dart';
 import '../../../transaction/transaction.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class TransactionListTile extends StatelessWidget {
   final ComprehensiveTransaction transactionTile;
@@ -16,6 +18,7 @@ class TransactionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
+    final seedColor = context.watch<ThemeCubit>().state;
     final textTheme = Theme.of(context).textTheme;
     return Dismissible(
       key: Key('transaction_dismissible_${transactionTile.id}'),
@@ -32,7 +35,7 @@ class TransactionListTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           Icons.clear_all,
-          color: BudgetColors.darkerGrey,
+          color: Colors.black87,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -52,7 +55,7 @@ class TransactionListTile extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: BudgetColors.darkerGrey,
+              color: Colors.black87,
             ),
           ],
         ),
@@ -60,14 +63,12 @@ class TransactionListTile extends StatelessWidget {
           transactionTile.title,
           style: TextStyle(
             fontSize: textTheme.titleLarge!.fontSize,
-            color: transactionTile.type == TransactionType.EXPENSE
-                ? BudgetColors.primary
-                : BudgetColors.primary,
+            color: Colors.black87,
           ),
         ),
         subtitle: Text(
           '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}',
-          style: TextStyle(color: BudgetColors.primary),
+          style: TextStyle(color: Colors.black87, fontSize: textTheme.titleMedium!.fontSize,),
         ),
         isThreeLine: false,
         onTap: onTap,

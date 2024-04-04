@@ -63,7 +63,7 @@ Future<String?> _guard(BuildContext context, GoRouterState state) async {
     return '/splash';
   }
   final bool signingIn =
-      ['/login', '/login/signup', '/splash'].contains(state.matchedLocation);
+      ['/login', '/signup', '/splash'].contains(state.matchedLocation);
   if (!signedIn && !signingIn) {
     return '/login';
   } else if (signedIn && signingIn) {

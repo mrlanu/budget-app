@@ -1,3 +1,4 @@
+import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -53,6 +54,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final seedColor = context.watch<ThemeCubit>().state;
     return MultiBlocListener(
         listeners: [
           BlocListener<HomeCubit, HomeState>(
@@ -87,7 +89,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
         child: SingleChildScrollView(
             child: ExpansionPanelList(
                 expandIconColor: Colors.black,
-                dividerColor: BudgetColors.primary,
+                dividerColor: seedColor.primaryColor[300],
                 expansionCallback: (int index, bool isExpanded) {
                   setState(() {
                     isExpandedList[index] = isExpanded;
@@ -104,11 +106,11 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                   final summary = widget.summaryList[index];
                   return ExpansionPanel(
                       canTapOnHeader: true,
-                      backgroundColor: BudgetColors.lightContainer,
+                      backgroundColor: seedColor.primaryColor[100],
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return ListTile(
                           leading: FaIcon(
-                              color: BudgetColors.primary,
+                              color: seedColor.primaryColor[900],
                               IconData(summary.iconCodePoint,
                                   fontFamily: 'FontAwesomeSolid')),
                           trailing: Row(
@@ -119,7 +121,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                                 style: TextStyle(
                                   fontSize: textTheme.titleLarge!.fontSize,
                                   fontWeight: FontWeight.bold,
-                                  color: BudgetColors.primary,
+                                  color: seedColor.primaryColor[900],
                                 ),
                               ),
                             ],
@@ -129,7 +131,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                             style: TextStyle(
                               fontSize: textTheme.titleLarge!.fontSize,
                               fontWeight: FontWeight.bold,
-                              color: BudgetColors.primary,
+                              color: seedColor.primaryColor[900],
                             ),
                           ),
                         );

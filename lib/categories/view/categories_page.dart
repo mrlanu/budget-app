@@ -8,6 +8,7 @@ import '../../budgets/repository/budget_repository.dart';
 import '../../constants/colors.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../../utils/theme/budget_theme.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 
 class CategoriesPage extends StatelessWidget {
   CategoriesPage({Key? key, required this.transactionType}) : super(key: key);
@@ -30,7 +31,7 @@ class CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final themeState = context.read<ThemeCubit>().state;
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
@@ -74,7 +75,7 @@ class CategoriesView extends StatelessWidget {
                             ),
                             Expanded(child: Container()),
                             FaIcon(
-                                color: scheme.primary,
+                                color: themeState.primaryColor[900],
                                 IconData(category.iconCode,
                                     fontFamily: 'FontAwesomeSolid')),
                           ],
@@ -101,8 +102,8 @@ class CategoriesView extends StatelessWidget {
               ),
               ListTile(
                 tileColor: BudgetTheme.isDarkMode(context)
-                    ? BudgetColors.accentDark
-                    : BudgetColors.accent,
+                    ? themeState.secondaryColor
+                    : themeState.secondaryColor,
                 title: Text(
                   'Add category',
                   style: TextStyle(

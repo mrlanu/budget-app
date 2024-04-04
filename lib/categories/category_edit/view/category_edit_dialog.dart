@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../budgets/repository/budget_repository.dart';
-import '../../../constants/colors.dart';
 import '../../../constants/constants.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../models/category.dart';
 import '../category_edit.dart';
 
@@ -34,6 +34,7 @@ class CategoryEditForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryEditBloc, CategoryEditState>(
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         return Center(
           child: SingleChildScrollView(
             child: Dialog(
@@ -61,7 +62,7 @@ class CategoryEditForm extends StatelessWidget {
                                 decoration: InputDecoration(
                                   icon: Icon(
                                     Icons.notes,
-                                    color: Colors.orangeAccent,
+                                    color: themeState.secondaryColor,
                                   ),
                                   border: OutlineInputBorder(),
                                   labelText: 'Name',
@@ -93,7 +94,7 @@ class CategoryEditForm extends StatelessWidget {
                                               state.name?.length == 0 ||
                                               state.iconCode < 0
                                           ? Colors.grey
-                                          : BudgetColors.accent)),
+                                          : themeState.secondaryColor)),
                             )
                           ],
                         ),

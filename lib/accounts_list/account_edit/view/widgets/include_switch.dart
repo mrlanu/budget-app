@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../utils/theme/cubit/theme_cubit.dart';
 import '../../bloc/account_edit_bloc.dart';
 
 class IncludeSwitch extends StatelessWidget {
@@ -8,6 +9,7 @@ class IncludeSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     final isIncludeInTotals =
         context.select((AccountEditBloc bloc) => bloc.state.isIncludeInTotals);
     return Row(
@@ -19,7 +21,7 @@ class IncludeSwitch extends StatelessWidget {
               fontSize: Theme.of(context).textTheme.titleLarge?.fontSize),
         ),
         SizedBox(width: 10),
-        Switch(
+        Switch(activeColor: themeState.secondaryColor,
           thumbIcon: _thumbIcon,
           value: isIncludeInTotals,
           onChanged: (bool value) {

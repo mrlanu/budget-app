@@ -1,3 +1,4 @@
+import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,7 @@ class HomeBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final themeState = context.read<ThemeCubit>().state;
     return Container(
       height: 80,
       child: Theme(
@@ -45,7 +46,7 @@ class HomeBottomNavBar extends StatelessWidget {
               elevation: 0,
               showSelectedLabels: true,
               showUnselectedLabels: false,
-              selectedItemColor: BudgetColors.accent,
+              selectedItemColor: themeState.secondaryColor,
               unselectedItemColor: BudgetColors.light,
               items: [
                 _buildBottomNavigationBarItem(

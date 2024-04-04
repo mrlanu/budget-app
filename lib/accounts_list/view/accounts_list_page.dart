@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../budgets/repository/budget_repository.dart';
-import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/accounts_cubit.dart';
 
 class AccountsListPage extends StatelessWidget {
@@ -47,7 +47,7 @@ class AccountsListView extends StatelessWidget {
         ],
         child: BlocBuilder<AccountsCubit, AccountsState>(
           builder: (context, state) {
-            final scheme = Theme.of(context).colorScheme;
+            final themeState = context.watch<ThemeCubit>().state;
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
@@ -77,7 +77,7 @@ class AccountsListView extends StatelessWidget {
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(
-                                    color: scheme.primary,
+                                    color: themeState.primaryColor[900],
                                     IconData(
                                         state.accountCategories
                                                 .firstWhere((element) =>
@@ -107,8 +107,8 @@ class AccountsListView extends StatelessWidget {
                   ),
                   ListTile(
                     tileColor: BudgetTheme.isDarkMode(context)
-                        ? BudgetColors.accentDark
-                        : BudgetColors.accent,
+                        ? themeState.secondaryColor
+                        : themeState.secondaryColor,
                     title: Text(
                       'Add Account',
                       style: TextStyle(
@@ -117,7 +117,9 @@ class AccountsListView extends StatelessWidget {
                     ),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetColors.primary,
+                      color: BudgetTheme.isDarkMode(context)
+                          ? themeState.primaryColor[900]
+                          : themeState.primaryColor[900],
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

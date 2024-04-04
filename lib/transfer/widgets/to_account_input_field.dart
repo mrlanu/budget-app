@@ -4,11 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../accounts_list/models/account.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../bloc/transfer_bloc.dart';
 
 class ToAccountInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final budget = context.select((TransferBloc bloc) => bloc.state.budget);
     final toAccount =
         context.select((TransferBloc bloc) => bloc.state.toAccount);
@@ -42,7 +44,7 @@ class ToAccountInputField extends StatelessWidget {
         decoration: InputDecoration(
           icon: Icon(
             Icons.account_balance,
-            color: Colors.orangeAccent,
+            color: themeState.secondaryColor,
           ),
           border: OutlineInputBorder(),
           labelText: 'To Account',

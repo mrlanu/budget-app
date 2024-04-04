@@ -15,9 +15,9 @@ class SignUpPage extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 1100) {
-            return MobileViewLogin();
+            return MobileViewSignup();
           }
-          return DesktopViewLogin();
+          return DesktopViewSignup();
         },
       ),
     );

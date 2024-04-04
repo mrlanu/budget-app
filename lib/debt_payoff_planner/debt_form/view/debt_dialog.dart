@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-import '../../../constants/colors.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class DebtDialog extends StatelessWidget {
   const DebtDialog({super.key});
@@ -27,10 +27,10 @@ class DebtDialog extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         return state.status == DebtStateStatus.loading
             ? Center(child: CircularProgressIndicator())
             : Dialog(
-            backgroundColor: BudgetColors.lightContainer,
                 insetPadding: EdgeInsets.all(10),
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -82,6 +82,7 @@ class _SubmitButton extends StatelessWidget {
     return BlocBuilder<DebtBloc, DebtState>(
       //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         return state.submissionStatus.isInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
@@ -90,7 +91,8 @@ class _SubmitButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
+                      themeState.secondaryColor,
+                  foregroundColor: Colors.white
                 ),
                 onPressed: state.isValid
                     ? () => context

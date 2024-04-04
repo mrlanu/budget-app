@@ -4,41 +4,51 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../utils.dart';
 
+typedef AppColors = ({MaterialColor primaryColor, Color secondaryColor});
+
 class BudgetTheme {
-  BudgetTheme._();
+  BudgetTheme({required this.seedColors});
 
-  static ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    disabledColor: BudgetColors.grey,
-    brightness: Brightness.light,
-    colorSchemeSeed: BudgetColors.primary,
-    scaffoldBackgroundColor: BudgetColors.light,
-    textTheme: _buildLightTextTheme(),
-    appBarTheme: BudgetAppBarTheme.light,
-    floatingActionButtonTheme: BudgetFloatingButtonTheme.light,
-    bottomNavigationBarTheme: BudgetBottomNavigationBarTheme.light,
-    inputDecorationTheme: BudgetTextFormFieldTheme.light,
-    drawerTheme: BudgetDrawerTheme.light,
-    checkboxTheme: BudgetCheckboxTheme.lightCheckboxTheme,
-  );
+  final AppColors seedColors;
 
-  static ThemeData darkTheme = ThemeData(
-    useMaterial3: true,
-    disabledColor: BudgetColors.grey,
-    brightness: Brightness.dark,
-    colorSchemeSeed: BudgetColors.primary,
-    scaffoldBackgroundColor: BudgetColors.dark,
-    textTheme: _buildDarkTextTheme(),
-    appBarTheme: BudgetAppBarTheme.dark,
-    cardTheme: CardTheme(color: BudgetColors.darkerGrey),
-    dialogTheme: DialogTheme(
-      backgroundColor: BudgetColors.darkerGrey,
-    ),
-    floatingActionButtonTheme: BudgetFloatingButtonTheme.dark,
-    bottomNavigationBarTheme: BudgetBottomNavigationBarTheme.dark,
-    inputDecorationTheme: BudgetTextFormFieldTheme.dark,
-    drawerTheme: BudgetDrawerTheme.dark,
-  );
+  ThemeData get lightTheme => ThemeData(
+        useMaterial3: true,
+        disabledColor: BudgetColors.grey,
+        brightness: Brightness.light,
+        colorSchemeSeed: seedColors.primaryColor,
+        scaffoldBackgroundColor: seedColors.primaryColor.shade50,
+        textTheme: _buildLightTextTheme(),
+        appBarTheme: BudgetAppBarTheme(seedColors).light,
+        floatingActionButtonTheme: BudgetFloatingButtonTheme(seedColors).light,
+        bottomNavigationBarTheme:
+            BudgetBottomNavigationBarTheme(color: seedColors).light,
+        drawerTheme: BudgetDrawerTheme.light,
+        checkboxTheme: BudgetCheckboxTheme(seedColors).lightCheckboxTheme,
+        cardColor: seedColors.primaryColor.shade100,
+        splashColor: Colors.transparent,
+        highlightColor: seedColors.primaryColor[200],
+      );
+
+  ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        disabledColor: BudgetColors.grey,
+        brightness: Brightness.dark,
+        colorSchemeSeed: seedColors.primaryColor,
+        scaffoldBackgroundColor: Color(0xFF272727),
+        textTheme: _buildDarkTextTheme(),
+        appBarTheme: BudgetAppBarTheme(seedColors).dark,
+        cardTheme: CardTheme(color: BudgetColors.darkerGrey),
+        dialogTheme: DialogTheme(
+          backgroundColor: BudgetColors.darkerGrey,
+        ),
+        floatingActionButtonTheme: BudgetFloatingButtonTheme(seedColors).dark,
+        bottomNavigationBarTheme:
+            BudgetBottomNavigationBarTheme(color: seedColors).dark,
+        inputDecorationTheme: BudgetTextFormFieldTheme.dark,
+        drawerTheme: BudgetDrawerTheme.dark,
+        splashColor: Colors.transparent,
+        highlightColor: seedColors.primaryColor[200],
+      );
 
   static TextTheme _buildLightTextTheme() =>
       GoogleFonts.robotoCondensedTextTheme();

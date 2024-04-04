@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../constants/colors.dart';
 import '../../../subcategories/models/subcategory.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
 class SubcategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
     final category =
         context.select((TransactionBloc bloc) => bloc.state.category);
@@ -51,7 +52,7 @@ class SubcategoryInput extends StatelessWidget {
         decoration: InputDecoration(
           icon: Icon(
             Icons.category_outlined,
-            color: BudgetColors.accent,
+            color: themeState.secondaryColor,
           ),
           border: OutlineInputBorder(),
           labelText: 'Subcategory',

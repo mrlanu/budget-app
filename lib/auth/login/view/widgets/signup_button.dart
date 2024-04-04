@@ -1,9 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../constants/colors.dart';
 import '../../../../utils/theme/budget_theme.dart';
+import '../../../../utils/theme/cubit/theme_cubit.dart';
 
 class SignUpButtonFromLogin extends StatelessWidget {
 
@@ -11,6 +12,7 @@ class SignUpButtonFromLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return RichText(
       text: TextSpan(
         recognizer: TapGestureRecognizer()
@@ -19,8 +21,8 @@ class SignUpButtonFromLogin extends StatelessWidget {
         text: '  Register',
         style: TextStyle(
             color: BudgetTheme.isDarkMode(context)
-                ? BudgetColors.primary600
-                : BudgetColors.primary, fontSize: 20),
+                ? themeState.secondaryColor
+                : themeState.secondaryColor, fontSize: 20),
       ),
     );
   }

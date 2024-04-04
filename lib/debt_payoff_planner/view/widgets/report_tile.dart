@@ -1,9 +1,10 @@
 import 'package:budget_app/debt_payoff_planner/models/debt_report_item.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../constants/colors.dart';
 import '../../../utils/theme/budget_theme.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class ReportTile extends StatelessWidget {
   final DebtStrategyReport report;
@@ -13,6 +14,7 @@ class ReportTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final themeState = context.read<ThemeCubit>().state;
     return Card(
       margin: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 15),
       child: Column(
@@ -28,10 +30,10 @@ class ReportTile extends StatelessWidget {
                       topLeft: Radius.circular(10.0),
                       bottomLeft: Radius.zero),
                   color: BudgetTheme.isDarkMode(context)
-                      ? BudgetColors.primary600
-                      : BudgetColors.lightContainer),
+                      ? themeState.primaryColor[400]
+                      : themeState.primaryColor[100]),
               child: Text('DURATION ${report.duration} MONTHS',
-                  style: Theme.of(context).textTheme.titleSmall)),
+                  style: Theme.of(context).textTheme.titleSmall,)),
           Container(
             height: report.extraPayments.length * 45,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),

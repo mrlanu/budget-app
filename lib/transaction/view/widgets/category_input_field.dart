@@ -3,12 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../categories/models/category.dart';
-import '../../../constants/colors.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
 class CategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
     final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
     final transactionType =
         context.select((TransactionBloc bloc) => bloc.state.transactionType);
@@ -40,7 +41,7 @@ class CategoryInput extends StatelessWidget {
         decoration: InputDecoration(
           icon: Icon(
             Icons.category,
-            color: BudgetColors.accent,
+            color: themeState.secondaryColor,
           ),
           border: OutlineInputBorder(),
           labelText: 'Category',

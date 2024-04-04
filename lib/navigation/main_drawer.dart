@@ -10,6 +10,7 @@ import '../auth/auth.dart';
 import '../constants/colors.dart';
 import '../summary/view/summary_page.dart';
 import '../utils/theme/budget_theme.dart';
+import '../utils/theme/cubit/theme_cubit.dart';
 
 class MainDrawer extends StatefulWidget {
   final TabController? tabController;
@@ -23,6 +24,7 @@ class MainDrawer extends StatefulWidget {
 class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return Drawer(
       child: Column(
         children: [
@@ -30,8 +32,8 @@ class _MainDrawerState extends State<MainDrawer> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    BudgetColors.primary600,
-                    BudgetColors.primary,
+                themeState.primaryColor[900]!,
+                themeState.primaryColor[600]!,
               ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
               child: Container(
                   width: double.infinity,
@@ -53,10 +55,10 @@ class _MainDrawerState extends State<MainDrawer> {
                     _buildMenuItem(
                         menuIndex: 1,
                         title: 'Summary',
-                        icon: FaIcon(FontAwesomeIcons.listUl,
-                            color: _getColor()),
+                        icon:
+                            FaIcon(FontAwesomeIcons.listUl, color: _getColor()),
                         route: SummaryPage.route()),
-                    Divider(color: _getColor()),
+                    Divider(color: themeState.primaryColor[200]),
                     ExpansionTile(
                       shape: Border.all(color: Colors.transparent),
                       title: Row(
@@ -88,7 +90,7 @@ class _MainDrawerState extends State<MainDrawer> {
                                 route: CategoryChartPage.route())),
                       ],
                     ),
-                    Divider(color: _getColor()),
+                    Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                         menuIndex: 3,
                         title: 'Debt payoff planner',
@@ -106,7 +108,7 @@ class _MainDrawerState extends State<MainDrawer> {
                               .copyWith(color: BudgetColors.teal900)),
                       onTap: () {},
                     ),*/
-                    Divider(color: _getColor()),
+                    Divider(color: themeState.primaryColor[200]),
                     ListTile(
                       leading: FaIcon(FontAwesomeIcons.rightFromBracket,
                           color: _getColor()),
@@ -116,10 +118,12 @@ class _MainDrawerState extends State<MainDrawer> {
                               .titleLarge!
                               .copyWith(color: _getColor())),
                       onTap: () {
-                        context.read<AuthBloc>().add(const AuthLogoutRequested());
+                        context
+                            .read<AuthBloc>()
+                            .add(const AuthLogoutRequested());
                       },
                     ),
-                    Divider(color: _getColor())
+                    Divider(color: themeState.primaryColor[200])
                   ],
                 ),
               ),
@@ -136,9 +140,8 @@ class _MainDrawerState extends State<MainDrawer> {
       required Widget? icon,
       required Route route}) {
     return ListTile(
-      tileColor: widget.tabController?.index == menuIndex
-          ? BudgetColors.light
-          : null,
+      tileColor:
+          widget.tabController?.index == menuIndex ? BudgetColors.light : null,
       leading: icon,
       title: Text(title,
           style: Theme.of(context)
@@ -153,7 +156,10 @@ class _MainDrawerState extends State<MainDrawer> {
     );
   }
 
-  Color _getColor() => BudgetTheme.isDarkMode(context)
-      ? BudgetColors.lightContainer
-      : BudgetColors.primary;
+  Color _getColor() {
+    final themeState = context.read<ThemeCubit>().state;
+    return BudgetTheme.isDarkMode(context)
+        ? BudgetColors.lightContainer
+        : themeState.primaryColor[900]!;
+  }
 }

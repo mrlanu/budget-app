@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../categories/models/category.dart';
 import '../../../../transaction/models/transaction_type.dart';
+import '../../../../utils/theme/cubit/theme_cubit.dart';
 import '../../bloc/account_edit_bloc.dart';
 
 class CategoryInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     final budget = context.select((AccountEditBloc bloc) => bloc.state.budget!);
     final category =
         context.select((AccountEditBloc bloc) => bloc.state.category);
@@ -41,7 +43,7 @@ class CategoryInputField extends StatelessWidget {
         decoration: InputDecoration(
           icon: Icon(
             Icons.category,
-            color: Colors.orangeAccent,
+            color: themeState.secondaryColor,
           ),
           border: OutlineInputBorder(),
           labelText: 'Category',

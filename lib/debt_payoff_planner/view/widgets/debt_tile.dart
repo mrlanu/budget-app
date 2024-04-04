@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../constants/colors.dart';
 import '../../../utils/theme/budget_theme.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../models/debt.dart';
 
 class DebtTile extends StatelessWidget {
@@ -15,6 +15,7 @@ class DebtTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return Card(
       margin: EdgeInsets.all(10),
       child: Column(
@@ -28,9 +29,7 @@ class DebtTile extends StatelessWidget {
                     bottomRight: Radius.zero,
                     topLeft: Radius.circular(10.0),
                     bottomLeft: Radius.zero),
-                color: BudgetTheme.isDarkMode(context)
-                    ? BudgetColors.primary
-                    : BudgetColors.primary600
+                color: themeState.primaryColor[600]
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,11 +47,11 @@ class DebtTile extends StatelessWidget {
                   ButtonBar(
                     children: [
                       IconButton.outlined(
-                        color: BudgetColors.accent,
+                        color: Colors.white,
                           onPressed: () => onEdit(debtModel),
                           icon: const Icon(Icons.edit_note)),
                       IconButton.outlined(
-                        color: BudgetColors.accent,
+                          color: Colors.white,
                           onPressed: () {
                             context.read<DebtsCubit>().deleteDebt(debtModel.id!);
                             //context.read<StrategyCubit>().fetchStrategy();
@@ -65,8 +64,8 @@ class DebtTile extends StatelessWidget {
           Expanded(
             child: Container(
               color: BudgetTheme.isDarkMode(context)
-                  ? BudgetColors.primary600
-                  : BudgetColors.lightContainer,
+                  ? themeState.primaryColor[400]
+                  : themeState.primaryColor[100],
               padding: EdgeInsets.all(15),
               width: double.infinity,
               child: Row(
@@ -109,9 +108,7 @@ class DebtTile extends StatelessWidget {
                   bottomRight: Radius.circular(10.0),
                   topLeft: Radius.zero,
                   bottomLeft: Radius.circular(10.0)),
-              color: BudgetTheme.isDarkMode(context)
-                  ? BudgetColors.primary
-                  : BudgetColors.primary600,
+              color: themeState.primaryColor[600],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

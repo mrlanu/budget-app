@@ -5,7 +5,7 @@ import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../budgets/repository/budget_repository.dart';
-import '../../../constants/colors.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../models/account.dart';
 import '../account_edit.dart';
 
@@ -30,6 +30,7 @@ class AccountEditDialog extends StatelessWidget {
 class AccountEditForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     final accStatus =
         context.select((AccountEditBloc bloc) => bloc.state.accStatus);
     return accStatus == AccountEditStatus.loading
@@ -91,6 +92,7 @@ class _SubmitButton extends StatelessWidget {
     return BlocBuilder<AccountEditBloc, AccountEditState>(
       //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : TextButton(
@@ -107,7 +109,7 @@ class _SubmitButton extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: state.isValid && state.category != null
-                            ? BudgetColors.accent
+                            ? themeState.secondaryColor
                             : Colors.grey)),
               );
       },

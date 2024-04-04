@@ -6,6 +6,7 @@ import '../../budgets/repository/budget_repository.dart';
 import '../../categories/models/category.dart';
 import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
@@ -44,6 +45,7 @@ class SubcategoriesView extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         return Scaffold(
           appBar: AppBar(
             title: _buildTitle(state.category!),
@@ -91,7 +93,7 @@ class SubcategoriesView extends StatelessWidget {
               ListTile(
                 tileColor: BudgetTheme.isDarkMode(context)
                     ? BudgetColors.accentDark
-                    : BudgetColors.accent,
+                    : themeState.secondaryColor,
                 title: Text(
                   'New Subcategory',
                   style: TextStyle(

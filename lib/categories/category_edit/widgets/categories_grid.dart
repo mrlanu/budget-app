@@ -1,8 +1,9 @@
 import 'package:budget_app/shared/awesome_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../constants/colors.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class CategoriesGrid extends StatelessWidget {
   final Function(int) onSelect;
@@ -13,6 +14,7 @@ class CategoriesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
@@ -26,11 +28,11 @@ class CategoriesGrid extends StatelessWidget {
               child: CircleAvatar(
                 backgroundColor:
                     selectedIconCode == appIconsList[index].iconData.codePoint
-                        ? BudgetColors.accent
-                        : BudgetColors.lightContainer,
+                        ? themeState.secondaryColor
+                        : themeState.primaryColor[100],
                 child: Center(
                     child: FaIcon(appIconsList[index].iconData,
-                        color: BudgetColors.primary)),
+                        color: themeState.primaryColor[900])),
               ),
             ),
           );

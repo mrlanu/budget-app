@@ -1,5 +1,7 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../auth/auth.dart';
@@ -14,8 +16,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (context) => _authRepo,
-      child: BlocProvider(
-        create: (_) => AuthBloc(authenticationRepository: _authRepo),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => AuthBloc(authenticationRepository: _authRepo),
+          ),
+          BlocProvider(
+            create: (context) => ThemeCubit(),
+          ),
+        ],
         child: AppView(),
       ),
     );
@@ -30,7 +39,6 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-
   @override
   Widget build(BuildContext context) {
     w = MediaQuery.of(context).size.width;
@@ -41,12 +49,27 @@ class _AppViewState extends State<AppView> {
           router.refresh();
           router.go('/');
         },
-        child: MaterialApp.router(
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.system,
-          theme: BudgetTheme.lightTheme,
-          darkTheme: BudgetTheme.darkTheme,
+        child: BlocBuilder<ThemeCubit, AppColors>(
+          builder: (context, state) {
+            _setSystemUIOverlayStyle(state);
+            return MaterialApp.router(
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              themeMode: ThemeMode.system,
+              theme: BudgetTheme(seedColors: state).lightTheme,
+              darkTheme: BudgetTheme(seedColors: state).darkTheme,
+            );
+          },
         ));
   }
 }
+
+void _setSystemUIOverlayStyle(AppColors color) =>
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: color.primaryColor.shade700,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: null,
+      statusBarColor: color.primaryColor.shade700,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.light,
+    ));
