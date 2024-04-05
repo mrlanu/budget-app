@@ -60,27 +60,33 @@ class _AppViewState extends State<AppView> {
           router.refresh();
           router.go('/');
         },
-        child: BlocBuilder<ThemeCubit, AppColors>(
+        child: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (context, state) {
-            _setSystemUIOverlayStyle(state);
+            _setSystemUIOverlayStyle(state.primaryColor);
             return MaterialApp.router(
               routerConfig: router,
               debugShowCheckedModeBanner: false,
-              themeMode: ThemeMode.system,
-              theme: BudgetTheme(seedColors: state).lightTheme,
-              darkTheme: BudgetTheme(seedColors: state).darkTheme,
+              themeMode: ThemeMode.values[state.mode],
+              theme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).lightTheme,
+              darkTheme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).darkTheme,
             );
           },
         ));
   }
 }
 
-void _setSystemUIOverlayStyle(AppColors color) =>
+void _setSystemUIOverlayStyle(MaterialColor color) =>
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: color.primaryColor.shade700,
+      systemNavigationBarColor: color.shade700,
       systemNavigationBarIconBrightness: Brightness.light,
       systemNavigationBarDividerColor: null,
-      statusBarColor: color.primaryColor.shade700,
+      statusBarColor: color.shade700,
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.light,
     ));

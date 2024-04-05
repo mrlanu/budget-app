@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-import '../budget_theme.dart';
+part 'theme_state.dart';
 
 const List<MaterialColor> appAccentColors = [
   Colors.teal,
@@ -15,44 +16,48 @@ const List<MaterialColor> appAccentColors = [
   Colors.blueGrey
 ];
 
-class ThemeCubit extends HydratedCubit<AppColors> {
-  ThemeCubit()
-      : super((
-          primaryColor: defaultPrimaryColor,
-          secondaryColor: defaultSecondaryColor
-        ));
+class ThemeCubit extends HydratedCubit<ThemeState> {
+  ThemeCubit() : super(ThemeState());
 
-  static const defaultPrimaryColor = Colors.teal;
-  static const defaultSecondaryColor = Color(0xffFF9843);
+  void updateTheme(MaterialColor color) {
+    final (primaryColor, secondaryColor) = _defineColors(color.value);
+    emit(state.copyWith(
+        primaryColor: primaryColor, secondaryColor: secondaryColor));
+  }
 
-  void updateTheme(MaterialColor primaryColor) {
-    emit(_defineColors(primaryColor.value));
+  void updateMode(int mode) {
+    emit(state.copyWith(mode: mode));
   }
 
   @override
-  AppColors fromJson(Map<String, dynamic> json) {
+  ThemeState fromJson(Map<String, dynamic> json) {
     final color = Color(int.parse(json['color'] as String));
-    print('Value: ${color.value}');
-    return _defineColors(color.value);
+    final mode = int.parse(json['mode']);
+    final (primaryColor, secondaryColor) = _defineColors(color.value);
+    return ThemeState(
+        primaryColor: primaryColor, secondaryColor: secondaryColor, mode: mode);
   }
 
   @override
-  Map<String, dynamic> toJson(AppColors state) {
-    return <String, dynamic>{'color': '${state.primaryColor.value}'};
+  Map<String, dynamic> toJson(ThemeState state) {
+    return <String, dynamic>{
+      'color': '${state.primaryColor.value}',
+      'mode': state.mode
+    };
   }
 
-  AppColors _defineColors(int value){
+  (MaterialColor, Color) _defineColors(int value) {
     return switch (value) {
-      4278228616 => (primaryColor: appAccentColors[0], secondaryColor: Color(0xffFF9843)),
-      4282339765 => (primaryColor: appAccentColors[1], secondaryColor: Color(0xffc0b15c)),
-      4293467747 => (primaryColor: appAccentColors[2], secondaryColor: Color(0xff7e00a1)),
-      4294940672 => (primaryColor: appAccentColors[3], secondaryColor: Color(0xff001ba1)),
-      4283215696 => (primaryColor: appAccentColors[4], secondaryColor: Color(0xff7e00a1)),
-      4294198070 => (primaryColor: appAccentColors[5], secondaryColor: Color(0xff7e00a1)),
-      4288423856 => (primaryColor: appAccentColors[6], secondaryColor: Color(0xff7e00a1)),
-      4284955319 => (primaryColor: appAccentColors[7], secondaryColor: Color(0xff7e00a1)),
-      4284513675 => (primaryColor: appAccentColors[8], secondaryColor: Color(0xff000000)),
-      _ => (primaryColor: Colors.grey, secondaryColor: Color(0xffa62633)),
+      4278228616 => (appAccentColors[0], Color(0xffFF9843)),
+      4282339765 => (appAccentColors[1], Color(0xffc0b15c)),
+      4293467747 => (appAccentColors[2], Color(0xff7e00a1)),
+      4294940672 => (appAccentColors[3], Color(0xff001ba1)),
+      4283215696 => (appAccentColors[4], Color(0xff7e00a1)),
+      4294198070 => (appAccentColors[5], Color(0xff7e00a1)),
+      4288423856 => (appAccentColors[6], Color(0xff7e00a1)),
+      4284955319 => (appAccentColors[7], Color(0xff7e00a1)),
+      4284513675 => (appAccentColors[8], Color(0xff000000)),
+      _ => (Colors.grey, Color(0xffa62633)),
     };
   }
 }
