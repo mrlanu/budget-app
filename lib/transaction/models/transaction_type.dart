@@ -1,1 +1,1 @@
-enum TransactionType { EXPENSE, INCOME, TRANSFER, ACCOUNT }
+enum TransactionType { EXPENSE, INCOME, ACCOUNT, TRANSFER, }

@@ -6,7 +6,6 @@ import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:budget_app/transaction/transaction.dart';
-import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
 import '../auth/auth.dart';
 import '../budgets/repository/budget_repository.dart';
+import '../settings/settings.dart';
 
 GoRouter get router => _router;
 
@@ -22,10 +22,6 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 final GlobalKey<NavigatorState> _buildingsNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'buildingsNav');
 
-final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
-final TransactionsRepository _transactionsRepository =
-    TransactionsRepositoryImpl();
-
 /// The route configuration.
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -33,19 +29,13 @@ final GoRouter _router = GoRouter(
   routes: [
     ..._authRoutes,
     ShellRoute(
-        builder: (context, state, child) => MultiRepositoryProvider(
-              providers: [
-                RepositoryProvider(create: (context) => _budgetRepository),
-                RepositoryProvider(
-                    create: (context) => _transactionsRepository),
-              ],
-              child: BlocProvider(
-                create: (context) => HomeCubit(
-                    transactionsRepository: _transactionsRepository,
-                    budgetRepository: _budgetRepository)
-                  ..initRequested(),
-                child: child,
-              ),
+        builder: (context, state, child) => BlocProvider(
+              create: (context) => HomeCubit(
+                  transactionsRepository:
+                      context.read<TransactionsRepository>(),
+                  budgetRepository: context.read<BudgetRepository>())
+                ..initRequested(),
+              child: child,
             ),
         routes: [
           ..._homeTabsRoutes,
@@ -131,41 +121,6 @@ final List<RouteBase> _homeTabsRoutes = [
 ];
 
 final List<RouteBase> _individualRoutes = [
-  GoRoute(
-    path: '/transaction',
-    builder: (BuildContext context, GoRouterState state) {
-      return TransactionPage(
-          transactionType: TransactionType
-              .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
-    },
-  ),
-  GoRoute(
-    path: '/transaction/:id',
-    builder: (BuildContext context, GoRouterState state) {
-      final homeCubit = context.read<HomeCubit>();
-      final transaction = homeCubit.state.transactionList
-          .firstWhere((tr) => tr.id == state.pathParameters['id']!);
-      return TransactionPage(
-          transaction: transaction,
-          transactionType: TransactionType
-              .values[int.parse(state.uri.queryParameters['typeIndex']!)]);
-    },
-  ),
-  GoRoute(
-    path: '/transfer',
-    builder: (BuildContext context, GoRouterState state) {
-      return TransferPage();
-    },
-  ),
-  GoRoute(
-    path: '/transfer/:id',
-    builder: (BuildContext context, GoRouterState state) {
-      final homeCubit = context.read<HomeCubit>();
-      final transfer = homeCubit.state.transactionList
-          .firstWhere((tr) => tr.id == state.pathParameters['id']!);
-      return TransferPage(transaction: transfer);
-    },
-  ),
   GoRoute(
       path: '/categories',
       builder: (BuildContext context, GoRouterState state) {
@@ -265,6 +220,12 @@ final List<RouteBase> _individualRoutes = [
           },
         ),
       ]),
+  GoRoute(
+    path: '/settings',
+    builder: (BuildContext context, GoRouterState state) {
+      return SettingsPage();
+    },
+  ),
 ];
 
 ///Wrapper for open Dialog with go_router

@@ -1,15 +1,16 @@
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../budgets/repository/budget_repository.dart';
-import '../../home/cubit/home_cubit.dart';
 import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
-  const TransferPage({super.key, this.transaction});
+  const TransferPage({super.key, this.transaction, required this.budget});
 
   final ComprehensiveTransaction? transaction;
+  final Budget budget;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class TransferPage extends StatelessWidget {
           transactionsRepository: context.read<TransactionsRepository>(),
           budgetRepository: context.read<BudgetRepository>())
           ..add(TransferBudgetChanged(
-          budget: context.read<HomeCubit>().state.budget))
+          budget: budget!))
         ..add(TransferFormLoaded(transaction: transaction)),
       child: TransferView(),
     );

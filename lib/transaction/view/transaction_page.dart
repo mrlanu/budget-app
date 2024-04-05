@@ -1,4 +1,4 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,10 +7,14 @@ import '../transaction.dart';
 
 class TransactionPage extends StatelessWidget {
   const TransactionPage(
-      {super.key, this.transaction, required this.transactionType});
+      {super.key,
+      this.transaction,
+      required this.transactionType,
+      required this.budget});
 
   final ComprehensiveTransaction? transaction;
   final TransactionType transactionType;
+  final Budget budget;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,7 @@ class TransactionPage extends StatelessWidget {
           transactionsRepository: context.read<TransactionsRepository>(),
           budgetRepository: context.read<BudgetRepository>())
         ..add(TransactionBudgetChanged(
-            budget: context.read<HomeCubit>().state.budget))
+            budget: budget))
         ..add(TransactionFormLoaded(
           transaction: transaction,
           transactionType: transactionType,

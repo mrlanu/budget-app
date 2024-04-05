@@ -11,7 +11,7 @@ class ThemeCubit extends HydratedCubit<AppColors> {
         ));
 
   static const defaultPrimaryColor = Colors.teal;
-  static const defaultSecondaryColor = Color(0xFFCD4C80);
+  static const defaultSecondaryColor = Color(0xffFF9843);
 
   void updateTheme(MaterialColor primaryColor) {
     emit(_defineColors(primaryColor.value));

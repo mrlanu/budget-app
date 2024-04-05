@@ -5,17 +5,28 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../auth/auth.dart';
+import '../../budgets/repository/budget_repository.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
+import '../../transaction/repository/transactions_repository.dart';
 import '../../utils/theme/budget_theme.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authRepo = AuthenticationRepository();
+  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
+  final TransactionsRepository _transactionsRepository =
+      TransactionsRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => _authRepo,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => _authRepo,
+        ),
+        RepositoryProvider(create: (context) => _budgetRepository),
+        RepositoryProvider(create: (context) => _transactionsRepository),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
