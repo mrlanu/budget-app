@@ -25,8 +25,8 @@ class BudgetTheme {
         drawerTheme: BudgetDrawerTheme.light,
         checkboxTheme: BudgetCheckboxTheme(seedColors).lightCheckboxTheme,
         cardColor: seedColors.primaryColor.shade100,
-        splashColor: Colors.transparent,
-        highlightColor: seedColors.primaryColor[200],
+        splashColor: seedColors.primaryColor[200],
+        highlightColor: Colors.transparent,
       );
 
   ThemeData get darkTheme => ThemeData(
