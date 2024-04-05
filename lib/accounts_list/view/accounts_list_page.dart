@@ -51,6 +51,12 @@ class AccountsListView extends StatelessWidget {
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
+                leading: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    context.pop();
+                  },
+                ),
               ),
               body: Column(
                 children: [

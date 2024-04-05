@@ -49,6 +49,12 @@ class CategoriesView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: _buildTitle(state),
+            leading: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                context.pop();
+              },
+            ),
           ),
           body: Column(
             children: [
