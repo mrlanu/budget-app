@@ -5,6 +5,7 @@ import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 import '../auth/auth.dart';
 import '../constants/colors.dart';
@@ -97,17 +98,12 @@ class _MainDrawerState extends State<MainDrawer> {
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: _getColor()),
                         route: DebtPayoffPage.route()),
-                    /*Divider(color: BudgetColors.teal900),
-                    ListTile(
-                      leading: FaIcon(FontAwesomeIcons.gear,
-                          color: BudgetColors.teal900),
-                      title: Text('Settings',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: BudgetColors.teal900)),
-                      onTap: () {},
-                    ),*/
+                    Divider(color: themeState.primaryColor[200]),
+                    _buildMenuItem(
+                      menuIndex: 4,
+                      title: 'Settings',
+                      icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
+                    ),
                     Divider(color: themeState.primaryColor[200]),
                     ListTile(
                       leading: FaIcon(FontAwesomeIcons.rightFromBracket,
@@ -138,22 +134,30 @@ class _MainDrawerState extends State<MainDrawer> {
       {required int menuIndex,
       required String title,
       required Widget? icon,
-      required Route route}) {
+      Route? route}) {
     return ListTile(
-      tileColor:
-          widget.tabController?.index == menuIndex ? BudgetColors.light : null,
-      leading: icon,
-      title: Text(title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: _getColor())),
-      onTap: () {
-        isDisplayDesktop(context)
-            ? {widget.tabController?.index = menuIndex, setState(() {})}
-            : {Navigator.of(context).pop(), Navigator.of(context).push(route)};
-      },
-    );
+        tileColor: widget.tabController?.index == menuIndex
+            ? BudgetColors.light
+            : null,
+        leading: icon,
+        title: Text(title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: _getColor())),
+        onTap: route != null
+            ? () {
+                isDisplayDesktop(context)
+                    ? {widget.tabController?.index = menuIndex, setState(() {})}
+                    : {
+                        Navigator.of(context).pop(),
+                        Navigator.of(context).push(route)
+                      };
+              }
+            : () {
+                context.pop();
+                context.push('/settings');
+              });
   }
 
   Color _getColor() {

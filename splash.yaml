@@ -1,11 +1,11 @@
 flutter_native_splash:
-  color: '#004D40'
-  color_dark: '#004D40'
-  image: assets/images/qruto_logo.png
-  image_dark: assets/images/qruto_logo.png
+  color: '#FFFFFF'
+  color_dark: '#000000'
+  image: assets/images/qruto_logo_black.png
+  image_dark: assets/images/qruto_logo_white.png
 
   android_12:
-    color: '#004D40'
-    color_dark: '#004D40'
-    image: assets/images/qruto_logo.png
-    image_dark: assets/images/qruto_logo.png
+    color: '#FFFFFF'
+    color_dark: '#000000'
+    image: assets/images/qruto_logo_black.png
+    image_dark: assets/images/qruto_logo_white.png

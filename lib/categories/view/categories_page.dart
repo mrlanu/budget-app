@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../budgets/repository/budget_repository.dart';
-import '../../constants/colors.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
@@ -97,9 +96,8 @@ class CategoriesView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context.push(
-                              '/categories/edit/${category.id}?'
-                                  'typeIndex=${state.transactionType.index}');
+                          context.push('/categories/edit/${category.id}?'
+                              'typeIndex=${state.transactionType.index}');
                         },
                       ),
                     );
@@ -111,14 +109,18 @@ class CategoriesView extends StatelessWidget {
                     ? themeState.secondaryColor
                     : themeState.secondaryColor,
                 title: Text(
-                  'Add category',
-                  style: TextStyle(
-                      fontSize:
-                          Theme.of(context).textTheme.titleLarge!.fontSize),
+                  'Add Category',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: BudgetTheme.isDarkMode(context)
+                            ? themeState.primaryColor[900]
+                            : themeState.primaryColor[100],
+                      ),
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetColors.primary,
+                  color: BudgetTheme.isDarkMode(context)
+                      ? themeState.primaryColor[900]
+                      : themeState.primaryColor[100],
                 ),
                 onTap: () {
                   context.push(

@@ -14,9 +14,8 @@ class AccountsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AccountsCubit(
-          budgetRepository: context.read<BudgetRepository>()
-      ),
+      create: (context) =>
+          AccountsCubit(budgetRepository: context.read<BudgetRepository>()),
       child: AccountsListView(),
     );
   }
@@ -86,10 +85,10 @@ class AccountsListView extends StatelessWidget {
                                     color: themeState.primaryColor[900],
                                     IconData(
                                         state.accountCategories
-                                                .firstWhere((element) =>
-                                                    element.id ==
-                                                    account.categoryId)
-                                                .iconCode,
+                                            .firstWhere((element) =>
+                                                element.id ==
+                                                account.categoryId)
+                                            .iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
                             ),
@@ -104,7 +103,7 @@ class AccountsListView extends StatelessWidget {
                             ),
                             trailing: Icon(Icons.chevron_right),
                             onTap: () {
-                             context.push('/accounts-list/edit/${account.id}');
+                              context.push('/accounts-list/edit/${account.id}');
                             },
                           ),
                         );
@@ -117,15 +116,17 @@ class AccountsListView extends StatelessWidget {
                         : themeState.secondaryColor,
                     title: Text(
                       'Add Account',
-                      style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.titleLarge!.fontSize),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: BudgetTheme.isDarkMode(context)
+                                ? themeState.primaryColor[900]
+                                : themeState.primaryColor[100],
+                          ),
                     ),
                     trailing: Icon(
                       Icons.add,
                       color: BudgetTheme.isDarkMode(context)
                           ? themeState.primaryColor[900]
-                          : themeState.primaryColor[900],
+                          : themeState.primaryColor[100],
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();
@@ -139,4 +140,3 @@ class AccountsListView extends StatelessWidget {
         ));
   }
 }
-
