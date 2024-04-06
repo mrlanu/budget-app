@@ -1,3 +1,4 @@
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';
@@ -5,10 +6,12 @@ import '../../constants/sizes.dart';
 
 /// Custom Class for Light & Dark Text Themes
 class BudgetCheckboxTheme {
-  BudgetCheckboxTheme._(); // To avoid creating instances
+  BudgetCheckboxTheme(this.appColors); // To avoid creating instances
+
+  final AppColors appColors;
 
   /// Customizable Light Text Theme
-  static CheckboxThemeData lightCheckboxTheme = CheckboxThemeData(
+  CheckboxThemeData get lightCheckboxTheme => CheckboxThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(BudgetSizes.xs)),
     checkColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
@@ -19,7 +22,7 @@ class BudgetCheckboxTheme {
     }),
     fillColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return BudgetColors.primary;
+        return appColors.secondaryColor;
       } else {
         return Colors.transparent;
       }
@@ -27,7 +30,7 @@ class BudgetCheckboxTheme {
   );
 
   /// Customizable Dark Text Theme
-  static CheckboxThemeData darkCheckboxTheme = CheckboxThemeData(
+  CheckboxThemeData get darkCheckboxTheme => CheckboxThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(BudgetSizes.xs)),
     checkColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
@@ -38,7 +41,7 @@ class BudgetCheckboxTheme {
     }),
     fillColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return BudgetColors.primary;
+        return appColors.secondaryColor;
       } else {
         return Colors.transparent;
       }

@@ -1,12 +1,16 @@
-import 'package:budget_app/constants/colors.dart';
+import 'package:budget_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class BudgetBottomNavigationBarTheme {
-  static const light = BottomNavigationBarThemeData(
-    backgroundColor: BudgetColors.primary,
 
+  BudgetBottomNavigationBarTheme({required this.color});
+
+  final AppColors color;
+
+  BottomNavigationBarThemeData get light => BottomNavigationBarThemeData(
+    backgroundColor: color.primaryColor,
   );
-  static const dark = BottomNavigationBarThemeData(
-    backgroundColor: BudgetColors.primary,
+  BottomNavigationBarThemeData get dark => BottomNavigationBarThemeData(
+    backgroundColor: color.primaryColor[900],
   );
 }

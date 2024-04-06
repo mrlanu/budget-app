@@ -2,17 +2,16 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:formz/formz.dart';
 
-import '../../../constants/api.dart';
 import '../../models/debt.dart';
 import '../../repository/debts_repository.dart';
 import '../debt_form.dart';
 
 part 'debt_event.dart';
-
 part 'debt_state.dart';
 
 class DebtBloc extends Bloc<DebtEvent, DebtState> {
@@ -94,7 +93,7 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
               startBalance: double.parse(state.balance.value),
               currentBalance: double.parse(state.balance.value),
               nextPaymentDue: DateTime.now(),
-              budgetId: await getBudgetId(),
+              budgetId: await CacheClient.instance.getBudgetId()?? '',
               apr: double.parse(state.apr.value),
               minimumPayment: double.parse(state.minPayment.value)));
       emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));

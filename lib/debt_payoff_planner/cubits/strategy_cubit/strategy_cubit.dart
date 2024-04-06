@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_payoff_strategy.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:equatable/equatable.dart';
-import 'package:http/http.dart' as http;
+import 'package:network/network.dart';
 
 import '../../../constants/api.dart';
 
@@ -15,23 +14,21 @@ class StrategyCubit extends Cubit<StrategyState> {
   Future<void> fetchStrategy(
       {String extraPayment = '0', String strategyName = 'snowball'}) async {
     emit(LoadingStrategyState());
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/debts/payoff', {
-            'budgetId': await getBudgetId(),
-            'extraPayment': extraPayment,
-            'strategy': strategyName,
-          })
-        : Uri.https(baseURL, '/api/debts/payoff', {
-            'budgetId': await getBudgetId(),
+    try {
+      final response = await NetworkClient.instance.get<Map<String, dynamic>>(
+          baseURL + '/api/debts/payoff',
+          queryParameters: {
+            'budgetId': await CacheClient.instance.getBudgetId(),
             'extraPayment': extraPayment,
             'strategy': strategyName,
           });
-
-    final response = await http.get(url, headers: await getHeaders());
-    final strategy = DebtPayoffStrategy.fromJson(jsonDecode(response.body));
-    emit(LoadedStrategyState(
-        strategy: strategyName,
-        extraPayment: extraPayment,
-        debtPayoffStrategy: strategy));
+      final strategy = DebtPayoffStrategy.fromJson(response.data!);
+      emit(LoadedStrategyState(
+          strategy: strategyName,
+          extraPayment: extraPayment,
+          debtPayoffStrategy: strategy));
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 }

@@ -1,40 +1,41 @@
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/app/app.dart';
-import 'package:budget_app/app/repository/budget_repository.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
-import 'package:budget_app/home/view/home_page.dart';
-import 'package:budget_app/login/login.dart';
-import 'package:budget_app/sign_up/sign_up.dart';
-import 'package:budget_app/splash/splash.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
-import 'package:budget_app/transfer/repository/transfer_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../auth/auth.dart';
+import '../../budgets/repository/budget_repository.dart';
 import '../../constants/constants.dart';
-import '../../subcategories/repository/subcategories_repository.dart';
-import '../../theme.dart';
-import '../../transactions/transaction/view/transaction_page.dart';
-import '../../utils/utils.dart';
+import '../../navigation/router.dart';
+import '../../transaction/repository/transactions_repository.dart';
+import '../../utils/theme/budget_theme.dart';
 
 class App extends StatelessWidget {
-  final AuthenticationRepository _authenticationRepository =
-      AuthenticationRepository(firebaseAuth: FirebaseAuth.instance);
+  final AuthenticationRepository _authRepo = AuthenticationRepository();
+  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
+  final TransactionsRepository _transactionsRepository =
+      TransactionsRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => _authenticationRepository,
+          create: (context) => _authRepo,
         ),
+        RepositoryProvider(create: (context) => _budgetRepository),
+        RepositoryProvider(create: (context) => _transactionsRepository),
       ],
-      child: BlocProvider(
-        create: (_) => AppBloc(
-          authenticationRepository: _authenticationRepository
-        ),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => AuthBloc(authenticationRepository: _authRepo),
+          ),
+          BlocProvider(
+            create: (context) => ThemeCubit(),
+          ),
+        ],
         child: AppView(),
       ),
     );
@@ -49,70 +50,43 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
-  ThemeMode themeMode = ThemeMode.system;
-  ColorSeed colorSelected = ColorSeed.baseColor;
-  final _navigatorKey = GlobalKey<NavigatorState>();
-
-  NavigatorState get _navigator => _navigatorKey.currentState!;
-
   @override
   Widget build(BuildContext context) {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
-    return MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider(create: (context) => BudgetRepositoryImpl()),
-            RepositoryProvider(create: (context) => CategoriesRepositoryImpl()),
-            RepositoryProvider(
-              create: (context) => AccountsRepositoryImpl(),
-            ),
-            RepositoryProvider(
-                create: (context) => TransactionsRepositoryImpl()),
-            RepositoryProvider(
-                create: (context) => SubcategoriesRepositoryImpl()),
-            RepositoryProvider(
-              create: (context) => TransferRepositoryImpl(),
-            )
-          ],
-          child: MaterialApp(
-            navigatorKey: _navigatorKey,
-            debugShowCheckedModeBanner: false,
-            themeMode: ThemeMode.system,
-            theme: BudgetTheme.lightTheme,
-            darkTheme: BudgetTheme.darkTheme,
-            routes: {
-              HomePage.routeName: (context) => HomePage(),
-              //AccountsPage.routeName: (context) => AccountsPage(),
-              SignUpPage.routeName: (context) => SignUpPage(),
-              LoginPage.routeName: (context) => LoginPage(),
-              TransactionPage.routeName: (context) => TransactionPage(),
-              //TransactionsPage.routeName: (context) => TransactionsPage(),
-            },
-            builder: (context, child) {
-              return BlocListener<AppBloc, AppState>(
-                listener: (context, state) {
-                  switch (state.status) {
-                    case AppStatus.authenticated:
-                      _navigator.pushNamedAndRemoveUntil<void>(
-                        HomePage.routeName,
-                        (route) => false,
-                      );
-                      break;
-                    case AppStatus.unauthenticated:
-                      _navigator.pushNamedAndRemoveUntil<void>(
-                        LoginPage.routeName,
-                        (route) => false,
-                      );
-                      break;
-                    case AppStatus.unknown:
-                      break;
-                  }
-                },
-                child: child,
-              );
-            },
-            onGenerateRoute: (_) => SplashPage.route(),
-          ),
-        );
+    return BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) => previous != current,
+        listener: (context, state) {
+          router.refresh();
+          router.go('/');
+        },
+        child: BlocBuilder<ThemeCubit, ThemeState>(
+          builder: (context, state) {
+            _setSystemUIOverlayStyle(state.primaryColor);
+            return MaterialApp.router(
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              themeMode: ThemeMode.values[state.mode],
+              theme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).lightTheme,
+              darkTheme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).darkTheme,
+            );
+          },
+        ));
   }
 }
+
+void _setSystemUIOverlayStyle(MaterialColor color) =>
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: color.shade700,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: null,
+      statusBarColor: color.shade700,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.light,
+    ));

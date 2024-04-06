@@ -1,34 +1,27 @@
 import 'package:budget_app/categories/cubit/categories_cubit.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
-import 'package:budget_app/categories/view/widgets/categories_grid.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../constants/colors.dart';
-import '../../constants/constants.dart';
+import '../../budgets/repository/budget_repository.dart';
+import '../../transaction/models/transaction_type.dart';
+import '../../utils/theme/budget_theme.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 
 class CategoriesPage extends StatelessWidget {
-  const CategoriesPage({Key? key}) : super(key: key);
+  CategoriesPage({Key? key, required this.transactionType}) : super(key: key);
 
-  static Route<void> route({required TransactionType transactionType}) {
-    return MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return BlocProvider(
-            create: (context) => CategoriesCubit(
-                categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-                transactionType: transactionType),
-            child: CategoriesPage(),
-          );
-        });
-  }
+  final TransactionType transactionType;
 
   @override
   Widget build(BuildContext context) {
-    return const CategoriesView();
+    return BlocProvider(
+      create: (context) => CategoriesCubit(
+          budgetRepository: context.read<BudgetRepository>(),
+          transactionType: transactionType),
+      child: CategoriesView(),
+    );
   }
 }
 
@@ -37,6 +30,7 @@ class CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return BlocConsumer<CategoriesCubit, CategoriesState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
@@ -54,6 +48,12 @@ class CategoriesView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: _buildTitle(state),
+            leading: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                context.pop();
+              },
+            ),
           ),
           body: Column(
             children: [
@@ -70,14 +70,18 @@ class CategoriesView extends StatelessWidget {
                       child: ListTile(
                         title: Row(
                           children: [
-                            Text(category.name,
-                                style: Theme.of(context).textTheme.titleLarge),
+                            Text(
+                              category.name,
+                              style: TextStyle(
+                                  fontSize: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .fontSize),
+                            ),
                             Expanded(child: Container()),
                             FaIcon(
-                                color: BudgetTheme.isDarkMode(context)
-                                    ? BudgetColors.lightContainer
-                                    : BudgetColors.primary,
-                                IconData(category.iconCode ?? 0,
+                                color: themeState.primaryColor[900],
+                                IconData(category.iconCode,
                                     fontFamily: 'FontAwesomeSolid')),
                           ],
                         ),
@@ -92,10 +96,8 @@ class CategoriesView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context
-                              .read<CategoriesCubit>()
-                              .onCategoryEdit(category);
-                          _openDialog(context);
+                          context.push('/categories/edit/${category.id}?'
+                              'typeIndex=${state.transactionType.index}');
                         },
                       ),
                     );
@@ -104,17 +106,25 @@ class CategoriesView extends StatelessWidget {
               ),
               ListTile(
                 tileColor: BudgetTheme.isDarkMode(context)
-                    ? BudgetColors.accentDark
-                    : BudgetColors.accent,
-                title: Text('Add category',
-                    style: Theme.of(context).textTheme.titleLarge),
+                    ? themeState.secondaryColor
+                    : themeState.secondaryColor,
+                title: Text(
+                  'Add Category',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: BudgetTheme.isDarkMode(context)
+                            ? themeState.primaryColor[900]
+                            : themeState.primaryColor[100],
+                      ),
+                ),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetColors.primary,
+                  color: BudgetTheme.isDarkMode(context)
+                      ? themeState.primaryColor[900]
+                      : themeState.primaryColor[100],
                 ),
                 onTap: () {
-                  context.read<CategoriesCubit>().onNewCategory();
-                  _openDialog(context);
+                  context.push(
+                      '/categories/new?typeIndex=${state.transactionType.index}');
                 },
               ),
             ],
@@ -122,79 +132,6 @@ class CategoriesView extends StatelessWidget {
         );
       },
     );
-  }
-
-  Future<String?> _openDialog(BuildContext context) => showDialog<String>(
-      context: context,
-      builder: (_) => BlocProvider.value(
-          value: context.read<CategoriesCubit>(),
-          child: BlocBuilder<CategoriesCubit, CategoriesState>(
-            builder: (context, state) {
-              return Center(
-                child: SingleChildScrollView(
-                  child: Dialog(
-                    insetPadding: EdgeInsets.all(10),
-                    child: Container(
-                      height: h * 0.7,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                state.editCategory == null
-                                    ? 'Add category'
-                                    : 'Edit category',
-                                style: Theme.of(context).textTheme.titleLarge),
-                            SizedBox(height: 20),
-                            TextFormField(
-                              autofocus: true,
-                              initialValue: state.editCategory?.name,
-                              onChanged: (name) => context
-                                  .read<CategoriesCubit>()
-                                  .onNameChanged(name),
-                              decoration:
-                                  InputDecoration(hintText: 'Enter name'),
-                            ),
-                            SizedBox(height: 10),
-                            Divider(),
-                            Expanded(
-                                child: CategoriesGrid(
-                                    selectedIconCode: state.iconCode,
-                                    onSelect: (code) => context
-                                        .read<CategoriesCubit>()
-                                        .onIconCodeChanged(code))),
-                            Divider(),
-                            TextButton(
-                              onPressed: state.name == null ||
-                                      state.name?.length == 0 ||
-                                      state.iconCode < 0
-                                  ? null
-                                  : () => _submit(context),
-                              child: Text('SAVE',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: state.name == null ||
-                                              state.name?.length == 0 ||
-                                              state.iconCode < 0
-                                          ? Colors.grey
-                                          : BudgetColors.accent)),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          )));
-
-  void _submit(BuildContext context) {
-    context.read<CategoriesCubit>().onSubmit();
-    Navigator.of(context).pop();
   }
 
   Widget _buildTitle(CategoriesState state) {

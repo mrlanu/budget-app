@@ -1,43 +1,48 @@
-import 'dart:convert';
-
 import 'package:budget_app/charts/models/year_month_sum.dart';
-import 'package:http/http.dart' as http;
+import 'package:cache_client/cache_client.dart';
+import 'package:network/network.dart';
 
 import '../../constants/api.dart';
 
 abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
+
   Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId);
 }
 
 class ChartRepositoryImpl extends ChartRepository {
+  ChartRepositoryImpl({NetworkClient? networkClient})
+      : _networkClient = networkClient ?? NetworkClient.instance;
+
+  final NetworkClient _networkClient;
+
   @override
   Future<List<YearMonthSum>> fetchTrendChartData() async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/charts/trend-chart',
-            {'budgetId': await getBudgetId()})
-        : Uri.https(baseURL, '/api/charts/trend-chart',
-            {'budgetId': await getBudgetId()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => YearMonthSum.fromJson(jsonMap)).toList();
-    return result;
+    try {
+      final response = await _networkClient.get<List<dynamic>>(
+          baseURL + '/api/charts/trend-chart',
+          queryParameters: {'budgetId': await CacheClient.instance.getBudgetId()});
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   @override
   Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/charts/category-chart',
-        {'categoryId': categoryId})
-        : Uri.https(baseURL, '/api/charts/category-chart',
-        {'categoryId': categoryId});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => YearMonthSum.fromJson(jsonMap)).toList();
-    return result;
+    try {
+      final response = await _networkClient.get<List<dynamic>>(
+          baseURL + '/api/charts/category-chart',
+          queryParameters: {'categoryId': categoryId});
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 }

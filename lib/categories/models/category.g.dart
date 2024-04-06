@@ -7,20 +7,23 @@ part of 'category.dart';
 // **************************************************************************
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['id'] as String?,
+      id: json['id'] as String,
       name: json['name'] as String,
-      budgetId: json['budgetId'] as String,
-      transactionType:
-          $enumDecode(_$TransactionTypeEnumMap, json['transactionType']),
-      iconCode: json['iconCode'] as int?,
+      iconCode: json['iconCode'] as int? ?? 0,
+      subcategoryList: (json['subcategoryList'] as List<dynamic>?)
+              ?.map((e) => Subcategory.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      type: $enumDecode(_$TransactionTypeEnumMap, json['type']),
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'budgetId': instance.budgetId,
-      'transactionType': _$TransactionTypeEnumMap[instance.transactionType]!,
       'iconCode': instance.iconCode,
+      'subcategoryList':
+          instance.subcategoryList.map((e) => e.toJson()).toList(),
+      'type': _$TransactionTypeEnumMap[instance.type]!,
     };
 
 const _$TransactionTypeEnumMap = {

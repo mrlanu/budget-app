@@ -1,12 +1,11 @@
-import 'dart:convert';
-
-import 'package:budget_app/constants/colors.dart';
-import 'package:budget_app/utils/theme/theme.dart';
+import 'package:cache_client/cache_client.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:network/network.dart';
 
 import '../../constants/api.dart';
+import '../../constants/colors.dart';
+import '../../utils/theme/budget_theme.dart';
 
 class SummaryPage extends StatelessWidget {
   const SummaryPage({super.key});
@@ -39,16 +38,17 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
   }
 
   Future<void> _fetchData() async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/summary', {'budgetId': await getBudgetId()})
-        : Uri.https(baseURL, '/api/summary', {'budgetId': await getBudgetId()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result =
-        (json.decode(response.body) as List).map((e) => e as double).toList();
-    setState(() {
-      _data = result;
-    });
+    try {
+      final response = await NetworkClient.instance.get<List<dynamic>>(
+          baseURL + '/api/summary',
+          queryParameters: {'budgetId': await CacheClient.instance.getBudgetId(),});
+      final result = (response.data!).map((e) => e as double).toList();
+      setState(() {
+        _data = result;
+      });
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   @override
@@ -99,6 +99,7 @@ class SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.titleLarge;
+    final theme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -117,8 +118,8 @@ class SummaryTile extends StatelessWidget {
                       Text('Income', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${income.toStringAsFixed(2)}',
-                          style: textStyle!.copyWith(
-                              color: BudgetTheme.isDarkMode(context)
+                          style:
+                              textStyle!.copyWith(color: BudgetTheme.isDarkMode(context)
                                   ? BudgetColors.lightContainer
                                   : BudgetColors.primary)),
                     ],
@@ -129,7 +130,7 @@ class SummaryTile extends StatelessWidget {
                       Text('Expenses', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${expenses.toStringAsFixed(2)}',
-                          style: textStyle.copyWith(color: BudgetColors.error)),
+                          style: textStyle.copyWith(color: theme.error)),
                     ],
                   ),
                   Divider(),

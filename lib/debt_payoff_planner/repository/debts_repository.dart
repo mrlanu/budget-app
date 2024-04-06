@@ -1,8 +1,8 @@
-import 'dart:convert';
+import 'package:cache_client/cache_client.dart';
+import 'package:network/network.dart';
 
 import '../../constants/api.dart';
 import '../models/models.dart';
-import 'package:http/http.dart' as http;
 
 class DebtFailure implements Exception {
   final String message;
@@ -21,39 +21,47 @@ abstract class DebtsRepository {
 }
 
 class DebtRepositoryImpl extends DebtsRepository {
+  DebtRepositoryImpl({NetworkClient? networkClient})
+      : _networkClient = networkClient ?? NetworkClient.instance;
+
+  final NetworkClient _networkClient;
+
   @override
   Future<List<Debt>> fetchAllDebts() async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/debts', {'budgetId': await getBudgetId()})
-        : Uri.https(baseURL, '/api/debts', {'budgetId': await getBudgetId()});
-
-    final response = await http.get(url, headers: await getHeaders());
-    final result = List<Map<String, dynamic>>.from(
-      json.decode(response.body) as List,
-    ).map((jsonMap) => Debt.fromJson(jsonMap)).toList();
-    print('Debts: $result');
-    return result;
+    try {
+      final response = await _networkClient
+          .get<List<dynamic>>(baseURL + '/api/debts', queryParameters: {
+        'budgetId': await CacheClient.instance.getBudgetId()
+      });
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => Debt.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 
   @override
   Future<Debt> saveDebt({required Debt debt}) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/debts')
-        : Uri.https(baseURL, '/api/debts');
-    final debtResponse = await http.post(url,
-        headers: await getHeaders(), body: json.encode(debt.toJson()));
-    if (debtResponse.statusCode != 200) {
-      throw DebtFailure(jsonDecode(debtResponse.body)['message']);
+    try {
+      final response = await _networkClient.post<Map<String, dynamic>>(
+          baseURL + '/api/debts',
+          data: debt.toJson());
+      final newDebt = Debt.fromJson(response.data!);
+      return newDebt;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
     }
-    final newDebt = Debt.fromJson(jsonDecode(debtResponse.body));
-    return newDebt;
   }
 
   @override
   Future<void> deleteDebt({required String debtId}) async {
-    final url = isTestMode
-        ? Uri.http(baseURL, '/api/debts', {'debtId': debtId})
-        : Uri.https(baseURL, '/api/debts', {'debtId': debtId});
-    await http.delete(url, headers: await getHeaders());
+    try {
+      await _networkClient
+          .delete(baseURL + '/api/debts', queryParameters: {'debtId': debtId});
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
   }
 }

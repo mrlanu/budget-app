@@ -1,24 +1,25 @@
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/categories/repository/categories_repository.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../budgets/budgets.dart';
+import '../../categories/models/category.dart';
+import '../../transaction/models/transaction_type.dart';
 
 part 'chart_state.dart';
 
 class ChartCubit extends Cubit<ChartState> {
-  final CategoriesRepository _categoriesRepository;
   final ChartRepository _chartRepository;
+  final Budget _budget;
 
   ChartCubit(
       {required ChartRepository chartRepository,
-      required CategoriesRepository categoriesRepository})
+      required Budget budget})
       : _chartRepository = chartRepository,
-        _categoriesRepository = categoriesRepository,
+        _budget = budget,
         super(ChartState());
 
   Future<void> changeCategory({required Category category}) async {
@@ -32,16 +33,15 @@ class ChartCubit extends Cubit<ChartState> {
   }
 
   Future<void> fetchCategoryChart([Category? category]) async {
-    final categories = await _categoriesRepository.getCategories().first;
-    final filteredCategories = categories
-        .where((element) =>
-            element.transactionType ==
+    final filteredCategories = _budget.categoryList
+        .where((cat) =>
+            cat.type ==
             (state.categoryType == 'Expenses'
                 ? TransactionType.EXPENSE
                 : TransactionType.INCOME))
         .toList();
     final chartData = await _chartRepository
-        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id!);
+        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id);
     emit(state.copyWith(
         status: ChartStatus.success,
         data: chartData,

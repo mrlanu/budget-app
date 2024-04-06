@@ -1,9 +1,8 @@
-import 'package:budget_app/accounts/models/account.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../transactions/models/transaction_tile.dart';
-import '../../transactions/models/transaction_type.dart';
+import '../../accounts_list/models/account.dart';
+import '../../transaction/transaction.dart';
 
 part 'transfer.g.dart';
 
@@ -53,27 +52,31 @@ class Transfer extends Equatable {
   @override
   List<Object?> get props => [id, budgetId];
 
-  List<TransactionTile> toTiles({required Account fromAccount, required Account toAccount}) {
-    return List.of(
-    [TransactionTile(
-        id: this.id!,
-        type: TransactionType.TRANSFER,
-        amount: this.amount,
-        title: 'Transfer in',
-        subtitle: 'from ${fromAccount.name}',
-        dateTime: date,
-        description: this.notes!,
-        fromAccount: fromAccount,
-        toAccount: toAccount),
-    TransactionTile(
-        id: this.id!,
-        type: TransactionType.TRANSFER,
-        amount: this.amount,
-        title: 'Transfer out',
-        subtitle: 'to ${toAccount.name}',
-        dateTime: date,
-        description: this.notes!,
-        fromAccount: fromAccount,
-        toAccount: toAccount)]);
+  List<ComprehensiveTransaction> toTiles(
+      {required Account fromAccount, required Account toAccount}) {
+    return List.of([
+      ComprehensiveTransaction(
+          id: this.id!,
+          budgetId: budgetId,
+          type: TransactionType.TRANSFER,
+          amount: this.amount,
+          title: 'Transfer in',
+          subtitle: 'from ${fromAccount.name}',
+          dateTime: date,
+          description: this.notes!,
+          fromAccount: fromAccount,
+          toAccount: toAccount),
+      ComprehensiveTransaction(
+          id: this.id!,
+          budgetId: budgetId,
+          type: TransactionType.TRANSFER,
+          amount: this.amount,
+          title: 'Transfer out',
+          subtitle: 'to ${toAccount.name}',
+          dateTime: date,
+          description: this.notes!,
+          fromAccount: fromAccount,
+          toAccount: toAccount)
+    ]);
   }
 }

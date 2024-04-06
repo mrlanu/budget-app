@@ -13,62 +13,134 @@ enum HomeTab {
 }
 
 class HomeState extends Equatable {
-  final List<Transaction> transactions;
-  final List<Category> categories;
-  final List<Account> accounts;
-  final Map<String, double> sectionsSum;
-  final List<SummaryTile> summaryList;
   final HomeStatus status;
-  final HomeTab tab;
+  final List<ComprehensiveTransaction> transactionList;
+  final Budget budget;
   final DateTime? selectedDate;
+  final HomeTab tab;
   final String? errorMessage;
+  final ComprehensiveTransaction? lastDeletedTransaction;
 
-  const HomeState({this.transactions = const [],
-    this.categories = const [],
-    this.accounts = const [],
-    this.sectionsSum = const {'incomes': 0.0, 'expenses': 0.0, 'accounts': 0.0},
-    this.summaryList = const [],
+  double get expenses {
+    return transactionList
+        .where((tr) => tr.type == TransactionType.EXPENSE)
+        .fold<double>(
+            0, (previousValue, element) => previousValue + element.amount);
+  }
+
+  double get incomes {
+    return transactionList
+        .where((tr) => tr.type == TransactionType.INCOME)
+        .fold<double>(
+            0, (previousValue, element) => previousValue + element.amount);
+  }
+
+  double get accountsTotal {
+    return budget.accountList.where((acc) => acc.includeInTotal).fold<double>(
+        0.0, (previousValue, element) => previousValue + element.balance);
+  }
+
+  List<SummaryTile> get summariesByCategory {
+    switch (tab) {
+      case HomeTab.expenses:
+        final tiles = transactionList
+            .where((tr) =>
+                tr.type == TransactionType.EXPENSE && tr.toAccount == null)
+            .toList();
+        return _getSummariesByCategory(tiles);
+      case HomeTab.income:
+        final tiles = transactionList
+            .where((tr) =>
+                tr.type == TransactionType.INCOME && tr.toAccount == null)
+            .toList();
+        return _getSummariesByCategory(tiles);
+      case HomeTab.accounts:
+        return _getSummariesByAccounts(transactionTiles: transactionList);
+    }
+  }
+
+  List<SummaryTile> _getSummariesByCategory(
+      List<ComprehensiveTransaction> filteredTiles) {
+    List<SummaryTile> summaries = [];
+    final groupedTrByCat =
+        groupBy(filteredTiles, (ComprehensiveTransaction tr) => tr.category!);
+
+    groupedTrByCat.forEach((key, value) {
+      final double sum = value.fold<double>(
+          0.0, (previousValue, element) => previousValue + element.amount);
+
+      summaries.add(SummaryTile(
+          id: key.id,
+          name: key.name,
+          total: sum,
+          comprehensiveTr: value,
+          iconCodePoint: key.iconCode));
+    });
+    return summaries;
+  }
+
+  List<SummaryTile> _getSummariesByAccounts(
+      {required List<ComprehensiveTransaction> transactionTiles}) {
+    List<SummaryTile> summaries = [];
+    budget.accountList.forEach((acc) {
+      summaries.add(SummaryTile(
+          id: acc.id,
+          name: acc.name,
+          total: acc.balance,
+          comprehensiveTr: transactionTiles
+              .where((tr) =>
+                  (tr.fromAccount!.id == acc.id &&
+                      tr.type != TransactionType.TRANSFER) ||
+                  (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
+                  (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
+              .toList(),
+          iconCodePoint: budget.getCategoryById(acc.categoryId).iconCode));
+    });
+    return summaries;
+  }
+
+  const HomeState({
     this.status = HomeStatus.initial,
-    this.tab = HomeTab.expenses,
+    this.transactionList = const [],
+    this.budget = const Budget(),
     this.selectedDate,
-    this.errorMessage});
+    this.tab = HomeTab.expenses,
+    this.errorMessage,
+    this.lastDeletedTransaction,
+  });
 
   HomeState copyWith({
-    List<Transaction>? transactions,
-    List<Category>? categories,
-    List<Account>? accounts,
-    Map<String, double>? sectionsSum,
-    List<SummaryTile>? summaryList,
     HomeStatus? status,
+    List<ComprehensiveTransaction>? transactionList,
     Budget? budget,
+    TransactionsViewFilter? filter,
+    List<SummaryTile>? summaryList,
     DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,
+    ComprehensiveTransaction? Function()? lastDeletedTransaction,
   }) {
     return HomeState(
-      transactions: transactions ?? this.transactions,
-      categories: categories ?? this.categories,
-      accounts: accounts ?? this.accounts,
-      sectionsSum: sectionsSum ?? this.sectionsSum,
-      summaryList: summaryList ?? this.summaryList,
       status: status ?? this.status,
+      transactionList: transactionList ?? this.transactionList,
+      budget: budget ?? this.budget,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
       errorMessage: errorMessage ?? this.errorMessage,
+      lastDeletedTransaction: lastDeletedTransaction != null
+          ? lastDeletedTransaction()
+          : this.lastDeletedTransaction,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [
-        transactions,
-        categories,
-        accounts,
-        sectionsSum,
-        summaryList,
+  List<Object?> get props => [
         status,
-        tab,
+        budget,
+        transactionList,
         selectedDate,
-        errorMessage
+        tab,
+        errorMessage,
+        lastDeletedTransaction
       ];
 }

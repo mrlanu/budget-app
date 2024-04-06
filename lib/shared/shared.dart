@@ -1,6 +1,1 @@
-enum DataStatus {
-  pure,
-  loading,
-  success,
-  error,
-}
+export 'widgets/widgets.dart';

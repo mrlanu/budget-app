@@ -1,79 +1,73 @@
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/transaction/bloc/transaction_bloc.dart';
+import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../constants/colors.dart';
-import '../../../constants/constants.dart';
-import '../../../shared/models/section.dart';
-import '../../cubit/home_cubit.dart';
+import '../../home.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
-  const HomeBottomNavBar(
-      {super.key,
-      this.selectedTab = HomeTab.expenses,
-      required this.sectionsSum});
+  const HomeBottomNavBar({super.key, required this.navigationShell});
 
-  final HomeTab selectedTab;
-  final Map<String, double> sectionsSum;
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
     return Container(
       height: 80,
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          //splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          currentIndex: selectedTab.index,
-          onTap: (value) {
-            context.read<HomeCubit>().setTab(value);
-            if (isDisplayDesktop(context)) {
-              final tab = HomeTab.values[value];
-              var tType = switch (tab) {
-                HomeTab.expenses => TransactionType.EXPENSE,
-                HomeTab.income => TransactionType.INCOME,
-                HomeTab.accounts => TransactionType.TRANSFER,
-              };
-              context.read<TransactionBloc>().add(TransactionFormLoaded(
-                  transactionType: tType,
-                  date: context.read<HomeCubit>().state.selectedDate!));
-            }
-          },
-          elevation: 0,
-          showSelectedLabels: true,
-          showUnselectedLabels: false,
-          selectedItemColor: BudgetColors.accent,
-          unselectedItemColor: BudgetColors.light,
-          items: [
-            _buildBottomNavigationBarItem(
-                label: 'expenses',
-                icon: Icons.account_balance_wallet,
-                color: BudgetColors.light,
-                section: Section.EXPENSES,
-                selectedTab: selectedTab,
-                amount: sectionsSum['expenses']!,
-                tab: HomeTab.expenses),
-            _buildBottomNavigationBarItem(
-                label: 'income',
-                icon: Icons.monetization_on_outlined,
-                color: BudgetColors.light,
-                section: Section.INCOME,
-                selectedTab: selectedTab,
-                amount: sectionsSum['incomes']!,
-                tab: HomeTab.income),
-            _buildBottomNavigationBarItem(
-                label: 'accounts',
-                icon: Icons.account_balance_outlined,
-                color: BudgetColors.light,
-                section: Section.ACCOUNTS,
-                amount: sectionsSum['accounts']!,
-                selectedTab: selectedTab,
-                tab: HomeTab.accounts),
-          ],
-        ),
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          return BottomNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: (index) {
+              navigationShell.goBranch(
+                index,
+                initialLocation: index == navigationShell.currentIndex,
+              );
+              context.read<HomeCubit>().setTab(index);
+              /*if (isDisplayDesktop(context)) {
+                final tab = HomeTab.values[value];
+                var tType = switch (tab) {
+                  HomeTab.expenses => TransactionType.EXPENSE,
+                  HomeTab.income => TransactionType.INCOME,
+                  HomeTab.accounts => TransactionType.TRANSFER,
+                };
+                context.read<TransactionBloc>().add(TransactionFormLoaded(
+                    transactionType: tType,
+                    date: context.read<HomeCubit>().state.selectedDate!));
+              }*/
+            },
+            elevation: 0,
+            showSelectedLabels: true,
+            showUnselectedLabels: false,
+            selectedItemColor: themeState.secondaryColor,
+            unselectedItemColor: BudgetColors.light,
+            items: [
+              _buildBottomNavigationBarItem(
+                  label: 'expenses',
+                  icon: Icons.account_balance_wallet,
+                  color: BudgetColors.light,
+                  selectedTab: state.tab,
+                  amount: state.expenses,
+                  tab: HomeTab.expenses),
+              _buildBottomNavigationBarItem(
+                  label: 'income',
+                  icon: Icons.monetization_on_outlined,
+                  color: BudgetColors.light,
+                  selectedTab: state.tab,
+                  amount: state.incomes,
+                  tab: HomeTab.income),
+              _buildBottomNavigationBarItem(
+                  label: 'accounts',
+                  icon: Icons.account_balance_outlined,
+                  color: BudgetColors.light,
+                  amount: state.accountsTotal,
+                  selectedTab: state.tab,
+                  tab: HomeTab.accounts),
+            ],
+          );
+        },
       ),
     );
   }
@@ -82,7 +76,6 @@ class HomeBottomNavBar extends StatelessWidget {
       {required String label,
       required IconData icon,
       required Color color,
-      required Section section,
       required HomeTab selectedTab,
       required double amount,
       required HomeTab tab}) {

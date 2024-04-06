@@ -1,48 +1,45 @@
-import 'package:budget_app/transactions/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../subcategories/models/subcategory.dart';
+import '../../transaction/transaction.dart';
+
 part 'category.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Category extends Equatable {
-  final String? id;
+  final String id;
   final String name;
-  final String budgetId;
-  final TransactionType transactionType;
-  final int? iconCode;
+  final int iconCode;
+  final List<Subcategory> subcategoryList;
+  final TransactionType type;
 
   const Category(
-      {this.id,
+      {required this.id,
       required this.name,
-      required this.budgetId,
-      required this.transactionType,
-      this.iconCode});
-
-  Category copyWith(
-      {String? id,
-      String? name,
-      String? budgetId,
-      TransactionType? transactionType,
-      int? iconCode}) {
-    return Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        budgetId: budgetId ?? this.budgetId,
-        transactionType: transactionType ?? this.transactionType,
-        iconCode: iconCode ?? this.iconCode);
-  }
+      this.iconCode = 0,
+      this.subcategoryList = const [],
+      required this.type});
 
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);
 
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 
-  @override
-  String toString() {
-    return 'Category{id: $id, name: $name, budgetId: $budgetId, type: $transactionType';
+  Category copyWith(
+      {String? id,
+      String? name,
+      int? iconCode,
+      List<Subcategory>? subcategoryList,
+      TransactionType? type}) {
+    return Category(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        type: type ?? this.type,
+        iconCode: iconCode ?? this.iconCode,
+        subcategoryList: subcategoryList ?? this.subcategoryList);
   }
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, subcategoryList];
 }
