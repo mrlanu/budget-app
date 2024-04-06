@@ -30,16 +30,9 @@ class _MainDrawerState extends State<MainDrawer> {
       child: Column(
         children: [
           DrawerHeader(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                themeState.primaryColor[900]!,
-                themeState.primaryColor[600]!,
-              ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
               child: Container(
                   width: double.infinity,
-                  child: Image.asset('assets/images/piggy_logo.png',
-                      fit: BoxFit.contain))),
+                  child: Image.asset('assets/images/piggy_bank.png',))),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(

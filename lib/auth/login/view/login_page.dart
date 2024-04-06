@@ -20,10 +20,15 @@ class LoginPage extends StatelessWidget {
           if (constraints.maxWidth < 1100) {
             return MobileViewLogin();
           }
-          return DesktopViewLogin();
+          return Scaffold(
+            body: Center(
+              child: Text(
+                  'Just mobile view currently supported. '
+                      'Please lunch me from the any mobile browser.', style: Theme.of(context).textTheme.titleLarge,),
+            ),
+          ); //DesktopViewLogin();
         },
       ),
     );
   }
 }
-

@@ -33,7 +33,7 @@ class SignUpButton extends StatelessWidget {
                               Navigator.of(context).pop();
                             })
                         : null,
-                    child: const Text('Register',
+                    child: const Text('Signup',
                         style: TextStyle(fontSize: 20))));
       },
     );

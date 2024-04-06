@@ -15,7 +15,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isDisplayDesktop(context)
-        ? HomeDesktopPage()
+        ? Scaffold(
+          body: Center(
+          child: Text(
+              'Just mobile view currently supported. '
+                  'Please lunch me from the any mobile browser')),
+        )
+    //HomeDesktopPage()
         : HomeMobilePage(navigationShell: navigationShell);
   }
 }
