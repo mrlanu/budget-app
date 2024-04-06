@@ -1,5 +1,5 @@
 import 'package:budget_app/charts/models/year_month_sum.dart';
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:network/network.dart';
 
 import '../../constants/api.dart';
@@ -21,7 +21,7 @@ class ChartRepositoryImpl extends ChartRepository {
     try {
       final response = await _networkClient.get<List<dynamic>>(
           baseURL + '/api/charts/trend-chart',
-          queryParameters: {'budgetId': await CacheClient.instance.getBudgetId()});
+          queryParameters: {'budgetId': await Cache.instance.getBudgetId()});
       final result = List<Map<String, dynamic>>.from(response.data!)
           .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
           .toList();

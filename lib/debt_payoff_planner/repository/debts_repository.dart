@@ -1,4 +1,4 @@
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:network/network.dart';
 
 import '../../constants/api.dart';
@@ -31,7 +31,7 @@ class DebtRepositoryImpl extends DebtsRepository {
     try {
       final response = await _networkClient
           .get<List<dynamic>>(baseURL + '/api/debts', queryParameters: {
-        'budgetId': await CacheClient.instance.getBudgetId()
+        'budgetId': await Cache.instance.getBudgetId()
       });
       final result = List<Map<String, dynamic>>.from(response.data!)
           .map((jsonMap) => Debt.fromJson(jsonMap))

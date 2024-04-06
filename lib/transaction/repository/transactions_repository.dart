@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:network/network.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -48,7 +48,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     try {
       final response = await _networkClient
           .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
-        'budgetId': await CacheClient.instance.getBudgetId(),
+        'budgetId': await Cache.instance.getBudgetId(),
         'date': dateTime.toString()
       });
       final transactions = List<Map<String, dynamic>>.from(response.data!)

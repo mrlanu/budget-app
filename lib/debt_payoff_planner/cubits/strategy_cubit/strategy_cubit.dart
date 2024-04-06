@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/debt_payoff_planner/models/debt_payoff_strategy.dart';
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:network/network.dart';
 
@@ -18,7 +18,7 @@ class StrategyCubit extends Cubit<StrategyState> {
       final response = await NetworkClient.instance.get<Map<String, dynamic>>(
           baseURL + '/api/debts/payoff',
           queryParameters: {
-            'budgetId': await CacheClient.instance.getBudgetId(),
+            'budgetId': await Cache.instance.getBudgetId(),
             'extraPayment': extraPayment,
             'strategy': strategyName,
           });

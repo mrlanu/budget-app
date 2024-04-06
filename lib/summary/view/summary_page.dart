@@ -1,4 +1,4 @@
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:network/network.dart';
@@ -41,7 +41,7 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
     try {
       final response = await NetworkClient.instance.get<List<dynamic>>(
           baseURL + '/api/summary',
-          queryParameters: {'budgetId': await CacheClient.instance.getBudgetId(),});
+          queryParameters: {'budgetId': await Cache.instance.getBudgetId(),});
       final result = (response.data!).map((e) => e as double).toList();
       setState(() {
         _data = result;

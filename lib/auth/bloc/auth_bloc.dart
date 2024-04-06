@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 
 part 'auth_event.dart';
@@ -11,7 +11,6 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required AuthenticationRepository authenticationRepository,
-    CacheClient? cacheClient,
   })  : _authenticationRepository = authenticationRepository,
         super(AuthState.unknown()) {
     on<_AuthUserChanged>(_onUserChanged);
@@ -31,13 +30,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event.user.isEmpty) {
       emit(const AuthState.unauthenticated());
     } else {
-      await CacheClient.instance.setAccessToken(accessToken: event.user.token!);
+      await Cache.instance.setAccessToken(accessToken: event.user.token!);
       emit(AuthState.authenticated(event.user));
     }
   }
 
   void _onLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) {
-    CacheClient.instance.deleteAccessToken();
+    Cache.instance.deleteAccessToken();
     unawaited(_authenticationRepository.logOut());
   }
 
