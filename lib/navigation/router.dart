@@ -2,7 +2,6 @@ import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
-import 'package:budget_app/splash/splash.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:budget_app/transaction/transaction.dart';
@@ -14,6 +13,7 @@ import '../accounts_list/account_edit/view/account_edit_dialog.dart';
 import '../auth/auth.dart';
 import '../budgets/repository/budget_repository.dart';
 import '../settings/settings.dart';
+import '../splash/view/splash_page.dart';
 
 GoRouter get router => _router;
 
