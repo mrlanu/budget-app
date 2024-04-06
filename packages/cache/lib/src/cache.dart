@@ -1,7 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Cache {
-  Cache._();
+  Cache._(){
+    SharedPreferences.setMockInitialValues({});
+  }
 
   static final Cache _instance = Cache._();
   static Cache get instance => _instance;

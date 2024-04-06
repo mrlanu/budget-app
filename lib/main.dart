@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'app/bloc_observer.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -15,7 +14,7 @@ Future<void> main() async {
         ? HydratedStorage.webStorageDirectory
         : await getTemporaryDirectory(),
   );
-  Bloc.observer = const AppBlocObserver();
+  //Bloc.observer = const AppBlocObserver();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
