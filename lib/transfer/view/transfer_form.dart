@@ -1,10 +1,11 @@
-import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
+import '../../constants/colors.dart';
 import '../../constants/constants.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../widgets/to_account_input_field.dart';
 
 class TransferForm extends StatelessWidget {
@@ -54,14 +55,15 @@ class _SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
+        final themeState = context.watch<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
             : ListTile(
-                tileColor: state.isValid &&
-                        state.fromAccount != null &&
-                        state.toAccount != null
-                    ? BudgetColors.accent
-                    : BudgetColors.grey,
+          tileColor: state.isValid &&
+              state.fromAccount != null &&
+              state.toAccount != null
+              ? themeState.secondaryColor
+              : BudgetColors.grey,
                 title: Center(
                   child: Text(
                     'Save',

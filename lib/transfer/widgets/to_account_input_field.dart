@@ -1,50 +1,54 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/transaction/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../accounts/models/account.dart';
-import '../../../../accounts_list/view/accounts_list_page.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../accounts_list/models/account.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
 import '../bloc/transfer_bloc.dart';
 
 class ToAccountInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransferBloc, TransferState>(
-      builder: (context, state) {
-        return DropdownButtonFormField<Account>(
-            icon: GestureDetector(
-              child: Icon(Icons.edit_note),
-              onTap: () {
-                Navigator.of(context).push(AccountsListPage.route(
-                    homeCubit: context.read<HomeCubit>()));
-              },
-            ),
-            items: state.accounts
-                .where((fromAcc) => fromAcc.id != state.fromAccount?.id)
-                .map((Account account) {
-              return DropdownMenuItem(
-                value: account,
-                child: Text(account.extendName(state.accountCategories)),
-              );
-            }).toList(),
-            onChanged: (newValue) {
-              context
-                  .read<TransferBloc>()
-                  .add(TransferToAccountChanged(account: newValue));
-              //setState(() => selectedValue = newValue);
-            },
-            value: state.accounts.contains(state.toAccount)
-                ? state.toAccount
-                : null,
-            decoration: InputDecoration(
-              icon: Icon(
-                Icons.account_balance,
-                color: Colors.orangeAccent,
-              ),
-              border: OutlineInputBorder(),
-              labelText: 'To Account',
-              //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
-            ));
-      },
-    );
+    final themeState = context.watch<ThemeCubit>().state;
+    final budget = context.select((TransferBloc bloc) => bloc.state.budget);
+    final toAccount =
+        context.select((TransferBloc bloc) => bloc.state.toAccount);
+    final fromAccount =
+        context.select((TransferBloc bloc) => bloc.state.fromAccount);
+    return DropdownButtonFormField<Account>(
+        icon: GestureDetector(
+          child: Icon(Icons.edit_note),
+          onTap: () {
+            context.push('/accounts-list');
+          },
+        ),
+        items: budget.accountList
+            .where((fromAcc) => fromAcc.id != fromAccount?.id)
+            .map((Account account) {
+          return DropdownMenuItem(
+            value: account,
+            child: Text(account.extendName(
+                budget.getCategoriesByType(TransactionType.ACCOUNT))),
+          );
+        }).toList(),
+        onChanged: (newValue) {
+          context
+              .read<TransferBloc>()
+              .add(TransferToAccountChanged(account: newValue));
+          //setState(() => selectedValue = newValue);
+        },
+        value: toAccount == null
+            ? null
+            : budget.accountList.firstWhere((c) => c.id == toAccount.id),
+        decoration: InputDecoration(
+          icon: Icon(
+            Icons.account_balance,
+            color: themeState.secondaryColor,
+          ),
+          border: OutlineInputBorder(),
+          labelText: 'To Account',
+          //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
+        ));
   }
 }

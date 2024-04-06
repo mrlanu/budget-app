@@ -1,43 +1,23 @@
-import 'package:budget_app/account_edit/bloc/account_edit_bloc.dart';
-import 'package:budget_app/account_edit/view/account_edit_form.dart';
-import 'package:budget_app/accounts/repository/accounts_repository.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
-import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../accounts/models/account.dart';
-import '../../categories/repository/categories_repository.dart';
-import '../../constants/colors.dart';
-import '../cubit/accounts_list_cubit.dart';
+import '../../budgets/repository/budget_repository.dart';
+import '../../utils/theme/budget_theme.dart';
+import '../../utils/theme/cubit/theme_cubit.dart';
+import '../cubit/accounts_cubit.dart';
 
 class AccountsListPage extends StatelessWidget {
   const AccountsListPage({Key? key}) : super(key: key);
 
-  static Route<void> route({required HomeCubit homeCubit}) {
-    return MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => AccountsListCubit(
-                  accountsRepository: context.read<AccountsRepositoryImpl>(),
-                  categoriesRepository:
-                      context.read<CategoriesRepositoryImpl>(),
-                )..onInit(),
-              ),
-              BlocProvider.value(value: homeCubit),
-            ],
-            child: AccountsListPage(),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return const AccountsListView();
+    return BlocProvider(
+      create: (context) =>
+          AccountsCubit(budgetRepository: context.read<BudgetRepository>()),
+      child: AccountsListView(),
+    );
   }
 }
 
@@ -48,11 +28,11 @@ class AccountsListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
         listeners: [
-          BlocListener<AccountsListCubit, AccountsListState>(
+          BlocListener<AccountsCubit, AccountsState>(
             listenWhen: (previous, current) =>
                 previous.status != current.status,
             listener: (context, state) {
-              if (state.status == AccountsListStatus.failure) {
+              if (state.status == AccountsStatus.failure) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
@@ -64,11 +44,18 @@ class AccountsListView extends StatelessWidget {
             },
           ),
         ],
-        child: BlocBuilder<AccountsListCubit, AccountsListState>(
+        child: BlocBuilder<AccountsCubit, AccountsState>(
           builder: (context, state) {
+            final themeState = context.watch<ThemeCubit>().state;
             return Scaffold(
               appBar: AppBar(
                 title: Text('Accounts'),
+                leading: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    context.pop();
+                  },
+                ),
               ),
               body: Column(
                 children: [
@@ -77,30 +64,31 @@ class AccountsListView extends StatelessWidget {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: state.accounts.length,
+                      itemCount: state.accountList.length,
                       itemBuilder: (context, index) {
-                        final account = state.accounts[index];
+                        final account = state.accountList[index];
                         return Card(
                           elevation: Theme.of(context).cardTheme.elevation,
                           child: ListTile(
                             title: Row(
                               children: [
                                 Text(
-                                    account.extendName(state.accountCategories),
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge),
+                                  account.extendName(state.accountCategories),
+                                  style: TextStyle(
+                                      fontSize: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .fontSize),
+                                ),
                                 Expanded(child: Container()),
                                 FaIcon(
-                                    color: BudgetTheme.isDarkMode(context)
-                                        ? BudgetColors.lightContainer
-                                        : BudgetColors.primary,
+                                    color: themeState.primaryColor[900],
                                     IconData(
                                         state.accountCategories
-                                                .firstWhere((element) =>
-                                                    element.id ==
-                                                    account.categoryId)
-                                                .iconCode ??
-                                            0,
+                                            .firstWhere((element) =>
+                                                element.id ==
+                                                account.categoryId)
+                                            .iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
                             ),
@@ -109,13 +97,13 @@ class AccountsListView extends StatelessWidget {
                                   color: Theme.of(context).colorScheme.error),
                               onPressed: () {
                                 context
-                                    .read<AccountsListCubit>()
+                                    .read<AccountsCubit>()
                                     .onAccountDeleted(account);
                               },
                             ),
                             trailing: Icon(Icons.chevron_right),
                             onTap: () {
-                              _openDialog(context: context, account: account);
+                              context.push('/accounts-list/edit/${account.id}');
                             },
                           ),
                         );
@@ -124,17 +112,25 @@ class AccountsListView extends StatelessWidget {
                   ),
                   ListTile(
                     tileColor: BudgetTheme.isDarkMode(context)
-                        ? BudgetColors.accentDark
-                        : BudgetColors.accent,
-                    title: Text('Add Account',
-                        style: Theme.of(context).textTheme.titleLarge),
+                        ? themeState.secondaryColor
+                        : themeState.secondaryColor,
+                    title: Text(
+                      'Add Account',
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: BudgetTheme.isDarkMode(context)
+                                ? themeState.primaryColor[900]
+                                : themeState.primaryColor[100],
+                          ),
+                    ),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetColors.primary,
+                      color: BudgetTheme.isDarkMode(context)
+                          ? themeState.primaryColor[900]
+                          : themeState.primaryColor[100],
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();
-                      _openDialog(context: context);
+                      context.push('/accounts-list/new');
                     },
                   ),
                 ],
@@ -143,17 +139,4 @@ class AccountsListView extends StatelessWidget {
           },
         ));
   }
-
-  Future<String?> _openDialog(
-          {required BuildContext context, Account? account}) =>
-      showDialog<String>(
-          context: context,
-          builder: (_) => BlocProvider(
-                create: (context) => AccountEditBloc(
-                    categoriesRepository:
-                        context.read<CategoriesRepositoryImpl>(),
-                    accountsRepository: context.read<AccountsRepositoryImpl>())
-                  ..add(AccountEditFormLoaded(account: account)),
-                child: AccountEditDialog(),
-              ));
 }

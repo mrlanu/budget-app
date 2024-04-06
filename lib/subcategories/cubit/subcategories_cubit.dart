@@ -1,47 +1,40 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/constants/api.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../budgets/budgets.dart';
+import '../../budgets/repository/budget_repository.dart';
 import '../../categories/models/category.dart';
-import '../../categories/repository/categories_repository.dart';
-import '../../shared/models/subcategory.dart';
-import '../repository/subcategories_repository.dart';
+import '../models/subcategory.dart';
 
 part 'subcategories_state.dart';
 
 class SubcategoriesCubit extends Cubit<SubcategoriesState> {
-  final SubcategoriesRepository _subcategoriesRepository;
-  late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
+  final BudgetRepository _budgetRepository;
+  late final StreamSubscription<Budget> _budgetSubscription;
 
   SubcategoriesCubit(
-      {required SubcategoriesRepository subcategoriesRepository,
-      required Category category})
-      : _subcategoriesRepository = subcategoriesRepository,
+      {required BudgetRepository budgetRepository, required Category category})
+      : _budgetRepository = budgetRepository,
         super(SubcategoriesState(category: category)) {
-    _subcategoriesSubscription =
-        _subcategoriesRepository.getSubcategories().listen((subcategories) {
-      _onSubcategoriesChanged(subcategories);
+    _budgetSubscription = _budgetRepository.budget.listen((budget) {
+      _onBudgetChanged(budget);
     });
   }
 
   Future<void> onInit({required Category category}) async {
-    final subcategories =
-        await _subcategoriesRepository.getSubcategories().first;
-    final filteredSubcategories =
-        subcategories.where((sC) => sC.categoryId == category.id).toList();
     emit(state.copyWith(
-        status: SubcategoriesStatus.success,
-        category: category,
-        subcategories: filteredSubcategories));
+      status: SubcategoriesStatus.success,
+      category: category, subcategories: category.subcategoryList
+    ));
   }
 
-  void _onSubcategoriesChanged(List<Subcategory> subcategories) {
-    final filteredSubcategories = subcategories
-        .where((sC) => sC.categoryId == state.category!.id)
-        .toList();
-    emit(state.copyWith(subcategories: filteredSubcategories));
+  void _onBudgetChanged(Budget budget) {
+    emit(state.copyWith(
+        subcategories: budget
+            .getCategoryById(state.category!.id)
+            .subcategoryList));
   }
 
   void onNameChanged(String name) {
@@ -56,26 +49,10 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     emit(state.copyWith(editSubcategory: subcategory));
   }
 
-  Future<void> onSubmit() async {
-    var subcategory;
-    if (state.editSubcategory == null) {
-      subcategory = Subcategory(
-          name: state.name!,
-          categoryId: state.category!.id!,
-          budgetId: await getBudgetId());
-    } else {
-      subcategory = state.editSubcategory!.copyWith(name: state.name);
-    }
-    _subcategoriesRepository.saveSubcategory(subcategory: subcategory);
-  }
-
   Future<void> onSubcategoryDeleted(Subcategory subcategory) async {
     emit(state.copyWith(status: SubcategoriesStatus.loading));
     try {
-      await _subcategoriesRepository.delete(subcategory: subcategory);
-    } on CategoryFailure catch (e) {
-      emit(state.copyWith(
-          status: SubcategoriesStatus.failure, errorMessage: e.message));
+      //await _subcategoriesRepository.delete(subcategory: subcategory);
     } catch (e) {
       emit(state.copyWith(
           status: SubcategoriesStatus.failure, errorMessage: 'Unknown error'));
@@ -84,7 +61,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   @override
   Future<void> close() {
-    _subcategoriesSubscription.cancel();
+    _budgetSubscription.cancel();
     return super.close();
   }
 }

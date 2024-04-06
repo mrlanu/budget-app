@@ -1,9 +1,9 @@
-import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
-import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../utils/theme/budget_theme.dart';
+import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../cubits/debt_cubit/debts_cubit.dart';
 
 class DebtController extends StatefulWidget {
@@ -53,14 +53,15 @@ class _DebtControllerState extends State<DebtController> {
   Widget build(BuildContext context) {
     return BlocBuilder<DebtsCubit, DebtsState>(
       builder: (context, state) {
+        final themeState = context.read<ThemeCubit>().state;
         final sumMinPayments = state.debtList
             .fold(0.0, (prevValue, d) => prevValue + d.minimumPayment);
         final total =
             sumMinPayments + _parseString(_textEditingController.text);
         return Container(
             color: BudgetTheme.isDarkMode(context)
-                ? BudgetColors.primary
-                : BudgetColors.lightContainer,
+                ? themeState.primaryColor
+                : themeState.primaryColor[200],
             padding: EdgeInsets.all(15),
             width: double.infinity,
             height: 80,
@@ -68,16 +69,16 @@ class _DebtControllerState extends State<DebtController> {
               children: [
                 Column(
                   children: [
-                    Text('min', style: Theme.of(context).textTheme.titleMedium),
+                    Text('min'),
                     Text('\$ ${sumMinPayments} +',
-                        style: Theme.of(context).textTheme.titleMedium)
+                        style: Theme.of(context).textTheme.titleLarge)
                   ],
                 ),
                 SizedBox(width: 15),
                 Expanded(
                   child: TextFormField(
                     keyboardType: TextInputType.number,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleLarge,
                     controller: _textEditingController,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(), labelText: 'extra'),
@@ -87,9 +88,9 @@ class _DebtControllerState extends State<DebtController> {
                 SizedBox(width: 15),
                 Column(
                   children: [
-                    Text('total', style: Theme.of(context).textTheme.titleMedium),
+                    Text('total'),
                     Text('= \$ $total',
-                        style: Theme.of(context).textTheme.titleMedium),
+                        style: Theme.of(context).textTheme.titleLarge),
                   ],
                 ),
               ],

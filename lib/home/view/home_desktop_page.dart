@@ -1,24 +1,16 @@
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/drawer/main_drawer.dart';
-import 'package:budget_app/home/view/widgets/accounts_summaries.dart';
+import 'package:budget_app/navigation/main_drawer.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
-import 'package:budget_app/transactions/models/transaction_type.dart';
-import 'package:budget_app/transactions/transaction/view/transaction_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
-import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../accounts/cubit/accounts_cubit.dart';
-import '../../accounts/repository/accounts_repository.dart';
-import '../../categories/repository/categories_repository.dart';
+import '../../budgets/repository/budget_repository.dart';
 import '../../constants/colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
-import '../../shared/widgets/paginator/month_paginator.dart';
-import '../../subcategories/repository/subcategories_repository.dart';
-import '../../transactions/repository/transactions_repository.dart';
-import '../../transactions/transaction/bloc/transaction_bloc.dart';
+import '../../shared/widgets/month_paginator.dart';
+import '../../transaction/transaction.dart';
 import '../../transfer/bloc/transfer_bloc.dart';
 import '../home.dart';
 
@@ -32,19 +24,14 @@ class HomeDesktopPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TransactionBloc(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-            subcategoriesRepository:
-                context.read<SubcategoriesRepositoryImpl>(),
-            accountsRepository: context.read<AccountsRepositoryImpl>(),
+            budgetRepository: context.read<BudgetRepository>()
           )..add(TransactionFormLoaded(
-              transactionType: TransactionType.EXPENSE,
-              date: context.read<HomeCubit>().state.selectedDate!)),
+              transactionType: TransactionType.EXPENSE,)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
             transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-            accountsRepository: context.read<AccountsRepositoryImpl>(),
+            budgetRepository: context.read<BudgetRepository>()
           )..add(TransferFormLoaded()),
         ),
       ],
@@ -85,9 +72,7 @@ class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
             controller: _tabController,
             children: [
               HomeViewDesktop(),
-              Center(
-                  child: Container(
-                      width: w * 0.5, height: h * 0.9, child: SummaryPage())),
+              Center(child: Container(width: w * 0.5, height: h * 0.9, child: SummaryPage())),
               TrendChartDesktopView(),
               DebtPayoffViewDesktop(),
             ],
@@ -110,7 +95,7 @@ class HomeViewDesktop extends StatelessWidget {
             previous.tab != current.tab && current.tab == HomeTab.accounts,
         listener: (context, state) {
           // it has been added for update accounts during first tab open
-          context.read<AccountsCubit>().fetchAllAccounts();
+          //context.read<AccountsCubit>().budgetChanged();
         },
         child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) => Column(
@@ -139,9 +124,7 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                color: BudgetTheme.isDarkMode(context)
-                                    ? BudgetColors.darkerGrey
-                                    : BudgetColors.lightContainer,
+                                color: BudgetColors.lightContainer,
                                 elevation: 5,
                                 child: Container(
                                   padding: EdgeInsets.all(20),
@@ -150,9 +133,7 @@ class HomeViewDesktop extends StatelessWidget {
                                   child: state.status == HomeStatus.loading
                                       ? Center(
                                           child: CircularProgressIndicator())
-                                      : state.tab == HomeTab.accounts
-                                          ? AccountsSummaries()
-                                          : CategorySummaries(),
+                                      : CategorySummaryListView(),
                                 ),
                               )
                             ],
@@ -162,9 +143,7 @@ class HomeViewDesktop extends StatelessWidget {
                           child: Column(
                             children: [
                               Card(
-                                  color: BudgetTheme.isDarkMode(context)
-                                      ? BudgetColors.darkerGrey
-                                      : BudgetColors.lightContainer,
+                                  color: BudgetColors.lightContainer,
                                   elevation: 5,
                                   child: Container(
                                     padding:
@@ -194,9 +173,7 @@ class HomeViewDesktop extends StatelessWidget {
                         clipper: ShapeBorderClipper(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        child: HomeBottomNavBar(
-                            selectedTab: state.tab,
-                            sectionsSum: state.sectionsSum),
+                        child: Container(),
                       ),
                     )
                   ],

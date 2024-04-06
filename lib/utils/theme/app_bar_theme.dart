@@ -1,25 +1,27 @@
-import 'package:budget_app/constants/colors.dart';
+import 'package:budget_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/sizes.dart';
 
 class BudgetAppBarTheme {
-  BudgetAppBarTheme._();
+  BudgetAppBarTheme(this.seedColor);
 
-  static const light = AppBarTheme(
+  final AppColors seedColor;
+
+ AppBarTheme get light => AppBarTheme(
     centerTitle: true,
     scrolledUnderElevation: 0,
-    backgroundColor: BudgetColors.primary,
-    iconTheme: IconThemeData(color: BudgetColors.white, size: BudgetSizes.iconMd),
-    actionsIconTheme: IconThemeData(color: BudgetColors.white, size: BudgetSizes.iconMd),
-    titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color: BudgetColors.white),
+    backgroundColor: seedColor.primaryColor.shade400,
+    iconTheme: IconThemeData(color:Colors.white, size: BudgetSizes.iconMd),
+    actionsIconTheme: IconThemeData(color:Colors.white, size: BudgetSizes.iconMd),
+    titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color:Colors.white,),
   );
-  static const dark = AppBarTheme(
+  AppBarTheme get dark => AppBarTheme(
     centerTitle: true,
     scrolledUnderElevation: 0,
-    backgroundColor: BudgetColors.primary,
-    iconTheme: IconThemeData(color:BudgetColors.white, size: BudgetSizes.iconMd),
-    actionsIconTheme: IconThemeData(color: BudgetColors.white, size: BudgetSizes.iconMd),
-    titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color: BudgetColors.white),
+    backgroundColor: seedColor.primaryColor.shade900,
+    iconTheme: IconThemeData(color:Colors.white, size: BudgetSizes.iconMd),
+    actionsIconTheme: IconThemeData(color:Colors.white, size: BudgetSizes.iconMd),
+    titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color:Colors.white,),
   );
 }

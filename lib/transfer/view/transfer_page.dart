@@ -1,36 +1,34 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
-import 'package:budget_app/transactions/models/transaction_tile.dart';
-import 'package:budget_app/transactions/repository/transactions_repository.dart';
+import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../accounts/repository/accounts_repository.dart';
-import '../../categories/repository/categories_repository.dart';
-import '../../transactions/models/transaction_type.dart';
+import '../../budgets/repository/budget_repository.dart';
+import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
-  const TransferPage({Key? key}) : super(key: key);
+  const TransferPage({super.key, this.transaction, required this.budget});
 
-  static Route<void> route({required HomeCubit homeCubit, TransactionTile? transactionTile}) {
-    return MaterialPageRoute(builder: (context) {
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) =>
-            TransferBloc(
-              transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-              categoriesRepository: context.read<CategoriesRepositoryImpl>(),
-              accountsRepository: context.read<AccountsRepositoryImpl>(),
-            )
-              ..add(TransferFormLoaded(transactionTile: transactionTile)),
-          ),
-          BlocProvider.value(value: homeCubit),
-        ],
-        child: TransferPage(),
-      );
-    });
+  final ComprehensiveTransaction? transaction;
+  final Budget budget;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TransferBloc(
+          transactionsRepository: context.read<TransactionsRepository>(),
+          budgetRepository: context.read<BudgetRepository>())
+          ..add(TransferBudgetChanged(
+          budget: budget!))
+        ..add(TransferFormLoaded(transaction: transaction)),
+      child: TransferView(),
+    );
   }
+}
+
+class TransferView extends StatelessWidget {
+  const TransferView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +37,18 @@ class TransferPage extends StatelessWidget {
         return Scaffold(
             appBar: AppBar(
               title: Text('Transfer'),
+              leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  context.pop();
+                },
+              ),
             ),
             body: state.trStatus == TransferStatus.success
                 ? TransferForm()
                 : Center(
-              child: CircularProgressIndicator(),
-            ));
+                    child: CircularProgressIndicator(),
+                  ));
       },
     );
   }
@@ -54,9 +58,12 @@ class TransferWindow extends StatelessWidget {
   const TransferWindow({Key? key}) : super(key: key);
 
   static Widget window(
-      {Key? key, TransactionTile? transaction,
-        required TransactionType transactionType}) {
-    return  TransferWindow(key: key,);
+      {Key? key,
+      ComprehensiveTransaction? transaction,
+      required TransactionType transactionType}) {
+    return TransferWindow(
+      key: key,
+    );
   }
 
   @override
@@ -65,8 +72,9 @@ class TransferWindow extends StatelessWidget {
       builder: (context, state) {
         return state.trStatus == TransferStatus.success
             ? TransferForm()
-            : Center(child: CircularProgressIndicator(),
-        );
+            : Center(
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }

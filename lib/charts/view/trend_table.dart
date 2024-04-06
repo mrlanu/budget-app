@@ -1,7 +1,7 @@
-import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../utils/theme/budget_theme.dart';
 import '../cubit/chart_cubit.dart';
 
 class TrendTable extends StatelessWidget {
@@ -190,8 +190,8 @@ class TrendTable extends StatelessWidget {
                                                     .textTheme
                                                     .titleMedium!
                                                     .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                    fontWeight:
+                                                    FontWeight.bold),
                                                 '\$ ${(e.incomeSum - e.expenseSum).toStringAsFixed(2)}'),
                                           )),
                                     )),

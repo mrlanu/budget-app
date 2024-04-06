@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 /// {@template user}
@@ -8,17 +9,43 @@ import 'package:equatable/equatable.dart';
 class User extends Equatable {
   /// {@macro user}
   const User({
-    required this.id,
+    this.id,
+    this.token,
     this.email,
     this.name,
     this.photo,
   });
 
+  factory User.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot,) {
+    final data = snapshot.data();
+    return User(
+      id: data?['id'] as String?,
+      token: data?['token'] as String?,
+      email: data?['email'] as String?,
+      name: data?['name'] as String?,
+      photo: data?['photo'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      if (id != null) 'id': id,
+      if (token != null) 'token': token,
+      if (email != null) 'email': email,
+      if (name != null) 'name': name,
+      if (photo != null) 'photo': photo,
+    };
+  }
+
   /// The current user's email address.
   final String? email;
 
   /// The current user's id.
-  final String id;
+  final String? id;
+
+  /// The current user's token.
+  final String? token;
 
   /// The current user's name (display name).
   final String? name;
@@ -36,5 +63,5 @@ class User extends Equatable {
   bool get isNotEmpty => this != User.empty;
 
   @override
-  List<Object?> get props => [email, id, name, photo];
+  List<Object?> get props => [email, id, token, name, photo];
 }
