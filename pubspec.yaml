@@ -29,8 +29,8 @@ dependencies:
     path: packages/form_inputs
   network:
     path: packages/network
-  cache_client:
-    path: packages/cache_client
+  cache:
+    path: packages/cache
   bloc_concurrency: ^0.2.1
   firebase_core: ^2.25.4
   firebase_auth: ^4.17.5

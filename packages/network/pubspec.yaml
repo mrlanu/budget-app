@@ -7,8 +7,8 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  cache_client:
-    path: ../cache_client
+  cache:
+    path: ../cache
   dio: ^5.4.1
   foundation: ^0.0.5
   pretty_dio_logger: ^1.3.1

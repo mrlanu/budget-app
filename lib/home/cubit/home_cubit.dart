@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:cache_client/cache_client.dart';
+import 'package:cache/cache.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
@@ -66,7 +66,7 @@ class HomeCubit extends Cubit<HomeState> {
       } else {
         currentBudgetId = budgetIds.first;
       }
-      CacheClient.instance.setBudgetId(budgetId: currentBudgetId);
+      Cache.instance.setBudgetId(budgetId: currentBudgetId);
       return currentBudgetId;
     } catch (e) {
       rethrow;
