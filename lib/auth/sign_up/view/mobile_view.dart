@@ -1,9 +1,9 @@
+import 'package:budget_app/auth/sign_up/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import '../../../constants/constants.dart';
-import '../../../shared/widgets/filled_card.dart';
 import '../../auth.dart';
 
 class MobileViewSignup extends StatelessWidget {
@@ -28,9 +28,10 @@ class MobileViewSignup extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FilledCard(height: h * 0.25),
+              SizedBox(height: 30,),
+              Image.asset('assets/images/piggy_bank.png', width: 200, height: 200,),
               Padding(
-                  padding: EdgeInsets.symmetric(vertical: h * 0.06, horizontal: w * 0.06),
+                  padding: EdgeInsets.symmetric(vertical: h * 0.03, horizontal: w * 0.06),
                   child: Column(
                     children: [
                       SignupEmailInput(),
@@ -39,7 +40,7 @@ class MobileViewSignup extends StatelessWidget {
                       SizedBox(height: h * 0.01),
                       ConfirmPasswordInput(),
                       SizedBox(height: h * 0.01),
-                      SignUpButtonFromLogin(),
+                      SignUpButton(),
                     ],
                   ),
               ),
