@@ -55,27 +55,6 @@ class TransactionsList extends StatelessWidget {
                     trCub.deleteTransaction(transaction: tr);
                   },
                   onTap: openContainer,
-                  /*onTap: () => {
-                    if (tr.type == TransactionType.TRANSFER)
-                      {
-                        isDisplayDesktop(context)
-                            ? context
-                            .read<TransferBloc>()
-                            .add(TransferFormLoaded(transaction: tr))
-                            : context.push('/transfer/${tr.id}')
-                      }
-                    else
-                      {
-                        isDisplayDesktop(context)
-                            ? context.read<TransactionBloc>().add(
-                          TransactionFormLoaded(
-                            transactionType: tr.type,
-                          ),
-                        )
-                            : context.push(
-                            '/transaction/${tr.id}?typeIndex=${tr.type.index}')
-                      }
-                  },*/
                 );
               },
             );

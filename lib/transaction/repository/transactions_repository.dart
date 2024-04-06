@@ -97,7 +97,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
     try {
       final response = await _networkClient.put<Map<String, dynamic>>(
-          baseURL + '/api/transfers',
+          baseURL + '/api/transactions',
           data: transfer.toJson());
       final updatedTransfer =
       Transfer.fromJson(response.data!);
@@ -114,53 +114,13 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   @override
   Future<void> deleteTransactionOrTransfer(
       {required ComprehensiveTransaction transaction}) async {
-    final partUrl = transaction.type == TransactionType.TRANSFER
-        ? 'transfers'
-        : 'transactions';
-
     try {
       final response = await _networkClient.delete(
-          baseURL + '/api/$partUrl/${transaction.id}');
+          baseURL + '/api/transactions/${transaction.id}');
       final transactions = [..._transactionsStreamController.value];
       final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
       transactions.removeAt(trIndex);
       _transactionsStreamController.add(transactions);
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
-
-  Future<List<Transaction>> _fetchTransactions({
-    required DateTime dateTime,
-  }) async {
-    try {
-      final response = await _networkClient
-          .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
-        'budgetId': await CacheClient.instance.getBudgetId(),
-        'date': dateTime.toString()
-      });
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => Transaction.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
-
-  Future<List<Transfer>> _fetchTransfers({
-    required DateTime dateTime,
-  }) async {
-    try {
-      final response = await _networkClient
-          .get<List<dynamic>>(baseURL + '/api/transfers', queryParameters: {
-        'budgetId': await CacheClient.instance.getBudgetId(),
-        'date': dateTime.toString()
-      });
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => Transfer.fromJson(jsonMap))
-          .toList();
-      return result;
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
     }
