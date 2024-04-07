@@ -1,7 +1,7 @@
 # Qruto budget
 
 <div align="center">
-  <a href="https://budget-track.web.app/">
+  <a href="https://budget.qruto.xyz/">
     <img alt="PWA Badge" src="assets/screenshots/pwa-badge.png" height="60px">
   </a>
 </div>
