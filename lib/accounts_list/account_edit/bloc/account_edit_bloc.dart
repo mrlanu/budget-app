@@ -8,7 +8,6 @@ import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
 import '../../../categories/models/category.dart';
 import '../../models/account.dart';
 
@@ -46,7 +45,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
     if (event.account != null) {
       Account account = event.account!;
-      final category = state.budget!.getCategoryById(account.categoryId);
+      final category = state.budget!.getCategoryById(account.category);
       emit(state.copyWith(
           id: account.id,
           category: category,
@@ -101,7 +100,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     final account = Account(
         id: isIdExist ? state.id! : Uuid().v4(),
         name: state.name!,
-        categoryId: state.category!.id,
+        category: state.category!.id,
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals);

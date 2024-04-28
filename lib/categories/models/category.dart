@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../subcategories/models/subcategory.dart';
@@ -7,19 +8,21 @@ import '../../transaction/transaction.dart';
 part 'category.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@Embedded(inheritance: false)
 class Category extends Equatable {
   final String id;
   final String name;
   final int iconCode;
   final List<Subcategory> subcategoryList;
+  @enumerated
   final TransactionType type;
 
   const Category(
-      {required this.id,
-      required this.name,
+      {this.id = '',
+      this.name = '',
       this.iconCode = 0,
       this.subcategoryList = const [],
-      required this.type});
+      this.type = TransactionType.EXPENSE});
 
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);
@@ -41,5 +44,6 @@ class Category extends Equatable {
   }
 
   @override
+  @ignore
   List<Object?> get props => [id, name, subcategoryList];
 }

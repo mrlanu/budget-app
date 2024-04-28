@@ -10,9 +10,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../accounts_list/models/account.dart';
-import '../../budgets/repository/budget_repository.dart';
 import '../../categories/models/category.dart';
 import '../../subcategories/models/subcategory.dart';
 import '../models/transaction.dart';
@@ -137,7 +137,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-      id: state.id,
+      id: state.id ?? Uuid().v4(),
       budgetId: (await Cache.instance.getBudgetId())!,
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
@@ -154,7 +154,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           transaction: transaction, editedTransaction: state.editedTransaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(transactionType: transaction.type!))
+          ? add(TransactionFormLoaded(transactionType: transaction.type))
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));

@@ -10,10 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../auth/auth.dart';
 import '../budgets/repository/budget_repository.dart';
 import '../settings/settings.dart';
-import '../splash/view/splash_page.dart';
 
 GoRouter get router => _router;
 
@@ -25,9 +23,8 @@ final GlobalKey<NavigatorState> _buildingsNavigatorKey =
 /// The route configuration.
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
+  initialLocation: '/expenses',
   routes: [
-    ..._authRoutes,
     ShellRoute(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
@@ -42,50 +39,9 @@ final GoRouter _router = GoRouter(
           ..._individualRoutes,
         ]),
   ],
-  redirect: _guard,
+  //redirect: _guard,
   debugLogDiagnostics: true,
 );
-
-Future<String?> _guard(BuildContext context, GoRouterState state) async {
-  final authStatus = context.read<AuthBloc>().state.status;
-  final bool signedIn = authStatus == AuthStatus.authenticated;
-  if (authStatus == AuthStatus.unknown) {
-    return '/splash';
-  }
-  final bool signingIn =
-      ['/login', '/signup', '/splash'].contains(state.matchedLocation);
-  if (!signedIn && !signingIn) {
-    return '/login';
-  } else if (signedIn && signingIn) {
-    return '/expenses';
-  }
-  return null;
-}
-
-final List<RouteBase> _authRoutes = [
-  GoRoute(
-    path: '/',
-    redirect: (_, __) => '/login',
-  ),
-  GoRoute(
-    path: '/login',
-    builder: (BuildContext context, GoRouterState state) {
-      return const LoginPage();
-    },
-  ),
-  GoRoute(
-    path: '/signup',
-    builder: (BuildContext context, GoRouterState state) {
-      return const SignUpPage();
-    },
-  ),
-  GoRoute(
-    path: '/splash',
-    builder: (BuildContext context, GoRouterState state) {
-      return SplashPage();
-    },
-  ),
-];
 
 final List<RouteBase> _homeTabsRoutes = [
   StatefulShellRoute.indexedStack(

@@ -1,14 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../accounts_list/models/account.dart';
 import '../../categories/models/category.dart';
+import '../../subcategories/models/subcategory.dart';
 import '../../transaction/models/transaction_type.dart';
+import '../../utils/utils.dart';
 
 part 'budget.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@Collection(inheritance: false)
 class Budget extends Equatable{
+  Id get isarId => fastHash(id!);
   final String id;
   final List<Category> categoryList;
   final List<Account> accountList;
@@ -45,5 +50,6 @@ class Budget extends Equatable{
   Map<String, dynamic> toJson() => _$BudgetToJson(this);
 
   @override
+  @ignore
   List<Object?> get props => [id, categoryList, accountList];
 }

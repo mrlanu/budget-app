@@ -87,7 +87,7 @@ class AccountsListView extends StatelessWidget {
                                         state.accountCategories
                                             .firstWhere((element) =>
                                                 element.id ==
-                                                account.categoryId)
+                                                account.category)
                                             .iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],

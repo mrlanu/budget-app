@@ -94,7 +94,7 @@ class HomeState extends Equatable {
                   (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
                   (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
               .toList(),
-          iconCodePoint: budget.getCategoryById(acc.categoryId).iconCode));
+          iconCodePoint: budget.getCategoryById(acc.category).iconCode));
     });
     return summaries;
   }

@@ -1,16 +1,21 @@
-import 'package:budget_app/budgets/budgets.dart';
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../budgets/models/budget.dart';
+import '../../utils/utils.dart';
 import '../transaction.dart';
 
 part 'transaction.g.dart';
 
 @JsonSerializable()
+@Collection(inheritance: false)
 class Transaction {
-  final String? id;
+  Id get isarId => fastHash(id!);
   final String budgetId;
+  final String? id;
   final DateTime date;
-  final TransactionType? type;
+  @enumerated
+  final TransactionType type;
   final double amount;
   final String fromAccountId;
   final String? toAccountId;
@@ -23,7 +28,7 @@ class Transaction {
     required this.budgetId,
     required this.date,
     required this.amount,
-    this.type,
+    this.type = TransactionType.EXPENSE,
     this.description = '',
     this.categoryId,
     this.subcategoryId,
@@ -40,9 +45,8 @@ class Transaction {
             .first;
         final acc = budget.getAccountById(this.fromAccountId);
         return [ComprehensiveTransaction(
-            id: this.id!,
             budgetId: budgetId,
-            type: this.type!,
+            type: this.type,
             amount: this.amount,
             title: subcategory.name,
             subtitle: acc.name,
@@ -50,7 +54,7 @@ class Transaction {
             description: this.description!,
             category: cat,
             subcategory: subcategory,
-            fromAccount: acc)];
+            fromAccount: acc, id: this.id!)];
       case TransactionType.TRANSFER:
         final fromAccount = budget.getAccountById(this.fromAccountId);
         final toAccount = budget.getAccountById(this.toAccountId!);
