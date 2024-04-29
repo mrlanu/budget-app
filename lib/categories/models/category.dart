@@ -1,46 +1,33 @@
 import 'package:equatable/equatable.dart';
 import 'package:isar/isar.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 import '../../subcategories/models/subcategory.dart';
 import '../../transaction/transaction.dart';
 
 part 'category.g.dart';
 
-@JsonSerializable(explicitToJson: true)
-@Embedded(inheritance: false)
+@Collection(inheritance: false)
 class Category extends Equatable {
-  final String id;
+  final Id? id;
   final String name;
   final int iconCode;
-  final List<Subcategory> subcategoryList;
+  final subcategoryList = IsarLinks<Subcategory>();
   @enumerated
   final TransactionType type;
 
-  const Category(
-      {this.id = '',
-      this.name = '',
-      this.iconCode = 0,
-      this.subcategoryList = const [],
-      this.type = TransactionType.EXPENSE});
-
-  factory Category.fromJson(Map<String, dynamic> json) =>
-      _$CategoryFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CategoryToJson(this);
+  Category(
+      {this.id, this.name = '', this.iconCode = 0, this.type = TransactionType.EXPENSE});
 
   Category copyWith(
-      {String? id,
-      String? name,
+      {String? name,
       int? iconCode,
       List<Subcategory>? subcategoryList,
       TransactionType? type}) {
     return Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        type: type ?? this.type,
-        iconCode: iconCode ?? this.iconCode,
-        subcategoryList: subcategoryList ?? this.subcategoryList);
+      name: name ?? this.name,
+      type: type ?? this.type,
+      iconCode: iconCode ?? this.iconCode,
+    );
   }
 
   @override

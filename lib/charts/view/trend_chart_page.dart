@@ -1,7 +1,6 @@
 import 'package:budget_app/charts/cubit/chart_cubit.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,9 +15,8 @@ class TrendChartPage extends StatelessWidget {
     return MaterialPageRoute(
       builder: (context) => BlocProvider(
         create: (context) => ChartCubit(
-            chartRepository: _repo,
-            budget: context.read<HomeCubit>().state.budget)
-          ..fetchTrendChart(),
+          chartRepository: _repo,
+        )..fetchTrendChart(),
         child: TrendChartPage(),
       ),
     );
@@ -70,9 +68,8 @@ class TrendChartDesktopView extends StatelessWidget {
     final _repo = ChartRepositoryImpl();
     return BlocProvider(
         create: (context) => ChartCubit(
-            chartRepository: _repo,
-            budget: context.read<HomeCubit>().state.budget)
-          ..fetchTrendChart(),
+              chartRepository: _repo,
+            )..fetchTrendChart(),
         child: TrendChartDesktopViewBody());
   }
 }

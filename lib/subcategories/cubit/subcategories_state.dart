@@ -4,7 +4,6 @@ enum SubcategoriesStatus { loading, success, failure }
 
 class SubcategoriesState extends Equatable {
   final SubcategoriesStatus status;
-  final Budget? budget;
   final List<Subcategory> subcategories;
   final Category? category;
   final String? name;
@@ -12,7 +11,6 @@ class SubcategoriesState extends Equatable {
 
   const SubcategoriesState({
     this.status = SubcategoriesStatus.loading,
-    this.budget,
     this.subcategories = const [],
     this.category,
     this.name,
@@ -21,7 +19,6 @@ class SubcategoriesState extends Equatable {
 
   SubcategoriesState copyWith({
     SubcategoriesStatus? status,
-    Budget? budget,
     List<Subcategory>? subcategories,
     Category? category,
     String? name,
@@ -30,7 +27,6 @@ class SubcategoriesState extends Equatable {
   }) {
     return SubcategoriesState(
         status: status ?? this.status,
-        budget: budget ?? this.budget,
         subcategories: subcategories ?? this.subcategories,
         category: category ?? this.category,
         name: name ?? this.name,
@@ -47,5 +43,5 @@ class SubcategoriesState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [status, budget, subcategories, category, name, errorMessage];
+      [status, subcategories, category, name, errorMessage];
 }

@@ -1,25 +1,19 @@
 import 'package:equatable/equatable.dart';
 import 'package:isar/isar.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'subcategory.g.dart';
 
-@JsonSerializable()
-@Embedded(inheritance: false)
+@Collection(inheritance: false)
 class Subcategory extends Equatable{
-  final String id;
+  final Id? id;
   final String name;
 
-  const Subcategory({this.id = '', this.name = ''});
+  const Subcategory({this.id, this.name = ''});
 
-  factory Subcategory.fromJson(Map<String, dynamic> json) =>
-      _$SubcategoryFromJson(json);
-
-  Subcategory copyWith({String? id, String? name}){
-    return Subcategory(id: id ?? this.id, name: name ?? this.name);
+  Subcategory copyWith({String? name}){
+    return Subcategory(id: this.id, name: name ?? this.name);
   }
 
-  Map<String, dynamic> toJson() => _$SubcategoryToJson(this);
 
   @override
   @ignore

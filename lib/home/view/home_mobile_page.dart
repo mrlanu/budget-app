@@ -110,12 +110,11 @@ class HomeMobilePage extends StatelessWidget {
       transitionType: _transitionType,
       openBuilder: (BuildContext _, VoidCallback openContainer) {
         return navigationShell.currentIndex == 2
-            ? TransferPage(budget: context.read<HomeCubit>().state.budget)
+            ? TransferPage()
             : TransactionPage(
                 transactionType: navigationShell.currentIndex == 0
                     ? TransactionType.EXPENSE
-                    : TransactionType.INCOME,
-                budget: context.read<HomeCubit>().state.budget);
+                    : TransactionType.INCOME,);
       },
       closedElevation: 6.0,
       closedShape: RoundedRectangleBorder(

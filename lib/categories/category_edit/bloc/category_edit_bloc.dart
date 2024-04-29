@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/budgets/budgets.dart';
+import 'package:budget_app/transaction/repository/transactions_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
-import 'package:uuid/uuid.dart';
+import 'package:isar/isar.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
 import '../../../subcategories/models/subcategory.dart';
 import '../../../transaction/models/transaction_type.dart';
 import '../../models/category.dart';
@@ -16,22 +15,22 @@ part 'category_edit_event.dart';
 part 'category_edit_state.dart';
 
 class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  final TransactionsRepository _transactionsRepository;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  CategoryEditBloc({required BudgetRepository budgetRepository})
-      : _budgetRepository = budgetRepository,
+  CategoryEditBloc({required TransactionsRepository transactionsRepository})
+      : _transactionsRepository = transactionsRepository,
         super(CategoryEditState()) {
     on<CategoryEditEvent>(_onEvent, transformer: sequential());
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(CategoryBudgetChanged(budget: budget));
+    _categoriesSubscription = _transactionsRepository.categories.listen((categories) {
+      add(CategoryCategoriesChanged(categories: categories));
     });
   }
 
   Future<void> _onEvent(
       CategoryEditEvent event, Emitter<CategoryEditState> emit) async {
     return switch (event) {
-      final CategoryBudgetChanged e => _onBudgetChanged(e, emit),
+      final CategoryCategoriesChanged e => _onCategoriesChanged(e, emit),
       final CategoryEditFormLoaded e => _onFormLoaded(e, emit),
       final CategoryNameChanged e => _onNameChanged(e, emit),
       final CategoryIconChanged e => _onIconChanged(e, emit),
@@ -48,7 +47,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
           id: category.id,
           name: category.name,
           iconCode: category.iconCode,
-          subcategoryList: category.subcategoryList,
+          subcategoryList: [],
           type: category.type,
           isValid: true,
           catStatus: CategoryEditStatus.success));
@@ -65,9 +64,9 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
     );
   }
 
-  void _onBudgetChanged(
-      CategoryBudgetChanged event, Emitter<CategoryEditState> emit) {
-    emit(state.copyWith(budget: event.budget));
+  void _onCategoriesChanged(
+      CategoryCategoriesChanged event, Emitter<CategoryEditState> emit) {
+    emit(state.copyWith(categoryList: event.categories));
   }
 
   void _onIconChanged(
@@ -80,19 +79,18 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final isIdExist = state.id != null;
     final category = Category(
-        id: isIdExist ? state.id! : Uuid().v4(),
+        id: isIdExist ? state.id! : Isar.autoIncrement,
         name: state.name!,
         iconCode: state.iconCode,
-        subcategoryList: state.subcategoryList,
-        type: state.type);
+        type: state.type)..subcategoryList.addAll([]);
     isIdExist
-        ? _budgetRepository.updateCategory(category)
-        : _budgetRepository.createCategory(category);
+        ? _transactionsRepository.updateCategory(category)
+        : _transactionsRepository.createCategory(category);
   }
 
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

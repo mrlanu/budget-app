@@ -1,10 +1,9 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/transaction/repository/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../models/account.dart';
 import '../account_edit.dart';
@@ -18,9 +17,7 @@ class AccountEditDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          AccountEditBloc(budgetRepository: context.read<BudgetRepository>())
-            ..add(AccountBudgetChanged(
-                budget: context.read<HomeCubit>().state.budget))
+          AccountEditBloc(transactionsRepository: context.read<TransactionsRepository>())
             ..add(AccountEditFormLoaded(account: account)),
       child: AccountEditForm(),
     );

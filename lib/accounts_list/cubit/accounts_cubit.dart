@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/budgets/budgets.dart';
+import 'package:budget_app/transaction/repository/transactions_repository.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../../categories/models/category.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../models/account.dart';
@@ -12,25 +11,36 @@ import '../models/account.dart';
 part 'accounts_state.dart';
 
 class AccountsCubit extends Cubit<AccountsState> {
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  final TransactionsRepository _transactionsRepository;
+  late final StreamSubscription<List<Account>> _accountsSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  AccountsCubit({required BudgetRepository budgetRepository})
-      : _budgetRepository = budgetRepository,
+  AccountsCubit({required TransactionsRepository transactionsRepository})
+      : _transactionsRepository = transactionsRepository,
         super(AccountsState()) {
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      budgetChanged(budget);
+    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+      accountsChanged(accounts);
     });
+    _categoriesSubscription =
+        _transactionsRepository.categories.listen((categories) {
+          categoriesChanged(categories);
+        });
   }
 
-  Future<void> budgetChanged(Budget budget) async {
+  Future<void> accountsChanged(List<Account> accounts) async {
+    emit(state.copyWith(
+      status: AccountsStatus.success,
+      accountList: accounts,));
+    }
+
+  Future<void> categoriesChanged(List<Category> categories) async {
     emit(state.copyWith(
         status: AccountsStatus.success,
-        accountList: budget.accountList,
-        accountCategories: budget.categoryList
+        accountCategories: categories
             .where((cat) => cat.type == TransactionType.ACCOUNT)
             .toList()));
   }
+
 
   Future<void> onAccountDeleted(Account account) async {
     emit(state.copyWith(status: AccountsStatus.loading));
@@ -47,7 +57,8 @@ class AccountsCubit extends Cubit<AccountsState> {
 
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
+    _accountsSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

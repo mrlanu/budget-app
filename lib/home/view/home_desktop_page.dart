@@ -6,7 +6,6 @@ import 'package:budget_app/transfer/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../../constants/colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/month_paginator.dart';
@@ -23,15 +22,13 @@ class HomeDesktopPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => TransactionBloc(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            budgetRepository: context.read<BudgetRepository>()
+            transactionsRepository: context.read<TransactionsRepository>(),
           )..add(TransactionFormLoaded(
               transactionType: TransactionType.EXPENSE,)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            budgetRepository: context.read<BudgetRepository>()
+            transactionsRepository: context.read<TransactionsRepository>(),
           )..add(TransferFormLoaded()),
         ),
       ],

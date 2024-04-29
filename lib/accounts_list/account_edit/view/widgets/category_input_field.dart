@@ -11,7 +11,7 @@ class CategoryInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.read<ThemeCubit>().state;
-    final budget = context.select((AccountEditBloc bloc) => bloc.state.budget!);
+    final categories = context.select((AccountEditBloc bloc) => bloc.state.categories);
     final category =
         context.select((AccountEditBloc bloc) => bloc.state.category);
     return DropdownButtonFormField<Category>(
@@ -23,8 +23,7 @@ class CategoryInputField extends StatelessWidget {
                 .push('/categories?typeIndex=${TransactionType.ACCOUNT.index}');
           },
         ),
-        items: budget
-            .getCategoriesByType(TransactionType.ACCOUNT)
+        items: categories.where((element) => element.type == TransactionType.ACCOUNT)
             .map((Category category) {
           return DropdownMenuItem(
             value: category,
@@ -39,7 +38,7 @@ class CategoryInputField extends StatelessWidget {
         },
         value: category == null
             ? null
-            : budget.categoryList.firstWhere((c) => c.id == category.id),
+            : categories.firstWhere((c) => c.id == category.id),
         decoration: InputDecoration(
           icon: Icon(
             Icons.category,

@@ -36,12 +36,10 @@ class TransactionsList extends StatelessWidget {
                 return tr.type == TransactionType.TRANSFER
                     ? TransferPage(
                         transaction: tr,
-                        budget: context.read<HomeCubit>().state.budget,
                       )
                     : TransactionPage(
                         transaction: tr,
                         transactionType: tr.type,
-                        budget: context.read<HomeCubit>().state.budget,
                       );
               },
               tappable: true,

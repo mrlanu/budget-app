@@ -5,10 +5,8 @@ import '../../categories/models/category.dart';
 import '../../subcategories/models/subcategory.dart';
 import '../transaction.dart';
 
-
 class ComprehensiveTransaction extends Equatable {
-  final String id;
-  final String budgetId;
+  final int id;
   final TransactionType type;
   final double amount;
   final String title;
@@ -22,7 +20,6 @@ class ComprehensiveTransaction extends Equatable {
 
   const ComprehensiveTransaction(
       {required this.id,
-      required this.budgetId,
       required this.type,
       required this.amount,
       required this.title,
@@ -35,30 +32,18 @@ class ComprehensiveTransaction extends Equatable {
       required this.description});
 
   Transaction toTransaction() {
-    return this.type == TransactionType.TRANSFER
-        ? Transaction(
+    return Transaction.fromComprehensive(
             id: id,
-            budgetId: budgetId,
-            date: dateTime,
+            dateTime: dateTime,
             amount: amount,
-            fromAccountId: fromAccount!.id,
-            toAccountId: toAccount!.id,
             description: description,
             type: type,
-          )
-        : Transaction(
-            id: id,
-            budgetId: budgetId,
-            date: dateTime,
-            amount: amount,
-            categoryId: category!.id,
-            subcategoryId: subcategory!.id,
-            description: description,
-            type: type,
-            fromAccountId: fromAccount!.id);
+            fromAcc: fromAccount,
+            toAcc: toAccount,
+            category: category,
+            subcategory: subcategory);
   }
 
   @override
-  List<Object?> get props =>
-      [id, budgetId, amount, fromAccount, toAccount, dateTime];
+  List<Object?> get props => [id, amount, fromAccount, toAccount, dateTime];
 }

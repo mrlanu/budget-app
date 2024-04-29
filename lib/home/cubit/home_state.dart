@@ -14,8 +14,8 @@ enum HomeTab {
 
 class HomeState extends Equatable {
   final HomeStatus status;
+  final List<Account> accountList;
   final List<ComprehensiveTransaction> transactionList;
-  final Budget budget;
   final DateTime? selectedDate;
   final HomeTab tab;
   final String? errorMessage;
@@ -36,7 +36,7 @@ class HomeState extends Equatable {
   }
 
   double get accountsTotal {
-    return budget.accountList.where((acc) => acc.includeInTotal).fold<double>(
+    return accountList.where((acc) => acc.includeInTotal).fold<double>(
         0.0, (previousValue, element) => previousValue + element.balance);
   }
 
@@ -70,7 +70,7 @@ class HomeState extends Equatable {
           0.0, (previousValue, element) => previousValue + element.amount);
 
       summaries.add(SummaryTile(
-          id: key.id,
+          id: key.id!,
           name: key.name,
           total: sum,
           comprehensiveTr: value,
@@ -82,9 +82,9 @@ class HomeState extends Equatable {
   List<SummaryTile> _getSummariesByAccounts(
       {required List<ComprehensiveTransaction> transactionTiles}) {
     List<SummaryTile> summaries = [];
-    budget.accountList.forEach((acc) {
+    accountList.forEach((acc) {
       summaries.add(SummaryTile(
-          id: acc.id,
+          id: acc.id!,
           name: acc.name,
           total: acc.balance,
           comprehensiveTr: transactionTiles
@@ -94,7 +94,7 @@ class HomeState extends Equatable {
                   (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
                   (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
               .toList(),
-          iconCodePoint: budget.getCategoryById(acc.category).iconCode));
+          iconCodePoint: acc.category.value!.iconCode));
     });
     return summaries;
   }
@@ -102,7 +102,7 @@ class HomeState extends Equatable {
   const HomeState({
     this.status = HomeStatus.initial,
     this.transactionList = const [],
-    this.budget = const Budget(),
+    this.accountList = const [],
     this.selectedDate,
     this.tab = HomeTab.expenses,
     this.errorMessage,
@@ -112,7 +112,6 @@ class HomeState extends Equatable {
   HomeState copyWith({
     HomeStatus? status,
     List<ComprehensiveTransaction>? transactionList,
-    Budget? budget,
     TransactionsViewFilter? filter,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
@@ -123,7 +122,6 @@ class HomeState extends Equatable {
     return HomeState(
       status: status ?? this.status,
       transactionList: transactionList ?? this.transactionList,
-      budget: budget ?? this.budget,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -136,7 +134,6 @@ class HomeState extends Equatable {
   @override
   List<Object?> get props => [
         status,
-        budget,
         transactionList,
         selectedDate,
         tab,

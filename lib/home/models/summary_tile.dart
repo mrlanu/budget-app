@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../transaction/transaction.dart';
 
 class SummaryTile extends Equatable {
-  final String id;
+  final int id;
   final String name;
   final double total;
   final List<ComprehensiveTransaction> comprehensiveTr;
@@ -19,7 +19,7 @@ class SummaryTile extends Equatable {
       this.isExpanded = false});
 
   SummaryTile copyWith(
-      {String? id,
+      {int? id,
       String? name,
       double? total,
       List<ComprehensiveTransaction>? comprehensiveTr,

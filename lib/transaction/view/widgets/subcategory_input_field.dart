@@ -10,7 +10,7 @@ class SubcategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
-    final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
+    final subcategories = context.select((TransactionBloc bloc) => bloc.state.subcategories);
     final category =
         context.select((TransactionBloc bloc) => bloc.state.category);
     final subcategory =
@@ -27,9 +27,7 @@ class SubcategoryInput extends StatelessWidget {
               : null,
         ),
         items: category != null
-            ? budget
-                .getCategoryById(category.id)
-                .subcategoryList
+            ? subcategories
                 .map((Subcategory subcategory) {
                 return DropdownMenuItem(
                   value: subcategory,
@@ -45,9 +43,7 @@ class SubcategoryInput extends StatelessWidget {
         },
         value: subcategory == null
             ? null
-            : budget
-                .getCategoryById(category!.id)
-                .subcategoryList
+            : subcategories
                 .firstWhere((c) => c.id == subcategory.id),
         decoration: InputDecoration(
           icon: Icon(

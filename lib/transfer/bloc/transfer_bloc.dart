@@ -2,15 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/budgets/budgets.dart';
-import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
 import '../../accounts_list/models/account.dart';
-import '../../budgets/repository/budget_repository.dart';
+import '../../categories/models/category.dart';
 import '../../constants/constants.dart';
 import '../../transaction/transaction.dart';
 
@@ -19,30 +17,33 @@ part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
   final TransactionsRepository _transactionsRepository;
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  late StreamSubscription<List<Account>> _accountsSubscription;
+  late StreamSubscription<List<Category>> _categoriesSubscription;
 
-  TransferBloc(
-      {required TransactionsRepository transactionsRepository,
-      required BudgetRepository budgetRepository})
-      : _transactionsRepository = transactionsRepository,
-        _budgetRepository = budgetRepository,
+  TransferBloc({
+    required TransactionsRepository transactionsRepository,
+  })  : _transactionsRepository = transactionsRepository,
         super(TransferState()) {
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(TransferBudgetChanged(budget: budget));
-    });
     on<TransferEvent>(_onEvent, transformer: sequential());
+    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+      add(TransferAccountsChanged(accounts: accounts));
+    });
+    _categoriesSubscription =
+        _transactionsRepository.categories.listen((categories) {
+      add(TransferCategoriesChanged(categories: categories));
+    });
   }
 
   Future<void> _onEvent(
       TransferEvent event, Emitter<TransferState> emit) async {
     return switch (event) {
-      final TransferBudgetChanged e => _onBudgetChanged(e, emit),
       final TransferFormLoaded e => _onFormLoaded(e, emit),
       final TransferAmountChanged e => _onAmountChanged(e, emit),
       final TransferDateChanged e => _onDateChanged(e, emit),
       final TransferFromAccountChanged e => _onFromAccountChanged(e, emit),
       final TransferToAccountChanged e => _onToAccountChanged(e, emit),
+      final TransferAccountsChanged e => _onAccountsChanged(e, emit),
+      final TransferCategoriesChanged e => _onCategoriesChanged(e, emit),
       final TransferNotesChanged e => _onNotesChanged(e, emit),
       final TransferFormSubmitted e => _onFormSubmitted(e, emit),
     };
@@ -52,7 +53,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       TransferFormLoaded event, Emitter<TransferState> emit) async {
     emit(state.copyWith(trStatus: TransferStatus.loading));
     final transaction = event.transaction;
-    String? id;
+    int? id;
     Account? fromAccount;
     Account? toAccount;
     if (transaction != null) {
@@ -74,11 +75,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       notes: transaction?.description ?? '',
       isValid: transaction == null ? false : true,
     ));
-  }
-
-  void _onBudgetChanged(
-      TransferBudgetChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(budget: event.budget));
   }
 
   void _onAmountChanged(
@@ -108,6 +104,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(state.copyWith(toAccount: event.account));
   }
 
+  void _onAccountsChanged(
+      TransferAccountsChanged event, Emitter<TransferState> emit) {
+    emit(state.copyWith(accounts: event.accounts));
+  }
+
+  void _onCategoriesChanged(
+      TransferCategoriesChanged event, Emitter<TransferState> emit) {
+    emit(state.copyWith(categories: event.categories));
+  }
+
   void _onNotesChanged(
       TransferNotesChanged event, Emitter<TransferState> emit) {
     emit(state.copyWith(notes: event.notes));
@@ -121,17 +127,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       type: TransactionType.TRANSFER,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),
-      fromAccountId: state.fromAccount!.id,
-      toAccountId: state.toAccount!.id,
       description: state.notes,
-      budgetId: await Cache.instance.getBudgetId() ?? '',
-    );
+    )
+      ..fromAccount.value = state.fromAccount
+      ..toAccount.value = state.toAccount;
     try {
       await state.editedTransfer == null
           ? _transactionsRepository.createTransaction(transfer)
           : _transactionsRepository.updateTransaction(transfer);
-      _updateBudgetOnTransfer(
-          transfer: transfer, editedTransfer: state.editedTransfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransferFormLoaded())
@@ -141,54 +144,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
-  void _updateBudgetOnTransfer(
-      {required Transaction transfer,
-      ComprehensiveTransaction? editedTransfer}) {
-    List<Account> updatedAccounts = [];
-
-    final accounts = state.budget.accountList;
-    //find the acc from editedTransaction and return amount
-    //find the acc from transaction and update amount
-    if (editedTransfer != null) {
-      updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransfer.fromAccount!.id) {
-          return acc.copyWith(balance: acc.balance + editedTransfer.amount);
-        } else {
-          return acc;
-        }
-      }).toList();
-      updatedAccounts = updatedAccounts.map((acc) {
-        if (acc.id == editedTransfer.toAccount!.id) {
-          return acc.copyWith(balance: acc.balance - editedTransfer.amount);
-        } else {
-          return acc;
-        }
-      }).toList();
-    } else {
-      updatedAccounts = [...accounts];
-    }
-
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transfer.fromAccountId) {
-        return acc.copyWith(balance: acc.balance - transfer.amount);
-      } else {
-        return acc;
-      }
-    }).toList();
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transfer.toAccountId) {
-        return acc.copyWith(balance: acc.balance + transfer.amount);
-      } else {
-        return acc;
-      }
-    }).toList();
-
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
-  }
-
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
+    _accountsSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

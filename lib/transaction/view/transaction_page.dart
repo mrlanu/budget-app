@@ -1,30 +1,23 @@
-import 'package:budget_app/budgets/budgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../transaction.dart';
 
 class TransactionPage extends StatelessWidget {
   const TransactionPage(
       {super.key,
       this.transaction,
-      required this.transactionType,
-      required this.budget});
+      required this.transactionType});
 
   final ComprehensiveTransaction? transaction;
   final TransactionType transactionType;
-  final Budget budget;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TransactionBloc(
-          transactionsRepository: context.read<TransactionsRepository>(),
-          budgetRepository: context.read<BudgetRepository>())
-        ..add(TransactionBudgetChanged(
-            budget: budget))
+          transactionsRepository: context.read<TransactionsRepository>(),)
         ..add(TransactionFormLoaded(
           transaction: transaction,
           transactionType: transactionType,

@@ -10,7 +10,7 @@ class AccountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
-    final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
+    final accounts = context.select((TransactionBloc bloc) => bloc.state.accounts);
     final account =
         context.select((TransactionBloc bloc) => bloc.state.account);
     return DropdownButtonFormField<Account>(
@@ -20,7 +20,7 @@ class AccountInput extends StatelessWidget {
             context.push('/accounts-list');
           },
         ),
-        items: budget.accountList.map((Account account) {
+        items: accounts.map((Account account) {
           return DropdownMenuItem(
             value: account,
             //child: Text(account.extendName(state.accountCategories)),
@@ -35,7 +35,7 @@ class AccountInput extends StatelessWidget {
         },
         value: account == null
             ? null
-            : budget.accountList.firstWhere((a) => a.id == account.id),
+            : accounts.firstWhere((a) => a.id == account.id),
         decoration: InputDecoration(
           icon: Icon(
             Icons.account_balance,

@@ -2,15 +2,12 @@ import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/home/home.dart';
-import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
-import 'package:budget_app/subcategories/view/subcategories_page.dart';
 import 'package:budget_app/transaction/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../budgets/repository/budget_repository.dart';
 import '../settings/settings.dart';
 
 GoRouter get router => _router;
@@ -29,8 +26,7 @@ final GoRouter _router = GoRouter(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
                   transactionsRepository:
-                      context.read<TransactionsRepository>(),
-                  budgetRepository: context.read<BudgetRepository>())
+                      context.read<TransactionsRepository>(),)
                 ..initRequested(),
               child: child,
             ),
@@ -100,13 +96,10 @@ final List<RouteBase> _individualRoutes = [
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
             final homeCubit = context.read<HomeCubit>();
-            final cat = homeCubit.state.budget.categoryList
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
             final type = TransactionType
                 .values[int.parse(state.uri.queryParameters['typeIndex']!)];
             return DialogPage(
                 builder: (_) => CategoryEditDialog(
-                      category: cat,
                       type: type,
                     ));
           },
@@ -116,38 +109,36 @@ final List<RouteBase> _individualRoutes = [
       path: '/subcategories',
       builder: (BuildContext context, GoRouterState state) {
         final catId = state.uri.queryParameters['categoryId']!;
-        final category =
-            context.read<HomeCubit>().state.budget.getCategoryById(catId);
-        return SubcategoriesPage(
+        return Scaffold();/*SubcategoriesPage(
           category: category,
-        );
+        );*/
       },
       routes: [
         GoRoute(
           path: 'new',
           pageBuilder: (BuildContext context, GoRouterState state) {
             final catId = state.uri.queryParameters['categoryId']!;
-            final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);
+            /*final category =
+                context.read<HomeCubit>().state.budget.getCategoryById(catId);*/
             return DialogPage(
-                builder: (_) => SubcategoryEditDialog(
+                builder: (_) => Container());/*SubcategoryEditDialog(
                       category: category,
-                    ));
+                    ));*/
           },
         ),
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
             final catId = state.uri.queryParameters['categoryId']!;
-            final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);
-            final subcategory = category.subcategoryList
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+            /*final category =
+                context.read<HomeCubit>().state.budget.getCategoryById(catId);*/
+            /*final subcategory = category.subcategoryList
+                .firstWhere((cat) => cat.id == state.pathParameters['id']!);*/
             return DialogPage(
-                builder: (_) => SubcategoryEditDialog(
+                builder: (_) => Container());/*SubcategoryEditDialog(
                       category: category,
                       subcategory: subcategory,
-                    ));
+                    ));*/
           },
         ),
       ]),
@@ -167,12 +158,12 @@ final List<RouteBase> _individualRoutes = [
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
             final homeCubit = context.read<HomeCubit>();
-            final acc = homeCubit.state.budget.accountList
-                .firstWhere((acc) => acc.id == state.pathParameters['id']!);
+            /*final acc = homeCubit.state.budget.accountList
+                .firstWhere((acc) => acc.id == state.pathParameters['id']!);*/
             return DialogPage(
-                builder: (_) => AccountEditDialog(
+                builder: (_) => Container()/*AccountEditDialog(
                       account: acc,
-                    ));
+                    )*/);
           },
         ),
       ]),

@@ -1,92 +1,99 @@
+import 'package:budget_app/accounts_list/models/account.dart';
+import 'package:budget_app/categories/models/category.dart';
+import 'package:budget_app/subcategories/models/models.dart';
+import 'package:budget_app/transaction/models/models.dart';
 import 'package:isar/isar.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-import '../../budgets/models/budget.dart';
-import '../../utils/utils.dart';
 import '../transaction.dart';
 
 part 'transaction.g.dart';
 
-@JsonSerializable()
 @Collection(inheritance: false)
 class Transaction {
-  Id get isarId => fastHash(id!);
-  final String budgetId;
-  final String? id;
+  final Id? id;
   final DateTime date;
   @enumerated
   final TransactionType type;
   final double amount;
-  final String fromAccountId;
-  final String? toAccountId;
+  final fromAccount = IsarLink<Account>();
+  final toAccount = IsarLink<Account>();
   final String? description;
-  final String? categoryId;
-  final String? subcategoryId;
+  final category = IsarLink<Category>();
+  final subcategory = IsarLink<Subcategory>();
 
   Transaction({
-    this.id,
-    required this.budgetId,
+    required this.id,
     required this.date,
     required this.amount,
     this.type = TransactionType.EXPENSE,
     this.description = '',
-    this.categoryId,
-    this.subcategoryId,
-    required this.fromAccountId,
-    this.toAccountId,
   });
 
-  List<ComprehensiveTransaction> toTile(Budget budget){
-    switch(this.type){
+  factory Transaction.fromComprehensive(
+      {Id? id,
+      required TransactionType type,
+      DateTime? dateTime,
+      double? amount,
+      Account? fromAcc,
+      Account? toAcc,
+      Category? category,
+      Subcategory? subcategory,
+      String? description}) {
+    return Transaction(
+      id: null,
+      type: type,
+      date: dateTime ?? DateTime.now(),
+      amount: amount ?? 0,
+      description: description,
+    )
+      ..fromAccount.value = fromAcc
+      ..toAccount.value = toAcc
+      ..category.value = category
+      ..subcategory.value = subcategory;
+  }
+
+  List<ComprehensiveTransaction> toTile() {
+    switch (this.type) {
       case TransactionType.EXPENSE || TransactionType.INCOME:
-        final cat = budget.getCategoryById(this.categoryId!);
-        final subcategory = cat.subcategoryList
-            .where((sc) => this.subcategoryId == sc.id)
-            .first;
-        final acc = budget.getAccountById(this.fromAccountId);
-        return [ComprehensiveTransaction(
-            budgetId: budgetId,
-            type: this.type,
-            amount: this.amount,
-            title: subcategory.name,
-            subtitle: acc.name,
-            dateTime: this.date,
-            description: this.description!,
-            category: cat,
-            subcategory: subcategory,
-            fromAccount: acc, id: this.id!)];
-      case TransactionType.TRANSFER:
-        final fromAccount = budget.getAccountById(this.fromAccountId);
-        final toAccount = budget.getAccountById(this.toAccountId!);
-        return [ComprehensiveTransaction(
-          id: this.id!,
-          budgetId: budgetId,
-          type: TransactionType.TRANSFER,
-          amount: this.amount,
-          title: 'Transfer in',
-          subtitle: 'from ${fromAccount.name}',
-          dateTime: this.date,
-          description: this.description!,
-          fromAccount: fromAccount,
-          toAccount: toAccount,),
+        return [
           ComprehensiveTransaction(
-              id: this.id!,
-              budgetId: budgetId,
-              type: TransactionType.TRANSFER,
+              type: this.type,
               amount: this.amount,
+              title: subcategory.value!.name,
+              subtitle: fromAccount.value!.name,
+              dateTime: date,
+              description: description!,
+              category: category.value,
+              subcategory: subcategory.value,
+              fromAccount: fromAccount.value,
+              id: id!.sign)
+        ];
+      case TransactionType.TRANSFER:
+        return [
+          ComprehensiveTransaction(
+            id: id!.sign,
+            type: TransactionType.TRANSFER,
+            amount: this.amount,
+            title: 'Transfer in',
+            subtitle: 'from ${fromAccount.value!.name}',
+            dateTime: date,
+            description: description!,
+            fromAccount: fromAccount.value,
+            toAccount: toAccount.value,
+          ),
+          ComprehensiveTransaction(
+              id: id!.sign,
+              type: TransactionType.TRANSFER,
+              amount: amount,
               title: 'Transfer out',
-              subtitle: 'to ${toAccount.name}',
-              dateTime: this.date,
-              description: this.description!,
-              fromAccount: fromAccount,
-              toAccount: toAccount)];
+              subtitle: 'to ${toAccount.value!.name}',
+              dateTime: date,
+              description: description!,
+              fromAccount: fromAccount.value,
+              toAccount: toAccount.value)
+        ];
       case _:
         return [];
     }
   }
-
-  factory Transaction.fromJson(Map<String, dynamic> json) =>
-      _$TransactionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TransactionToJson(this);
 }

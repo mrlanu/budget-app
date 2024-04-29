@@ -1,4 +1,3 @@
-import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,8 +18,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<BudgetRepository>(
-            create: (context) => BudgetIsarRepoImpl(isar: isar)),
         RepositoryProvider<TransactionsRepository>(
             create: (context) => TransactionRepoIsarImpl(isar: isar)),
       ],

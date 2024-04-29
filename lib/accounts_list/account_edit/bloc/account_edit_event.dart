@@ -29,11 +29,11 @@ final class AccountBalanceChanged extends AccountEditEvent {
   List<Object?> get props => [balance];
 }
 
-final class AccountBudgetChanged extends AccountEditEvent {
-  final Budget budget;
-  const AccountBudgetChanged({required this.budget});
+final class AccountAccountsChanged extends AccountEditEvent {
+  final List<Account> accounts;
+  const AccountAccountsChanged({required this.accounts});
   @override
-  List<Object?> get props => [budget];
+  List<Object?> get props => [accounts];
 }
 
 final class AccountCategoryChanged extends AccountEditEvent {
@@ -41,6 +41,13 @@ final class AccountCategoryChanged extends AccountEditEvent {
   const AccountCategoryChanged({this.category});
   @override
   List<Object?> get props => [category];
+}
+
+final class AccountCategoriesChanged extends AccountEditEvent {
+  final List<Category> categories;
+  const AccountCategoriesChanged({required this.categories});
+  @override
+  List<Object?> get props => [categories];
 }
 
 final class AccountIncludeInTotalsChanged extends AccountEditEvent {
