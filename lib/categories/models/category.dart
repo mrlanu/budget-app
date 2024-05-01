@@ -11,12 +11,16 @@ class Category extends Equatable {
   final Id? id;
   final String name;
   final int iconCode;
-  final subcategoryList = IsarLinks<Subcategory>();
+  final List<Subcategory> subcategoryList;
   @enumerated
   final TransactionType type;
 
   Category(
-      {this.id, this.name = '', this.iconCode = 0, this.type = TransactionType.EXPENSE});
+      {this.id,
+      this.name = '',
+      this.iconCode = 0,
+      this.subcategoryList = const [],
+      this.type = TransactionType.EXPENSE});
 
   Category copyWith(
       {String? name,
@@ -24,8 +28,10 @@ class Category extends Equatable {
       List<Subcategory>? subcategoryList,
       TransactionType? type}) {
     return Category(
+      id: this.id,
       name: name ?? this.name,
       type: type ?? this.type,
+      subcategoryList: subcategoryList ?? this.subcategoryList,
       iconCode: iconCode ?? this.iconCode,
     );
   }

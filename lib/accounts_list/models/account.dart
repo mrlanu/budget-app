@@ -6,7 +6,7 @@ import '../../categories/models/category.dart';
 part 'account.g.dart';
 
 @Collection(inheritance: false)
-class Account extends Equatable{
+class Account extends Equatable {
   final Id? id;
   final String name;
   final category = IsarLink<Category>();
@@ -26,24 +26,26 @@ class Account extends Equatable{
 
   Account copyWith({
     String? name,
-    String? categoryId,
     String? currency,
     double? balance,
     double? initialBalance,
+    IsarLink<Category>? category,
     bool? includeInTotal,
-    bool? isExpanded,
-  }){
+  }) {
     return Account(
-        name: name ?? this.name,
-        currency: currency ?? this.currency,
-        balance: balance ?? this.balance,
-        initialBalance: initialBalance ?? this.initialBalance,
-        includeInTotal: includeInTotal ?? this.includeInTotal,
-    );
+      id: this.id,
+      name: name ?? this.name,
+      currency: currency ?? this.currency,
+      balance: balance ?? this.balance,
+      initialBalance: initialBalance ?? this.initialBalance,
+      includeInTotal: includeInTotal ?? this.includeInTotal,
+    )..category.value = category?.value ?? this.category.value;
   }
 
-  String extendName(List<Category> categories){
-    final category = categories.where((element) => element.id == this.category).first;
+  String extendName(List<Category> categories) {
+    final category = categories
+        .where((element) => element.id == this.category.value?.id)
+        .first;
     return '${category.name} / ${this.name}';
   }
 

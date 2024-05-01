@@ -25,7 +25,7 @@ class _MonthPaginatorState extends State<MonthPaginator> {
   @override
   void initState() {
     super.initState();
-    _myDate = DateTime.now()..copyWith(day: 15);
+    _myDate = DateTime.now().copyWith(day: 15);
   }
 
   @override
@@ -37,7 +37,7 @@ class _MonthPaginatorState extends State<MonthPaginator> {
           icon: Icon(Icons.arrow_circle_left_outlined, color: widget.color),
           onPressed: () {
             setState(() {
-              _myDate = _myDate.subtract(Duration(days: 30));
+              _myDate = DateTime(_myDate.year, _myDate.month -1, _myDate.day);
             });
             widget.onLeft!(_myDate);
           },
@@ -63,7 +63,7 @@ class _MonthPaginatorState extends State<MonthPaginator> {
               ? null
               : () {
                   setState(() {
-                    _myDate = _myDate.add(Duration(days: 30));
+                    _myDate = DateTime(_myDate.year, _myDate.month + 1, _myDate.day);
                   });
                   widget.onRight!(_myDate);
                 },

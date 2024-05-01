@@ -25,14 +25,14 @@ class HomeState extends Equatable {
     return transactionList
         .where((tr) => tr.type == TransactionType.EXPENSE)
         .fold<double>(
-            0, (previousValue, element) => previousValue + element.amount);
+        0, (previousValue, element) => previousValue + element.amount);
   }
 
   double get incomes {
     return transactionList
         .where((tr) => tr.type == TransactionType.INCOME)
         .fold<double>(
-            0, (previousValue, element) => previousValue + element.amount);
+        0, (previousValue, element) => previousValue + element.amount);
   }
 
   double get accountsTotal {
@@ -45,13 +45,13 @@ class HomeState extends Equatable {
       case HomeTab.expenses:
         final tiles = transactionList
             .where((tr) =>
-                tr.type == TransactionType.EXPENSE && tr.toAccount == null)
+        tr.type == TransactionType.EXPENSE && tr.toAccount == null)
             .toList();
         return _getSummariesByCategory(tiles);
       case HomeTab.income:
         final tiles = transactionList
             .where((tr) =>
-                tr.type == TransactionType.INCOME && tr.toAccount == null)
+        tr.type == TransactionType.INCOME && tr.toAccount == null)
             .toList();
         return _getSummariesByCategory(tiles);
       case HomeTab.accounts:
@@ -63,7 +63,7 @@ class HomeState extends Equatable {
       List<ComprehensiveTransaction> filteredTiles) {
     List<SummaryTile> summaries = [];
     final groupedTrByCat =
-        groupBy(filteredTiles, (ComprehensiveTransaction tr) => tr.category!);
+    groupBy(filteredTiles, (ComprehensiveTransaction tr) => tr.category!);
 
     groupedTrByCat.forEach((key, value) {
       final double sum = value.fold<double>(
@@ -89,10 +89,10 @@ class HomeState extends Equatable {
           total: acc.balance,
           comprehensiveTr: transactionTiles
               .where((tr) =>
-                  (tr.fromAccount!.id == acc.id &&
-                      tr.type != TransactionType.TRANSFER) ||
-                  (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
-                  (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
+          (tr.fromAccount!.id == acc.id &&
+              tr.type != TransactionType.TRANSFER) ||
+              (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
+              (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
               .toList(),
           iconCodePoint: acc.category.value!.iconCode));
     });
@@ -112,6 +112,7 @@ class HomeState extends Equatable {
   HomeState copyWith({
     HomeStatus? status,
     List<ComprehensiveTransaction>? transactionList,
+    List<Account>? accountList,
     TransactionsViewFilter? filter,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
@@ -122,6 +123,7 @@ class HomeState extends Equatable {
     return HomeState(
       status: status ?? this.status,
       transactionList: transactionList ?? this.transactionList,
+      accountList: accountList ?? this.accountList,
       selectedDate: selectedDate ?? this.selectedDate,
       tab: tab ?? this.tab,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -132,9 +134,11 @@ class HomeState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         status,
         transactionList,
+        accountList,
         selectedDate,
         tab,
         errorMessage,

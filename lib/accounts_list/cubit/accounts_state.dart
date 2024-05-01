@@ -11,7 +11,7 @@ class AccountsState extends Equatable {
   const AccountsState(
       {this.status = AccountsStatus.loading,
       this.accountList = const [],
-        this.accountCategories = const [],
+      this.accountCategories = const [],
       this.errorMessage});
 
   AccountsState copyWith({

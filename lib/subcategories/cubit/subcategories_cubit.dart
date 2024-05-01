@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category.dart';
@@ -10,28 +10,24 @@ import '../models/subcategory.dart';
 part 'subcategories_state.dart';
 
 class SubcategoriesCubit extends Cubit<SubcategoriesState> {
-  final TransactionsRepository _transactionsRepository;
-  late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
+  final BudgetRepository _transactionsRepository;
+  late final StreamSubscription<Category?> _categorySubscription;
 
   SubcategoriesCubit(
-      {required TransactionsRepository transactionsRepository, required Category category})
+      {required BudgetRepository transactionsRepository,
+      required int categoryId})
       : _transactionsRepository = transactionsRepository,
-        super(SubcategoriesState(category: category)) {
-    _subcategoriesSubscription = _transactionsRepository.subcategories.listen((subcategories) {
-      _onSubcategoriesChanged(subcategories);
+        super(SubcategoriesState()) {
+    _categorySubscription = _transactionsRepository
+        .watchCategoryById(categoryId)
+        .listen((category) {
+      _onCategoryChanged(category!);
     });
   }
 
-  Future<void> onInit({required Category category}) async {
+  void _onCategoryChanged(Category category) {
     emit(state.copyWith(
-      status: SubcategoriesStatus.success,
-      category: category, subcategories: category.subcategoryList.toList()
-    ));
-  }
-
-  void _onSubcategoriesChanged(List<Subcategory> subcategories) {
-    emit(state.copyWith(
-        subcategories: []));
+        category: category, subcategories: category.subcategoryList));
   }
 
   void onNameChanged(String name) {
@@ -58,7 +54,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   @override
   Future<void> close() {
-    _subcategoriesSubscription.cancel();
+    _categorySubscription.cancel();
     return super.close();
   }
 }

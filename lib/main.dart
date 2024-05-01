@@ -1,6 +1,5 @@
 import 'package:budget_app/app/app.dart';
 import 'package:budget_app/categories/models/category.dart';
-import 'package:budget_app/subcategories/models/models.dart';
 import 'package:budget_app/transaction/models/transaction.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +26,7 @@ Future<void> main() async {
 
   final dir = await getApplicationDocumentsDirectory();
   final isar = await Isar.open(
-    [TransactionSchema, CategorySchema, AccountSchema, SubcategorySchema],
+    [TransactionSchema, CategorySchema, AccountSchema],
     directory: dir.path,
   );
 

@@ -1,4 +1,4 @@
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,7 +15,7 @@ class AccountsListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AccountsCubit(transactionsRepository: context.read<TransactionsRepository>()),
+          AccountsCubit(transactionsRepository: context.read<BudgetRepository>()),
       child: AccountsListView(),
     );
   }
@@ -87,7 +87,7 @@ class AccountsListView extends StatelessWidget {
                                         state.accountCategories
                                             .firstWhere((element) =>
                                                 element.id ==
-                                                account.category)
+                                                account.category.value?.id)
                                             .iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],

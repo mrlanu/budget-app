@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/colors.dart';
 import '../../../transaction/transaction.dart';
-import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class TransactionListTile extends StatelessWidget {
   final ComprehensiveTransaction transactionTile;
@@ -18,7 +16,6 @@ class TransactionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-    final seedColor = context.watch<ThemeCubit>().state;
     final textTheme = Theme.of(context).textTheme;
     return Dismissible(
       key: Key('transaction_dismissible_${transactionTile.id}'),

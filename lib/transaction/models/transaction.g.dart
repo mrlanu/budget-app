@@ -32,8 +32,14 @@ const TransactionSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'type': PropertySchema(
+    r'subcategory': PropertySchema(
       id: 3,
+      name: r'subcategory',
+      type: IsarType.object,
+      target: r'Subcategory',
+    ),
+    r'type': PropertySchema(
+      id: 4,
       name: r'type',
       type: IsarType.byte,
       enumMap: _TransactiontypeEnumValueMap,
@@ -63,15 +69,9 @@ const TransactionSchema = CollectionSchema(
       name: r'category',
       target: r'Category',
       single: true,
-    ),
-    r'subcategory': LinkSchema(
-      id: 6175119186837788724,
-      name: r'subcategory',
-      target: r'Subcategory',
-      single: true,
     )
   },
-  embeddedSchemas: {},
+  embeddedSchemas: {r'Subcategory': SubcategorySchema},
   getId: _transactionGetId,
   getLinks: _transactionGetLinks,
   attach: _transactionAttach,
@@ -90,6 +90,14 @@ int _transactionEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.subcategory;
+    if (value != null) {
+      bytesCount += 3 +
+          SubcategorySchema.estimateSize(
+              value, allOffsets[Subcategory]!, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
@@ -102,7 +110,13 @@ void _transactionSerialize(
   writer.writeDouble(offsets[0], object.amount);
   writer.writeDateTime(offsets[1], object.date);
   writer.writeString(offsets[2], object.description);
-  writer.writeByte(offsets[3], object.type.index);
+  writer.writeObject<Subcategory>(
+    offsets[3],
+    allOffsets,
+    SubcategorySchema.serialize,
+    object.subcategory,
+  );
+  writer.writeByte(offsets[4], object.type.index);
 }
 
 Transaction _transactionDeserialize(
@@ -116,7 +130,12 @@ Transaction _transactionDeserialize(
     date: reader.readDateTime(offsets[1]),
     description: reader.readStringOrNull(offsets[2]),
     id: id,
-    type: _TransactiontypeValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+    subcategory: reader.readObjectOrNull<Subcategory>(
+      offsets[3],
+      SubcategorySchema.deserialize,
+      allOffsets,
+    ),
+    type: _TransactiontypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
         TransactionType.EXPENSE,
   );
   return object;
@@ -136,6 +155,12 @@ P _transactionDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
+      return (reader.readObjectOrNull<Subcategory>(
+        offset,
+        SubcategorySchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 4:
       return (_TransactiontypeValueEnumMap[reader.readByteOrNull(offset)] ??
           TransactionType.EXPENSE) as P;
     default:
@@ -161,12 +186,7 @@ Id _transactionGetId(Transaction object) {
 }
 
 List<IsarLinkBase<dynamic>> _transactionGetLinks(Transaction object) {
-  return [
-    object.fromAccount,
-    object.toAccount,
-    object.category,
-    object.subcategory
-  ];
+  return [object.fromAccount, object.toAccount, object.category];
 }
 
 void _transactionAttach(
@@ -176,8 +196,6 @@ void _transactionAttach(
   object.toAccount
       .attach(col, col.isar.collection<Account>(), r'toAccount', id);
   object.category.attach(col, col.isar.collection<Category>(), r'category', id);
-  object.subcategory
-      .attach(col, col.isar.collection<Subcategory>(), r'subcategory', id);
 }
 
 extension TransactionQueryWhereSort
@@ -599,6 +617,24 @@ extension TransactionQueryFilter
     });
   }
 
+  QueryBuilder<Transaction, Transaction, QAfterFilterCondition>
+      subcategoryIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'subcategory',
+      ));
+    });
+  }
+
+  QueryBuilder<Transaction, Transaction, QAfterFilterCondition>
+      subcategoryIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'subcategory',
+      ));
+    });
+  }
+
   QueryBuilder<Transaction, Transaction, QAfterFilterCondition> typeEqualTo(
       TransactionType value) {
     return QueryBuilder.apply(this, (query) {
@@ -654,7 +690,14 @@ extension TransactionQueryFilter
 }
 
 extension TransactionQueryObject
-    on QueryBuilder<Transaction, Transaction, QFilterCondition> {}
+    on QueryBuilder<Transaction, Transaction, QFilterCondition> {
+  QueryBuilder<Transaction, Transaction, QAfterFilterCondition> subcategory(
+      FilterQuery<Subcategory> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'subcategory');
+    });
+  }
+}
 
 extension TransactionQueryLinks
     on QueryBuilder<Transaction, Transaction, QFilterCondition> {
@@ -697,20 +740,6 @@ extension TransactionQueryLinks
       categoryIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'category', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Transaction, Transaction, QAfterFilterCondition> subcategory(
-      FilterQuery<Subcategory> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'subcategory');
-    });
-  }
-
-  QueryBuilder<Transaction, Transaction, QAfterFilterCondition>
-      subcategoryIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'subcategory', 0, true, 0, true);
     });
   }
 }
@@ -880,6 +909,13 @@ extension TransactionQueryProperty
   QueryBuilder<Transaction, String?, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<Transaction, Subcategory?, QQueryOperations>
+      subcategoryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'subcategory');
     });
   }
 

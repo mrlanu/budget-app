@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:isar/isar.dart';
@@ -15,16 +15,12 @@ part 'category_edit_event.dart';
 part 'category_edit_state.dart';
 
 class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
-  final TransactionsRepository _transactionsRepository;
-  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  final BudgetRepository _transactionsRepository;
 
-  CategoryEditBloc({required TransactionsRepository transactionsRepository})
+  CategoryEditBloc({required BudgetRepository transactionsRepository})
       : _transactionsRepository = transactionsRepository,
         super(CategoryEditState()) {
     on<CategoryEditEvent>(_onEvent, transformer: sequential());
-    _categoriesSubscription = _transactionsRepository.categories.listen((categories) {
-      add(CategoryCategoriesChanged(categories: categories));
-    });
   }
 
   Future<void> _onEvent(
@@ -41,10 +37,11 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   Future<void> _onFormLoaded(
       CategoryEditFormLoaded event, Emitter<CategoryEditState> emit) async {
     emit(state.copyWith(catStatus: CategoryEditStatus.loading));
-    if (event.category != null) {
-      Category category = event.category!;
+    if (event.categoryId != null) {
+      final category =
+          await _transactionsRepository.fetchCategoryById(event.categoryId!);
       emit(state.copyWith(
-          id: category.id,
+          id: category!.id,
           name: category.name,
           iconCode: category.iconCode,
           subcategoryList: [],
@@ -77,20 +74,17 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   Future<void> _onFormSubmitted(
       CategoryFormSubmitted event, Emitter<CategoryEditState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    final isIdExist = state.id != null;
     final category = Category(
-        id: isIdExist ? state.id! : Isar.autoIncrement,
+        id: state.id?? Isar.autoIncrement,
         name: state.name!,
         iconCode: state.iconCode,
-        type: state.type)..subcategoryList.addAll([]);
-    isIdExist
-        ? _transactionsRepository.updateCategory(category)
-        : _transactionsRepository.createCategory(category);
+        subcategoryList: state.subcategoryList,
+        type: state.type);
+    _transactionsRepository.saveCategory(category);
   }
 
   @override
   Future<void> close() {
-    _categoriesSubscription.cancel();
     return super.close();
   }
 }

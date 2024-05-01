@@ -1,26 +1,25 @@
 import 'package:budget_app/transaction/models/models.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../constants/constants.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
-import '../../models/category.dart';
 import '../category_edit.dart';
 
 class CategoryEditDialog extends StatelessWidget {
-  const CategoryEditDialog({super.key, this.category, required this.type});
+  const CategoryEditDialog({super.key, this.categoryId, required this.type});
 
-  final Category? category;
+  final int? categoryId;
   final TransactionType type;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          CategoryEditBloc(transactionsRepository: context.read<TransactionsRepository>())
-            ..add(CategoryEditFormLoaded(category: category, type: type)),
+          CategoryEditBloc(transactionsRepository: context.read<BudgetRepository>())
+            ..add(CategoryEditFormLoaded(categoryId: categoryId, type: type)),
       child: CategoryEditForm(),
     );
   }

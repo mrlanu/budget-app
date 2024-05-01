@@ -3,19 +3,17 @@ import 'package:isar/isar.dart';
 
 part 'subcategory.g.dart';
 
-@Collection(inheritance: false)
-class Subcategory extends Equatable{
-  final Id? id;
+@Embedded(inheritance: false)
+class Subcategory extends Equatable {
   final String name;
 
-  const Subcategory({this.id, this.name = ''});
+  const Subcategory({this.name = ''});
 
-  Subcategory copyWith({String? name}){
-    return Subcategory(id: this.id, name: name ?? this.name);
+  Subcategory copyWith({String? name}) {
+    return Subcategory(name: name ?? this.name);
   }
-
 
   @override
   @ignore
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [name];
 }

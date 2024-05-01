@@ -16,12 +16,12 @@ part 'transfer_event.dart';
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
-  final TransactionsRepository _transactionsRepository;
+  final BudgetRepository _transactionsRepository;
   late StreamSubscription<List<Account>> _accountsSubscription;
   late StreamSubscription<List<Category>> _categoriesSubscription;
 
   TransferBloc({
-    required TransactionsRepository transactionsRepository,
+    required BudgetRepository transactionsRepository,
   })  : _transactionsRepository = transactionsRepository,
         super(TransferState()) {
     on<TransferEvent>(_onEvent, transformer: sequential());
@@ -132,9 +132,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       ..fromAccount.value = state.fromAccount
       ..toAccount.value = state.toAccount;
     try {
-      await state.editedTransfer == null
-          ? _transactionsRepository.createTransaction(transfer)
-          : _transactionsRepository.updateTransaction(transfer);
+      await _updateAccountsOnTransfer(
+          transfer: transfer, editedTransfer: state.editedTransfer);
+      await _transactionsRepository.saveTransaction(transfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransferFormLoaded())
@@ -149,5 +149,50 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     _accountsSubscription.cancel();
     _categoriesSubscription.cancel();
     return super.close();
+  }
+
+  Future<void> _updateAccountsOnTransfer(
+      {required Transaction transfer,
+      ComprehensiveTransaction? editedTransfer}) async {
+    List<Account> updatedAccounts = [];
+
+    final accounts = state.accounts;
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (editedTransfer != null) {
+      updatedAccounts = accounts.map((acc) {
+        if (acc.id == editedTransfer.fromAccount!.id) {
+          return acc.copyWith(balance: acc.balance + editedTransfer.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+      updatedAccounts = updatedAccounts.map((acc) {
+        if (acc.id == editedTransfer.toAccount!.id) {
+          return acc.copyWith(balance: acc.balance - editedTransfer.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...accounts];
+    }
+
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.fromAccount.value!.id) {
+        return acc.copyWith(balance: acc.balance - transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.toAccount.value!.id) {
+        return acc.copyWith(balance: acc.balance + transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    await _transactionsRepository.saveAccounts(updatedAccounts);
   }
 }

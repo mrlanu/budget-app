@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category.dart';
@@ -11,20 +11,20 @@ import '../models/account.dart';
 part 'accounts_state.dart';
 
 class AccountsCubit extends Cubit<AccountsState> {
-  final TransactionsRepository _transactionsRepository;
+  final BudgetRepository _transactionsRepository;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  AccountsCubit({required TransactionsRepository transactionsRepository})
+  AccountsCubit({required BudgetRepository transactionsRepository})
       : _transactionsRepository = transactionsRepository,
         super(AccountsState()) {
-    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
-      accountsChanged(accounts);
-    });
     _categoriesSubscription =
         _transactionsRepository.categories.listen((categories) {
           categoriesChanged(categories);
         });
+    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+      accountsChanged(accounts);
+    });
   }
 
   Future<void> accountsChanged(List<Account> accounts) async {

@@ -27,8 +27,14 @@ const CategorySchema = CollectionSchema(
       name: r'name',
       type: IsarType.string,
     ),
-    r'type': PropertySchema(
+    r'subcategoryList': PropertySchema(
       id: 2,
+      name: r'subcategoryList',
+      type: IsarType.objectList,
+      target: r'Subcategory',
+    ),
+    r'type': PropertySchema(
+      id: 3,
       name: r'type',
       type: IsarType.byte,
       enumMap: _CategorytypeEnumValueMap,
@@ -40,15 +46,8 @@ const CategorySchema = CollectionSchema(
   deserializeProp: _categoryDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'subcategoryList': LinkSchema(
-      id: -6006927310978149957,
-      name: r'subcategoryList',
-      target: r'Subcategory',
-      single: false,
-    )
-  },
-  embeddedSchemas: {},
+  links: {},
+  embeddedSchemas: {r'Subcategory': SubcategorySchema},
   getId: _categoryGetId,
   getLinks: _categoryGetLinks,
   attach: _categoryAttach,
@@ -62,6 +61,14 @@ int _categoryEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.subcategoryList.length * 3;
+  {
+    final offsets = allOffsets[Subcategory]!;
+    for (var i = 0; i < object.subcategoryList.length; i++) {
+      final value = object.subcategoryList[i];
+      bytesCount += SubcategorySchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
   return bytesCount;
 }
 
@@ -73,7 +80,13 @@ void _categorySerialize(
 ) {
   writer.writeLong(offsets[0], object.iconCode);
   writer.writeString(offsets[1], object.name);
-  writer.writeByte(offsets[2], object.type.index);
+  writer.writeObjectList<Subcategory>(
+    offsets[2],
+    allOffsets,
+    SubcategorySchema.serialize,
+    object.subcategoryList,
+  );
+  writer.writeByte(offsets[3], object.type.index);
 }
 
 Category _categoryDeserialize(
@@ -86,7 +99,14 @@ Category _categoryDeserialize(
     iconCode: reader.readLongOrNull(offsets[0]) ?? 0,
     id: id,
     name: reader.readStringOrNull(offsets[1]) ?? '',
-    type: _CategorytypeValueEnumMap[reader.readByteOrNull(offsets[2])] ??
+    subcategoryList: reader.readObjectList<Subcategory>(
+          offsets[2],
+          SubcategorySchema.deserialize,
+          allOffsets,
+          Subcategory(),
+        ) ??
+        const [],
+    type: _CategorytypeValueEnumMap[reader.readByteOrNull(offsets[3])] ??
         TransactionType.EXPENSE,
   );
   return object;
@@ -104,6 +124,14 @@ P _categoryDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 2:
+      return (reader.readObjectList<Subcategory>(
+            offset,
+            SubcategorySchema.deserialize,
+            allOffsets,
+            Subcategory(),
+          ) ??
+          const []) as P;
+    case 3:
       return (_CategorytypeValueEnumMap[reader.readByteOrNull(offset)] ??
           TransactionType.EXPENSE) as P;
     default:
@@ -129,13 +157,10 @@ Id _categoryGetId(Category object) {
 }
 
 List<IsarLinkBase<dynamic>> _categoryGetLinks(Category object) {
-  return [object.subcategoryList];
+  return [];
 }
 
-void _categoryAttach(IsarCollection<dynamic> col, Id id, Category object) {
-  object.subcategoryList
-      .attach(col, col.isar.collection<Subcategory>(), r'subcategoryList', id);
-}
+void _categoryAttach(IsarCollection<dynamic> col, Id id, Category object) {}
 
 extension CategoryQueryWhereSort on QueryBuilder<Category, Category, QWhere> {
   QueryBuilder<Category, Category, QAfterWhere> anyId() {
@@ -465,6 +490,95 @@ extension CategoryQueryFilter
     });
   }
 
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Category, Category, QAfterFilterCondition>
+      subcategoryListLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subcategoryList',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Category, Category, QAfterFilterCondition> typeEqualTo(
       TransactionType value) {
     return QueryBuilder.apply(this, (query) {
@@ -520,72 +634,17 @@ extension CategoryQueryFilter
 }
 
 extension CategoryQueryObject
-    on QueryBuilder<Category, Category, QFilterCondition> {}
-
-extension CategoryQueryLinks
     on QueryBuilder<Category, Category, QFilterCondition> {
-  QueryBuilder<Category, Category, QAfterFilterCondition> subcategoryList(
-      FilterQuery<Subcategory> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'subcategoryList');
-    });
-  }
-
   QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListLengthEqualTo(int length) {
+      subcategoryListElement(FilterQuery<Subcategory> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'subcategoryList', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'subcategoryList', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'subcategoryList', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'subcategoryList', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'subcategoryList', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Category, Category, QAfterFilterCondition>
-      subcategoryListLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'subcategoryList', lower, includeLower, upper, includeUpper);
+      return query.object(q, r'subcategoryList');
     });
   }
 }
+
+extension CategoryQueryLinks
+    on QueryBuilder<Category, Category, QFilterCondition> {}
 
 extension CategoryQuerySortBy on QueryBuilder<Category, Category, QSortBy> {
   QueryBuilder<Category, Category, QAfterSortBy> sortByIconCode() {
@@ -715,6 +774,13 @@ extension CategoryQueryProperty
   QueryBuilder<Category, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Category, List<Subcategory>, QQueryOperations>
+      subcategoryListProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'subcategoryList');
     });
   }
 

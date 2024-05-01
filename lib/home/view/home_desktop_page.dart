@@ -22,13 +22,13 @@ class HomeDesktopPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => TransactionBloc(
-            transactionsRepository: context.read<TransactionsRepository>(),
+            transactionsRepository: context.read<BudgetRepository>(),
           )..add(TransactionFormLoaded(
               transactionType: TransactionType.EXPENSE,)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
-            transactionsRepository: context.read<TransactionsRepository>(),
+            transactionsRepository: context.read<BudgetRepository>(),
           )..add(TransferFormLoaded()),
         ),
       ],

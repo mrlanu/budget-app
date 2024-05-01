@@ -1,37 +1,42 @@
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/theme/cubit/theme_cubit.dart';
-import '../../models/account.dart';
 import '../account_edit.dart';
 
 class AccountEditDialog extends StatelessWidget {
-  const AccountEditDialog({super.key, this.account});
+  const AccountEditDialog({super.key, this.accountId});
 
-  final Account? account;
+  final int? accountId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          AccountEditBloc(transactionsRepository: context.read<TransactionsRepository>())
-            ..add(AccountEditFormLoaded(account: account)),
-      child: AccountEditForm(),
+      create: (_) => AccountEditBloc(
+          transactionsRepository: context.read<BudgetRepository>()),
+      child: AccountEditForm(accountId: accountId,),
     );
   }
 }
 
 class AccountEditForm extends StatelessWidget {
+  AccountEditForm({this.accountId});
+
+  final int? accountId;
+
   @override
   Widget build(BuildContext context) {
-    final themeState = context.read<ThemeCubit>().state;
     final accStatus =
         context.select((AccountEditBloc bloc) => bloc.state.accStatus);
     return accStatus == AccountEditStatus.loading
-        ? Center(child: CircularProgressIndicator())
+        ? Builder(builder: (context) {
+            context.read<AccountEditBloc>()
+              ..add(AccountEditFormLoaded(accountId: accountId));
+            return Center(child: CircularProgressIndicator());
+          })
         : Center(
             child: SingleChildScrollView(
               child: Dialog(

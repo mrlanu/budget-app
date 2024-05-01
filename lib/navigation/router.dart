@@ -9,6 +9,8 @@ import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
 import '../settings/settings.dart';
+import '../subcategories/subcategory_edit/view/subcategory_edit_dialog.dart';
+import '../subcategories/view/subcategories_page.dart';
 
 GoRouter get router => _router;
 
@@ -25,9 +27,8 @@ final GoRouter _router = GoRouter(
     ShellRoute(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
-                  transactionsRepository:
-                      context.read<TransactionsRepository>(),)
-                ..initRequested(),
+                budgetRepository: context.read<BudgetRepository>(),
+              )..initRequested(),
               child: child,
             ),
         routes: [
@@ -95,11 +96,12 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
             final type = TransactionType
                 .values[int.parse(state.uri.queryParameters['typeIndex']!)];
+            final categoryId = state.pathParameters['id'];
             return DialogPage(
                 builder: (_) => CategoryEditDialog(
+                      categoryId: int.parse(categoryId!),
                       type: type,
                     ));
           },
@@ -109,36 +111,31 @@ final List<RouteBase> _individualRoutes = [
       path: '/subcategories',
       builder: (BuildContext context, GoRouterState state) {
         final catId = state.uri.queryParameters['categoryId']!;
-        return Scaffold();/*SubcategoriesPage(
-          category: category,
-        );*/
+        return SubcategoriesPage(
+          categoryId: int.parse(catId),
+        );
       },
       routes: [
         GoRoute(
           path: 'new',
           pageBuilder: (BuildContext context, GoRouterState state) {
             final catId = state.uri.queryParameters['categoryId']!;
-            /*final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);*/
             return DialogPage(
-                builder: (_) => Container());/*SubcategoryEditDialog(
-                      category: category,
-                    ));*/
+                builder: (_) => SubcategoryEditDialog(
+                      categoryId: int.parse(catId),
+                    ));
           },
         ),
         GoRoute(
-          path: 'edit/:id',
+          path: 'edit/:subcategoryName',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final catId = state.uri.queryParameters['categoryId']!;
-            /*final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);*/
-            /*final subcategory = category.subcategoryList
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);*/
+            final subcategoryName = state.pathParameters['subcategoryName']!;
+            final categoryId = state.uri.queryParameters['categoryId']!;
             return DialogPage(
-                builder: (_) => Container());/*SubcategoryEditDialog(
-                      category: category,
-                      subcategory: subcategory,
-                    ));*/
+                builder: (_) => SubcategoryEditDialog(
+                      categoryId: int.parse(categoryId),
+                      subcategoryName: subcategoryName,
+                    ));
           },
         ),
       ]),
@@ -157,13 +154,11 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
-            /*final acc = homeCubit.state.budget.accountList
-                .firstWhere((acc) => acc.id == state.pathParameters['id']!);*/
+            final accId = state.pathParameters['id'];
             return DialogPage(
-                builder: (_) => Container()/*AccountEditDialog(
-                      account: acc,
-                    )*/);
+                builder: (_) => AccountEditDialog(
+                      accountId: int.parse(accId!),
+                    ));
           },
         ),
       ]),

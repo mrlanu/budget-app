@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
@@ -15,17 +15,13 @@ part 'account_edit_event.dart';
 part 'account_edit_state.dart';
 
 class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
-  late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
-  final TransactionsRepository _transactionsRepository;
+  final BudgetRepository _transactionsRepository;
 
-  AccountEditBloc({required TransactionsRepository transactionsRepository})
+  AccountEditBloc({required BudgetRepository transactionsRepository})
       : _transactionsRepository = transactionsRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
-    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
-      add(AccountAccountsChanged(accounts: accounts));
-    });
     _categoriesSubscription =
         _transactionsRepository.categories.listen((categories) {
       add(AccountCategoriesChanged(categories: categories));
@@ -49,10 +45,10 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
-    if (event.account != null) {
-      Account account = event.account!;
+    if (event.accountId != null) {
+      final account = await _transactionsRepository.fetchAccountById(event.accountId!);
       emit(state.copyWith(
-          id: account.id,
+          id: account!.id,
           category: account.category.value,
           name: account.name,
           balance: Amount.dirty(account.balance.toString()),
@@ -105,22 +101,19 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   Future<void> _onFormSubmitted(
       AccountFormSubmitted event, Emitter<AccountEditState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    final isIdExist = state.id != null;
     final account = Account(
-        id: isIdExist ? state.id! : Isar.autoIncrement,
+        id: state.id?? Isar.autoIncrement,
         name: state.name!,
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals)
       ..category.value = state.category;
-    isIdExist
-        ? _transactionsRepository.updateAccount(account)
-        : _transactionsRepository.createAccount(account);
+    _transactionsRepository.saveAccount(account);
   }
 
   @override
   Future<void> close() {
-    _accountsSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

@@ -5,11 +5,11 @@ sealed class CategoryEditEvent extends Equatable {
 }
 
 final class CategoryEditFormLoaded extends CategoryEditEvent {
-  final Category? category;
+  final int? categoryId;
   final TransactionType type;
-  CategoryEditFormLoaded({this.category, required this.type});
+  CategoryEditFormLoaded({this.categoryId, required this.type});
   @override
-  List<Object?> get props => [category, type];
+  List<Object?> get props => [categoryId, type];
 }
 
 final class CategoryNameChanged extends CategoryEditEvent {

@@ -1,4 +1,4 @@
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,17 +10,15 @@ import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
-  const SubcategoriesPage({Key? key, required this.category}) : super(key: key);
+  const SubcategoriesPage({Key? key, required this.categoryId}) : super(key: key);
 
-  final Category category;
+  final int categoryId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SubcategoriesCubit(
-          transactionsRepository: context.read<TransactionsRepository>(),
-          category: category)
-        ..onInit(category: category),
+      create: (context) => SubcategoriesCubit(categoryId: categoryId,
+          transactionsRepository: context.read<BudgetRepository>()),
       child: SubcategoriesView(),
     );
   }
@@ -48,7 +46,7 @@ class SubcategoriesView extends StatelessWidget {
         final themeState = context.read<ThemeCubit>().state;
         return Scaffold(
           appBar: AppBar(
-            title: _buildTitle(state.category!),
+            title: state.category == null ? Text('') : _buildTitle(state.category!),
           ),
           body: Column(
             children: [
@@ -82,7 +80,7 @@ class SubcategoriesView extends StatelessWidget {
                         ),
                         trailing: Icon(Icons.chevron_right),
                         onTap: () {
-                          context.push('/subcategories/edit/${subcategory.id}'
+                          context.push('/subcategories/edit/${subcategory.name}'
                               '?categoryId=${state.category!.id}');
                         },
                       ),

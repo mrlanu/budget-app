@@ -8,26 +8,23 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
-import 'package:isar/isar.dart';
 
 import '../../accounts_list/models/account.dart';
 import '../../categories/models/category.dart';
 import '../../subcategories/models/subcategory.dart';
 import '../models/transaction.dart';
 import '../models/transaction_type.dart';
-import '../repository/transactions_repository.dart';
+import '../repository/budget_repository.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final TransactionsRepository _transactionsRepository;
+  final BudgetRepository _transactionsRepository;
   late StreamSubscription<List<Account>> _accountsSubscription;
   late StreamSubscription<List<Category>> _categoriesSubscription;
-  late StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
 
-  TransactionBloc(
-      {required TransactionsRepository transactionsRepository})
+  TransactionBloc({required BudgetRepository transactionsRepository})
       : _transactionsRepository = transactionsRepository,
         super(TransactionState()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
@@ -37,10 +34,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     _categoriesSubscription =
         _transactionsRepository.categories.listen((categories) {
       add(TransactionCategoriesChanged(categories: categories));
-    });
-    _subcategoriesSubscription =
-        _transactionsRepository.subcategories.listen((subcategories) {
-      add(TransactionSubcategoriesChanged(subcategories: subcategories));
     });
   }
 
@@ -153,17 +146,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
-        id: Isar.autoIncrement,
+        id: state.id,
         date: state.date ?? DateTime.now(),
         type: state.transactionType,
+        subcategory: state.subcategory!,
         amount: double.parse(state.amount.value))
       ..category.value = state.category
-      ..subcategory.value = state.subcategory
       ..fromAccount.value = state.account;
     try {
-      await state.editedTransaction == null
-          ? _transactionsRepository.createTransaction(transaction)
-          : _transactionsRepository.updateTransaction(transaction);
+      await _updateAccountsOnAddOrEditTransaction(
+          transaction: transaction,
+          oldTransaction: state.editedTransaction);
+      await _transactionsRepository.saveTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       isDisplayDesktop(event.context!)
           ? add(TransactionFormLoaded(transactionType: transaction.type))
@@ -177,7 +171,43 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> close() {
     _accountsSubscription.cancel();
     _categoriesSubscription.cancel();
-    _subcategoriesSubscription.cancel();
     return super.close();
+  }
+
+  Future<void> _updateAccountsOnAddOrEditTransaction(
+      {required Transaction transaction, ComprehensiveTransaction? oldTransaction}) async {
+    List<Account> updatedAccounts = [];
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (oldTransaction != null) {
+      updatedAccounts = state.accounts.map((acc) {
+        if (acc.id == oldTransaction.fromAccount!.id) {
+          return acc.copyWith(
+              category: acc.category,
+              balance: acc.balance +
+                  (oldTransaction.type == TransactionType.EXPENSE
+                      ? oldTransaction.amount
+                      : -oldTransaction.amount));
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...state.accounts];
+    }
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.fromAccount.value!.id) {
+        return acc.copyWith(
+            category: acc.category,
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? -transaction.amount
+                    : transaction.amount));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    await _transactionsRepository.saveAccounts(updatedAccounts);
   }
 }

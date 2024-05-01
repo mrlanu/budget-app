@@ -18,8 +18,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<TransactionsRepository>(
-            create: (context) => TransactionRepoIsarImpl(isar: isar)),
+        RepositoryProvider<BudgetRepository>(
+            create: (context) => BudgetRepoIsarImpl(isar: isar)),
       ],
       child: MultiBlocProvider(
         providers: [

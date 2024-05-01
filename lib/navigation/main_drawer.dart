@@ -2,12 +2,12 @@ import 'package:budget_app/charts/view/category_chart_page.dart';
 import 'package:budget_app/charts/view/trend_chart_page.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
+import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../auth/auth.dart';
 import '../constants/colors.dart';
 import '../summary/view/summary_page.dart';
 import '../utils/theme/budget_theme.dart';
@@ -99,20 +99,20 @@ class _MainDrawerState extends State<MainDrawer> {
                     ),
                     Divider(color: themeState.primaryColor[200]),
                     ListTile(
-                      leading: FaIcon(FontAwesomeIcons.rightFromBracket,
+                      leading: FaIcon(FontAwesomeIcons.trashCan,
                           color: _getColor()),
-                      title: Text('Log out',
+                      title: Text('Delete budget',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
                               .copyWith(color: _getColor())),
                       onTap: () {
                         context
-                            .read<AuthBloc>()
-                            .add(const AuthLogoutRequested());
+                            .read<HomeCubit>()
+                            .deleteBudget();
                       },
                     ),
-                    Divider(color: themeState.primaryColor[200])
+                    Divider(color: themeState.primaryColor[200]),
                   ],
                 ),
               ),

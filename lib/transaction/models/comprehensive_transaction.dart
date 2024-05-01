@@ -32,18 +32,19 @@ class ComprehensiveTransaction extends Equatable {
       required this.description});
 
   Transaction toTransaction() {
-    return Transaction.fromComprehensive(
-            id: id,
-            dateTime: dateTime,
-            amount: amount,
-            description: description,
-            type: type,
-            fromAcc: fromAccount,
-            toAcc: toAccount,
-            category: category,
-            subcategory: subcategory);
+    return Transaction.fromComprehensive(comprehensiveTransaction: this);
   }
 
   @override
-  List<Object?> get props => [id, amount, fromAccount, toAccount, dateTime];
+  List<Object?> get props => [
+        id,
+        amount,
+        fromAccount,
+        toAccount,
+        category,
+        subcategory,
+        description,
+        toAccount,
+        dateTime
+      ];
 }

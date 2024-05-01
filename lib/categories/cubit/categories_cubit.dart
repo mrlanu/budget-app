@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/transaction/repository/transactions_repository.dart';
+import 'package:budget_app/transaction/repository/budget_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../transaction/models/transaction_type.dart';
@@ -10,11 +10,11 @@ import '../models/category.dart';
 part 'categories_state.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
-  late final TransactionsRepository _transactionsRepository;
+  late final BudgetRepository _transactionsRepository;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   CategoriesCubit(
-      {required TransactionsRepository transactionsRepository,
+      {required BudgetRepository transactionsRepository,
       required TransactionType transactionType})
       : _transactionsRepository = transactionsRepository,
         super(CategoriesState(transactionType: transactionType)) {

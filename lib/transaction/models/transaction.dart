@@ -19,37 +19,30 @@ class Transaction {
   final toAccount = IsarLink<Account>();
   final String? description;
   final category = IsarLink<Category>();
-  final subcategory = IsarLink<Subcategory>();
+  final Subcategory? subcategory;
 
   Transaction({
     required this.id,
     required this.date,
     required this.amount,
     this.type = TransactionType.EXPENSE,
+    this.subcategory,
     this.description = '',
   });
 
   factory Transaction.fromComprehensive(
-      {Id? id,
-      required TransactionType type,
-      DateTime? dateTime,
-      double? amount,
-      Account? fromAcc,
-      Account? toAcc,
-      Category? category,
-      Subcategory? subcategory,
-      String? description}) {
+      {required ComprehensiveTransaction comprehensiveTransaction}) {
     return Transaction(
-      id: null,
-      type: type,
-      date: dateTime ?? DateTime.now(),
-      amount: amount ?? 0,
-      description: description,
+      id: comprehensiveTransaction.id,
+      type: comprehensiveTransaction.type,
+      date: comprehensiveTransaction.dateTime,
+      amount: comprehensiveTransaction.amount,
+      subcategory: comprehensiveTransaction.subcategory,
+      description: comprehensiveTransaction.description,
     )
-      ..fromAccount.value = fromAcc
-      ..toAccount.value = toAcc
-      ..category.value = category
-      ..subcategory.value = subcategory;
+      ..fromAccount.value = comprehensiveTransaction.fromAccount
+      ..toAccount.value = comprehensiveTransaction.toAccount
+      ..category.value = comprehensiveTransaction.category;
   }
 
   List<ComprehensiveTransaction> toTile() {
@@ -59,19 +52,19 @@ class Transaction {
           ComprehensiveTransaction(
               type: this.type,
               amount: this.amount,
-              title: subcategory.value!.name,
+              title: subcategory!.name,
               subtitle: fromAccount.value!.name,
               dateTime: date,
               description: description!,
               category: category.value,
-              subcategory: subcategory.value,
+              subcategory: subcategory,
               fromAccount: fromAccount.value,
-              id: id!.sign)
+              id: id!)
         ];
       case TransactionType.TRANSFER:
         return [
           ComprehensiveTransaction(
-            id: id!.sign,
+            id: id!,
             type: TransactionType.TRANSFER,
             amount: this.amount,
             title: 'Transfer in',
@@ -95,5 +88,28 @@ class Transaction {
       case _:
         return [];
     }
+  }
+
+  Transaction copyWith({
+    int? id,
+    DateTime? date,
+    TransactionType? type,
+    double? amount,
+    IsarLink<Account>? fromAccount,
+    IsarLink<Account>? toAccount,
+    String? description,
+    IsarLink<Category>? category,
+    Subcategory? subcategory,
+  }) {
+    return Transaction(
+        id: id ?? this.id,
+        date: date ?? this.date,
+        type: type ?? this.type,
+        subcategory: subcategory ?? this.subcategory,
+        description: description ?? this.description,
+        amount: amount ?? this.amount)
+      ..fromAccount.value = fromAccount?.value ?? this.fromAccount.value
+      ..toAccount.value = toAccount?.value ?? this.toAccount.value
+      ..category.value = category?.value ?? this.category.value;
   }
 }
