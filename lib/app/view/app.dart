@@ -1,3 +1,4 @@
+import 'package:budget_app/summary/repository/summary_repository.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,8 @@ class App extends StatelessWidget {
       providers: [
         RepositoryProvider<BudgetRepository>(
             create: (context) => BudgetRepoIsarImpl(isar: isar)),
+        RepositoryProvider<SummaryRepository>(
+            create: (context) => SummaryRepository(isar: isar)),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -46,23 +49,23 @@ class _AppViewState extends State<AppView> {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
     return BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, state) {
-            _setSystemUIOverlayStyle(state.primaryColor);
-            return MaterialApp.router(
-              routerConfig: router,
-              debugShowCheckedModeBanner: false,
-              themeMode: ThemeMode.values[state.mode],
-              theme: BudgetTheme(seedColors: (
-                primaryColor: state.primaryColor,
-                secondaryColor: state.secondaryColor
-              )).lightTheme,
-              darkTheme: BudgetTheme(seedColors: (
-                primaryColor: state.primaryColor,
-                secondaryColor: state.secondaryColor
-              )).darkTheme,
-            );
-          },
+      builder: (context, state) {
+        _setSystemUIOverlayStyle(state.primaryColor);
+        return MaterialApp.router(
+          routerConfig: router,
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.values[state.mode],
+          theme: BudgetTheme(seedColors: (
+            primaryColor: state.primaryColor,
+            secondaryColor: state.secondaryColor
+          )).lightTheme,
+          darkTheme: BudgetTheme(seedColors: (
+            primaryColor: state.primaryColor,
+            secondaryColor: state.secondaryColor
+          )).darkTheme,
         );
+      },
+    );
   }
 }
 

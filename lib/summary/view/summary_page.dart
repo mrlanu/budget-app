@@ -1,9 +1,10 @@
-import 'package:cache/cache.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:network/network.dart';
+import 'dart:core';
 
-import '../../constants/api.dart';
+import 'package:budget_app/summary/repository/summary_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
 import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
 
@@ -20,66 +21,48 @@ class SummaryPage extends StatelessWidget {
   }
 }
 
-class SummaryViewMobile extends StatefulWidget {
+class SummaryViewMobile extends StatelessWidget {
   const SummaryViewMobile({super.key});
-
-  @override
-  State<SummaryViewMobile> createState() => _SummaryViewMobileState();
-}
-
-class _SummaryViewMobileState extends State<SummaryViewMobile> {
-  late List<double> _data;
-
-  @override
-  void initState() {
-    super.initState();
-    _data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    try {
-      final response = await NetworkClient.instance.get<List<dynamic>>(
-          baseURL + '/api/summary',
-          queryParameters: {'budgetId': await Cache.instance.getBudgetId(),});
-      final result = (response.data!).map((e) => e as double).toList();
-      setState(() {
-        _data = result;
-      });
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(title: Text('Summary')),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SummaryTile(
-                title: 'Year: ${DateFormat('yyyy').format(DateTime.now())}',
-                income: _data[0],
-                expenses: _data[1]),
-            SummaryTile(
-                title:
-                    'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
-                income: _data[2],
-                expenses: _data[3]),
-            SummaryTile(
-                title:
-                    'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
-                income: _data[4],
-                expenses: _data[5]),
-            SummaryTile(
-                title:
-                    'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
-                income: _data[6],
-                expenses: _data[7]),
-          ],
-        ),
+      body: FutureBuilder(
+        future: context.read<SummaryRepository>().getSummary(),
+        builder: (BuildContext context, AsyncSnapshot<List<double>> snapshot) {
+          return snapshot.hasData
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SummaryTile(
+                          title:
+                              'Year: ${DateFormat('yyyy').format(DateTime.now())}',
+                          income: snapshot.data![1],
+                          expenses: snapshot.data![0]),
+                      SummaryTile(
+                          title:
+                              'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
+                          income: snapshot.data![3],
+                          expenses: snapshot.data![2]),
+                      SummaryTile(
+                          title:
+                              'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
+                          income: snapshot.data![5],
+                          expenses: snapshot.data![4]),
+                      SummaryTile(
+                          title:
+                              'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
+                          income: snapshot.data![7],
+                          expenses: snapshot.data![6]),
+                    ],
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
+        },
       ),
     ));
   }
@@ -118,8 +101,8 @@ class SummaryTile extends StatelessWidget {
                       Text('Income', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${income.toStringAsFixed(2)}',
-                          style:
-                              textStyle!.copyWith(color: BudgetTheme.isDarkMode(context)
+                          style: textStyle!.copyWith(
+                              color: BudgetTheme.isDarkMode(context)
                                   ? BudgetColors.lightContainer
                                   : BudgetColors.primary)),
                     ],
@@ -143,8 +126,8 @@ class SummaryTile extends StatelessWidget {
                               color: (income - expenses) < 0
                                   ? BudgetColors.error
                                   : BudgetTheme.isDarkMode(context)
-                                  ? BudgetColors.lightContainer
-                                  : BudgetColors.primary)),
+                                      ? BudgetColors.lightContainer
+                                      : BudgetColors.primary)),
                     ],
                   )
                 ],
