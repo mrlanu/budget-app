@@ -61,6 +61,10 @@ class SummaryRepository {
   }
 
   Map<TransactionType, List<Transaction>> _groupTransaction(
-          List<Transaction> transactions) =>
-      groupBy(transactions, (Transaction tr) => tr.type);
+          List<Transaction> transactions) {
+    final grouped = groupBy(transactions, (Transaction tr) => tr.type);
+    grouped.putIfAbsent(TransactionType.INCOME, () => []);
+    grouped.putIfAbsent(TransactionType.EXPENSE, () => []);
+    return grouped;
+  }
 }

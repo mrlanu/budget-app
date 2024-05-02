@@ -1,48 +1,83 @@
+import 'package:budget_app/categories/models/category.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
-import 'package:cache/cache.dart';
-import 'package:network/network.dart';
-
-import '../../constants/api.dart';
+import 'package:budget_app/transaction/models/models.dart';
+import 'package:collection/collection.dart';
+import 'package:isar/isar.dart';
 
 abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
 
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId);
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId);
 }
 
 class ChartRepositoryImpl extends ChartRepository {
-  ChartRepositoryImpl({NetworkClient? networkClient})
-      : _networkClient = networkClient ?? NetworkClient.instance;
+  ChartRepositoryImpl({required Isar isar}) : _isar = isar;
 
-  final NetworkClient _networkClient;
+  final Isar _isar;
 
   @override
   Future<List<YearMonthSum>> fetchTrendChartData() async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/trend-chart',
-          queryParameters: {'budgetId': await Cache.instance.getBudgetId()});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+    final result = <YearMonthSum>[];
+    final datesRange = _getDatesRange();
+    var transactionsForYear =
+        await _findAllTransactionsByDateBetween(datesRange.start, datesRange.end);
+    final groupedTrs =
+        groupBy(transactionsForYear, (Transaction tr) => tr.date.month);
+    for (var i = 0; i <= 11; i++) {
+      final month = datesRange.start.copyWith(month: datesRange.start.month + i);
+      final trs = groupedTrs[month.month] ?? [];
+      final double sumExpenses = trs
+          .where((t) => t.type == TransactionType.EXPENSE)
+          .fold<double>(
+              0.0, (previousValue, element) => previousValue + element.amount);
+      final double sumIncomes = trs
+          .where((t) => t.type == TransactionType.INCOME)
+          .fold<double>(
+              0.0, (previousValue, element) => previousValue + element.amount);
+      result.add(YearMonthSum(
+          date: '${month.year}-${month.month}',
+          expenseSum: sumExpenses,
+          incomeSum: sumIncomes));
     }
+
+    return result;
+  }
+
+  Future<List<Transaction>> _findAllTransactionsByDateBetween(
+      DateTime start, DateTime end) async {
+    return _isar.transactions.filter().dateBetween(start, end).findAll();
   }
 
   @override
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId) async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/category-chart',
-          queryParameters: {'categoryId': categoryId});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) async {
+    final result = <YearMonthSum>[];
+    final datesRange = _getDatesRange();
+    final categoryTrs = await _isar.transactions
+        .filter()
+        .dateBetween(datesRange.start, datesRange.end)
+        .category((c) => c.idEqualTo(categoryId))
+        .findAll();
+    final groupedTrs = groupBy(categoryTrs, (Transaction tr) => tr.date.month);
+    for (var i = 0; i <= 11; i++) {
+      final month = datesRange.start.copyWith(month: datesRange.start.month + i);
+      final trs = groupedTrs[month.month] ?? [];
+      final double sumExpenses = trs
+          .fold<double>(
+          0.0, (previousValue, element) => previousValue + element.amount);
+      result.add(YearMonthSum(
+          date: '${month.year}-${month.month}',
+          expenseSum: sumExpenses,
+          incomeSum: 0.0));
     }
+    return result;
+  }
+
+  DateRange _getDatesRange(){
+  var now = DateTime.now().toLocal();
+  final start = DateTime(now.year - 1, now.month + 1, now.day);
+  final end = DateTime(now.year, now.month, now.day + 1);
+  return (start: start, end: end);
   }
 }
+
+typedef DateRange = ({DateTime start, DateTime end});

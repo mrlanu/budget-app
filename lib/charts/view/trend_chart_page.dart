@@ -1,31 +1,39 @@
 import 'package:budget_app/charts/cubit/chart_cubit.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../charts.dart';
 
-class TrendChartPage extends StatelessWidget {
+class TrendChartPage extends StatefulWidget {
   const TrendChartPage({super.key});
 
-  static Route<void> route() {
-    final _repo = ChartRepositoryImpl();
-    return MaterialPageRoute(
-      builder: (context) => BlocProvider(
-        create: (context) => ChartCubit(
-          chartRepository: _repo,
-        )..fetchTrendChart(),
-        child: TrendChartPage(),
-      ),
-    );
+  @override
+  State<TrendChartPage> createState() => _TrendChartPageState();
+}
+
+class _TrendChartPageState extends State<TrendChartPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ChartCubit>().fetchTrendChart();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Trend for last 12 months')),
+      appBar: AppBar(
+        title: Text('Trend for last 12 months'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            context.pop();
+          },
+        ),
+      ),
       body: BlocBuilder<ChartCubit, ChartState>(
         builder: (context, state) {
           return Center(
@@ -65,12 +73,7 @@ class TrendChartDesktopView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _repo = ChartRepositoryImpl();
-    return BlocProvider(
-        create: (context) => ChartCubit(
-              chartRepository: _repo,
-            )..fetchTrendChart(),
-        child: TrendChartDesktopViewBody());
+    return TrendChartDesktopViewBody();
   }
 }
 

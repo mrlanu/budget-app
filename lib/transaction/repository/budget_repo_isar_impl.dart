@@ -93,6 +93,11 @@ class BudgetRepoIsarImpl implements BudgetRepository {
   }
 
   @override
+  Future<List<Category>> fetchAllCategory() async {
+    return isar.categorys.where().findAll();
+  }
+
+  @override
   Future<void> saveAccounts(List<Account> updatedAccounts) async {
     await isar.writeTxn(() async {
       await isar.accounts.putAll(updatedAccounts);

@@ -1,27 +1,26 @@
 import 'package:budget_app/charts/cubit/chart_cubit.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/charts/view/category_table.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../categories/models/category.dart';
 import '../charts.dart';
 
-class CategoryChartPage extends StatelessWidget {
+class CategoryChartPage extends StatefulWidget {
   const CategoryChartPage({super.key});
 
-  static Route<void> route() {
-    final _repo = ChartRepositoryImpl();
-    return MaterialPageRoute(
-      builder: (context) => BlocProvider(
-        create: (context) => ChartCubit(
-          chartRepository: _repo,
-        )..fetchCategoryChart(),
-        child: CategoryChartPage(),
-      ),
-    );
+  @override
+  State<CategoryChartPage> createState() => _CategoryChartPageState();
+}
+
+class _CategoryChartPageState extends State<CategoryChartPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ChartCubit>().fetchCategoryChart();
   }
 
   @override
@@ -30,6 +29,12 @@ class CategoryChartPage extends StatelessWidget {
       builder: (context, state) => Scaffold(
           appBar: AppBar(
               title: Text(state.category?.name ?? ''),
+              leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  context.pop();
+                },
+              ),
               actions: [CategoryTypeSelectButton()]),
           body: Center(
               child: state.status == ChartStatus.loading
@@ -68,12 +73,7 @@ class TrendChartDesktopView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _repo = ChartRepositoryImpl();
-    return BlocProvider(
-        create: (context) => ChartCubit(
-              chartRepository: _repo,
-            )..fetchTrendChart(),
-        child: TrendChartDesktopViewBody());
+    return TrendChartDesktopViewBody();
   }
 }
 

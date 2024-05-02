@@ -3,19 +3,22 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
+import 'package:budget_app/transaction/transaction.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/models/category.dart';
-import '../../transaction/models/transaction_type.dart';
 
 part 'chart_state.dart';
 
 class ChartCubit extends Cubit<ChartState> {
   final ChartRepository _chartRepository;
+  final BudgetRepository _budgetRepository;
 
   ChartCubit(
-      {required ChartRepository chartRepository,})
+      {required ChartRepository chartRepository,
+      required BudgetRepository budgetRepository})
       : _chartRepository = chartRepository,
+        _budgetRepository = budgetRepository,
         super(ChartState());
 
   Future<void> changeCategory({required Category category}) async {
@@ -29,7 +32,7 @@ class ChartCubit extends Cubit<ChartState> {
   }
 
   Future<void> fetchCategoryChart([Category? category]) async {
-    final filteredCategories = []
+    final filteredCategories = (await _budgetRepository.fetchAllCategory())
         .where((cat) =>
             cat.type ==
             (state.categoryType == 'Expenses'
@@ -37,11 +40,11 @@ class ChartCubit extends Cubit<ChartState> {
                 : TransactionType.INCOME))
         .toList();
     final chartData = await _chartRepository
-        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id);
+        .fetchCategoryChartData(category?.id ?? filteredCategories[0].id!);
     emit(state.copyWith(
         status: ChartStatus.success,
         data: chartData,
-        categories: [],
+        categories: filteredCategories,
         category: category != null ? category : filteredCategories[0]));
   }
 

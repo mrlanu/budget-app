@@ -29,6 +29,7 @@ abstract class BudgetRepository {
   Future<void> saveAccounts(List<Account> updatedAccounts);
 
   Future<void> saveCategory(Category category);
+  Future<List<Category>> fetchAllCategory();
 
   Stream<Category?> watchCategoryById(int categoryId);
 

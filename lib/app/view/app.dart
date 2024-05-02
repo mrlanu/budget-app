@@ -1,3 +1,4 @@
+import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/summary/repository/summary_repository.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ class App extends StatelessWidget {
             create: (context) => BudgetRepoIsarImpl(isar: isar)),
         RepositoryProvider<SummaryRepository>(
             create: (context) => SummaryRepository(isar: isar)),
+        RepositoryProvider<ChartRepository>(
+            create: (context) => ChartRepositoryImpl(isar: isar)),
       ],
       child: MultiBlocProvider(
         providers: [

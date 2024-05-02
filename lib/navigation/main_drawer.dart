@@ -1,7 +1,3 @@
-import 'package:budget_app/charts/view/category_chart_page.dart';
-import 'package:budget_app/charts/view/trend_chart_page.dart';
-import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../constants/colors.dart';
-import '../summary/view/summary_page.dart';
 import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
 
@@ -32,7 +27,9 @@ class _MainDrawerState extends State<MainDrawer> {
           DrawerHeader(
               child: Container(
                   width: double.infinity,
-                  child: Image.asset('assets/images/piggy_bank.png',))),
+                  child: Image.asset(
+                    'assets/images/piggy_bank.png',
+                  ))),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -51,7 +48,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         title: 'Summary',
                         icon:
                             FaIcon(FontAwesomeIcons.listUl, color: _getColor()),
-                        route: SummaryPage.route()),
+                        path: '/summary'),
                     Divider(color: themeState.primaryColor[200]),
                     ExpansionTile(
                       shape: Border.all(color: Colors.transparent),
@@ -74,14 +71,14 @@ class _MainDrawerState extends State<MainDrawer> {
                                 menuIndex: 2,
                                 title: 'Trend',
                                 icon: null,
-                                route: TrendChartPage.route())),
+                                path: '/trend')),
                         Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: _buildMenuItem(
                                 menuIndex: 2,
                                 title: 'Sum by Category',
                                 icon: null,
-                                route: CategoryChartPage.route())),
+                                path: '/category-chart')),
                       ],
                     ),
                     Divider(color: themeState.primaryColor[200]),
@@ -90,26 +87,28 @@ class _MainDrawerState extends State<MainDrawer> {
                         title: 'Debt payoff planner',
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: _getColor()),
-                        route: DebtPayoffPage.route()),
+                        path: '/debt-payoff'),
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                       menuIndex: 4,
                       title: 'Settings',
-                      icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
+                      icon: FaIcon(
+                        FontAwesomeIcons.gear,
+                        color: _getColor(),
+                      ),
+                      path: '/settings',
                     ),
                     Divider(color: themeState.primaryColor[200]),
                     ListTile(
-                      leading: FaIcon(FontAwesomeIcons.trashCan,
-                          color: _getColor()),
+                      leading:
+                          FaIcon(FontAwesomeIcons.trashCan, color: _getColor()),
                       title: Text('Delete budget',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
                               .copyWith(color: _getColor())),
                       onTap: () {
-                        context
-                            .read<HomeCubit>()
-                            .deleteBudget();
+                        context.read<HomeCubit>().deleteBudget();
                       },
                     ),
                     Divider(color: themeState.primaryColor[200]),
@@ -127,30 +126,21 @@ class _MainDrawerState extends State<MainDrawer> {
       {required int menuIndex,
       required String title,
       required Widget? icon,
-      Route? route}) {
+      required String path}) {
     return ListTile(
-        tileColor: widget.tabController?.index == menuIndex
-            ? BudgetColors.light
-            : null,
-        leading: icon,
-        title: Text(title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: _getColor())),
-        onTap: route != null
-            ? () {
-                isDisplayDesktop(context)
-                    ? {widget.tabController?.index = menuIndex, setState(() {})}
-                    : {
-                        Navigator.of(context).pop(),
-                        Navigator.of(context).push(route)
-                      };
-              }
-            : () {
-                context.pop();
-                context.push('/settings');
-              });
+      tileColor:
+          widget.tabController?.index == menuIndex ? BudgetColors.light : null,
+      leading: icon,
+      title: Text(title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: _getColor())),
+      onTap: () {
+        context.pop();
+        context.push('$path');
+      },
+    );
   }
 
   Color _getColor() {
