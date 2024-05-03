@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/transaction/models/comprehensive_transaction.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -20,19 +19,19 @@ part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
   late StreamSubscription<List<Account>> _accountsSubscription;
   late StreamSubscription<List<Category>> _categoriesSubscription;
 
-  TransactionBloc({required BudgetRepository transactionsRepository})
-      : _transactionsRepository = transactionsRepository,
+  TransactionBloc({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(TransactionState()) {
     on<TransactionEvent>(_onEvent, transformer: sequential());
-    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+    _accountsSubscription = _budgetRepository.accounts.listen((accounts) {
       add(TransactionAccountsChanged(accounts: accounts));
     });
     _categoriesSubscription =
-        _transactionsRepository.categories.listen((categories) {
+        _budgetRepository.categories.listen((categories) {
       add(TransactionCategoriesChanged(categories: categories));
     });
   }
@@ -157,11 +156,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       await _updateAccountsOnAddOrEditTransaction(
           transaction: transaction,
           oldTransaction: state.editedTransaction);
-      await _transactionsRepository.saveTransaction(transaction);
+      await _budgetRepository.saveTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(transactionType: transaction.type))
-          : Navigator.of(event.context!).pop();
+      Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
@@ -208,6 +205,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     }).toList();
 
-    await _transactionsRepository.saveAccounts(updatedAccounts);
+    await _budgetRepository.saveAccounts(updatedAccounts);
   }
 }

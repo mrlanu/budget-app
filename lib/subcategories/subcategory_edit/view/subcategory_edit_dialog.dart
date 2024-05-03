@@ -16,7 +16,7 @@ class SubcategoryEditDialog extends StatelessWidget {
     return BlocProvider(
       create: (_) => SubcategoryEditBloc(
           categoryId: categoryId,
-          transactionsRepository: context.read<BudgetRepository>())
+          budgetRepository: context.read<BudgetRepository>())
         ..add(SubcategoryEditFormLoaded(
             categoryId: categoryId, subcategoryName: subcategoryName)),
       child: SubcategoryEditForm(),

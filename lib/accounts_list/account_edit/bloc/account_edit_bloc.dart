@@ -16,14 +16,14 @@ part 'account_edit_state.dart';
 
 class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   late final StreamSubscription<List<Category>> _categoriesSubscription;
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
 
-  AccountEditBloc({required BudgetRepository transactionsRepository})
-      : _transactionsRepository = transactionsRepository,
+  AccountEditBloc({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
     _categoriesSubscription =
-        _transactionsRepository.categories.listen((categories) {
+        _budgetRepository.categories.listen((categories) {
       add(AccountCategoriesChanged(categories: categories));
     });
   }
@@ -46,7 +46,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
     if (event.accountId != null) {
-      final account = await _transactionsRepository.fetchAccountById(event.accountId!);
+      final account = await _budgetRepository.fetchAccountById(event.accountId!);
       emit(state.copyWith(
           id: account!.id,
           category: account.category.value,
@@ -108,7 +108,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals)
       ..category.value = state.category;
-    _transactionsRepository.saveAccount(account);
+    _budgetRepository.saveAccount(account);
   }
 
   @override

@@ -18,7 +18,7 @@ class CategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => CategoriesCubit(
-          transactionsRepository: context.read<BudgetRepository>(),
+          budgetRepository: context.read<BudgetRepository>(),
           transactionType: transactionType),
       child: CategoriesView(),
     );

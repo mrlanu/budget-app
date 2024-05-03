@@ -11,18 +11,18 @@ import '../models/account.dart';
 part 'accounts_state.dart';
 
 class AccountsCubit extends Cubit<AccountsState> {
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
   late final StreamSubscription<List<Account>> _accountsSubscription;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
-  AccountsCubit({required BudgetRepository transactionsRepository})
-      : _transactionsRepository = transactionsRepository,
+  AccountsCubit({required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(AccountsState()) {
     _categoriesSubscription =
-        _transactionsRepository.categories.listen((categories) {
+        _budgetRepository.categories.listen((categories) {
           categoriesChanged(categories);
         });
-    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+    _accountsSubscription = _budgetRepository.accounts.listen((accounts) {
       accountsChanged(accounts);
     });
   }

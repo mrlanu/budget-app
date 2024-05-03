@@ -9,27 +9,26 @@ import 'package:formz/formz.dart';
 
 import '../../accounts_list/models/account.dart';
 import '../../categories/models/category.dart';
-import '../../constants/constants.dart';
 import '../../transaction/transaction.dart';
 
 part 'transfer_event.dart';
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
   late StreamSubscription<List<Account>> _accountsSubscription;
   late StreamSubscription<List<Category>> _categoriesSubscription;
 
   TransferBloc({
-    required BudgetRepository transactionsRepository,
-  })  : _transactionsRepository = transactionsRepository,
+    required BudgetRepository budgetRepository,
+  })  : _budgetRepository = budgetRepository,
         super(TransferState()) {
     on<TransferEvent>(_onEvent, transformer: sequential());
-    _accountsSubscription = _transactionsRepository.accounts.listen((accounts) {
+    _accountsSubscription = _budgetRepository.accounts.listen((accounts) {
       add(TransferAccountsChanged(accounts: accounts));
     });
     _categoriesSubscription =
-        _transactionsRepository.categories.listen((categories) {
+        _budgetRepository.categories.listen((categories) {
       add(TransferCategoriesChanged(categories: categories));
     });
   }
@@ -134,11 +133,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     try {
       await _updateAccountsOnTransfer(
           transfer: transfer, editedTransfer: state.editedTransfer);
-      await _transactionsRepository.saveTransaction(transfer);
+      await _budgetRepository.saveTransaction(transfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      isDisplayDesktop(event.context!)
-          ? add(TransferFormLoaded())
-          : Navigator.of(event.context!).pop();
+      Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
@@ -193,6 +190,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }
     }).toList();
 
-    await _transactionsRepository.saveAccounts(updatedAccounts);
+    await _budgetRepository.saveAccounts(updatedAccounts);
   }
 }

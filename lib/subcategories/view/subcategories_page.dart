@@ -18,7 +18,7 @@ class SubcategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubcategoriesCubit(categoryId: categoryId,
-          transactionsRepository: context.read<BudgetRepository>()),
+          budgetRepository: context.read<BudgetRepository>()),
       child: SubcategoriesView(),
     );
   }

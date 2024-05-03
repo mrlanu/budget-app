@@ -17,7 +17,7 @@ class TransactionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TransactionBloc(
-          transactionsRepository: context.read<BudgetRepository>(),)
+          budgetRepository: context.read<BudgetRepository>(),)
         ..add(TransactionFormLoaded(
           transaction: transaction,
           transactionType: transactionType,

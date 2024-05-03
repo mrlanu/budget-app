@@ -14,12 +14,12 @@ part 'subcategory_edit_state.dart';
 
 class SubcategoryEditBloc
     extends Bloc<SubcategoryEditEvent, SubcategoryEditState> {
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
 
   SubcategoryEditBloc(
       {required int categoryId,
-      required BudgetRepository transactionsRepository})
-      : _transactionsRepository = transactionsRepository,
+      required BudgetRepository budgetRepository})
+      : _budgetRepository = budgetRepository,
         super(SubcategoryEditState()) {
     on<SubcategoryEditEvent>(_onEvent, transformer: sequential());
   }
@@ -36,7 +36,7 @@ class SubcategoryEditBloc
   Future<void> _onFormLoaded(SubcategoryEditFormLoaded event,
       Emitter<SubcategoryEditState> emit) async {
     final category =
-    await _transactionsRepository.fetchCategoryById(event.categoryId);
+    await _budgetRepository.fetchCategoryById(event.categoryId);
     if (event.subcategoryName != null) {
       final index = category!.subcategoryList
           .indexWhere((s) => s.name == event.subcategoryName);
@@ -66,7 +66,7 @@ class SubcategoryEditBloc
     state.position != null
         ? subcategories[state.position!] = subcategory
         : subcategories.add(subcategory);
-    _transactionsRepository
+    _budgetRepository
         .saveCategory(state.category!.copyWith(subcategoryList: subcategories));
   }
 

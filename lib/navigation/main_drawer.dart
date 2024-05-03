@@ -81,13 +81,13 @@ class _MainDrawerState extends State<MainDrawer> {
                                 path: '/category-chart')),
                       ],
                     ),
-                    Divider(color: themeState.primaryColor[200]),
+                    /*Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                         menuIndex: 3,
                         title: 'Debt payoff planner',
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: _getColor()),
-                        path: '/debt-payoff'),
+                        path: '/debt-payoff'),*/
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                       menuIndex: 4,

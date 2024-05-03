@@ -10,16 +10,16 @@ import '../models/category.dart';
 part 'categories_state.dart';
 
 class CategoriesCubit extends Cubit<CategoriesState> {
-  late final BudgetRepository _transactionsRepository;
+  late final BudgetRepository _budgetRepository;
   late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   CategoriesCubit(
-      {required BudgetRepository transactionsRepository,
+      {required BudgetRepository budgetRepository,
       required TransactionType transactionType})
-      : _transactionsRepository = transactionsRepository,
+      : _budgetRepository = budgetRepository,
         super(CategoriesState(transactionType: transactionType)) {
     _categoriesSubscription =
-        _transactionsRepository.categories.listen((categories) {
+        _budgetRepository.categories.listen((categories) {
       _onCategoriesChanged(categories);
     });
   }
@@ -34,7 +34,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   Future<void> onCategoryDeleted(Category category) async {
     emit(state.copyWith(status: CategoriesStatus.loading));
     try {
-      //await _categoriesRepository.deleteCategory(category: category);
+      //await _bu.deleteCategory(category: category);
     } catch (e) {
       emit(state.copyWith(
           status: CategoriesStatus.failure, errorMessage: 'Unknown error'));

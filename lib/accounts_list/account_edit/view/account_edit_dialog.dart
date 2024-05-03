@@ -16,7 +16,7 @@ class AccountEditDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AccountEditBloc(
-          transactionsRepository: context.read<BudgetRepository>()),
+          budgetRepository: context.read<BudgetRepository>()),
       child: AccountEditForm(accountId: accountId,),
     );
   }

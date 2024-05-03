@@ -10,15 +10,15 @@ import '../models/subcategory.dart';
 part 'subcategories_state.dart';
 
 class SubcategoriesCubit extends Cubit<SubcategoriesState> {
-  final BudgetRepository _transactionsRepository;
+  final BudgetRepository _budgetRepository;
   late final StreamSubscription<Category?> _categorySubscription;
 
   SubcategoriesCubit(
-      {required BudgetRepository transactionsRepository,
+      {required BudgetRepository budgetRepository,
       required int categoryId})
-      : _transactionsRepository = transactionsRepository,
+      : _budgetRepository = budgetRepository,
         super(SubcategoriesState()) {
-    _categorySubscription = _transactionsRepository
+    _categorySubscription = _budgetRepository
         .watchCategoryById(categoryId)
         .listen((category) {
       _onCategoryChanged(category!);

@@ -15,7 +15,7 @@ class AccountsListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AccountsCubit(transactionsRepository: context.read<BudgetRepository>()),
+          AccountsCubit(budgetRepository: context.read<BudgetRepository>()),
       child: AccountsListView(),
     );
   }
