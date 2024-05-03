@@ -108,7 +108,7 @@ class _MainDrawerState extends State<MainDrawer> {
                               .titleLarge!
                               .copyWith(color: _getColor())),
                       onTap: () {
-                        context.read<HomeCubit>().deleteBudget();
+                        _showAlertDialog(context);
                       },
                     ),
                     Divider(color: themeState.primaryColor[200]),
@@ -149,4 +149,39 @@ class _MainDrawerState extends State<MainDrawer> {
         ? BudgetColors.lightContainer
         : themeState.primaryColor[900]!;
   }
+}
+
+void _showAlertDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext ctx) {
+      return AlertDialog(
+        title: Text(
+          "WARNING",
+          style: TextStyle(color: Colors.deepOrange),
+        ),
+        content: Text("All data will be deleted."),
+        actions: [
+          TextButton(
+            child: Text("Delete",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Colors.deepOrange)),
+            onPressed: () {
+              context.read<HomeCubit>().deleteBudget();
+              Navigator.of(ctx).pop();
+            },
+          ),
+          TextButton(
+            child:
+                Text("Cancel", style: Theme.of(context).textTheme.titleLarge!),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
