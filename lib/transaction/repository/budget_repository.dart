@@ -13,6 +13,14 @@ class TransactionFailure implements Exception {
   ]);
 }
 
+class CategoryFailure implements Exception {
+  final String message;
+
+  const CategoryFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+}
+
 abstract class BudgetRepository {
   Stream<List<Account>> get accounts;
   Stream<List<Category>> get categories;
@@ -35,4 +43,6 @@ abstract class BudgetRepository {
 
   Future<Category?> fetchCategoryById(int categoryId);
   Future<void> clearAll();
+
+  Future<void> deleteCategory({required int categoryId});
 }

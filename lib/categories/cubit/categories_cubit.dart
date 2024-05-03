@@ -18,8 +18,7 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       required TransactionType transactionType})
       : _budgetRepository = budgetRepository,
         super(CategoriesState(transactionType: transactionType)) {
-    _categoriesSubscription =
-        _budgetRepository.categories.listen((categories) {
+    _categoriesSubscription = _budgetRepository.categories.listen((categories) {
       _onCategoriesChanged(categories);
     });
   }
@@ -31,13 +30,17 @@ class CategoriesCubit extends Cubit<CategoriesState> {
             categories.where((c) => c.type == state.transactionType).toList()));
   }
 
-  Future<void> onCategoryDeleted(Category category) async {
+  Future<void> onCategoryDeleted(int categoryId) async {
     emit(state.copyWith(status: CategoriesStatus.loading));
     try {
-      //await _bu.deleteCategory(category: category);
-    } catch (e) {
+      await _budgetRepository.deleteCategory(categoryId: categoryId);
+      emit(state.copyWith(status: CategoriesStatus.success));
+    } on CategoryFailure catch (e) {
       emit(state.copyWith(
-          status: CategoriesStatus.failure, errorMessage: 'Unknown error'));
+          status: CategoriesStatus.failure, errorMessage: e.message));
+    } catch (_) {
+      emit(state.copyWith(
+          status: CategoriesStatus.failure, errorMessage: 'Something went wrong'));
     }
   }
 

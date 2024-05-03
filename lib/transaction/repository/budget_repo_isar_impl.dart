@@ -55,18 +55,6 @@ class BudgetRepoIsarImpl implements BudgetRepository {
   }
 
   @override
-  Future<void> updateTransaction(Transaction transaction) {
-    // TODO: implement updateTransaction
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateTransfer(Transaction transfer) {
-    // TODO: implement updateTransfer
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Account?> fetchAccountById(int accountId) =>
       isar.accounts.get(accountId);
 
@@ -109,5 +97,33 @@ class BudgetRepoIsarImpl implements BudgetRepository {
     await isar.writeTxn(() async {
       await isar.clear();
     });
+  }
+
+  @override
+  Future<void> deleteCategory({required int categoryId}) async {
+    if (await _isAnyTransactionRelatesOnCategory(categoryId)) {
+      throw new CategoryFailure(
+          "Declined. One or many transactions relate on this category.");
+    }
+    if (await _hasAnySubcategory(categoryId)) {
+      throw new CategoryFailure("Declined. Category has some subcategories");
+    }
+
+    await isar.writeTxn(() async {
+      await isar.categorys.delete(categoryId);
+    });
+  }
+
+  Future<bool> _isAnyTransactionRelatesOnCategory(int categoryId) async {
+    final anyTr = await isar.transactions
+        .filter()
+        .category((category) => category.idEqualTo(categoryId))
+        .findFirst();
+    return anyTr != null;
+  }
+
+  Future<bool> _hasAnySubcategory(int categoryId) async {
+    final cat = await isar.categorys.get(categoryId);
+    return cat!.subcategoryList.length > 0;
   }
 }

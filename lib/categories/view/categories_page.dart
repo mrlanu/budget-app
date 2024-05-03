@@ -91,7 +91,7 @@ class CategoriesView extends StatelessWidget {
                           onPressed: () {
                             context
                                 .read<CategoriesCubit>()
-                                .onCategoryDeleted(category);
+                                .onCategoryDeleted(category.id!);
                           },
                         ),
                         trailing: Icon(Icons.chevron_right),
