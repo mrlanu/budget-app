@@ -114,6 +114,18 @@ class BudgetRepoIsarImpl implements BudgetRepository {
     });
   }
 
+  @override
+  Future<void> deleteAccount({required int accountId}) async {
+    if (await _hasAccountAnyTransaction(accountId)) {
+      throw new AccountFailure(
+          "Declined. One or many transactions relate on this account.");
+    }
+
+    await isar.writeTxn(() async {
+      await isar.accounts.delete(accountId);
+    });
+  }
+
   Future<bool> _isAnyTransactionRelatesOnCategory(int categoryId) async {
     final anyTr = await isar.transactions
         .filter()
@@ -125,5 +137,15 @@ class BudgetRepoIsarImpl implements BudgetRepository {
   Future<bool> _hasAnySubcategory(int categoryId) async {
     final cat = await isar.categorys.get(categoryId);
     return cat!.subcategoryList.length > 0;
+  }
+
+  Future<bool> _hasAccountAnyTransaction(int accountId) async {
+    final anyTr = await isar.transactions
+        .filter()
+        .fromAccount((acc) => acc.idEqualTo(accountId))
+        .or()
+        .toAccount((acc) => acc.idEqualTo(accountId))
+        .findFirst();
+    return anyTr != null;
   }
 }

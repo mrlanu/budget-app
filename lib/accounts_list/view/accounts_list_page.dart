@@ -98,7 +98,7 @@ class AccountsListView extends StatelessWidget {
                               onPressed: () {
                                 context
                                     .read<AccountsCubit>()
-                                    .onAccountDeleted(account);
+                                    .onAccountDeleted(account.id!);
                               },
                             ),
                             trailing: Icon(Icons.chevron_right),
