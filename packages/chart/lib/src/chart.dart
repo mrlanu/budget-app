@@ -12,11 +12,11 @@ class BarChart extends StatelessWidget {
 
   const BarChart(
       {super.key,
-        required this.dataPoints,
-        required this.labels,
-        required this.isGrouped,
-        this.firstColor = Colors.green,
-        this.secondColor = Colors.red});
+      required this.dataPoints,
+      required this.labels,
+      required this.isGrouped,
+      this.firstColor = Colors.green,
+      this.secondColor = Colors.red});
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +45,12 @@ class _BarChart extends StatefulWidget {
 
   const _BarChart(
       {required this.dataPoints,
-        required this.labels,
-        required this.width,
-        required this.height,
-        required this.isGrouped,
-        required this.firstColor,
-        required this.secondColor});
+      required this.labels,
+      required this.width,
+      required this.height,
+      required this.isGrouped,
+      required this.firstColor,
+      required this.secondColor});
 
   @override
   _BarChartState createState() => _BarChartState();
@@ -60,6 +60,9 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
   late AnimationController controller;
   late BarChartTween tween;
   late List<double> _dataPoints;
+
+  late (double, double) average;
+
   late List<String> _labels;
   late bool _isGrouped;
   late double maxBarHeight;
@@ -75,7 +78,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
     _dataPoints = widget.dataPoints;
     _labels = widget.labels;
     _isGrouped = widget.isGrouped;
-    maxBarHeight = _dataPoints.reduce(max);
+    maxBarHeight = _dataPoints.reduce(max) == 0 ? 1 : _dataPoints.reduce(max);
     final multiplier = widget.height / maxBarHeight;
     tween = BarChartTween(
         BarChartModel.empty(
@@ -192,37 +195,37 @@ class BarChartModel {
 
   factory BarChartModel.empty(
       {required int amount,
-        required bool isGrouped,
-        required Color firstColor,
-        required Color secondColor}) {
+      required bool isGrouped,
+      required Color firstColor,
+      required Color secondColor}) {
     return BarChartModel(
         bars: List.generate(
             amount,
-                (index) => BarModel(
+            (index) => BarModel(
                 height: 0.0,
                 color: isGrouped
                     ? index % 2 == 0
-                    ? secondColor
-                    : firstColor
+                        ? secondColor
+                        : firstColor
                     : firstColor)));
   }
 
   factory BarChartModel.fromArray(
       {required List<double> scaledData,
-        required List<double> dataPoints,
-        required bool isGrouped,
-        required Color firstColor,
-        required Color secondColor}) {
+      required List<double> dataPoints,
+      required bool isGrouped,
+      required Color firstColor,
+      required Color secondColor}) {
     return BarChartModel(
         dataPoints: dataPoints,
         bars: List.generate(
             scaledData.length,
-                (index) => BarModel(
+            (index) => BarModel(
                 height: scaledData[index],
                 color: isGrouped
                     ? index % 2 == 0
-                    ? secondColor
-                    : firstColor
+                        ? secondColor
+                        : firstColor
                     : firstColor)));
   }
 
@@ -231,7 +234,7 @@ class BarChartModel {
         dataPoints: end.dataPoints,
         bars: List.generate(
             begin.bars.length,
-                (i) =>
+            (i) =>
                 BarModel.lerp(begin: begin.bars[i], end: end.bars[i], t: t)));
   }
 }
@@ -254,8 +257,8 @@ class BarChartPainter extends CustomPainter {
 
   BarChartPainter(Animation<BarChartModel> animation,
       {required this.isGrouped,
-        this.tappedIndex = -1,
-        required double maxWidth})
+      this.tappedIndex = -1,
+      required double maxWidth})
       : animation = animation,
         barDistance = isGrouped ? maxWidth / 31 : maxWidth / 20,
         barWidth = isGrouped ? maxWidth / 34 : maxWidth / 20,
@@ -277,6 +280,9 @@ class BarChartPainter extends CustomPainter {
           ? offsetX += (barDistance + barWidth / 3 * (i % 2))
           : offsetX += barDistance * 1.5;
     }
+    isGrouped
+        ? _drawDoubleAverage(chart, canvas, size)
+        : _drawSingleAverage(chart, canvas, size);
     if (tappedIndex >= 0) {
       _drawLabel(chart.bars[tappedIndex], chart.dataPoints[tappedIndex],
           tappedBarX, canvas, size);
@@ -296,14 +302,14 @@ class BarChartPainter extends CustomPainter {
       Canvas canvas) {
     final textSpan = TextSpan(text: text, style: style);
     final textPainter =
-    TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout(minWidth: 0, maxWidth: width);
     textPainter.paint(canvas, position);
   }
 
   void _drawLabel(BarModel bar, double labelValue, double tappedBarX,
       Canvas canvas, Size size) {
-    final txt = '\$ $labelValue';
+    final txt = '\$ ${labelValue.toStringAsFixed(2)}';
     double labelX = 0.0;
     double labelY = 0.0;
     if (tappedBarX - (9.0 * txt.length / 2) < 0) {
@@ -344,6 +350,131 @@ class BarChartPainter extends CustomPainter {
     canvas.drawRRect(rect, paintBorder);
     _drawText(Offset(labelX + 5, labelY + 5), 150, labelStyle, txt, canvas);
   }
+
+  void _drawSingleAverage(BarChartModel chart, Canvas canvas, Size size) {
+    int count = chart.bars.where((bar) => bar.height > 0).length;
+    if (count == 0) return;
+    double averageScaled =
+        chart.bars.map((e) => e.height).reduce((a, b) => a + b) / count;
+    double average = chart.dataPoints.reduce((a, b) => a + b) / count;
+    final labelText = '\$ ${average.toStringAsFixed(1)}';
+    final paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    var labelStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 15,
+      fontWeight: FontWeight.bold,
+    );
+    final paintBack = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    final paintBorder = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+          45, size.height - averageScaled - 13, 9.0 * labelText.length, 24),
+      Radius.circular(5),
+    );
+
+    canvas.drawLine(Offset(35, size.height - averageScaled),
+        Offset(size.width, size.height - averageScaled), paint);
+    canvas.drawRRect(rect, paintBack);
+    canvas.drawRRect(rect, paintBorder);
+    _drawText(Offset(50, size.height - averageScaled - 10), 150, labelStyle,
+        labelText, canvas);
+  }
+
+  void _drawDoubleAverage(BarChartModel chart, Canvas canvas, Size size) {
+    Map<String, List<BarModel>> splitBarsMap = {'incomes': [], 'expenses': []};
+    Map<String, List<double>> splitDataPointsMap = {
+      'incomes': [],
+      'expenses': []
+    };
+
+    for (int i = 0; i < chart.bars.length; i++) {
+      if (i % 2 == 0) {
+        splitBarsMap['expenses']!.add(chart.bars[i]);
+        splitDataPointsMap['expenses']!.add(chart.dataPoints[i]);
+      } else {
+        splitBarsMap['incomes']!.add(chart.bars[i]);
+        splitDataPointsMap['incomes']!.add(chart.dataPoints[i]);
+      }
+    }
+    int countIncomes =
+        splitBarsMap['incomes']!.where((bar) => bar.height > 0).length;
+    int countExpenses =
+        splitBarsMap['expenses']!.where((bar) => bar.height > 0).length;
+    if (countIncomes == 0) countIncomes = 1;
+    if (countExpenses == 0) countExpenses = 1;
+    double averageScaledIncomes =
+        splitBarsMap['incomes']!.map((e) => e.height).reduce((a, b) => a + b) /
+            countIncomes;
+    double averageScaledExpenses =
+        splitBarsMap['expenses']!.map((e) => e.height).reduce((a, b) => a + b) /
+            countExpenses;
+    double averageIncomes =
+        splitDataPointsMap['incomes']!.reduce((a, b) => a + b) / countIncomes;
+    double averageExpenses =
+        splitDataPointsMap['expenses']!.reduce((a, b) => a + b) / countExpenses;
+
+    final labelTextIncomes = '\$ ${averageIncomes.toStringAsFixed(1)}';
+    final labelTextExpenses = '\$ ${averageExpenses.toStringAsFixed(1)}';
+    final paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    var labelStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 15,
+      fontWeight: FontWeight.bold,
+    );
+    final paintBackIncomes = Paint()
+      ..color = Colors.lightGreen
+      ..style = PaintingStyle.fill;
+    final paintBackExpenses = Paint()
+      ..color = Colors.redAccent
+      ..style = PaintingStyle.fill;
+    final paintBorder = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    final rectIncomes = RRect.fromRectAndRadius(
+      Rect.fromLTWH(45, size.height - averageScaledIncomes - 13,
+          9.0 * labelTextIncomes.length, 24),
+      Radius.circular(5),
+    );
+
+    final rectExpenses = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+          55 + 9.0 * labelTextIncomes.length,
+          size.height - averageScaledExpenses - 13,
+          9.0 * labelTextExpenses.length,
+          24),
+      Radius.circular(5),
+    );
+
+    canvas.drawLine(Offset(35, size.height - averageScaledIncomes),
+        Offset(size.width, size.height - averageScaledIncomes), paint);
+    canvas.drawLine(Offset(35, size.height - averageScaledExpenses),
+        Offset(size.width, size.height - averageScaledExpenses), paint);
+    canvas.drawRRect(rectIncomes, paintBorder);
+    canvas.drawRRect(rectIncomes, paintBackIncomes);
+    canvas.drawRRect(rectExpenses, paintBorder);
+    canvas.drawRRect(rectExpenses, paintBackExpenses);
+    _drawText(Offset(50, size.height - averageScaledIncomes - 10), 150,
+        labelStyle, labelTextIncomes, canvas);
+    _drawText(
+        Offset(60 + 9.0 * labelTextIncomes.length,
+            size.height - averageScaledExpenses - 10),
+        150,
+        labelStyle,
+        labelTextExpenses,
+        canvas);
+  }
 }
 
 class GridPainter extends CustomPainter {
@@ -353,8 +484,8 @@ class GridPainter extends CustomPainter {
 
   GridPainter(
       {required this.maxHeight,
-        required this.labels,
-        required this.labelsColor});
+      required this.labels,
+      required this.labelsColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -379,7 +510,7 @@ class GridPainter extends CustomPainter {
         String text) {
       final textSpan = TextSpan(text: text, style: style);
       final textPainter =
-      TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+          TextPainter(text: textSpan, textDirection: TextDirection.ltr);
       textPainter.layout(minWidth: 0, maxWidth: width);
       textPainter.paint(canvas, position);
     }
