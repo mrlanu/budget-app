@@ -1,5 +1,6 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
+import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,6 @@ import '../../budgets/repository/budget_repository.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
 import '../../transaction/repository/transactions_repository.dart';
-import '../../utils/theme/budget_theme.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authRepo = AuthenticationRepository();
@@ -60,23 +60,25 @@ class _AppViewState extends State<AppView> {
           router.refresh();
           router.go('/');
         },
-        child: BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (context, state) {
-            _setSystemUIOverlayStyle(state.primaryColor);
-            return MaterialApp.router(
-              routerConfig: router,
-              debugShowCheckedModeBanner: false,
-              themeMode: ThemeMode.values[state.mode],
-              theme: BudgetTheme(seedColors: (
-                primaryColor: state.primaryColor,
-                secondaryColor: state.secondaryColor
-              )).lightTheme,
-              darkTheme: BudgetTheme(seedColors: (
-                primaryColor: state.primaryColor,
-                secondaryColor: state.secondaryColor
-              )).darkTheme,
-            );
-          },
+        child: Responsive(
+          child: BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              _setSystemUIOverlayStyle(state.primaryColor);
+              return MaterialApp.router(
+                routerConfig: router,
+                debugShowCheckedModeBanner: false,
+                themeMode: ThemeMode.values[state.mode],
+                theme: BudgetTheme(seedColors: (
+                  primaryColor: state.primaryColor,
+                  secondaryColor: state.secondaryColor
+                )).lightTheme,
+                darkTheme: BudgetTheme(seedColors: (
+                  primaryColor: state.primaryColor,
+                  secondaryColor: state.secondaryColor
+                )).darkTheme,
+              );
+            },
+          ),
         ));
   }
 }
