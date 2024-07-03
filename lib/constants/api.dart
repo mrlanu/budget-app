@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-const bool isTestMode = true;
+const bool isTestMode = false;
 
 final baseURL = isTestMode
     ? kIsWeb
