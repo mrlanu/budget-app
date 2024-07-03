@@ -1,9 +1,13 @@
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
+import 'package:budget_app/charts/charts.dart';
+import 'package:budget_app/charts/view/category_chart_page.dart';
+import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
+import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transaction/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -224,6 +228,30 @@ final List<RouteBase> _individualRoutes = [
     path: '/settings',
     builder: (BuildContext context, GoRouterState state) {
       return SettingsPage();
+    },
+  ),
+  GoRoute(
+    path: '/summary',
+    builder: (BuildContext context, GoRouterState state) {
+      return SummaryPage();
+    },
+  ),
+  GoRoute(
+    path: '/trend',
+    builder: (BuildContext context, GoRouterState state) {
+      return TrendChartPage();
+    },
+  ),
+  GoRoute(
+    path: '/category-trend',
+    builder: (BuildContext context, GoRouterState state) {
+      return CategoryChartPage();
+    },
+  ),
+  GoRoute(
+    path: '/debt-payoff',
+    builder: (BuildContext context, GoRouterState state) {
+      return DebtPayoffPage();
     },
   ),
 ];

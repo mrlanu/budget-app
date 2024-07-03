@@ -10,31 +10,26 @@ import '../debt_form/debt_form.dart';
 import '../models/models.dart';
 
 class DebtPayoffPage extends StatelessWidget {
-  static Route<void> route() {
-    final repository = DebtRepositoryImpl();
-    return MaterialPageRoute(
-        builder: (context) => RepositoryProvider(
-              create: (context) => repository,
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) =>
-                        DebtsCubit(debtsRepository: repository)..updateDebts(),
-                  ),
-                  BlocProvider(
-                    create: (context) => StrategyCubit(),
-                  ),
-                ],
-                child: DebtPayoffPage(),
-              ),
-            ));
-  }
 
   DebtPayoffPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DebtPayoffViewMobile();
+    return RepositoryProvider(
+  create: (context) => DebtRepositoryImpl(),
+    child: MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+          DebtsCubit(debtsRepository: context.read<DebtRepositoryImpl>())..updateDebts(),
+        ),
+        BlocProvider(
+          create: (context) => StrategyCubit(),
+        ),
+      ],
+      child: DebtPayoffViewMobile(),
+    ),
+);
   }
 }
 

@@ -13,18 +13,20 @@ import '../charts.dart';
 class CategoryChartPage extends StatelessWidget {
   const CategoryChartPage({super.key});
 
-  static Route<void> route() {
-    final _repo = ChartRepositoryImpl();
-    return MaterialPageRoute(
-      builder: (context) => BlocProvider(
-        create: (context) => ChartCubit(
-            chartRepository: _repo,
-            budget: context.read<HomeCubit>().state.budget)
-          ..fetchCategoryChart(),
-        child: CategoryChartPage(),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ChartCubit(
+          chartRepository: ChartRepositoryImpl(),
+          budget: context.read<HomeCubit>().state.budget)
+        ..fetchCategoryChart(),
+      child: CategoryChartView(),
     );
   }
+}
+
+class CategoryChartView extends StatelessWidget {
+  const CategoryChartView({super.key});
 
   @override
   Widget build(BuildContext context) {

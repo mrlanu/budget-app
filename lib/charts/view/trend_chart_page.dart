@@ -9,54 +9,49 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../charts.dart';
 
 class TrendChartPage extends StatelessWidget {
-  const TrendChartPage({super.key});
+  TrendChartPage({super.key});
 
-  static Route<void> route() {
-    final _repo = ChartRepositoryImpl();
-    return MaterialPageRoute(
-      builder: (context) => BlocProvider(
-        create: (context) => ChartCubit(
-            chartRepository: _repo,
-            budget: context.read<HomeCubit>().state.budget)
-          ..fetchTrendChart(),
-        child: TrendChartPage(),
-      ),
-    );
-  }
+  final _repo = ChartRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Trend for last 12 months')),
-      body: BlocBuilder<ChartCubit, ChartState>(
-        builder: (context, state) {
-          return Center(
-              child: state.status == ChartStatus.loading
-                  ? CircularProgressIndicator()
-                  : Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1.3 / 1,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 30, horizontal: 8),
-                            child: BlocBuilder<ChartCubit, ChartState>(
-                              builder: (context, state) {
-                                return BarChart(
-                                  dataPoints: state.dataPointsGrouped,
-                                  labels: state.titles,
-                                  isGrouped: true,
-                                );
-                              },
+    return BlocProvider(
+      create: (context) => ChartCubit(
+          chartRepository: _repo,
+          budget: context.read<HomeCubit>().state.budget)
+        ..fetchTrendChart(),
+      child: Scaffold(
+        appBar: AppBar(title: Text('Trend for last 12 months')),
+        body: BlocBuilder<ChartCubit, ChartState>(
+          builder: (context, state) {
+            return Center(
+                child: state.status == ChartStatus.loading
+                    ? CircularProgressIndicator()
+                    : Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1.3 / 1,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 30, horizontal: 8),
+                              child: BlocBuilder<ChartCubit, ChartState>(
+                                builder: (context, state) {
+                                  return BarChart(
+                                    dataPoints: state.dataPointsGrouped,
+                                    labels: state.titles,
+                                    isGrouped: true,
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        //Divider(color: BudgetColors.teal900, indent: 20, endIndent: 20,),
-                        Expanded(child: TrendTable())
-                      ],
-                    ));
-        },
+                          SizedBox(height: 20),
+                          //Divider(color: BudgetColors.teal900, indent: 20, endIndent: 20,),
+                          Expanded(child: TrendTable())
+                        ],
+                      ));
+          },
+        ),
       ),
     );
   }

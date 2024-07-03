@@ -1,7 +1,3 @@
-import 'package:budget_app/charts/view/category_chart_page.dart';
-import 'package:budget_app/charts/view/trend_chart_page.dart';
-import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../auth/auth.dart';
 import '../constants/colors.dart';
-import '../summary/view/summary_page.dart';
 import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
 
@@ -39,19 +34,12 @@ class _MainDrawerState extends State<MainDrawer> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   children: [
-                    /*_buildMenuItem(
-                        menuIndex: 0,
-                        title: 'Budgets',
-                        icon: FaIcon(FontAwesomeIcons.coins,
-                            color: BudgetColors.teal900),
-                        route: HomePage.route()),
-                    Divider(color: BudgetColors.teal900),*/
                     _buildMenuItem(
                         menuIndex: 1,
                         title: 'Summary',
                         icon:
                             FaIcon(FontAwesomeIcons.listUl, color: _getColor()),
-                        route: SummaryPage.route()),
+                        routeName: 'summary'),
                     Divider(color: themeState.primaryColor[200]),
                     ExpansionTile(
                       shape: Border.all(color: Colors.transparent),
@@ -74,14 +62,14 @@ class _MainDrawerState extends State<MainDrawer> {
                                 menuIndex: 2,
                                 title: 'Trend',
                                 icon: null,
-                                route: TrendChartPage.route())),
+                                routeName: 'trend')),
                         Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: _buildMenuItem(
                                 menuIndex: 2,
                                 title: 'Sum by Category',
                                 icon: null,
-                                route: CategoryChartPage.route())),
+                                routeName: 'category-trend')),
                       ],
                     ),
                     Divider(color: themeState.primaryColor[200]),
@@ -90,12 +78,13 @@ class _MainDrawerState extends State<MainDrawer> {
                         title: 'Debt payoff planner',
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: _getColor()),
-                        route: DebtPayoffPage.route()),
+                        routeName: 'debt-payoff'),
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                       menuIndex: 4,
                       title: 'Settings',
                       icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
+                      routeName: 'settings'
                     ),
                     Divider(color: themeState.primaryColor[200]),
                     ListTile(
@@ -127,7 +116,7 @@ class _MainDrawerState extends State<MainDrawer> {
       {required int menuIndex,
       required String title,
       required Widget? icon,
-      Route? route}) {
+      required String routeName}) {
     return ListTile(
         tileColor: widget.tabController?.index == menuIndex
             ? BudgetColors.light
@@ -138,18 +127,9 @@ class _MainDrawerState extends State<MainDrawer> {
                 .textTheme
                 .titleLarge!
                 .copyWith(color: _getColor())),
-        onTap: route != null
-            ? () {
-                isDisplayDesktop(context)
-                    ? {widget.tabController?.index = menuIndex, setState(() {})}
-                    : {
-                        Navigator.of(context).pop(),
-                        Navigator.of(context).push(route)
-                      };
-              }
-            : () {
+        onTap: () {
                 context.pop();
-                context.push('/settings');
+                context.push('/$routeName');
               });
   }
 
