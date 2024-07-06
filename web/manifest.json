@@ -1,10 +1,10 @@
 {
     "name": "My Budget",
-    "short_name": "My Budget",
+    "short_name": "Budget",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#00FF00",
-    "theme_color": "#FF0000",
+    "background_color": "#000000",
+    "theme_color": "#607D8B",
     "description": "A Budget app",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
