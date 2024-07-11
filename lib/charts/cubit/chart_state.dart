@@ -7,6 +7,8 @@ class ChartState extends Equatable {
   final List<YearMonthSum> data;
   final List<Category> categories;
   final Category? category;
+  final List<Subcategory> subcategories;
+  final Subcategory? subcategory;
   final String categoryType;
 
   List<String> get titles {
@@ -41,6 +43,8 @@ class ChartState extends Equatable {
       this.data = const <YearMonthSum>[],
       this.categories = const [],
       this.category,
+      this.subcategories = const [],
+      this.subcategory,
       this.categoryType = 'Expenses'});
 
   ChartState copyWith(
@@ -48,15 +52,27 @@ class ChartState extends Equatable {
       List<YearMonthSum>? data,
       List<Category>? categories,
       Category? category,
+      List<Subcategory>? subcategories,
+      Subcategory? Function()? subcategory,
       String? categoryType}) {
     return ChartState(
         status: status ?? this.status,
         data: data ?? this.data,
         categories: categories ?? this.categories,
         category: category ?? this.category,
+        subcategory: subcategory != null ? subcategory() : this.subcategory,
+        subcategories: subcategories ?? this.subcategories,
         categoryType: categoryType ?? this.categoryType);
   }
 
   @override
-  List<Object?> get props => [status, data, categories, category, categoryType];
+  List<Object?> get props => [
+        status,
+        data,
+        categories,
+        category,
+        subcategory,
+        subcategories,
+        categoryType
+      ];
 }

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:budget_app/charts/models/year_month_sum.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
+import 'package:budget_app/subcategories/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../budgets/budgets.dart';
@@ -15,14 +16,17 @@ class ChartCubit extends Cubit<ChartState> {
   final ChartRepository _chartRepository;
   final Budget _budget;
 
-  ChartCubit(
-      {required ChartRepository chartRepository,
-      required Budget budget})
+  ChartCubit({required ChartRepository chartRepository, required Budget budget})
       : _chartRepository = chartRepository,
         _budget = budget,
         super(ChartState());
 
   Future<void> changeCategory({required Category category}) async {
+    emit(state.copyWith(
+      category: category,
+      subcategories: category.subcategoryList,
+      subcategory: () => null,
+    ));
     fetchCategoryChart(category);
   }
 
@@ -43,10 +47,24 @@ class ChartCubit extends Cubit<ChartState> {
     final chartData = await _chartRepository
         .fetchCategoryChartData(category?.id ?? filteredCategories[0].id);
     emit(state.copyWith(
+      status: ChartStatus.success,
+      data: chartData,
+      categories: filteredCategories,
+      category: category != null ? category : filteredCategories[0],
+      subcategories: category != null
+          ? category.subcategoryList
+          : filteredCategories[0].subcategoryList,
+      subcategory: () => null,
+    ));
+  }
+
+  Future<void> fetchSubcategoryChart(Subcategory subcategory) async {
+    final chartData =
+        await _chartRepository.fetchSubcategoryChartData(subcategory.id);
+    emit(state.copyWith(
         status: ChartStatus.success,
         data: chartData,
-        categories: filteredCategories,
-        category: category != null ? category : filteredCategories[0]));
+        subcategory: () => subcategory));
   }
 
   void changeCategoryType({required String categoryType}) {

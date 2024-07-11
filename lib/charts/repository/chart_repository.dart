@@ -8,6 +8,8 @@ abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
 
   Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId);
+
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id);
 }
 
 class ChartRepositoryImpl extends ChartRepository {
@@ -37,6 +39,21 @@ class ChartRepositoryImpl extends ChartRepository {
       final response = await _networkClient.get<List<dynamic>>(
           baseURL + '/api/charts/category-chart',
           queryParameters: {'categoryId': categoryId});
+      final result = List<Map<String, dynamic>>.from(response.data!)
+          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
+          .toList();
+      return result;
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    }
+  }
+
+  @override
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id) async {
+    try {
+      final response = await _networkClient.get<List<dynamic>>(
+          baseURL + '/api/charts/subcategory-chart',
+          queryParameters: {'categoryId': id});
       final result = List<Map<String, dynamic>>.from(response.data!)
           .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
           .toList();

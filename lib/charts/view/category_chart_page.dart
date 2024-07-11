@@ -3,6 +3,7 @@ import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/charts/view/category_table.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/subcategories/models/models.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,6 +61,7 @@ class CategoryChartView extends StatelessWidget {
                           ),
                         ),
                         CategoryInput(),
+                        SubcategoryInput(),
                         Expanded(child: CategoryTable())
                       ],
                     ))),
@@ -147,6 +149,36 @@ class CategoryInput extends StatelessWidget {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Category',
+                //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
+              )),
+        );
+      },
+    );
+  }
+}
+
+class SubcategoryInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ChartCubit, ChartState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: DropdownButtonFormField<Subcategory>(
+              items: state.subcategories.map((Subcategory category) {
+                return DropdownMenuItem(
+                  value: category,
+                  child: Text(category.name),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                context.read<ChartCubit>().fetchSubcategoryChart(newValue!);
+                //setState(() => selectedValue = newValue);
+              },
+              value: state.subcategory,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Subcategory',
                 //errorText: errorSnapshot.data == 0 ? Localization.of(context).categoryEmpty : null),
               )),
         );
