@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../categories/models/category.dart';
@@ -6,6 +7,7 @@ import '../../categories/models/category.dart';
 part 'account.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+@Embedded(inheritance: false)
 class Account extends Equatable{
   final String id;
   final String name;
@@ -17,11 +19,11 @@ class Account extends Equatable{
 
   const Account({
     this.id = '',
-    required this.name,
-    required this.categoryId,
+    this.name = '',
+    this.categoryId = '',
     this.currency = 'USD',
-    required this.balance,
-    required this.initialBalance,
+    this.balance = 0,
+    this.initialBalance = 0,
     this.includeInTotal = true,
   });
 
@@ -55,5 +57,6 @@ class Account extends Equatable{
   Map<String, dynamic> toJson() => _$AccountToJson(this);
 
   @override
+  @ignore
   List<Object?> get props => [id, name, balance];
 }

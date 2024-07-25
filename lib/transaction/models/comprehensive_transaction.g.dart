@@ -51,6 +51,6 @@ Map<String, dynamic> _$ComprehensiveTransactionToJson(
 const _$TransactionTypeEnumMap = {
   TransactionType.EXPENSE: 'EXPENSE',
   TransactionType.INCOME: 'INCOME',
-  TransactionType.TRANSFER: 'TRANSFER',
   TransactionType.ACCOUNT: 'ACCOUNT',
+  TransactionType.TRANSFER: 'TRANSFER',
 };

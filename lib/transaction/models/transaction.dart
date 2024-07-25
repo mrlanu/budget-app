@@ -1,4 +1,5 @@
 import 'package:budget_app/budgets/budgets.dart';
+import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../transaction.dart';
@@ -6,11 +7,15 @@ import '../transaction.dart';
 part 'transaction.g.dart';
 
 @JsonSerializable()
+@Collection(inheritance: false)
 class Transaction {
   final String? id;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final Id? isarId;
   final String budgetId;
   final DateTime date;
-  final TransactionType? type;
+  @enumerated
+  final TransactionType type;
   final double amount;
   final String fromAccountId;
   final String? toAccountId;
@@ -20,10 +25,11 @@ class Transaction {
 
   Transaction({
     this.id,
+    this.isarId,
     required this.budgetId,
     required this.date,
     required this.amount,
-    this.type,
+    required this.type,
     this.description = '',
     this.categoryId,
     this.subcategoryId,
@@ -42,7 +48,7 @@ class Transaction {
         return [ComprehensiveTransaction(
             id: this.id!,
             budgetId: budgetId,
-            type: this.type!,
+            type: this.type,
             amount: this.amount,
             title: subcategory.name,
             subtitle: acc.name,
