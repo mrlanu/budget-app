@@ -29,5 +29,5 @@ Future<void> main() async {
     directory: dir.path,
   );
 
-  runApp(App());
+  runApp(App(isar: isar,));
 }

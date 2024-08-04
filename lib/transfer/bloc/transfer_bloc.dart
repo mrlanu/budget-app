@@ -117,7 +117,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       TransferFormSubmitted event, Emitter<TransferState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transfer = Transaction(
-      id: state.id,
+      id: state.id!,
       type: TransactionType.TRANSFER,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),

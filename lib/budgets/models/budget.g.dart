@@ -122,7 +122,6 @@ Budget _budgetDeserialize(
         ) ??
         const [],
     id: reader.readStringOrNull(offsets[2]) ?? '',
-    isarId: id,
   );
   return object;
 }
@@ -158,7 +157,7 @@ P _budgetDeserializeProp<P>(
 }
 
 Id _budgetGetId(Budget object) {
-  return object.isarId ?? Isar.autoIncrement;
+  return object.isarId;
 }
 
 List<IsarLinkBase<dynamic>> _budgetGetLinks(Budget object) {
@@ -542,23 +541,7 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'isarId',
-      ));
-    });
-  }
-
-  QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'isarId',
-      ));
-    });
-  }
-
-  QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdEqualTo(Id? value) {
+  QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isarId',
@@ -568,7 +551,7 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
   }
 
   QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdGreaterThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -581,7 +564,7 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
   }
 
   QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdLessThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -594,8 +577,8 @@ extension BudgetQueryFilter on QueryBuilder<Budget, Budget, QFilterCondition> {
   }
 
   QueryBuilder<Budget, Budget, QAfterFilterCondition> isarIdBetween(
-    Id? lower,
-    Id? upper, {
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

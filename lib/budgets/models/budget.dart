@@ -6,6 +6,7 @@ import '../../accounts_list/models/account.dart';
 import '../../categories/models/category.dart';
 import '../../subcategories/models/subcategory.dart';
 import '../../transaction/models/transaction_type.dart';
+import '../../utils/utils.dart';
 
 part 'budget.g.dart';
 
@@ -13,14 +14,12 @@ part 'budget.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Budget extends Equatable{
   final String id;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final Id? isarId;
+  Id get isarId => fastHash(id);
   final List<Category> categoryList;
   final List<Account> accountList;
 
   const Budget(
       {this.id = '',
-        this.isarId,
       this.categoryList = const [],
       this.accountList = const []});
 

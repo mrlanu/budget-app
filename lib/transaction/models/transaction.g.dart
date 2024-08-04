@@ -156,7 +156,6 @@ Transaction _transactionDeserialize(
     description: reader.readStringOrNull(offsets[4]),
     fromAccountId: reader.readString(offsets[5]),
     id: reader.readStringOrNull(offsets[6]),
-    isarId: id,
     subcategoryId: reader.readStringOrNull(offsets[7]),
     toAccountId: reader.readStringOrNull(offsets[8]),
     type: _TransactiontypeValueEnumMap[reader.readByteOrNull(offsets[9])] ??
@@ -212,7 +211,7 @@ const _TransactiontypeValueEnumMap = {
 };
 
 Id _transactionGetId(Transaction object) {
-  return object.isarId ?? Isar.autoIncrement;
+  return object.isarId;
 }
 
 List<IsarLinkBase<dynamic>> _transactionGetLinks(Transaction object) {
@@ -1146,25 +1145,8 @@ extension TransactionQueryFilter
     });
   }
 
-  QueryBuilder<Transaction, Transaction, QAfterFilterCondition> isarIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'isarId',
-      ));
-    });
-  }
-
-  QueryBuilder<Transaction, Transaction, QAfterFilterCondition>
-      isarIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'isarId',
-      ));
-    });
-  }
-
   QueryBuilder<Transaction, Transaction, QAfterFilterCondition> isarIdEqualTo(
-      Id? value) {
+      Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isarId',
@@ -1175,7 +1157,7 @@ extension TransactionQueryFilter
 
   QueryBuilder<Transaction, Transaction, QAfterFilterCondition>
       isarIdGreaterThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1188,7 +1170,7 @@ extension TransactionQueryFilter
   }
 
   QueryBuilder<Transaction, Transaction, QAfterFilterCondition> isarIdLessThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1201,8 +1183,8 @@ extension TransactionQueryFilter
   }
 
   QueryBuilder<Transaction, Transaction, QAfterFilterCondition> isarIdBetween(
-    Id? lower,
-    Id? upper, {
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

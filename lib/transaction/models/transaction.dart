@@ -2,6 +2,7 @@ import 'package:budget_app/budgets/budgets.dart';
 import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../utils/fasthash.dart';
 import '../transaction.dart';
 
 part 'transaction.g.dart';
@@ -10,8 +11,8 @@ part 'transaction.g.dart';
 @Collection(inheritance: false)
 class Transaction {
   final String? id;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final Id? isarId;
+
+  Id get isarId => fastHash(id!);
   final String budgetId;
   final DateTime date;
   @enumerated
@@ -25,7 +26,6 @@ class Transaction {
 
   Transaction({
     this.id,
-    this.isarId,
     required this.budgetId,
     required this.date,
     required this.amount,
@@ -37,40 +37,44 @@ class Transaction {
     this.toAccountId,
   });
 
-  List<ComprehensiveTransaction> toTile(Budget budget){
-    switch(this.type){
+  List<ComprehensiveTransaction> toTile(Budget budget) {
+    switch (this.type) {
       case TransactionType.EXPENSE || TransactionType.INCOME:
         final cat = budget.getCategoryById(this.categoryId!);
         final subcategory = cat.subcategoryList
             .where((sc) => this.subcategoryId == sc.id)
             .first;
         final acc = budget.getAccountById(this.fromAccountId);
-        return [ComprehensiveTransaction(
-            id: this.id!,
-            budgetId: budgetId,
-            type: this.type,
-            amount: this.amount,
-            title: subcategory.name,
-            subtitle: acc.name,
-            dateTime: this.date,
-            description: this.description!,
-            category: cat,
-            subcategory: subcategory,
-            fromAccount: acc)];
+        return [
+          ComprehensiveTransaction(
+              id: this.id!,
+              budgetId: budgetId,
+              type: this.type,
+              amount: this.amount,
+              title: subcategory.name,
+              subtitle: acc.name,
+              dateTime: this.date,
+              description: this.description!,
+              category: cat,
+              subcategory: subcategory,
+              fromAccount: acc)
+        ];
       case TransactionType.TRANSFER:
         final fromAccount = budget.getAccountById(this.fromAccountId);
         final toAccount = budget.getAccountById(this.toAccountId!);
-        return [ComprehensiveTransaction(
-          id: this.id!,
-          budgetId: budgetId,
-          type: TransactionType.TRANSFER,
-          amount: this.amount,
-          title: 'Transfer in',
-          subtitle: 'from ${fromAccount.name}',
-          dateTime: this.date,
-          description: this.description!,
-          fromAccount: fromAccount,
-          toAccount: toAccount,),
+        return [
+          ComprehensiveTransaction(
+            id: this.id!,
+            budgetId: budgetId,
+            type: TransactionType.TRANSFER,
+            amount: this.amount,
+            title: 'Transfer in',
+            subtitle: 'from ${fromAccount.name}',
+            dateTime: this.date,
+            description: this.description!,
+            fromAccount: fromAccount,
+            toAccount: toAccount,
+          ),
           ComprehensiveTransaction(
               id: this.id!,
               budgetId: budgetId,
@@ -81,10 +85,37 @@ class Transaction {
               dateTime: this.date,
               description: this.description!,
               fromAccount: fromAccount,
-              toAccount: toAccount)];
+              toAccount: toAccount)
+        ];
       case _:
         return [];
     }
+  }
+
+  Transaction copyWith({
+    String? id,
+    String? budgetId,
+    DateTime? date,
+    TransactionType? type,
+    double? amount,
+    String? fromAccountId,
+    String? toAccountId,
+    String? description,
+    String? categoryId,
+    String? subcategoryId,
+  }) {
+    return Transaction(
+      id: id ?? this.id,
+      budgetId: budgetId ?? this.budgetId,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      amount: amount ?? this.amount,
+      fromAccountId: fromAccountId ?? this.fromAccountId,
+      toAccountId: toAccountId ?? this.fromAccountId,
+      description: description ?? this.description,
+      categoryId: categoryId ?? this.categoryId,
+      subcategoryId: subcategoryId ?? this.subcategoryId,
+    );
   }
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

@@ -4,6 +4,7 @@ import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isar/isar.dart';
 
 import '../../auth/auth.dart';
 import '../../budgets/repository/budget_repository.dart';
@@ -12,29 +13,31 @@ import '../../navigation/router.dart';
 import '../../transaction/repository/transactions_repository.dart';
 
 class App extends StatelessWidget {
+  App({this.isar});
+
+  final Isar? isar;
   final AuthenticationRepository _authRepo = AuthenticationRepository();
-  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
-  final TransactionsRepository _transactionsRepository =
-      TransactionsRepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider(create: (context) => _authRepo),
         RepositoryProvider(
-          create: (context) => _authRepo,
-        ),
-        RepositoryProvider(create: (context) => _budgetRepository),
-        RepositoryProvider(create: (context) => _transactionsRepository),
+            create: (context) => isar == null
+                ? BudgetRepositoryImpl()
+                : BudgetRepositoryIsar(isar: isar!)),
+        RepositoryProvider(
+            create: (context) => isar == null
+                ? TransactionsRepositoryImpl()
+                : TransactionsRepositoryIsar(isar: isar!)),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (_) => AuthBloc(authenticationRepository: _authRepo),
           ),
-          BlocProvider(
-            create: (context) => ThemeCubit(),
-          ),
+          BlocProvider(create: (context) => ThemeCubit()),
         ],
         child: AppView(),
       ),
