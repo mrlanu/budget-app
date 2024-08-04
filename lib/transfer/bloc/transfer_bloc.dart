@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -11,7 +10,6 @@ import 'package:formz/formz.dart';
 
 import '../../accounts_list/models/account.dart';
 import '../../budgets/repository/budget_repository.dart';
-import '../../constants/constants.dart';
 import '../../transaction/transaction.dart';
 
 part 'transfer_event.dart';
@@ -117,73 +115,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       TransferFormSubmitted event, Emitter<TransferState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transfer = Transaction(
-      id: state.id!,
+      id: state.id,
       type: TransactionType.TRANSFER,
       amount: double.parse(state.amount.value),
       date: state.date ?? DateTime.now(),
       fromAccountId: state.fromAccount!.id,
       toAccountId: state.toAccount!.id,
       description: state.notes,
-      budgetId: await Cache.instance.getBudgetId() ?? '',
+      budgetId: state.budget.id,
     );
     try {
-      await state.editedTransfer == null
-          ? _transactionsRepository.createTransaction(transfer)
-          : _transactionsRepository.updateTransaction(transfer);
-      _updateBudgetOnTransfer(
-          transfer: transfer, editedTransfer: state.editedTransfer);
+      await _budgetRepository.updateBudgetOnTransaction(transfer);
+      await _transactionsRepository.saveTransaction(transfer);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      isDisplayDesktop(event.context!)
-          ? add(TransferFormLoaded())
-          : Navigator.of(event.context!).pop();
+      Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
-  }
-
-  void _updateBudgetOnTransfer(
-      {required Transaction transfer,
-      ComprehensiveTransaction? editedTransfer}) {
-    List<Account> updatedAccounts = [];
-
-    final accounts = state.budget.accountList;
-    //find the acc from editedTransaction and return amount
-    //find the acc from transaction and update amount
-    if (editedTransfer != null) {
-      updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransfer.fromAccount!.id) {
-          return acc.copyWith(balance: acc.balance + editedTransfer.amount);
-        } else {
-          return acc;
-        }
-      }).toList();
-      updatedAccounts = updatedAccounts.map((acc) {
-        if (acc.id == editedTransfer.toAccount!.id) {
-          return acc.copyWith(balance: acc.balance - editedTransfer.amount);
-        } else {
-          return acc;
-        }
-      }).toList();
-    } else {
-      updatedAccounts = [...accounts];
-    }
-
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transfer.fromAccountId) {
-        return acc.copyWith(balance: acc.balance - transfer.amount);
-      } else {
-        return acc;
-      }
-    }).toList();
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transfer.toAccountId) {
-        return acc.copyWith(balance: acc.balance + transfer.amount);
-      } else {
-        return acc;
-      }
-    }).toList();
-
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:budget_app/transaction/models/models.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:isar/isar.dart';
 import 'package:network/network.dart';
@@ -9,7 +10,6 @@ import '../../budgets/budgets.dart';
 import '../../categories/models/category.dart';
 import '../../constants/api.dart';
 import '../../subcategories/models/subcategory.dart';
-import '../../transaction/models/transaction_type.dart';
 
 abstract class BudgetRepository {
   // BUDGETS
@@ -37,7 +37,7 @@ abstract class BudgetRepository {
   Future<void> updateSubcategory(Category category, Subcategory subcategory);
 
   //OTHER
-  void pushUpdatedAccounts(List<Account> accounts);
+  Future<void> updateBudgetOnTransaction(Transaction transaction);
 
   Future<void> deleteBudget();
 }
@@ -245,9 +245,9 @@ class BudgetRepositoryImpl extends BudgetRepository {
   }
 
   @override
-  void pushUpdatedAccounts(List<Account> accounts) {
-    final currentBudget = _budgetStreamController.value;
-    _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
+  Future<void> updateBudgetOnTransaction(Transaction transaction) async {
+    //final currentBudget = _budgetStreamController.value;
+    //_budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
   }
 
   Category _getCategoryById(String id) =>
@@ -415,9 +415,95 @@ class BudgetRepositoryIsar extends BudgetRepository {
   }
 
   @override
-  void pushUpdatedAccounts(List<Account> accounts) {
-    final currentBudget = _budgetStreamController.value;
-    _budgetStreamController.add(currentBudget.copyWith(accountList: accounts));
+  Future<void> updateBudgetOnTransaction(Transaction transaction) async {
+    final budget = _budgetStreamController.value;
+    final updatedAccounts = transaction.type == TransactionType.TRANSFER
+        ? await _updateBudgetOnTransfer(budget: budget, transfer: transaction)
+        : await _updateBudgetOnTransaction(budget: budget, transaction: transaction);
+
+    await isar.writeTxn(() async {
+      await isar.budgets.put(budget.copyWith(accountList: updatedAccounts));
+    });
+    _budgetStreamController.add(budget.copyWith(accountList: updatedAccounts));
+  }
+
+  Future<List<Account>> _updateBudgetOnTransaction({required Budget budget, required Transaction transaction}) async {
+    List<Account> updatedAccounts = [];
+
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (transaction.id != null) {
+      final editedTr = await isar.transactions.get(transaction.isarId);
+      updatedAccounts = budget.accountList.map((acc) {
+        if (acc.id == editedTr!.fromAccountId) {
+          return acc.copyWith(
+              balance: acc.balance +
+                  (editedTr.type == TransactionType.EXPENSE
+                      ? editedTr.amount
+                      : -editedTr.amount));
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...budget.accountList];
+    }
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transaction.fromAccountId) {
+        return acc.copyWith(
+            balance: acc.balance +
+                (transaction.type == TransactionType.EXPENSE
+                    ? -transaction.amount
+                    : transaction.amount));
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    return updatedAccounts;
+  }
+
+  Future<List<Account>> _updateBudgetOnTransfer({required Budget budget, required Transaction transfer}) async {
+    List<Account> updatedAccounts = [];
+
+    //find the acc from editedTransaction and return amount
+    //find the acc from transaction and update amount
+    if (transfer.id != null) {
+      final editedTr = await isar.transactions.get(transfer.isarId);
+      updatedAccounts = budget.accountList.map((acc) {
+        if (acc.id == editedTr!.fromAccountId) {
+          return acc.copyWith(balance: acc.balance + editedTr.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+      updatedAccounts = updatedAccounts.map((acc) {
+        if (acc.id == editedTr!.toAccountId) {
+          return acc.copyWith(balance: acc.balance - editedTr.amount);
+        } else {
+          return acc;
+        }
+      }).toList();
+    } else {
+      updatedAccounts = [...budget.accountList];
+    }
+
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.fromAccountId) {
+        return acc.copyWith(balance: acc.balance - transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+    updatedAccounts = updatedAccounts.map((acc) {
+      if (acc.id == transfer.toAccountId) {
+        return acc.copyWith(balance: acc.balance + transfer.amount);
+      } else {
+        return acc;
+      }
+    }).toList();
+
+    return updatedAccounts;
   }
 
   Category _getCategoryById(String id) =>

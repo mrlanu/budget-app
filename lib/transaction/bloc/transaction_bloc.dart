@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/transaction/models/comprehensive_transaction.dart';
-import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -77,11 +75,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       subcategory = tr.subcategory!;
       account = tr.fromAccount;
     }
-    //for amount update on desktop view
-    await Future.delayed(Duration(milliseconds: 100));
 
     emit(state.copyWith(
-        editedTransaction: tr,
         id: id,
         transactionType: event.transactionType,
         amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
@@ -138,7 +133,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transaction = Transaction(
       id: state.id,
-      budgetId: (await Cache.instance.getBudgetId())!,
+      budgetId: state.budget.id,
       date: state.date ?? DateTime.now(),
       type: state.transactionType,
       amount: double.parse(state.amount.value),
@@ -147,54 +142,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       fromAccountId: state.account!.id,
     );
     try {
-      await state.editedTransaction == null
-          ? _transactionsRepository.createTransaction(transaction)
-          : _transactionsRepository.updateTransaction(transaction);
-      _updateBudgetOnAddOrEditTransaction(
-          transaction: transaction, editedTransaction: state.editedTransaction);
+      await _budgetRepository.updateBudgetOnTransaction(transaction);
+      await _transactionsRepository.saveTransaction(transaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(transactionType: transaction.type!))
-          : Navigator.of(event.context!).pop();
+      Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
-  }
-
-  void _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction, ComprehensiveTransaction? editedTransaction}) {
-    List<Account> updatedAccounts = [];
-    final accounts = state.budget.accountList;
-    //find the acc from editedTransaction and return amount
-    //find the acc from transaction and update amount
-    if (editedTransaction != null) {
-      updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransaction.fromAccount!.id) {
-          return acc.copyWith(
-              balance: acc.balance +
-                  (editedTransaction.type == TransactionType.EXPENSE
-                      ? editedTransaction.amount
-                      : -editedTransaction.amount));
-        } else {
-          return acc;
-        }
-      }).toList();
-    } else {
-      updatedAccounts = [...accounts];
-    }
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccountId) {
-        return acc.copyWith(
-            balance: acc.balance +
-                (transaction.type == TransactionType.EXPENSE
-                    ? -transaction.amount
-                    : transaction.amount));
-      } else {
-        return acc;
-      }
-    }).toList();
-
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
   }
 
   @override

@@ -7,8 +7,6 @@ import 'package:network/network.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../accounts_list/models/account.dart';
-import '../../budgets/models/budget.dart';
 import '../../constants/api.dart';
 import '../transaction.dart';
 
@@ -25,9 +23,7 @@ abstract class TransactionsRepository {
 
   void fetchTransactions(DateTime dateTime);
 
-  Future<void> createTransaction(Transaction transaction);
-
-  Future<void> updateTransaction(Transaction transaction);
+  Future<void> saveTransaction(Transaction transaction);
 
   Future<void> deleteTransactionOrTransfer(
       {required ComprehensiveTransaction transaction});
@@ -62,7 +58,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
   }
 
   @override
-  Future<void> createTransaction(Transaction transaction) async {
+  Future<void> saveTransaction(Transaction transaction) async {
     try {
       final response = await _networkClient.post<Map<String, dynamic>>(
           baseURL + '/api/transactions',
@@ -138,32 +134,19 @@ class TransactionsRepositoryIsar extends TransactionsRepository {
   }
 
   @override
-  Future<void> createTransaction(Transaction transaction) async {
+  Future<void> saveTransaction(Transaction transaction) async {
+    final transactions = [..._transactionsStreamController.value];
     if (transaction.id == null) {
       transaction = transaction.copyWith(id: Uuid().v4());
+      transactions.add(transaction);
+    } else{
+      final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
+      transactions.removeAt(trIndex);
+      transactions.insert(trIndex, transaction);
     }
-
-    await _updateBudgetOnAddOrEditTransaction(transaction: transaction);
     await isar.writeTxn(() async {
       await isar.transactions.put(transaction);
     });
-    final transactions = [..._transactionsStreamController.value];
-    transactions.add(transaction);
-    _transactionsStreamController.add(transactions);
-  }
-
-  @override
-  Future<void> updateTransaction(Transaction transaction) async {
-    await _updateBudgetOnAddOrEditTransaction(
-        transaction: transaction, editedTransaction: true);
-    await isar.writeTxn(() async {
-      await isar.transactions.put(transaction); // perform update operations
-    });
-
-    final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
-    transactions.removeAt(trIndex);
-    transactions.insert(trIndex, transaction);
     _transactionsStreamController.add(transactions);
   }
 
@@ -179,44 +162,4 @@ class TransactionsRepositoryIsar extends TransactionsRepository {
     _transactionsStreamController.add(transactions);
   }
 
-  Future<void> _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction,
-      bool editedTransaction = false}) async {
-    final budget = await isar.budgets.get(fastHash(transaction.budgetId));
-    List<Account> updatedAccounts = [];
-
-    //find the acc from editedTransaction and return amount
-    //find the acc from transaction and update amount
-    if (editedTransaction) {
-      final editedTr = await isar.transactions.get(transaction.isarId);
-      updatedAccounts = budget!.accountList.map((acc) {
-        if (acc.id == transaction.fromAccountId) {
-          return acc.copyWith(
-              balance: acc.balance +
-                  (editedTr!.type == TransactionType.EXPENSE
-                      ? editedTr.amount
-                      : -editedTr.amount));
-        } else {
-          return acc;
-        }
-      }).toList();
-    } else {
-      updatedAccounts = [...budget!.accountList];
-    }
-    updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccountId) {
-        return acc.copyWith(
-            balance: acc.balance +
-                (transaction.type == TransactionType.EXPENSE
-                    ? -transaction.amount
-                    : transaction.amount));
-      } else {
-        return acc;
-      }
-    }).toList();
-
-    await isar.writeTxn(() async {
-      await isar.budgets.put(budget.copyWith(accountList: updatedAccounts));
-    });
-  }
 }

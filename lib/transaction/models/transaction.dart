@@ -111,7 +111,7 @@ class Transaction {
       type: type ?? this.type,
       amount: amount ?? this.amount,
       fromAccountId: fromAccountId ?? this.fromAccountId,
-      toAccountId: toAccountId ?? this.fromAccountId,
+      toAccountId: toAccountId ?? this.toAccountId,
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
       subcategoryId: subcategoryId ?? this.subcategoryId,

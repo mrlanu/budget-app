@@ -108,7 +108,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> undoDelete() async {
     await _transactionsRepository
-        .createTransaction(state.lastDeletedTransaction!.toTransaction());
+        .saveTransaction(state.lastDeletedTransaction!.toTransaction());
     if (state.lastDeletedTransaction!.type == TransactionType.TRANSFER) {
       _updateBudgetOnUndoDeleteTransfer(
           transfer: state.lastDeletedTransaction!);
@@ -137,7 +137,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    //_budgetRepository.updateBudgetOnTransaction(updatedAccounts);
   }
 
   void _updateBudgetOnDeleteTransfer(
@@ -161,7 +161,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    //_budgetRepository.updateBudgetOnTransaction(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransaction(
@@ -181,7 +181,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    //_budgetRepository.updateBudgetOnTransaction(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransfer(
@@ -206,7 +206,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    //_budgetRepository.updateBudgetOnTransaction(updatedAccounts);
   }
 
   Future<void> deleteBudget() async {

@@ -3,7 +3,6 @@ part of 'transfer_bloc.dart';
 enum TransferStatus { loading, success, failure }
 
 class TransferState extends Equatable {
-  final ComprehensiveTransaction? editedTransfer;
   final String? id;
   final Amount amount;
   final DateTime? date;
@@ -17,7 +16,7 @@ class TransferState extends Equatable {
   final Budget budget;
 
   TransferState(
-      {this.editedTransfer,
+      {
       this.id,
       this.amount = const Amount.pure(),
       this.date,
@@ -45,7 +44,6 @@ class TransferState extends Equatable {
     String? errorMessage,
   }) {
     return TransferState(
-      editedTransfer: editedTransfer ?? this.editedTransfer,
       id: id ?? this.id,
       trStatus: trStatus ?? this.trStatus,
       amount: amount ?? this.amount,
@@ -62,7 +60,6 @@ class TransferState extends Equatable {
 
   @override
   List<Object?> get props => [
-        editedTransfer,
         id,
         trStatus,
         amount,
