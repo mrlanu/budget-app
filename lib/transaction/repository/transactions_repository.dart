@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:budget_app/utils/fasthash.dart';
+import 'package:budget_app/utils/fast_hash.dart';
 import 'package:cache/cache.dart';
 import 'package:isar/isar.dart';
 import 'package:network/network.dart';
@@ -59,41 +59,31 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
 
   @override
   Future<void> saveTransaction(Transaction transaction) async {
-    try {
+    final transactions = [..._transactionsStreamController.value];
+    if (transaction.id == null) {
       final response = await _networkClient.post<Map<String, dynamic>>(
           baseURL + '/api/transactions',
           data: transaction.toJson());
       final newTransaction = Transaction.fromJson(response.data!);
-      final transactions = [..._transactionsStreamController.value];
       transactions.add(newTransaction);
-      _transactionsStreamController.add(transactions);
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
-
-  @override
-  Future<void> updateTransaction(Transaction transaction) async {
-    try {
+    } else{
       final response = await _networkClient.put<Map<String, dynamic>>(
           baseURL + '/api/transactions',
           data: transaction.toJson());
-      final updatedTransaction = Transaction.fromJson(response.data!);
-      final transactions = [..._transactionsStreamController.value];
-      final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
+      final newTransaction = Transaction.fromJson(response.data!);
+      final trIndex = transactions.indexWhere((t) => t.id == newTransaction.id);
       transactions.removeAt(trIndex);
-      transactions.insert(trIndex, transaction);
-      _transactionsStreamController.add(transactions);
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+      transactions.insert(trIndex, newTransaction);
     }
+    _transactionsStreamController.add(transactions);
+
   }
 
   @override
   Future<void> deleteTransactionOrTransfer(
       {required ComprehensiveTransaction transaction}) async {
     try {
-      final response = await _networkClient
+      await _networkClient
           .delete(baseURL + '/api/transactions/${transaction.id}');
       final transactions = [..._transactionsStreamController.value];
       final trIndex = transactions.indexWhere((t) => t.id == transaction.id);

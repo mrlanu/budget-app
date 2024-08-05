@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isar/isar.dart';
 
 import '../../auth/auth.dart';
-import '../../budgets/repository/budget_repository.dart';
+import '../../budgets/repository/repository.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
 import '../../transaction/repository/transactions_repository.dart';

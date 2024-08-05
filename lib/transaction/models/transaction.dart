@@ -2,7 +2,7 @@ import 'package:budget_app/budgets/budgets.dart';
 import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../utils/fasthash.dart';
+import '../../utils/fast_hash.dart';
 import '../transaction.dart';
 
 part 'transaction.g.dart';
