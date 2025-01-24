@@ -1,6 +1,4 @@
-import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/debt_tile.dart';
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +18,7 @@ class DebtCarousel extends StatefulWidget {
 
 class _DebtCarouselState extends State<DebtCarousel> {
   int _current = 0;
-  final CarouselController _controller = CarouselController();
+  final CarouselSliderController _controller = CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {

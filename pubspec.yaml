@@ -35,7 +35,7 @@ dependencies:
   firebase_core: ^2.25.4
   firebase_auth: ^4.17.5
   cloud_firestore: ^4.16.0
-  carousel_slider: ^4.2.1
+  carousel_slider: ^5.0.0
   adaptive_breakpoints: ^0.1.6
   font_awesome_flutter: ^10.5.0
   flow_builder: ^0.0.10
