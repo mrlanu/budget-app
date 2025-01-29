@@ -12,6 +12,7 @@ class User extends Equatable {
     this.id,
     this.token,
     this.email,
+    this.isVerified,
     this.name,
     this.photo,
   });
@@ -23,6 +24,7 @@ class User extends Equatable {
       id: data?['id'] as String?,
       token: data?['token'] as String?,
       email: data?['email'] as String?,
+      isVerified: data?['isVerified'] as bool,
       name: data?['name'] as String?,
       photo: data?['photo'] as String?,
     );
@@ -33,6 +35,7 @@ class User extends Equatable {
       if (id != null) 'id': id,
       if (token != null) 'token': token,
       if (email != null) 'email': email,
+      if (isVerified != null) 'isVerified': isVerified,
       if (name != null) 'name': name,
       if (photo != null) 'photo': photo,
     };
@@ -40,6 +43,9 @@ class User extends Equatable {
 
   /// The current user's email address.
   final String? email;
+
+  /// is email verified
+  final bool? isVerified;
 
   /// The current user's id.
   final String? id;
@@ -63,5 +69,5 @@ class User extends Equatable {
   bool get isNotEmpty => this != User.empty;
 
   @override
-  List<Object?> get props => [email, id, token, name, photo];
+  List<Object?> get props => [email, isVerified, id, token, name, photo];
 }

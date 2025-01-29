@@ -10,7 +10,7 @@ class AuthenticationRepository {
   /// {@macro authentication_repository}
   AuthenticationRepository({
     firebase_auth.FirebaseAuth? firebaseAuth,
-  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
 
   final firebase_auth.FirebaseAuth _firebaseAuth;
 
@@ -29,15 +29,16 @@ class AuthenticationRepository {
   /// Creates a new user with the provided [email] and [password].
   ///
   /// Throws a [SignUpWithEmailAndPasswordFailure] if an exception occurs.
-  Future<String> signUp({required String email,
-    required String password,}) async {
+  Future<String> signUp({
+    required String email,
+    required String password,
+  }) async {
     try {
       final result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       return await result.user!.getIdToken() ?? '';
-
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (_) {
@@ -64,6 +65,14 @@ class AuthenticationRepository {
     }
   }
 
+  Future<void> sendVerificationEmail() =>
+      _firebaseAuth.currentUser!.sendEmailVerification();
+
+  Future<User> reloadUser() async {
+    await _firebaseAuth.currentUser!.reload();
+    return _firebaseAuth.currentUser!.toUser;
+  }
+
   /// Signs out the current user which will emit
   /// [User.empty] from the [user] Stream.
   ///
@@ -86,6 +95,7 @@ extension on firebase_auth.User {
       token: await getIdToken(),
       email: email,
       name: displayName,
+      isVerified: emailVerified,
       photo: photoURL,
     );
   }

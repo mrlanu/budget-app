@@ -4,6 +4,7 @@ import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/charts/view/category_chart_page.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
+import 'package:budget_app/email_verification/view/email_verification_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
@@ -53,9 +54,15 @@ final GoRouter _router = GoRouter(
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
   final authStatus = context.read<AuthBloc>().state.status;
   final bool signedIn = authStatus == AuthStatus.authenticated;
+
   if (authStatus == AuthStatus.unknown) {
     return '/splash';
   }
+
+  if(authStatus == AuthStatus.unverified){
+    return '/verify-email';
+  }
+
   final bool signingIn =
       ['/login', '/signup', '/splash'].contains(state.matchedLocation);
   if (!signedIn && !signingIn) {
@@ -252,6 +259,12 @@ final List<RouteBase> _individualRoutes = [
     path: '/debt-payoff',
     builder: (BuildContext context, GoRouterState state) {
       return DebtPayoffPage();
+    },
+  ),
+  GoRoute(
+    path: '/verify-email',
+    builder: (BuildContext context, GoRouterState state) {
+      return EmailVerificationPage();
     },
   ),
 ];
