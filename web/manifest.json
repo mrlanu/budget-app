@@ -1,10 +1,10 @@
 {
-    "name": "My Budget",
+    "name": "Qruto Budget",
     "short_name": "Budget",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#607D8B",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
     "description": "A Budget app",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
