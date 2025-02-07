@@ -15,7 +15,7 @@ SummaryTile _$SummaryTileFromJson(Map<String, dynamic> json) => SummaryTile(
                   ComprehensiveTransaction.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      iconCodePoint: json['iconCodePoint'] as int,
+      iconCodePoint: (json['iconCodePoint'] as num).toInt(),
       isExpanded: json['isExpanded'] as bool? ?? false,
     );
 

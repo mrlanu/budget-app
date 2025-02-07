@@ -8,7 +8,7 @@ part of 'debt_strategy_report.dart';
 
 DebtStrategyReport _$DebtStrategyReportFromJson(Map<String, dynamic> json) =>
     DebtStrategyReport(
-      duration: json['duration'] as int,
+      duration: (json['duration'] as num).toInt(),
       extraPayments: (json['extraPayments'] as List<dynamic>)
           .map((e) => DebtReportItem.fromJson(e as Map<String, dynamic>))
           .toList(),

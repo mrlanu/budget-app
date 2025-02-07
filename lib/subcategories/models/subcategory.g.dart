@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../subcategories/models/subcategory.dart';
+part of 'subcategory.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

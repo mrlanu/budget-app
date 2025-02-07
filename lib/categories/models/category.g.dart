@@ -9,7 +9,7 @@ part of 'category.dart';
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
       id: json['id'] as String,
       name: json['name'] as String,
-      iconCode: json['iconCode'] as int? ?? 0,
+      iconCode: (json['iconCode'] as num?)?.toInt() ?? 0,
       subcategoryList: (json['subcategoryList'] as List<dynamic>?)
               ?.map((e) => Subcategory.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -29,6 +29,6 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
 const _$TransactionTypeEnumMap = {
   TransactionType.EXPENSE: 'EXPENSE',
   TransactionType.INCOME: 'INCOME',
-  TransactionType.TRANSFER: 'TRANSFER',
   TransactionType.ACCOUNT: 'ACCOUNT',
+  TransactionType.TRANSFER: 'TRANSFER',
 };

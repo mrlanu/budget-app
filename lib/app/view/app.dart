@@ -1,4 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:budget_app/transaction/repository/drift_transactions_repository.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class App extends StatelessWidget {
   final AuthenticationRepository _authRepo = AuthenticationRepository();
   final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
   final TransactionsRepository _transactionsRepository =
-      TransactionsRepositoryImpl();
+      DriftTransactionsRepository();
 
   @override
   Widget build(BuildContext context) {

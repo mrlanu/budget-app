@@ -8,7 +8,7 @@ part of 'debt_payoff_strategy.dart';
 
 DebtPayoffStrategy _$DebtPayoffStrategyFromJson(Map<String, dynamic> json) =>
     DebtPayoffStrategy(
-      totalDuration: json['totalDuration'] as int,
+      totalDuration: (json['totalDuration'] as num).toInt(),
       totalInterest: (json['totalInterest'] as num).toDouble(),
       debtFreeDate: DateTime.parse(json['debtFreeDate'] as String),
       reports: (json['reports'] as List<dynamic>)
