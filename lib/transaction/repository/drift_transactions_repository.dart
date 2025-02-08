@@ -4,23 +4,23 @@ import 'package:budget_app/database/database.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../transfer/models/transfer.dart';
-import '../transaction.dart';
+import '../transaction.dart' as tr;
 
-class DriftTransactionsRepository extends TransactionsRepository {
+class DriftTransactionsRepository extends tr.TransactionsRepository {
   DriftTransactionsRepository({AppDatabase? database})
       : _database = database ?? AppDatabase();
 
   final AppDatabase _database;
-  final _transactionsStreamController =
-      BehaviorSubject<List<Transaction>>();
+  final _transactionsStreamController = BehaviorSubject<List<tr.Transaction>>();
 
   @override
-  Stream<List<Transaction>> get transactions =>
+  Stream<List<tr.Transaction>> get transactions =>
       _transactionsStreamController.asBroadcastStream();
 
   @override
   void fetchTransactions(DateTime dateTime) async {
-    List<TodoItem> allItems = await _database.select(_database.todoItems).get();
+    List<Category> allItems =
+        await _database.select(_database.categories).get();
 
     print('items in database: $allItems');
     /*try {
@@ -39,11 +39,14 @@ class DriftTransactionsRepository extends TransactionsRepository {
   }
 
   @override
-  Future<void> createTransaction(Transaction transaction) async {
-    await _database.into(_database.todoItems).insert(TodoItemsCompanion.insert(
-      title: 'todo: finish drift setup',
-      content: 'We can now write queries and define our own tables.',
-    ));
+  Future<void> createTransaction(tr.Transaction transaction) async {
+    await _database
+        .into(_database.categories)
+        .insert(CategoriesCompanion.insert(
+          name: 'todo: finish drift setup',
+          iconCode: 17,
+          type: tr.TransactionType.EXPENSE,
+        ));
     /*try {
       final response = await _networkClient.post<Map<String, dynamic>>(
           baseURL + '/api/transactions',
@@ -58,7 +61,7 @@ class DriftTransactionsRepository extends TransactionsRepository {
   }
 
   @override
-  Future<void> updateTransaction(Transaction transaction) async {
+  Future<void> updateTransaction(tr.Transaction transaction) async {
     /*try {
       final response = await _networkClient.put<Map<String, dynamic>>(
           baseURL + '/api/transactions',
@@ -76,7 +79,6 @@ class DriftTransactionsRepository extends TransactionsRepository {
 
   @override
   Future<void> updateTransfer(Transfer transfer) async {
-
     /*try {
       final response = await _networkClient.put<Map<String, dynamic>>(
           baseURL + '/api/transactions',
@@ -95,7 +97,7 @@ class DriftTransactionsRepository extends TransactionsRepository {
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required ComprehensiveTransaction transaction}) async {
+      {required tr.ComprehensiveTransaction transaction}) async {
     /*try {
       final response = await _networkClient.delete(
           baseURL + '/api/transactions/${transaction.id}');
