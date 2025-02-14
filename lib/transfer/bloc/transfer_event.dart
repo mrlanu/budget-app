@@ -8,7 +8,7 @@ sealed class TransferEvent extends Equatable {
 }
 
 final class TransferFormLoaded extends TransferEvent {
-  final ComprehensiveTransaction? transaction;
+  final TransactionTile? transaction;
   const TransferFormLoaded({this.transaction});
 
   @override
@@ -48,13 +48,6 @@ final class TransferNotesChanged extends TransferEvent {
   const TransferNotesChanged({this.notes});
   @override
   List<Object?> get props => [notes];
-}
-
-final class TransferBudgetChanged extends TransferEvent {
-  final Budget budget;
-  const TransferBudgetChanged({required this.budget});
-  @override
-  List<Object?> get props => [budget];
 }
 
 final class TransferFormSubmitted extends TransferEvent {

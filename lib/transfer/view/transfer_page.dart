@@ -1,26 +1,19 @@
-import 'package:budget_app/budgets/budgets.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
-  const TransferPage({super.key, this.transaction, required this.budget});
+  const TransferPage({super.key, this.transaction});
 
-  final ComprehensiveTransaction? transaction;
-  final Budget budget;
+  final TransactionTile? transaction;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TransferBloc(
-          transactionsRepository: context.read<TransactionsRepository>(),
-          budgetRepository: context.read<BudgetRepository>())
-          ..add(TransferBudgetChanged(
-          budget: budget!))
+      create: (context) => TransferBloc(transactionsRepository: context.read<TransactionRepository>())
         ..add(TransferFormLoaded(transaction: transaction)),
       child: TransferView(),
     );
@@ -59,7 +52,7 @@ class TransferWindow extends StatelessWidget {
 
   static Widget window(
       {Key? key,
-      ComprehensiveTransaction? transaction,
+      TransactionTile? transaction,
       required TransactionType transactionType}) {
     return TransferWindow(
       key: key,

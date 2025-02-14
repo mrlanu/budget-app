@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:cache/cache.dart';
-import 'package:network/network.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:budget_app/database/transaction_with_detail.dart';
 
-import '../../constants/api.dart';
-import '../../transfer/models/transfer.dart';
-import '../transaction.dart';
+import '../../database/database.dart';
+import '../models/transaction_tile.dart';
 
 class TransactionFailure implements Exception {
   final String message;
@@ -16,8 +13,8 @@ class TransactionFailure implements Exception {
   ]);
 }
 
-abstract class TransactionsRepository {
-  Stream<List<Transaction>> get transactions;
+abstract class TransactionRepository {
+  Stream<List<TransactionWithDetails>> get transactions;
 
   void fetchTransactions(DateTime dateTime);
 
@@ -25,22 +22,20 @@ abstract class TransactionsRepository {
 
   Future<void> updateTransaction(Transaction transaction);
 
-  Future<void> updateTransfer(Transfer transfer);
-
   Future<void> deleteTransactionOrTransfer(
-      {required ComprehensiveTransaction transaction});
+      {required TransactionTile transaction});
 }
 
-class TransactionsRepositoryImpl extends TransactionsRepository {
+/*class TransactionsRepositoryImpl extends TransactionRepository {
   TransactionsRepositoryImpl({NetworkClient? networkClient})
       : _networkClient = networkClient ?? NetworkClient.instance;
 
   final NetworkClient _networkClient;
   final _transactionsStreamController =
-      BehaviorSubject<List<Transaction>>();
+      BehaviorSubject<List<TransactionWithDetails>>();
 
   @override
-  Stream<List<Transaction>> get transactions =>
+  Stream<List<TransactionWithDetails>> get transactions =>
       _transactionsStreamController.asBroadcastStream();
 
   @override
@@ -92,7 +87,7 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     }
   }
 
-  @override
+  *//*@override
   Future<void> updateTransfer(Transfer transfer) async {
 
     try {
@@ -109,11 +104,11 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
     }
-  }
+  }*//*
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required ComprehensiveTransaction transaction}) async {
+      {required TransactionTile transaction}) async {
     try {
       final response = await _networkClient.delete(
           baseURL + '/api/transactions/${transaction.id}');
@@ -125,4 +120,4 @@ class TransactionsRepositoryImpl extends TransactionsRepository {
       throw NetworkException.fromDioError(e);
     }
   }
-}
+}*/

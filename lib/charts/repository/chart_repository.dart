@@ -7,9 +7,9 @@ import '../../constants/api.dart';
 abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
 
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId);
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId);
 
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id);
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(int id);
 }
 
 class ChartRepositoryImpl extends ChartRepository {
@@ -34,7 +34,7 @@ class ChartRepositoryImpl extends ChartRepository {
   }
 
   @override
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId) async {
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) async {
     try {
       final response = await _networkClient.get<List<dynamic>>(
           baseURL + '/api/charts/category-chart',
@@ -49,7 +49,7 @@ class ChartRepositoryImpl extends ChartRepository {
   }
 
   @override
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id) async {
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(int id) async {
     try {
       final response = await _networkClient.get<List<dynamic>>(
           baseURL + '/api/charts/subcategory-chart',

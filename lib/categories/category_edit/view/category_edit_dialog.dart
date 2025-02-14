@@ -1,13 +1,12 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/transaction/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
 import '../../../constants/constants.dart';
+import '../../../database/database.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
-import '../../models/category.dart';
 import '../category_edit.dart';
 
 class CategoryEditDialog extends StatelessWidget {
@@ -20,9 +19,7 @@ class CategoryEditDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          CategoryEditBloc(budgetRepository: context.read<BudgetRepository>())
-            ..add(CategoryBudgetChanged(
-                budget: context.read<HomeCubit>().state.budget))
+          CategoryEditBloc(categoryRepository: context.read<CategoryRepository>())
             ..add(CategoryEditFormLoaded(category: category, type: type)),
       child: CategoryEditForm(),
     );

@@ -7,7 +7,7 @@ import '../../../transaction/transaction.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final ComprehensiveTransaction transactionTile;
+  final TransactionTile transactionTile;
   final DismissDirectionCallback? onDismissed;
   final VoidCallback? onTap;
 

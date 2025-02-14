@@ -1,16 +1,12 @@
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 import '../../transaction/transaction.dart';
 
-part 'summary_tile.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class SummaryTile extends Equatable {
-  final String id;
+  final int id;
   final String name;
   final double total;
-  final List<ComprehensiveTransaction> comprehensiveTr;
+  final List<TransactionTile> comprehensiveTr;
   final int iconCodePoint;
   final bool isExpanded;
 
@@ -23,10 +19,10 @@ class SummaryTile extends Equatable {
       this.isExpanded = false});
 
   SummaryTile copyWith(
-      {String? id,
+      {int? id,
       String? name,
       double? total,
-      List<ComprehensiveTransaction>? comprehensiveTr,
+      List<TransactionTile>? comprehensiveTr,
       int? iconCodePoint,
       bool? isExpanded}) {
     return SummaryTile(
@@ -37,11 +33,6 @@ class SummaryTile extends Equatable {
         iconCodePoint: iconCodePoint ?? this.iconCodePoint,
         isExpanded: isExpanded ?? this.isExpanded);
   }
-
-  factory SummaryTile.fromJson(Map<String, dynamic> json) =>
-      _$SummaryTileFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SummaryTileToJson(this);
 
   @override
   List<Object?> get props =>

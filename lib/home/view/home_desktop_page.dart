@@ -1,3 +1,5 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/navigation/main_drawer.dart';
@@ -6,7 +8,6 @@ import 'package:budget_app/transfer/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../../constants/colors.dart';
 import '../../debt_payoff_planner/view/payoff_page.dart';
 import '../../shared/widgets/month_paginator.dart';
@@ -23,16 +24,18 @@ class HomeDesktopPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => TransactionBloc(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            budgetRepository: context.read<BudgetRepository>()
+            transactionsRepository: context.read<TransactionRepository>(),
+            categoryRepository: context.read<CategoryRepository>(),
+            accountRepository: context.read<AccountRepository>(),
           )..add(TransactionFormLoaded(
-              transactionType: TransactionType.EXPENSE,)),
+              transactionType: TransactionType.EXPENSE,
+            )),
         ),
         BlocProvider(
           create: (context) => TransferBloc(
-            transactionsRepository: context.read<TransactionsRepositoryImpl>(),
-            budgetRepository: context.read<BudgetRepository>()
-          )..add(TransferFormLoaded()),
+              transactionsRepository:
+                  context.read<TransactionRepository>(),)
+            ..add(TransferFormLoaded()),
         ),
       ],
       child: Scaffold(body: HomeGrid()),
@@ -72,7 +75,9 @@ class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
             controller: _tabController,
             children: [
               HomeViewDesktop(),
-              Center(child: Container(width: w * 0.5, height: h * 0.9, child: SummaryPage())),
+              Center(
+                  child: Container(
+                      width: w * 0.5, height: h * 0.9, child: SummaryPage())),
               TrendChartDesktopView(),
               DebtPayoffViewDesktop(),
             ],

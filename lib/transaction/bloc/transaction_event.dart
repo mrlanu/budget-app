@@ -8,7 +8,7 @@ sealed class TransactionEvent extends Equatable {
 }
 
 final class TransactionFormLoaded extends TransactionEvent {
-  final ComprehensiveTransaction? transaction;
+  final TransactionTile? transaction;
   final TransactionType transactionType;
   const TransactionFormLoaded(
       {this.transaction, required this.transactionType,});
@@ -16,11 +16,18 @@ final class TransactionFormLoaded extends TransactionEvent {
   List<Object?> get props => [transaction, transactionType,];
 }
 
-final class TransactionBudgetChanged extends TransactionEvent {
-  final Budget budget;
-  const TransactionBudgetChanged({required this.budget});
+final class TransactionCategoriesChanged extends TransactionEvent {
+  final List<Category> categories;
+  const TransactionCategoriesChanged({required this.categories});
   @override
-  List<Object?> get props => [budget];
+  List<Object?> get props => [categories];
+}
+
+final class TransactionAccountsChanged extends TransactionEvent {
+  final List<AccountWithDetails> accounts;
+  const TransactionAccountsChanged({required this.accounts});
+  @override
+  List<Object?> get props => [accounts];
 }
 
 final class TransactionAmountChanged extends TransactionEvent {
@@ -52,7 +59,7 @@ final class TransactionSubcategoryChanged extends TransactionEvent {
 }
 
 final class TransactionAccountChanged extends TransactionEvent {
-  final Account? account;
+  final AccountWithDetails? account;
   const TransactionAccountChanged({this.account});
   @override
   List<Object?> get props => [account];

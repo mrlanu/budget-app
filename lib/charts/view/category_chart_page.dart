@@ -2,13 +2,11 @@ import 'package:budget_app/charts/cubit/chart_cubit.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/charts/view/category_table.dart';
 import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/home/cubit/home_cubit.dart';
-import 'package:budget_app/subcategories/models/models.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../categories/models/category.dart';
+import '../../database/database.dart';
 import '../charts.dart';
 
 class CategoryChartPage extends StatelessWidget {
@@ -19,7 +17,7 @@ class CategoryChartPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => ChartCubit(
           chartRepository: ChartRepositoryImpl(),
-          budget: context.read<HomeCubit>().state.budget)
+          categories: [])
         ..fetchCategoryChart(),
       child: CategoryChartView(),
     );
@@ -78,7 +76,7 @@ class TrendChartDesktopView extends StatelessWidget {
     return BlocProvider(
         create: (context) => ChartCubit(
             chartRepository: _repo,
-            budget: context.read<HomeCubit>().state.budget)
+            categories: [])
           ..fetchTrendChart(),
         child: TrendChartDesktopViewBody());
   }

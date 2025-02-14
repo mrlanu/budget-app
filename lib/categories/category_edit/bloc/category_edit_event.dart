@@ -32,11 +32,11 @@ final class CategoryIconChanged extends CategoryEditEvent {
 }
 
 
-final class CategoryBudgetChanged extends CategoryEditEvent {
-  final Budget budget;
-  const CategoryBudgetChanged({required this.budget});
+final class CategoriesChanged extends CategoryEditEvent {
+  final List<Category> categories;
+  const CategoriesChanged({required this.categories});
   @override
-  List<Object?> get props => [budget];
+  List<Object?> get props => [categories];
 }
 
 

@@ -3,11 +3,11 @@ part of 'account_edit_bloc.dart';
 enum AccountEditStatus { loading, success, failure }
 
 class AccountEditState extends Equatable {
-  final String? id;
-  final Budget? budget;
+  final int? id;
   final String? name;
   final Amount balance;
   final Category? category;
+  final List<Category> categories;
   final bool isIncludeInTotals;
   final FormzSubmissionStatus status;
   final bool isValid;
@@ -18,8 +18,8 @@ class AccountEditState extends Equatable {
     this.id,
     this.name,
     this.balance = const Amount.pure(),
-    this.budget,
     this.category,
+    this.categories = const [],
     this.isIncludeInTotals = true,
     this.status = FormzSubmissionStatus.initial,
     this.isValid = false,
@@ -28,11 +28,11 @@ class AccountEditState extends Equatable {
   });
 
   AccountEditState copyWith({
-    String? id,
+    int? id,
     String? name,
-    Budget? budget,
     Amount? balance,
     Category? category,
+    List<Category>? categories,
     bool? isIncludeInTotals,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -43,8 +43,8 @@ class AccountEditState extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       balance: balance ?? this.balance,
-      budget: budget ?? this.budget,
       category: category ?? this.category,
+      categories: categories ?? this.categories,
       isIncludeInTotals: isIncludeInTotals ?? this.isIncludeInTotals,
       isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -55,10 +55,10 @@ class AccountEditState extends Equatable {
   @override
   List<Object?> get props => [
         balance,
-        budget,
         id,
         name,
         category,
+        categories,
         isIncludeInTotals,
         status,
         isValid,

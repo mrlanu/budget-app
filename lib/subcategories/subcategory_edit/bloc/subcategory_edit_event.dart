@@ -22,11 +22,11 @@ final class SubcategoryNameChanged extends SubcategoryEditEvent {
 }
 
 
-final class SubcategoryBudgetChanged extends SubcategoryEditEvent {
-  final Budget budget;
-  const SubcategoryBudgetChanged({required this.budget});
+final class SubcategoriesChanged extends SubcategoryEditEvent {
+  final List<Subcategory> subcategories;
+  const SubcategoriesChanged({required this.subcategories});
   @override
-  List<Object?> get props => [budget];
+  List<Object?> get props => [subcategories];
 }
 
 

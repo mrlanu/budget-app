@@ -1,10 +1,10 @@
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../budgets/repository/budget_repository.dart';
-import '../../categories/models/category.dart';
 import '../../constants/colors.dart';
+import '../../database/database.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
@@ -18,7 +18,7 @@ class SubcategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubcategoriesCubit(
-          budgetRepository: context.read<BudgetRepository>(),
+          categoryRepository: context.read<CategoryRepository>(),
           category: category)
         ..onInit(category: category),
       child: SubcategoriesView(),

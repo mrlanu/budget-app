@@ -3,7 +3,7 @@ part of 'transfer_bloc.dart';
 enum TransferStatus { loading, success, failure }
 
 class TransferState extends Equatable {
-  final ComprehensiveTransaction? editedTransfer;
+  final TransactionTile? editedTransfer;
   final String? id;
   final Amount amount;
   final DateTime? date;
@@ -14,7 +14,6 @@ class TransferState extends Equatable {
   final FormzSubmissionStatus status;
   final bool isValid;
   final String? errorMessage;
-  final Budget budget;
 
   TransferState(
       {this.editedTransfer,
@@ -24,20 +23,18 @@ class TransferState extends Equatable {
       this.fromAccount,
       this.toAccount,
       this.notes = '',
-      this.budget = const Budget(),
       this.trStatus = TransferStatus.loading,
       this.status = FormzSubmissionStatus.initial,
       this.isValid = false,
       this.errorMessage});
 
   TransferState copyWith({
-    ComprehensiveTransaction? editedTransfer,
+    TransactionTile? editedTransfer,
     String? id,
     Amount? amount,
     DateTime? date,
     Account? fromAccount,
     Account? toAccount,
-    Budget? budget,
     String? notes,
     TransferStatus? trStatus,
     FormzSubmissionStatus? status,
@@ -50,7 +47,6 @@ class TransferState extends Equatable {
       trStatus: trStatus ?? this.trStatus,
       amount: amount ?? this.amount,
       date: date ?? this.date,
-      budget: budget ?? this.budget,
       fromAccount: fromAccount ?? this.fromAccount,
       toAccount: toAccount ?? this.toAccount,
       notes: notes ?? this.notes,
@@ -68,7 +64,6 @@ class TransferState extends Equatable {
         amount,
         date,
         fromAccount,
-        budget,
         toAccount,
         notes,
         status,

@@ -9,7 +9,7 @@ import '../../../transaction/transaction.dart';
 import '../../home.dart';
 
 class TransactionsList extends StatelessWidget {
-  final List<ComprehensiveTransaction> transactionTiles;
+  final List<TransactionTile> transactionTiles;
 
   TransactionsList({super.key, required this.transactionTiles});
 
@@ -36,12 +36,10 @@ class TransactionsList extends StatelessWidget {
                 return tr.type == TransactionType.TRANSFER
                     ? TransferPage(
                         transaction: tr,
-                        budget: context.read<HomeCubit>().state.budget,
                       )
                     : TransactionPage(
                         transaction: tr,
                         transactionType: tr.type,
-                        budget: context.read<HomeCubit>().state.budget,
                       );
               },
               tappable: true,

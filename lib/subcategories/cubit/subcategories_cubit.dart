@@ -1,40 +1,35 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:budget_app/database/database.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../budgets/budgets.dart';
-import '../../budgets/repository/budget_repository.dart';
-import '../../categories/models/category.dart';
-import '../models/subcategory.dart';
 
 part 'subcategories_state.dart';
 
 class SubcategoriesCubit extends Cubit<SubcategoriesState> {
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  final CategoryRepository _categoryRepository;
+  late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
 
   SubcategoriesCubit(
-      {required BudgetRepository budgetRepository, required Category category})
-      : _budgetRepository = budgetRepository,
+      {required CategoryRepository categoryRepository, required Category category})
+      : _categoryRepository = categoryRepository,
         super(SubcategoriesState(category: category)) {
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      _onBudgetChanged(budget);
+    _subcategoriesSubscription = _categoryRepository.subcategories.listen((subcategories) {
+      _onSubcategoriesChanged(subcategories);
     });
   }
 
   Future<void> onInit({required Category category}) async {
     emit(state.copyWith(
       status: SubcategoriesStatus.success,
-      category: category, subcategories: category.subcategoryList
+      category: category, subcategories: []
     ));
   }
 
-  void _onBudgetChanged(Budget budget) {
+  void _onSubcategoriesChanged(List<Subcategory> subcategories) {
     emit(state.copyWith(
-        subcategories: budget
-            .getCategoryById(state.category!.id)
-            .subcategoryList));
+        subcategories: subcategories));
   }
 
   void onNameChanged(String name) {
@@ -61,7 +56,7 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
 
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
+    _subcategoriesSubscription.cancel();
     return super.close();
   }
 }

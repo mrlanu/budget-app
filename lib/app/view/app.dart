@@ -1,38 +1,38 @@
-import 'package:authentication_repository/authentication_repository.dart';
-import 'package:budget_app/transaction/repository/drift_transactions_repository.dart';
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/accounts_list/repository/account_repository_drift.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:budget_app/categories/repository/category_repository_drift.dart';
+import 'package:budget_app/database/database.dart';
+import 'package:budget_app/transaction/repository/transaction_repository.dart';
+import 'package:budget_app/transaction/repository/transaction_repository_drift.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../auth/auth.dart';
-import '../../budgets/repository/budget_repository.dart';
 import '../../constants/constants.dart';
 import '../../navigation/router.dart';
-import '../../transaction/repository/transactions_repository.dart';
 
 class App extends StatelessWidget {
-  final AuthenticationRepository _authRepo = AuthenticationRepository();
-  final BudgetRepository _budgetRepository = BudgetRepositoryImpl();
-  final TransactionsRepository _transactionsRepository =
-      DriftTransactionsRepository();
+  final AppDatabase database = AppDatabase();
 
   @override
   Widget build(BuildContext context) {
+    final TransactionRepository transactionRepository =
+        TransactionRepositoryDrift(database: database);
+    final AccountRepository accountRepository =
+        AccountRepositoryDrift(database: database);
+    final CategoryRepository categoryRepository =
+        CategoryRepositoryDrift(database: database);
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (context) => _authRepo,
-        ),
-        RepositoryProvider(create: (context) => _budgetRepository),
-        RepositoryProvider(create: (context) => _transactionsRepository),
+        RepositoryProvider(create: (context) => categoryRepository),
+        RepositoryProvider(create: (context) => accountRepository),
+        RepositoryProvider(create: (context) => transactionRepository),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (_) => AuthBloc(authenticationRepository: _authRepo),
-          ),
           BlocProvider(
             create: (context) => ThemeCubit(),
           ),
@@ -55,32 +55,26 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     w = MediaQuery.of(context).size.width;
     h = MediaQuery.of(context).size.height;
-    return BlocListener<AuthBloc, AuthState>(
-        listenWhen: (previous, current) => previous != current,
-        listener: (context, state) {
-          router.refresh();
-          router.go('/');
+    return Responsive(
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          _setSystemUIOverlayStyle(state.primaryColor);
+          return MaterialApp.router(
+            routerConfig: router,
+            debugShowCheckedModeBanner: false,
+            themeMode: ThemeMode.values[state.mode],
+            theme: BudgetTheme(seedColors: (
+              primaryColor: state.primaryColor,
+              secondaryColor: state.secondaryColor
+            )).lightTheme,
+            darkTheme: BudgetTheme(seedColors: (
+              primaryColor: state.primaryColor,
+              secondaryColor: state.secondaryColor
+            )).darkTheme,
+          );
         },
-        child: Responsive(
-          child: BlocBuilder<ThemeCubit, ThemeState>(
-            builder: (context, state) {
-              _setSystemUIOverlayStyle(state.primaryColor);
-              return MaterialApp.router(
-                routerConfig: router,
-                debugShowCheckedModeBanner: false,
-                themeMode: ThemeMode.values[state.mode],
-                theme: BudgetTheme(seedColors: (
-                  primaryColor: state.primaryColor,
-                  secondaryColor: state.secondaryColor
-                )).lightTheme,
-                darkTheme: BudgetTheme(seedColors: (
-                  primaryColor: state.primaryColor,
-                  secondaryColor: state.secondaryColor
-                )).darkTheme,
-              );
-            },
-          ),
-        ));
+      ),
+    );
   }
 }
 

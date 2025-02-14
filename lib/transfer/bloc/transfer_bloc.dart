@@ -2,42 +2,30 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/budgets/budgets.dart';
-import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../accounts_list/models/account.dart';
-import '../../budgets/repository/budget_repository.dart';
-import '../../constants/constants.dart';
+import '../../database/database.dart';
 import '../../transaction/transaction.dart';
 
 part 'transfer_event.dart';
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
-  final TransactionsRepository _transactionsRepository;
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  final TransactionRepository _transactionsRepository;
 
   TransferBloc(
-      {required TransactionsRepository transactionsRepository,
-      required BudgetRepository budgetRepository})
+      {required TransactionRepository transactionsRepository,})
       : _transactionsRepository = transactionsRepository,
-        _budgetRepository = budgetRepository,
         super(TransferState()) {
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(TransferBudgetChanged(budget: budget));
-    });
     on<TransferEvent>(_onEvent, transformer: sequential());
   }
 
   Future<void> _onEvent(
       TransferEvent event, Emitter<TransferState> emit) async {
     return switch (event) {
-      final TransferBudgetChanged e => _onBudgetChanged(e, emit),
       final TransferFormLoaded e => _onFormLoaded(e, emit),
       final TransferAmountChanged e => _onAmountChanged(e, emit),
       final TransferDateChanged e => _onDateChanged(e, emit),
@@ -50,7 +38,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   Future<void> _onFormLoaded(
       TransferFormLoaded event, Emitter<TransferState> emit) async {
-    emit(state.copyWith(trStatus: TransferStatus.loading));
+    /*emit(state.copyWith(trStatus: TransferStatus.loading));
     final transaction = event.transaction;
     String? id;
     Account? fromAccount;
@@ -73,12 +61,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       date: transaction?.dateTime ?? DateTime.now(),
       notes: transaction?.description ?? '',
       isValid: transaction == null ? false : true,
-    ));
-  }
-
-  void _onBudgetChanged(
-      TransferBudgetChanged event, Emitter<TransferState> emit) {
-    emit(state.copyWith(budget: event.budget));
+    ));*/
   }
 
   void _onAmountChanged(
@@ -115,7 +98,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
   Future<void> _onFormSubmitted(
       TransferFormSubmitted event, Emitter<TransferState> emit) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+    /*emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final transfer = Transaction(
       id: state.id,
       type: TransactionType.TRANSFER,
@@ -138,13 +121,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
-    }
+    }*/
   }
 
   void _updateBudgetOnTransfer(
       {required Transaction transfer,
-      ComprehensiveTransaction? editedTransfer}) {
-    List<Account> updatedAccounts = [];
+      TransactionTile? editedTransfer}) {
+   /* List<Account> updatedAccounts = [];
 
     final accounts = state.budget.accountList;
     //find the acc from editedTransaction and return amount
@@ -183,12 +166,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
   }
 
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
     return super.close();
   }
 }

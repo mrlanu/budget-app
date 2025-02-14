@@ -2,39 +2,42 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/budgets/budgets.dart';
-import 'package:budget_app/constants/constants.dart';
-import 'package:budget_app/transaction/models/comprehensive_transaction.dart';
-import 'package:cache/cache.dart';
+import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:budget_app/database/database.dart';
+import 'package:budget_app/transaction/models/transaction_tile.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
-import '../../accounts_list/models/account.dart';
-import '../../budgets/repository/budget_repository.dart';
-import '../../categories/models/category.dart';
-import '../../subcategories/models/subcategory.dart';
-import '../models/transaction.dart';
 import '../models/transaction_type.dart';
-import '../repository/transactions_repository.dart';
+import '../repository/transaction_repository.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final TransactionsRepository _transactionsRepository;
-  final BudgetRepository _budgetRepository;
-  late final StreamSubscription<Budget> _budgetSubscription;
+  final TransactionRepository _transactionsRepository;
+  final CategoryRepository _categoryRepository;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
+  final AccountRepository _accountsRepository;
+  late final StreamSubscription<List<AccountWithDetails>> _accountsSubscription;
 
   TransactionBloc(
-      {required TransactionsRepository transactionsRepository,
-      required BudgetRepository budgetRepository})
+      {required TransactionRepository transactionsRepository,
+      required CategoryRepository categoryRepository,
+      required AccountRepository accountRepository})
       : _transactionsRepository = transactionsRepository,
-        _budgetRepository = budgetRepository,
+        _categoryRepository = categoryRepository,
+        _accountsRepository = accountRepository,
         super(TransactionState()) {
-    _budgetSubscription = _budgetRepository.budget.listen((budget) {
-      add(TransactionBudgetChanged(budget: budget));
+    _categoriesSubscription = _categoryRepository.categories.listen((categories) {
+      add(TransactionCategoriesChanged(categories: categories));
+    });
+    _accountsSubscription = _accountsRepository.accounts.listen((accounts) {
+      add(TransactionAccountsChanged(accounts: accounts));
     });
     on<TransactionEvent>(_onEvent, transformer: sequential());
   }
@@ -42,7 +45,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _onEvent(
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
-      final TransactionBudgetChanged e => _onBudgetChanged(e, emit),
+      final TransactionCategoriesChanged e => _onCategoriesChanged(e, emit),
+      final TransactionAccountsChanged e => _onAccountsChanged(e, emit),
       final TransactionFormLoaded e => _onFormLoaded(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
       final TransactionDateChanged e => _onDateChanged(e, emit),
@@ -54,22 +58,29 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     };
   }
 
-  Future<void> _onBudgetChanged(
-    TransactionBudgetChanged event,
+  Future<void> _onCategoriesChanged(
+    TransactionCategoriesChanged event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(state.copyWith(budget: event.budget));
+    emit(state.copyWith(categories: event.categories));
+  }
+
+  Future<void> _onAccountsChanged(
+      TransactionAccountsChanged event,
+      Emitter<TransactionState> emit,
+      ) async {
+    emit(state.copyWith(accounts: event.accounts));
   }
 
   Future<void> _onFormLoaded(
     TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(state.copyWith(trStatus: TransactionStatus.loading));
+    /*emit(state.copyWith(trStatus: TransactionStatus.loading));
     Category? category;
     Subcategory? subcategory;
     Account? account;
-    String? id;
+    int? id;
     final tr = event.transaction;
     if (tr != null) {
       id = tr.id;
@@ -91,7 +102,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         account: account,
         description: tr?.description ?? '',
         trStatus: TransactionStatus.success,
-        isValid: tr == null ? false : true));
+        isValid: tr == null ? false : true));*/
   }
 
   void _onAmountChanged(
@@ -136,7 +147,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _onFormSubmitted(
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    final transaction = Transaction(
+    /*final transaction = Transaction(
       id: state.id,
       budgetId: (await Cache.instance.getBudgetId())!,
       date: state.date ?? DateTime.now(),
@@ -158,12 +169,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           : Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
-    }
+    }*/
   }
 
   void _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction, ComprehensiveTransaction? editedTransaction}) {
-    List<Account> updatedAccounts = [];
+      {required Transaction transaction, TransactionTile? editedTransaction}) {
+    /*List<Account> updatedAccounts = [];
     final accounts = state.budget.accountList;
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
@@ -194,12 +205,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
   }
 
   @override
   Future<void> close() {
-    _budgetSubscription.cancel();
+    _categoriesSubscription.cancel();
+    _accountsSubscription.cancel();
     return super.close();
   }
 }
