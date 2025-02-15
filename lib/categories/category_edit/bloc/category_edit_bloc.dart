@@ -19,10 +19,10 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   CategoryEditBloc({required CategoryRepository categoryRepository})
       : _categoryRepository = categoryRepository,
         super(CategoryEditState()) {
-    on<CategoryEditEvent>(_onEvent, transformer: sequential());
     _categorySubscription = _categoryRepository.categories.listen((categories) {
       add(CategoriesChanged(categories: categories));
     });
+    on<CategoryEditEvent>(_onEvent, transformer: sequential());
   }
 
   Future<void> _onEvent(
@@ -39,8 +39,10 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   Future<void> _onFormLoaded(
       CategoryEditFormLoaded event, Emitter<CategoryEditState> emit) async {
     emit(state.copyWith(catStatus: CategoryEditStatus.loading));
-    if (event.category != null) {
-      Category category = event.category!;
+    if (event.categoryId != null) {
+      Category category = state.categories.firstWhere(
+        (c) => c.id == event.categoryId,
+      );
       emit(state.copyWith(
           id: category.id,
           name: category.name,

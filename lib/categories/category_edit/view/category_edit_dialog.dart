@@ -5,22 +5,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../constants/constants.dart';
-import '../../../database/database.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../category_edit.dart';
 
 class CategoryEditDialog extends StatelessWidget {
-  const CategoryEditDialog({super.key, this.category, required this.type});
+  const CategoryEditDialog({super.key, this.categoryId, required this.type});
 
-  final Category? category;
+  final int? categoryId;
   final TransactionType type;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          CategoryEditBloc(categoryRepository: context.read<CategoryRepository>())
-            ..add(CategoryEditFormLoaded(category: category, type: type)),
+      create: (_) {
+          final bloc = CategoryEditBloc(categoryRepository: context.read<CategoryRepository>());
+          //preloading categories
+          bloc.stream.where((state) => state.categories.isNotEmpty).first.then((_) {
+            bloc.add(CategoryEditFormLoaded(categoryId: categoryId, type: type));
+          });
+          return bloc;},
       child: CategoryEditForm(),
     );
   }

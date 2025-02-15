@@ -153,14 +153,12 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
-            final cat = homeCubit.state.categories
-                .firstWhere((cat) => cat.id == int.parse(state.pathParameters['id']!));
+            final categoryId = int.parse(state.pathParameters['id']!);
             final type = TransactionType
                 .values[int.parse(state.uri.queryParameters['typeIndex']!)];
             return DialogPage(
                 builder: (_) => CategoryEditDialog(
-                      category: cat,
+                      categoryId: categoryId,
                       type: type,
                     ));
           },
