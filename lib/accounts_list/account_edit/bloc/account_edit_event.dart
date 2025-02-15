@@ -5,10 +5,10 @@ sealed class AccountEditEvent extends Equatable {
 }
 
 final class AccountEditFormLoaded extends AccountEditEvent {
-  final AccountWithDetails? account;
-  AccountEditFormLoaded({this.account});
+  final int? accountId;
+  AccountEditFormLoaded({this.accountId});
   @override
-  List<Object?> get props => [account];
+  List<Object?> get props => [accountId];
 }
 
 final class AccountNameChanged extends AccountEditEvent {

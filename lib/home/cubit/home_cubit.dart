@@ -8,6 +8,7 @@ import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
 
 import '../../../transaction/transaction.dart';
+import '../../accounts_list/repository/account_repository.dart';
 import '../../database/database.dart';
 import '../models/summary_tile.dart';
 
@@ -16,14 +17,18 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final TransactionRepository _transactionsRepository;
   final CategoryRepository _categoryRepository;
+  final AccountRepository _accountRepository;
   late final StreamSubscription _transactionsSubscription;
   late final StreamSubscription _categoriesSubscription;
+  late final StreamSubscription _accountsSubscription;
 
   HomeCubit(
       {required TransactionRepository transactionsRepository,
-      required CategoryRepository categoryRepository})
+      required CategoryRepository categoryRepository,
+      required AccountRepository accountRepository})
       : _transactionsRepository = transactionsRepository,
         _categoryRepository = categoryRepository,
+        _accountRepository = accountRepository,
         super(HomeState(selectedDate: DateTime.now())) {}
 
   Future<void> initRequested() async {
@@ -43,11 +48,23 @@ class HomeCubit extends Cubit<HomeState> {
             status: HomeStatus.failure, errorMessage: 'Something went wrong')));
 
     _categoriesSubscription = _categoryRepository.categories.listen(
-            (categories) {
+        (categories) {
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          categories: categories,
+        ),
+      );
+    },
+        onError: (_) => emit(state.copyWith(
+            status: HomeStatus.failure, errorMessage: 'Something went wrong')));
+
+    _accountsSubscription = _accountRepository.accounts.listen(
+            (accounts) {
           emit(
             state.copyWith(
               status: HomeStatus.success,
-              categories: categories,
+              accounts: accounts,
             ),
           );
         },
@@ -255,6 +272,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> close() {
     _transactionsSubscription.cancel();
     _categoriesSubscription.cancel();
+    _accountsSubscription.cancel();
     return super.close();
   }
 }

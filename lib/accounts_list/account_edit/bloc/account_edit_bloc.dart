@@ -20,14 +20,18 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   late final StreamSubscription<List<AccountWithDetails>> _accountSubscription;
   late final StreamSubscription<List<Category>> _accountCategoriesSubscription;
 
-  AccountEditBloc({required AccountRepository accountRepository, required CategoryRepository categoryRepository})
-      : _accountRepository = accountRepository, _categoryRepository = categoryRepository,
+  AccountEditBloc(
+      {required AccountRepository accountRepository,
+      required CategoryRepository categoryRepository})
+      : _accountRepository = accountRepository,
+        _categoryRepository = categoryRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
     _accountSubscription = _accountRepository.accounts.listen((accounts) {
       add(AccountsChanged(accounts: accounts));
     });
-    _accountCategoriesSubscription = _categoryRepository.categories.listen((categories) {
+    _accountCategoriesSubscription =
+        _categoryRepository.categories.listen((categories) {
       add(AccountCategoriesChanged(categories: categories));
     });
   }
@@ -49,8 +53,8 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
-    if (event.account != null) {
-      final account = event.account!;
+    if (event.accountId != null) {
+      final account = state.accounts.firstWhere((acc) => acc.id == event.accountId,);
       emit(state.copyWith(
           id: account.id,
           category: account.category,
@@ -60,8 +64,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
           accStatus: AccountEditStatus.success,
           isValid: true));
     } else {
-      emit(state.copyWith(
-          accStatus: AccountEditStatus.success));
+      emit(state.copyWith(accStatus: AccountEditStatus.success));
     }
   }
 
@@ -74,7 +77,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   void _onAccountsChanged(
       AccountsChanged event, Emitter<AccountEditState> emit) {
-    emit(state.copyWith());
+    emit(state.copyWith(accounts: event.accounts));
   }
 
   void _onCategoryChanged(
@@ -107,16 +110,19 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
       AccountFormSubmitted event, Emitter<AccountEditState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final isIdExist = state.id != null;
-    final account = Account(
-        id: isIdExist ? state.id! : -1,
-        name: state.name!,
+    isIdExist
+        ? _accountRepository.updateAccount(
+            id: state.id!,
+            name: state.name!,
+            categoryId: state.category!.id,
+            balance: double.parse(state.balance.value),
+            initialBalance: double.parse(state.balance.value),
+            includeInTotal: state.isIncludeInTotals)
+        : _accountRepository.insertAccount(name: state.name!,
         categoryId: state.category!.id,
         balance: double.parse(state.balance.value),
         initialBalance: double.parse(state.balance.value),
         includeInTotal: state.isIncludeInTotals);
-    isIdExist
-        ? _accountRepository.updateAccount(account)
-        : _accountRepository.createAccount(account);
   }
 
   @override

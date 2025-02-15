@@ -1,3 +1,4 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
@@ -37,7 +38,8 @@ final GoRouter _router = GoRouter(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
                   transactionsRepository: context.read<TransactionRepository>(),
-                  categoryRepository: context.read<CategoryRepository>())
+                  categoryRepository: context.read<CategoryRepository>(),
+                  accountRepository: context.read<AccountRepository>())
                 ..initRequested(),
               child: child,
             ),
@@ -230,12 +232,10 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
-            final acc = homeCubit.state.accounts
-                .firstWhere((acc) => acc.id == state.pathParameters['id']!);
+            final accId = int.parse(state.pathParameters['id']!);
             return DialogPage(
                 builder: (_) => AccountEditDialog(
-                      account: acc,
+                      accountId: accId,
                     ));
           },
         ),

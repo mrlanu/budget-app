@@ -9,18 +9,49 @@ class AccountRepositoryDrift extends AccountRepository {
   final AppDatabase _database;
 
   @override
-  Stream<List<AccountWithDetails>> get accounts => _database.watchAccountsWithDetails();
+  Stream<List<AccountWithDetails>> get accounts =>
+      _database.watchAccountsWithDetails();
 
   @override
-  Future<Account> createAccount(Account account) => _database.insertAccount(account);
-
-  @override
-  Future<Account> getAccountById(int accountId) => _database.accountById(accountId);
+  Future<Account> getAccountById(int accountId) =>
+      _database.accountById(accountId);
 
   @override
   Future<List<Account>> getAllAccounts() => _database.getAllAccounts();
 
   @override
-  Future<void> updateAccount(Account account) => _database.updateAccount(account);
+  Future<int> insertAccount(
+          {required String name,
+          required int categoryId,
+          String currency = 'USD',
+          double balance = 0.0,
+          double initialBalance = 0.0,
+          bool includeInTotal = true}) =>
+      _database.insertAccount(AccountsCompanion.insert(
+          name: name,
+          balance: balance,
+          initialBalance: initialBalance,
+          categoryId: categoryId,
+          includeInTotal: includeInTotal));
 
+  @override
+  Future<void> updateAccount(
+          {required int id,
+          required String name,
+          required int categoryId,
+          String currency = 'USD',
+          double balance = 0.0,
+          double initialBalance = 0.0,
+          bool includeInTotal = true}) =>
+      _database.updateAccount(Account(
+          id: id,
+          name: name,
+          balance: balance,
+          initialBalance: initialBalance,
+          categoryId: categoryId,
+          includeInTotal: includeInTotal));
+
+  @override
+  Future<int> deleteAccount(int accountId) =>
+      _database.deleteAccount(accountId);
 }

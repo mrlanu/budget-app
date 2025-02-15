@@ -19,5 +19,5 @@ abstract class CategoryRepository {
 
   Future<List<Category>> getAllCategories();
 
-  Future<int> deleteCategory(Category category);
+  Future<int> deleteCategory(int categoryId);
 }

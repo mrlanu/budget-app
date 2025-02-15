@@ -46,15 +46,12 @@ class AccountsCubit extends Cubit<AccountsState> {
 
   Future<void> onAccountDeleted(AccountWithDetails account) async {
     emit(state.copyWith(status: AccountsStatus.loading));
-    /*try {
-      await _accountsRepository.deleteAccount(account: account);
-    } on AccountFailure catch (e) {
-      emit(state.copyWith(
-          status: AccountsListStatus.failure, errorMessage: e.message));
+    try {
+      await _accountRepository.deleteAccount(account.id!);
     } catch (e) {
       emit(state.copyWith(
-          status: AccountsListStatus.failure, errorMessage: 'Unknown error'));
-    }*/
+          status: AccountsStatus.failure, errorMessage: 'Unknown error'));
+    }
   }
 
   @override

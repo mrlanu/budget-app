@@ -1,4 +1,3 @@
-import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
 import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
@@ -10,17 +9,25 @@ import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../account_edit.dart';
 
 class AccountEditDialog extends StatelessWidget {
-  const AccountEditDialog({super.key, this.account});
+  const AccountEditDialog({super.key, this.accountId});
 
-  final AccountWithDetails? account;
+  final int? accountId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AccountEditBloc(
-          accountRepository: context.read<AccountRepository>(),
-          categoryRepository: context.read<CategoryRepository>())
-        ..add(AccountEditFormLoaded(account: account)),
+      create: (_) {
+        final bloc = AccountEditBloc(
+            accountRepository: context.read<AccountRepository>(),
+            categoryRepository: context.read<CategoryRepository>());
+        bloc.stream
+            .where((state) => state.accounts.isNotEmpty)
+            .first
+            .then((_) {
+          bloc.add(AccountEditFormLoaded(accountId: accountId));
+        });
+        return bloc;
+      },
       child: AccountEditForm(),
     );
   }

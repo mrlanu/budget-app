@@ -4,8 +4,27 @@ import '../../database/database.dart';
 
 abstract class AccountRepository {
   Stream<List<AccountWithDetails>> get accounts;
-  Future<Account> createAccount(Account account);
-  Future<void> updateAccount(Account account);
+
+  Future<int> insertAccount(
+      {required String name,
+      required int categoryId,
+      String currency = 'USD',
+      double balance = 0.0,
+      double initialBalance = 0.0,
+      bool includeInTotal = true});
+
+  Future<void> updateAccount(
+      {required int id,
+      required String name,
+      required int categoryId,
+      String currency = 'USD',
+      double balance = 0.0,
+      double initialBalance = 0.0,
+      bool includeInTotal = true});
+
   Future<Account> getAccountById(int accountId);
+
   Future<List<Account>> getAllAccounts();
+
+  Future<int> deleteAccount(int accountId);
 }

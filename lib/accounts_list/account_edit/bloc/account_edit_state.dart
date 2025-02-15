@@ -4,6 +4,7 @@ enum AccountEditStatus { loading, success, failure }
 
 class AccountEditState extends Equatable {
   final int? id;
+  final List<AccountWithDetails> accounts;
   final String? name;
   final Amount balance;
   final Category? category;
@@ -16,6 +17,7 @@ class AccountEditState extends Equatable {
 
   const AccountEditState({
     this.id,
+    this.accounts = const [],
     this.name,
     this.balance = const Amount.pure(),
     this.category,
@@ -29,6 +31,7 @@ class AccountEditState extends Equatable {
 
   AccountEditState copyWith({
     int? id,
+    List<AccountWithDetails>? accounts,
     String? name,
     Amount? balance,
     Category? category,
@@ -41,6 +44,7 @@ class AccountEditState extends Equatable {
   }) {
     return AccountEditState(
       id: id ?? this.id,
+      accounts: accounts ?? this.accounts,
       name: name ?? this.name,
       balance: balance ?? this.balance,
       category: category ?? this.category,
@@ -54,6 +58,7 @@ class AccountEditState extends Equatable {
 
   @override
   List<Object?> get props => [
+        accounts,
         balance,
         id,
         name,

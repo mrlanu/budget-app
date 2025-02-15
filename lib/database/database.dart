@@ -54,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
     return select(subcategories).watch();
   }
 
-  Future<int> insert(CategoriesCompanion categoryCompanion) async {
+  Future<int> insertCategory(CategoriesCompanion categoryCompanion) async {
     return await into(categories).insert(categoryCompanion);
   }
 
@@ -78,22 +78,16 @@ class AppDatabase extends _$AppDatabase {
     return select(accounts).watch();
   }
 
-  Future<Account> insertAccount(Account account) async {
-    return await into(accounts).insertReturning(
-      //remove -1 id which came from repo
-      AccountsCompanion(
-        balance: Value(account.balance),
-        categoryId: Value(account.categoryId),
-        currency: Value(account.currency),
-        includeInTotal: Value(account.includeInTotal),
-        initialBalance: Value(account.initialBalance),
-        name: Value(account.name),
-      )
-    );
+  Future<int> insertAccount(AccountsCompanion accountsCompanion) async {
+    return await into(accounts).insert(accountsCompanion);
   }
 
-  Future<bool> updateAccount(Account account) async {
-    return update(accounts).replace(account);
+  Future<bool> updateAccount(Account acc) async {
+    return update(accounts).replace(acc);
+  }
+
+  Future<int> deleteAccount(int id) async {
+    return await (delete(accounts)..where((c) => c.id.equals(id))).go();
   }
 
   Future<Account> accountById(int id) {

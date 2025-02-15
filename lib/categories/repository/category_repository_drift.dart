@@ -21,7 +21,7 @@ class CategoryRepositoryDrift extends CategoryRepository {
           {required String name,
           required int iconCode,
           required TransactionType type}) =>
-      _database.insert(CategoriesCompanion.insert(
+      _database.insertCategory(CategoriesCompanion.insert(
           name: name, iconCode: iconCode, type: type));
 
   @override
@@ -41,6 +41,6 @@ class CategoryRepositoryDrift extends CategoryRepository {
       _database.categoryById(categoryId);
 
   @override
-  Future<int> deleteCategory(Category category) =>
-      _database.deleteCategory(category.id);
+  Future<int> deleteCategory(int categoryId) =>
+      _database.deleteCategory(categoryId);
 }
