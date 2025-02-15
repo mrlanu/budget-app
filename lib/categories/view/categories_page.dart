@@ -57,14 +57,12 @@ class CategoriesView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
-                  itemCount: state.categories.length,
+                  itemCount: state.filteredCategories.length,
                   itemBuilder: (context, index) {
-                    final category = state.categories[index];
+                    final category = state.filteredCategories[index];
                     return Card(
                       elevation: Theme.of(context).cardTheme.elevation,
                       child: ListTile(

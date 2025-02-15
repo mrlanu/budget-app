@@ -45,7 +45,6 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
           id: category.id,
           name: category.name,
           iconCode: category.iconCode,
-          //subcategoryList: category.subcategoryList,
           type: category.type,
           isValid: true,
           catStatus: CategoryEditStatus.success));
@@ -64,7 +63,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
 
   void _onCategoriesChanged(
       CategoriesChanged event, Emitter<CategoryEditState> emit) {
-    //emit(state.copyWith(cate: event.budget));
+    emit(state.copyWith(categories: event.categories));
   }
 
   void _onIconChanged(
@@ -74,22 +73,21 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
 
   Future<void> _onFormSubmitted(
       CategoryFormSubmitted event, Emitter<CategoryEditState> emit) async {
-    /*emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final isIdExist = state.id != null;
-    final category = Category(
-        id: isIdExist ? state.id! : Uuid().v4(),
-        name: state.name!,
-        iconCode: state.iconCode,
-        subcategoryList: state.subcategoryList,
-        type: state.type);
     isIdExist
-        ? _budgetRepository.updateCategory(category)
-        : _budgetRepository.createCategory(category);*/
+        ? _categoryRepository.updateCategory(
+            id: state.id!,
+            name: state.name!,
+            iconCode: state.iconCode,
+            type: state.type)
+        : _categoryRepository.insertCategory(
+            name: state.name!, iconCode: state.iconCode, type: state.type);
   }
 
   @override
   Future<void> close() {
-    //_budgetSubscription.cancel();
+    _categorySubscription.cancel();
     return super.close();
   }
 }

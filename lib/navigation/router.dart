@@ -1,5 +1,6 @@
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/charts/view/category_chart_page.dart';
@@ -35,8 +36,9 @@ final GoRouter _router = GoRouter(
     ShellRoute(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
-                transactionsRepository: context.read<TransactionRepository>(),
-              )..initRequested(),
+                  transactionsRepository: context.read<TransactionRepository>(),
+                  categoryRepository: context.read<CategoryRepository>())
+                ..initRequested(),
               child: child,
             ),
         routes: [
@@ -153,7 +155,7 @@ final List<RouteBase> _individualRoutes = [
           pageBuilder: (BuildContext context, GoRouterState state) {
             final homeCubit = context.read<HomeCubit>();
             final cat = homeCubit.state.categories
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+                .firstWhere((cat) => cat.id == int.parse(state.pathParameters['id']!));
             final type = TransactionType
                 .values[int.parse(state.uri.queryParameters['typeIndex']!)];
             return DialogPage(

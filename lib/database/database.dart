@@ -54,12 +54,16 @@ class AppDatabase extends _$AppDatabase {
     return select(subcategories).watch();
   }
 
-  Future<Category> insertCategory(Category category) async {
-    return await into(categories).insertReturning(category);
+  Future<int> insert(CategoriesCompanion categoryCompanion) async {
+    return await into(categories).insert(categoryCompanion);
   }
 
   Future<bool> updateCategory(Category category) async {
     return update(categories).replace(category);
+  }
+
+  Future<int> deleteCategory(int id) async {
+    return await (delete(categories)..where((c) => c.id.equals(id))).go();
   }
 
   Future<Category> categoryById(int id) {
