@@ -31,15 +31,6 @@ final class CategoryIconChanged extends CategoryEditEvent {
   List<Object?> get props => [code];
 }
 
-
-final class CategoriesChanged extends CategoryEditEvent {
-  final List<Category> categories;
-  const CategoriesChanged({required this.categories});
-  @override
-  List<Object?> get props => [categories];
-}
-
-
 final class CategoryFormSubmitted extends CategoryEditEvent {
   const CategoryFormSubmitted();
   @override

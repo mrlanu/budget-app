@@ -14,21 +14,16 @@ part 'category_edit_state.dart';
 
 class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   final CategoryRepository _categoryRepository;
-  late final StreamSubscription<List<Category>> _categorySubscription;
 
   CategoryEditBloc({required CategoryRepository categoryRepository})
       : _categoryRepository = categoryRepository,
         super(CategoryEditState()) {
-    _categorySubscription = _categoryRepository.categories.listen((categories) {
-      add(CategoriesChanged(categories: categories));
-    });
     on<CategoryEditEvent>(_onEvent, transformer: sequential());
   }
 
   Future<void> _onEvent(
       CategoryEditEvent event, Emitter<CategoryEditState> emit) async {
     return switch (event) {
-      final CategoriesChanged e => _onCategoriesChanged(e, emit),
       final CategoryEditFormLoaded e => _onFormLoaded(e, emit),
       final CategoryNameChanged e => _onNameChanged(e, emit),
       final CategoryIconChanged e => _onIconChanged(e, emit),
@@ -40,9 +35,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
       CategoryEditFormLoaded event, Emitter<CategoryEditState> emit) async {
     emit(state.copyWith(catStatus: CategoryEditStatus.loading));
     if (event.categoryId != null) {
-      Category category = state.categories.firstWhere(
-        (c) => c.id == event.categoryId,
-      );
+      Category category = await _categoryRepository.getCategoryById(event.categoryId!);
       emit(state.copyWith(
           id: category.id,
           name: category.name,
@@ -61,11 +54,6 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
     emit(
       state.copyWith(name: event.name),
     );
-  }
-
-  void _onCategoriesChanged(
-      CategoriesChanged event, Emitter<CategoryEditState> emit) {
-    emit(state.copyWith(categories: event.categories));
   }
 
   void _onIconChanged(
@@ -89,7 +77,6 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
 
   @override
   Future<void> close() {
-    _categorySubscription.cancel();
     return super.close();
   }
 }
