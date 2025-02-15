@@ -20,12 +20,16 @@ class AccountEditDialog extends StatelessWidget {
         final bloc = AccountEditBloc(
             accountRepository: context.read<AccountRepository>(),
             categoryRepository: context.read<CategoryRepository>());
-        bloc.stream
-            .where((state) => state.accounts.isNotEmpty)
-            .first
-            .then((_) {
-          bloc.add(AccountEditFormLoaded(accountId: accountId));
-        });
+        if (accountId != null) {
+          bloc.stream
+              .where((state) => state.accounts.isNotEmpty)
+              .first
+              .then((_) {
+            bloc.add(AccountEditFormLoaded(accountId: accountId));
+          });
+          return bloc;
+        }
+        bloc.add(AccountEditFormLoaded(accountId: accountId));
         return bloc;
       },
       child: AccountEditForm(),

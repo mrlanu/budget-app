@@ -18,12 +18,22 @@ class CategoryEditDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) {
-          final bloc = CategoryEditBloc(categoryRepository: context.read<CategoryRepository>());
-          //preloading categories
-          bloc.stream.where((state) => state.categories.isNotEmpty).first.then((_) {
-            bloc.add(CategoryEditFormLoaded(categoryId: categoryId, type: type));
+        final bloc = CategoryEditBloc(
+            categoryRepository: context.read<CategoryRepository>());
+        //preloading categories
+        if (categoryId != null) {
+          bloc.stream
+              .where((state) => state.categories.isNotEmpty)
+              .first
+              .then((_) {
+            bloc.add(
+                CategoryEditFormLoaded(categoryId: categoryId, type: type));
           });
-          return bloc;},
+          return bloc;
+        }
+        bloc.add(CategoryEditFormLoaded(categoryId: categoryId, type: type));
+        return bloc;
+      },
       child: CategoryEditForm(),
     );
   }
