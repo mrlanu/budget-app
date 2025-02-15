@@ -13,8 +13,8 @@ class AccountRepositoryDrift extends AccountRepository {
       _database.watchAccountsWithDetails();
 
   @override
-  Future<Account> getAccountById(int accountId) =>
-      _database.accountById(accountId);
+  Future<AccountWithDetails> getAccountById(int accountId) =>
+      _database.getAccountWithDetailsById(accountId);
 
   @override
   Future<List<Account>> getAllAccounts() => _database.getAllAccounts();

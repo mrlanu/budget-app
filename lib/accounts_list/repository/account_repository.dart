@@ -22,7 +22,7 @@ abstract class AccountRepository {
       double initialBalance = 0.0,
       bool includeInTotal = true});
 
-  Future<Account> getAccountById(int accountId);
+  Future<AccountWithDetails> getAccountById(int accountId);
 
   Future<List<Account>> getAllAccounts();
 

@@ -46,5 +46,5 @@ class AccountWithDetails extends Equatable{
   }
 
   @override
-  List<Object?> get props => [id, name, balance];
+  List<Object?> get props => [id, name, category, balance, includeInTotal];
 }

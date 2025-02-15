@@ -17,8 +17,7 @@ part 'account_edit_state.dart';
 class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   final AccountRepository _accountRepository;
   final CategoryRepository _categoryRepository;
-  late final StreamSubscription<List<AccountWithDetails>> _accountSubscription;
-  late final StreamSubscription<List<Category>> _accountCategoriesSubscription;
+  late final StreamSubscription<List<Category>> _categoriesSubscription;
 
   AccountEditBloc(
       {required AccountRepository accountRepository,
@@ -27,10 +26,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
         _categoryRepository = categoryRepository,
         super(AccountEditState()) {
     on<AccountEditEvent>(_onEvent, transformer: sequential());
-    _accountSubscription = _accountRepository.accounts.listen((accounts) {
-      add(AccountsChanged(accounts: accounts));
-    });
-    _accountCategoriesSubscription =
+    _categoriesSubscription =
         _categoryRepository.categories.listen((categories) {
       add(AccountCategoriesChanged(categories: categories));
     });
@@ -41,7 +37,6 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     return switch (event) {
       final AccountEditFormLoaded e => _onFormLoaded(e, emit),
       final AccountNameChanged e => _onNameChanged(e, emit),
-      final AccountsChanged e => _onAccountsChanged(e, emit),
       final AccountCategoryChanged e => _onCategoryChanged(e, emit),
       final AccountCategoriesChanged e => _onCategoriesChanged(e, emit),
       final AccountBalanceChanged e => _onBalanceChanged(e, emit),
@@ -54,7 +49,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
   Future<void> _onFormLoaded(
       AccountEditFormLoaded event, Emitter<AccountEditState> emit) async {
     if (event.accountId != null) {
-      final account = state.accounts.firstWhere((acc) => acc.id == event.accountId,);
+      final account = await _accountRepository.getAccountById(event.accountId!);
       emit(state.copyWith(
           id: account.id,
           category: account.category,
@@ -73,11 +68,6 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
     emit(
       state.copyWith(name: event.name),
     );
-  }
-
-  void _onAccountsChanged(
-      AccountsChanged event, Emitter<AccountEditState> emit) {
-    emit(state.copyWith(accounts: event.accounts));
   }
 
   void _onCategoryChanged(
@@ -127,8 +117,7 @@ class AccountEditBloc extends Bloc<AccountEditEvent, AccountEditState> {
 
   @override
   Future<void> close() {
-    _accountSubscription.cancel();
-    _accountCategoriesSubscription.cancel();
+    _categoriesSubscription.cancel();
     return super.close();
   }
 }

@@ -94,6 +94,25 @@ class AppDatabase extends _$AppDatabase {
     return (select(accounts)..where((a) => a.id.equals(id))).getSingle();
   }
 
+  Future<AccountWithDetails> getAccountWithDetailsById(int accountId) async {
+    final query = select(accounts).join(
+        [innerJoin(categories, accounts.categoryId.equalsExp(categories.id))])
+      ..where(accounts.id.equals(accountId));
+
+    final result = await query.getSingle();
+
+    final accRow = result.readTable(accounts);
+    return AccountWithDetails(
+      balance: accRow.balance,
+      initialBalance: accRow.initialBalance,
+      name: accRow.name,
+      currency: accRow.currency ?? 'USD',
+      id: accRow.id,
+      includeInTotal: accRow.includeInTotal,
+      category: result.readTable(categories),
+    );
+  }
+
   Future<List<Account>> getAllAccounts() async {
     return await select(accounts).get();
   }
