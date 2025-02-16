@@ -10,17 +10,16 @@ import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
-  const SubcategoriesPage({Key? key, required this.category}) : super(key: key);
+  const SubcategoriesPage({Key? key, required this.categoryId}) : super(key: key);
 
-  final Category category;
+  final int categoryId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubcategoriesCubit(
-          categoryRepository: context.read<CategoryRepository>(),
-          category: category)
-        ..onInit(category: category),
+          categoryRepository: context.read<CategoryRepository>(),)
+        ..onInit(categoryId: categoryId),
       child: SubcategoriesView(),
     );
   }
@@ -48,7 +47,7 @@ class SubcategoriesView extends StatelessWidget {
         final themeState = context.read<ThemeCubit>().state;
         return Scaffold(
           appBar: AppBar(
-            title: _buildTitle(state.category!),
+            title: _buildTitle(state.category),
           ),
           body: Column(
             children: [
@@ -57,9 +56,9 @@ class SubcategoriesView extends StatelessWidget {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: state.subcategories.length,
+                  itemCount: state.subcategoriesByCategory.length,
                   itemBuilder: (context, index) {
-                    final subcategory = state.subcategories[index];
+                    final subcategory = state.subcategoriesByCategory[index];
                     return Card(
                       elevation: Theme.of(context).cardTheme.elevation,
                       child: ListTile(
@@ -77,7 +76,7 @@ class SubcategoriesView extends StatelessWidget {
                           onPressed: () {
                             context
                                 .read<SubcategoriesCubit>()
-                                .onSubcategoryDeleted(subcategory);
+                                .onSubcategoryDeleted(subcategory.id);
                           },
                         ),
                         trailing: Icon(Icons.chevron_right),
@@ -114,8 +113,8 @@ class SubcategoriesView extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle(Category category) {
-    final body = 'Subcategories for ${category.name}';
+  Widget _buildTitle(Category? category) {
+    final body = 'Subcategories for ${category == null ? '' : category.name}';
     return Text(body);
   }
 }

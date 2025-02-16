@@ -21,27 +21,52 @@ class TransactionRepositoryDrift extends TransactionRepository {
       _transactionsStreamController.asBroadcastStream();
 
   @override
-  void fetchTransactions(DateTime dateTime) async {
-    List<TransactionWithDetails> transactions =
-        await _database.getTransactionsForCertainMonth(dateTime);
-    _transactionsStreamController.add(transactions);
-    print('items in database: $transactions');
+  Future<TransactionWithDetails> getTransactionById(int transactionId) =>
+      _database.getTransactionWithDetailsById(transactionId);
+
+  @override
+  void fetchTransactions(DateTime dateTime) async{
+   final tr = await _database.getTransactionsForCertainMonth(dateTime);
+   _transactionsStreamController.add(tr);
   }
 
   @override
-  Future<void> createTransaction(Transaction transaction) async {
-    await _database
-        .into(_database.categories)
-        .insert(CategoriesCompanion.insert(
-          name: 'todo: finish drift setup',
-          iconCode: 17,
-          type: TransactionType.EXPENSE,
-        ));
-  }
+  Future<int> insertTransaction(
+          {required DateTime date,
+          required TransactionType type,
+          required double amount,
+          required int categoryId,
+          required int subcategoryId,
+          required int fromAccountId,
+          required String description}) =>
+      _database.insertTransaction(TransactionsCompanion.insert(
+          amount: amount,
+          date: date,
+          categoryId: categoryId,
+          subcategoryId: subcategoryId,
+          fromAccountId: fromAccountId,
+          description: description,
+          type: type));
 
   @override
-  Future<void> updateTransaction(Transaction transaction) async {
-  }
+  Future<void> updateTransaction(
+          {required int id,
+          required DateTime date,
+          required TransactionType type,
+          required double amount,
+          required int categoryId,
+          required int subcategoryId,
+          required int fromAccountId,
+          required String description}) =>
+      _database.updateTransaction(Transaction(
+          id: id,
+          amount: amount,
+          date: date,
+          categoryId: categoryId,
+          subcategoryId: subcategoryId,
+          fromAccountId: fromAccountId,
+          description: description,
+          type: type));
 
   /*@override
   Future<void> updateTransfer(Transfer transfer) async {
@@ -63,6 +88,5 @@ class TransactionRepositoryDrift extends TransactionRepository {
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction}) async {
-  }
+      {required TransactionTile transaction}) async {}
 }

@@ -10,6 +10,7 @@ class TransactionState extends Equatable {
   final DateTime? date;
   final Category? category;
   final List<Category> categories;
+  final List<Subcategory> subcategories;
   final List<AccountWithDetails> accounts;
   final Subcategory? subcategory;
   final AccountWithDetails? account;
@@ -28,6 +29,7 @@ class TransactionState extends Equatable {
       this.date,
       this.category,
       this.categories = const [],
+      this.subcategories = const [],
       this.accounts = const [],
       this.subcategory,
       this.account,
@@ -45,6 +47,7 @@ class TransactionState extends Equatable {
     DateTime? date,
     Category? Function()? category,
     List<Category>? categories,
+    List<Subcategory>? subcategories,
     List<AccountWithDetails>? accounts,
     Subcategory? Function()? subcategory,
     AccountWithDetails? account,
@@ -62,6 +65,7 @@ class TransactionState extends Equatable {
       date: date ?? this.date,
       category: category != null ? category() : this.category,
       categories: categories ?? this.categories,
+      subcategories: subcategories ?? this.subcategories,
       accounts: accounts ?? this.accounts,
       subcategory: subcategory != null ? subcategory() : this.subcategory,
       account: account ?? this.account,
@@ -81,6 +85,7 @@ class TransactionState extends Equatable {
         date,
         category,
         categories,
+        subcategories,
         accounts,
         subcategory,
         account,

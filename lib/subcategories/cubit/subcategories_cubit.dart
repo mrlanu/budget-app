@@ -11,25 +11,27 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
   final CategoryRepository _categoryRepository;
   late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
 
-  SubcategoriesCubit(
-      {required CategoryRepository categoryRepository, required Category category})
+  SubcategoriesCubit({required CategoryRepository categoryRepository})
       : _categoryRepository = categoryRepository,
-        super(SubcategoriesState(category: category)) {
-    _subcategoriesSubscription = _categoryRepository.subcategories.listen((subcategories) {
+        super(SubcategoriesState()) {
+    _subcategoriesSubscription =
+        _categoryRepository.subcategories.listen((subcategories) {
       _onSubcategoriesChanged(subcategories);
     });
   }
 
-  Future<void> onInit({required Category category}) async {
+  Future<void> onInit({required int categoryId}) async {
+    final category = await _categoryRepository.getCategoryById(categoryId);
+    final subcategories =
+        await _categoryRepository.fetchSubcategoriesByCategoryId(categoryId);
     emit(state.copyWith(
-      status: SubcategoriesStatus.success,
-      category: category, subcategories: []
-    ));
+        status: SubcategoriesStatus.success,
+        category: category,
+        subcategories: subcategories));
   }
 
   void _onSubcategoriesChanged(List<Subcategory> subcategories) {
-    emit(state.copyWith(
-        subcategories: subcategories));
+    emit(state.copyWith(subcategories: subcategories));
   }
 
   void onNameChanged(String name) {
@@ -44,10 +46,9 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
     emit(state.copyWith(editSubcategory: subcategory));
   }
 
-  Future<void> onSubcategoryDeleted(Subcategory subcategory) async {
-    emit(state.copyWith(status: SubcategoriesStatus.loading));
+  Future<void> onSubcategoryDeleted(int subcategoryId) async {
     try {
-      //await _subcategoriesRepository.delete(subcategory: subcategory);
+      await _categoryRepository.deleteSubcategory(subcategoryId);
     } catch (e) {
       emit(state.copyWith(
           status: SubcategoriesStatus.failure, errorMessage: 'Unknown error'));

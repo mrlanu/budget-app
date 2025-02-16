@@ -24,6 +24,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   late final StreamSubscription<List<Category>> _categoriesSubscription;
   final AccountRepository _accountsRepository;
   late final StreamSubscription<List<AccountWithDetails>> _accountsSubscription;
+  late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
 
   TransactionBloc(
       {required TransactionRepository transactionsRepository,
@@ -32,12 +33,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       : _transactionsRepository = transactionsRepository,
         _categoryRepository = categoryRepository,
         _accountsRepository = accountRepository,
-        super(TransactionState()) {
-    _categoriesSubscription = _categoryRepository.categories.listen((categories) {
+        super(TransactionState(date: DateTime.now())) {
+    _categoriesSubscription =
+        _categoryRepository.categories.listen((categories) {
       add(TransactionCategoriesChanged(categories: categories));
     });
     _accountsSubscription = _accountsRepository.accounts.listen((accounts) {
       add(TransactionAccountsChanged(accounts: accounts));
+    });
+    _subcategoriesSubscription = _categoryRepository.subcategories.listen((sc) {
+      add(TransactionSubcategoriesChanged(subcategories: sc));
     });
     on<TransactionEvent>(_onEvent, transformer: sequential());
   }
@@ -46,6 +51,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       TransactionEvent event, Emitter<TransactionState> emit) async {
     return switch (event) {
       final TransactionCategoriesChanged e => _onCategoriesChanged(e, emit),
+      final TransactionSubcategoriesChanged e =>
+        _onSubcategoriesChanged(e, emit),
       final TransactionAccountsChanged e => _onAccountsChanged(e, emit),
       final TransactionFormLoaded e => _onFormLoaded(e, emit),
       final TransactionAmountChanged e => _onAmountChanged(e, emit),
@@ -65,10 +72,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(categories: event.categories));
   }
 
+  Future<void> _onSubcategoriesChanged(
+    TransactionSubcategoriesChanged event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(subcategories: event.subcategories));
+  }
+
   Future<void> _onAccountsChanged(
-      TransactionAccountsChanged event,
-      Emitter<TransactionState> emit,
-      ) async {
+    TransactionAccountsChanged event,
+    Emitter<TransactionState> emit,
+  ) async {
     emit(state.copyWith(accounts: event.accounts));
   }
 
@@ -76,33 +90,28 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionFormLoaded event,
     Emitter<TransactionState> emit,
   ) async {
-    /*emit(state.copyWith(trStatus: TransactionStatus.loading));
-    Category? category;
-    Subcategory? subcategory;
-    Account? account;
-    int? id;
-    final tr = event.transaction;
-    if (tr != null) {
-      id = tr.id;
-      category = tr.category!;
-      subcategory = tr.subcategory!;
-      account = tr.fromAccount;
-    }
-    //for amount update on desktop view
-    await Future.delayed(Duration(milliseconds: 100));
-
-    emit(state.copyWith(
-        editedTransaction: tr,
-        id: id,
-        transactionType: event.transactionType,
-        amount: tr == null ? Amount.pure() : Amount.dirty(tr.amount.toString()),
-        date: tr?.dateTime ?? DateTime.now(),
-        category: () => category,
-        subcategory: () => subcategory,
-        account: account,
-        description: tr?.description ?? '',
+    emit(state.copyWith(trStatus: TransactionStatus.loading));
+    if (event.transactionId != null) {
+      final tr = await _transactionsRepository
+          .getTransactionById(event.transactionId!);
+      final account =
+          await _accountsRepository.getAccountById(tr.fromAccount.id);
+      emit(state.copyWith(
+          id: tr.id,
+          transactionType: tr.type,
+          amount: Amount.dirty(tr.amount.toString()),
+          date: tr.date,
+          category: () => tr.category,
+          subcategory: () => tr.subcategory,
+          account: account,
+          description: tr.description,
+          trStatus: TransactionStatus.success,
+          isValid: true));
+    } else {
+      emit(state.copyWith(
         trStatus: TransactionStatus.success,
-        isValid: tr == null ? false : true));*/
+      ));
+    }
   }
 
   void _onAmountChanged(
@@ -125,8 +134,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   void _onCategoryChanged(
       TransactionCategoryChanged event, Emitter<TransactionState> emit) async {
+    final subcategories = await _categoryRepository
+        .fetchSubcategoriesByCategoryId(event.category!.id);
     emit(state.copyWith(
-        category: () => event.category, subcategory: () => null));
+        category: () => event.category,
+        subcategory: () => null,
+        subcategories: subcategories));
   }
 
   void _onSubcategoryChanged(
@@ -147,29 +160,33 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> _onFormSubmitted(
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    /*final transaction = Transaction(
-      id: state.id,
-      budgetId: (await Cache.instance.getBudgetId())!,
-      date: state.date ?? DateTime.now(),
-      type: state.transactionType,
-      amount: double.parse(state.amount.value),
-      categoryId: state.category?.id,
-      subcategoryId: state.subcategory?.id,
-      fromAccountId: state.account!.id,
-    );
     try {
-      await state.editedTransaction == null
-          ? _transactionsRepository.createTransaction(transaction)
-          : _transactionsRepository.updateTransaction(transaction);
-      _updateBudgetOnAddOrEditTransaction(
-          transaction: transaction, editedTransaction: state.editedTransaction);
+      final isIdExist = state.id != null;
+      isIdExist
+          ? await _transactionsRepository.updateTransaction(
+              id: state.id!,
+              date: state.date!,
+              type: state.transactionType,
+              amount: double.parse(state.amount.value),
+              categoryId: state.category!.id,
+              subcategoryId: state.subcategory!.id,
+              fromAccountId: state.account!.id!,
+              description: state.description!)
+          : await _transactionsRepository.insertTransaction(
+              date: state.date!,
+              type: state.transactionType,
+              amount: double.parse(state.amount.value),
+              categoryId: state.category!.id,
+              subcategoryId: state.subcategory!.id,
+              fromAccountId: state.account!.id!,
+              description: state.description!);
+      /*_updateBudgetOnAddOrEditTransaction(
+          transaction: transaction, editedTransaction: state.editedTransaction);*/
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-      isDisplayDesktop(event.context!)
-          ? add(TransactionFormLoaded(transactionType: transaction.type!))
-          : Navigator.of(event.context!).pop();
+      Navigator.of(event.context!).pop();
     } catch (e) {
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
-    }*/
+    }
   }
 
   void _updateBudgetOnAddOrEditTransaction(

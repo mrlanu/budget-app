@@ -14,6 +14,8 @@ class SubcategoryInput extends StatelessWidget {
         context.select((TransactionBloc bloc) => bloc.state.category);
     final subcategory =
         context.select((TransactionBloc bloc) => bloc.state.subcategory);
+    final subcategories =
+        context.select((TransactionBloc bloc) => bloc.state.subcategories);
     return DropdownButtonFormField<Subcategory>(
         icon: GestureDetector(
           child: Icon(
@@ -26,7 +28,10 @@ class SubcategoryInput extends StatelessWidget {
               : null,
         ),
         items: category != null
-            ? <Subcategory>[]
+            ? subcategories
+                .where(
+                (sc) => sc.categoryId == category.id,
+              )
                 .map((Subcategory subcategory) {
                 return DropdownMenuItem(
                   value: subcategory,
@@ -40,9 +45,7 @@ class SubcategoryInput extends StatelessWidget {
               .add(TransactionSubcategoryChanged(subcategory: newValue));
           //setState(() => selectedValue = newValue);
         },
-        value: subcategory == null
-            ? null
-            : subcategory,
+        value: subcategory == null ? null : subcategory,
         decoration: InputDecoration(
           icon: Icon(
             Icons.category_outlined,

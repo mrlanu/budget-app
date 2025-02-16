@@ -169,50 +169,31 @@ final List<RouteBase> _individualRoutes = [
   GoRoute(
       path: '/subcategories',
       builder: (BuildContext context, GoRouterState state) {
-        final catId = state.uri.queryParameters['categoryId']!;
-        final category = context
-            .read<HomeCubit>()
-            .state
-            .categories
-            .firstWhere((cat) => cat.id == catId);
+        final catId = int.parse(state.uri.queryParameters['categoryId']!);
         return SubcategoriesPage(
-          category: category,
+          categoryId: catId,
         );
       },
       routes: [
         GoRoute(
           path: 'new',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final catId = state.uri.queryParameters['categoryId']!;
-            final category = context
-                .read<HomeCubit>()
-                .state
-                .categories
-                .firstWhere((cat) => cat.id == catId);
+            final catId = int.parse(state.uri.queryParameters['categoryId']!);
             return DialogPage(
                 builder: (_) => SubcategoryEditDialog(
-                      category: category,
+                      categoryId: catId,
                     ));
           },
         ),
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final catId = state.uri.queryParameters['categoryId']!;
-            final category = context
-                .read<HomeCubit>()
-                .state
-                .categories
-                .firstWhere((cat) => cat.id == catId);
-            final subcategory = context
-                .read<HomeCubit>()
-                .state
-                .subcategories
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+            final catId = int.parse(state.uri.queryParameters['categoryId']!);
+            final subcategoryId = int.parse(state.pathParameters['id']!);
             return DialogPage(
                 builder: (_) => SubcategoryEditDialog(
-                      category: category,
-                      subcategory: subcategory,
+                      categoryId: catId,
+                      subcategoryId: subcategoryId,
                     ));
           },
         ),

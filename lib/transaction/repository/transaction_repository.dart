@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:budget_app/database/transaction_with_detail.dart';
 
-import '../../database/database.dart';
 import '../models/transaction_tile.dart';
+import '../models/transaction_type.dart';
 
 class TransactionFailure implements Exception {
   final String message;
@@ -18,9 +18,26 @@ abstract class TransactionRepository {
 
   void fetchTransactions(DateTime dateTime);
 
-  Future<void> createTransaction(Transaction transaction);
+  Future<TransactionWithDetails> getTransactionById(int transactionId);
 
-  Future<void> updateTransaction(Transaction transaction);
+  Future<int> insertTransaction(
+      {required DateTime date,
+      required TransactionType type,
+      required double amount,
+      required int categoryId,
+      required int subcategoryId,
+      required int fromAccountId,
+      required String description});
+
+  Future<void> updateTransaction(
+      {required int id,
+      required DateTime date,
+      required TransactionType type,
+      required double amount,
+      required int categoryId,
+      required int subcategoryId,
+      required int fromAccountId,
+      required String description});
 
   Future<void> deleteTransactionOrTransfer(
       {required TransactionTile transaction});
@@ -87,7 +104,7 @@ abstract class TransactionRepository {
     }
   }
 
-  *//*@override
+  */ /*@override
   Future<void> updateTransfer(Transfer transfer) async {
 
     try {
@@ -104,7 +121,7 @@ abstract class TransactionRepository {
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
     }
-  }*//*
+  }*/ /*
 
   @override
   Future<void> deleteTransactionOrTransfer(

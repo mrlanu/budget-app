@@ -13,15 +13,11 @@ part 'subcategory_edit_state.dart';
 class SubcategoryEditBloc
     extends Bloc<SubcategoryEditEvent, SubcategoryEditState> {
   final CategoryRepository _categoryRepository;
-  late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
 
   SubcategoryEditBloc({required CategoryRepository categoryRepository})
       : _categoryRepository = categoryRepository,
         super(SubcategoryEditState()) {
     on<SubcategoryEditEvent>(_onEvent, transformer: sequential());
-    _subcategoriesSubscription = _categoryRepository.subcategories.listen((subcategories) {
-      add(SubcategoriesChanged(subcategories: subcategories));
-    });
   }
 
   Future<void> _onEvent(
@@ -34,18 +30,23 @@ class SubcategoryEditBloc
     };
   }
 
-  Future<void> _onFormLoaded(
-      SubcategoryEditFormLoaded event, Emitter<SubcategoryEditState> emit) async {
-    if (event.subcategory != null) {
-      Subcategory subcategory = event.subcategory!;
+  Future<void> _onFormLoaded(SubcategoryEditFormLoaded event,
+      Emitter<SubcategoryEditState> emit) async {
+    if (event.subcategoryId != null) {
+      Subcategory subcategory =
+          await _categoryRepository.getSubcategoryById(event.subcategoryId!);
+      Category category =
+          await _categoryRepository.getCategoryById(subcategory.categoryId);
       emit(state.copyWith(
-          category: event.category,
+          category: category,
           id: subcategory.id,
           name: subcategory.name,
           isValid: true));
     } else {
+      Category category =
+          await _categoryRepository.getCategoryById(event.categoryId);
       emit(state.copyWith(
-          category: event.category, catStatus: SubcategoryEditStatus.success));
+          category: category, catStatus: SubcategoryEditStatus.success));
     }
   }
 
@@ -59,22 +60,19 @@ class SubcategoryEditBloc
     emit(state.copyWith(subcategories: event.subcategories));
   }
 
-  Future<void> _onFormSubmitted(
-      SubcategoryFormSubmitted event, Emitter<SubcategoryEditState> emit) async {
-    /*emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+  Future<void> _onFormSubmitted(SubcategoryFormSubmitted event,
+      Emitter<SubcategoryEditState> emit) async {
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     final isIdExist = state.id != null;
-    final subcategory = Subcategory(
-      id: isIdExist ? state.id! : Uuid().v4(),
-      name: state.name!,
-    );
     isIdExist
-        ? _budgetRepository.updateSubcategory(state.category!, subcategory)
-        : _budgetRepository.createSubcategory(state.category!, subcategory);*/
+        ? _categoryRepository.updateSubcategory(
+            categoryId: state.category!.id, name: state.name!, id: state.id!)
+        : _categoryRepository.insertSubcategory(
+            name: state.name!, categoryId: state.category!.id);
   }
 
   @override
   Future<void> close() {
-    _subcategoriesSubscription.cancel();
     return super.close();
   }
 }

@@ -5,11 +5,11 @@ sealed class SubcategoryEditEvent extends Equatable {
 }
 
 final class SubcategoryEditFormLoaded extends SubcategoryEditEvent {
-  final Category category;
-  final Subcategory? subcategory;
-  SubcategoryEditFormLoaded({required this.category, this.subcategory});
+  final int categoryId;
+  final int? subcategoryId;
+  SubcategoryEditFormLoaded({required this.categoryId, this.subcategoryId});
   @override
-  List<Object?> get props => [subcategory];
+  List<Object?> get props => [subcategoryId, categoryId];
 }
 
 final class SubcategoryNameChanged extends SubcategoryEditEvent {

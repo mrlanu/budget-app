@@ -17,6 +17,12 @@ class SubcategoriesState extends Equatable {
     this.errorMessage,
   });
 
+  List<Subcategory> get subcategoriesByCategory => subcategories
+      .where(
+        (sc) => sc.categoryId == category?.id,
+      )
+      .toList();
+
   SubcategoriesState copyWith({
     SubcategoriesStatus? status,
     List<Subcategory>? subcategories,

@@ -62,8 +62,20 @@ class AppDatabase extends _$AppDatabase {
     return update(categories).replace(category);
   }
 
+  Future<int> insertSubcategory(SubcategoriesCompanion subcategoryCompanion) async {
+    return await into(subcategories).insert(subcategoryCompanion);
+  }
+
+  Future<bool> updateSubcategory(Subcategory subcategory) async {
+    return update(subcategories).replace(subcategory);
+  }
+
   Future<int> deleteCategory(int id) async {
     return await (delete(categories)..where((c) => c.id.equals(id))).go();
+  }
+
+  Future<int> deleteSubcategory(int id) async {
+    return await (delete(subcategories)..where((c) => c.id.equals(id))).go();
   }
 
   Future<Category> categoryById(int id) {
@@ -137,12 +149,16 @@ class AppDatabase extends _$AppDatabase {
     }).watch();
   }
 
-  Future<List<TransactionWithDetails>> getTransactionsForCertainMonth(
-      DateTime date) async {
-    final firstDayOfMonth = DateTime(date.year, date.month, 1);
-    final lastDayOfMonth = DateTime(date.year, date.month + 1, 0);
+  Future<int> insertTransaction(TransactionsCompanion transactionsCompanion) async {
+    return into(transactions).insert(transactionsCompanion);
+  }
 
-    // Build the query with joins
+  Future<bool> updateTransaction(Transaction transaction) async {
+    return update(transactions).replace(transaction);
+  }
+
+  Future<TransactionWithDetails> getTransactionWithDetailsById(
+      int transactionId) async {
     final query = select(transactions).join([
       innerJoin(categories, transactions.categoryId.equalsExp(categories.id)),
       innerJoin(subcategories,
@@ -150,19 +166,68 @@ class AppDatabase extends _$AppDatabase {
       innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
       leftOuterJoin(accounts, transactions.toAccountId.equalsExp(accounts.id))
     ])
+      ..where(transactions.id.equals(transactionId));
+
+    final result = await query.getSingle();
+
+    return TransactionWithDetails(
+      id: result.readTable(transactions).id,
+      amount: result.readTable(transactions).amount,
+      date: result.readTable(transactions).date,
+      description: result.readTable(transactions).description,
+      type: result.readTable(transactions).type,
+      category: result.readTable(categories),
+      subcategory: result.readTable(subcategories),
+      fromAccount: result.readTable(accounts),
+      toAccount: result.readTableOrNull(accounts),
+    );
+  }
+
+  Future<List<TransactionWithDetails>> getTransactionsForCertainMonth(
+      DateTime date) async {
+    final firstDayOfMonth = DateTime(date.year, date.month, 1);
+    final lastDayOfMonth = DateTime(date.year, date.month + 1, 0);
+
+    // Create an alias for the second accounts table
+    final toAccount = alias(accounts, 'toAccount');
+
+    // Build the query with joins
+    final query = select(transactions).join([
+      innerJoin(categories, transactions.categoryId.equalsExp(categories.id)),
+      innerJoin(subcategories,
+          transactions.subcategoryId.equalsExp(subcategories.id)),
+      innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
+      leftOuterJoin(toAccount, transactions.toAccountId.equalsExp(accounts.id))
+    ])
       ..where(
           transactions.date.isBetweenValues(firstDayOfMonth, lastDayOfMonth))
       ..orderBy([OrderingTerm.desc(transactions.date)]);
 
     // Execute the query and map the results
-    return await query.map((row) {
+    return query.map((row) {
       return TransactionWithDetails(
-          transaction: row.readTable(transactions),
+          id: row.readTable(transactions).id,
+          amount: row.readTable(transactions).amount,
+          date: row.readTable(transactions).date,
+          description: row.readTable(transactions).description,
+          type: row.readTable(transactions).type,
           category: row.readTable(categories),
           subcategory: row.readTable(subcategories),
           fromAccount: row.readTable(accounts),
           toAccount: row.readTableOrNull(accounts));
     }).get();
+  }
+
+  Future<List<Subcategory>> fetchSubcategoriesByCategoryId(
+      int categoryId) async {
+    return await (select(subcategories)
+          ..where((s) => s.categoryId.equals(categoryId)))
+        .get();
+  }
+
+  Future<Subcategory> getSubcategoryById(int subcategoryId) async {
+    return (select(subcategories)..where((c) => c.id.equals(subcategoryId)))
+        .getSingle();
   }
 
   static QueryExecutor _openConnection() {

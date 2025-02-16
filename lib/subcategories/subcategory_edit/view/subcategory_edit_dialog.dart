@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../database/database.dart';
-
 class SubcategoryEditDialog extends StatelessWidget {
   const SubcategoryEditDialog(
-      {super.key, required this.category, this.subcategory});
+      {super.key, required this.categoryId, this.subcategoryId});
 
-  final Category category;
-  final Subcategory? subcategory;
+  final int categoryId;
+  final int? subcategoryId;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class SubcategoryEditDialog extends StatelessWidget {
       create: (_) => SubcategoryEditBloc(
           categoryRepository: context.read<CategoryRepository>())
         ..add(SubcategoryEditFormLoaded(
-            category: category, subcategory: subcategory)),
+            categoryId: categoryId, subcategoryId: subcategoryId)),
       child: SubcategoryEditForm(),
     );
   }

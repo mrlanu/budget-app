@@ -43,4 +43,28 @@ class CategoryRepositoryDrift extends CategoryRepository {
   @override
   Future<int> deleteCategory(int categoryId) =>
       _database.deleteCategory(categoryId);
+
+  @override
+  Future<int> deleteSubcategory(int subcategoryId) =>
+      _database.deleteSubcategory(subcategoryId);
+
+  @override
+  Future<Subcategory> getSubcategoryById(int subcategoryId) =>
+      _database.getSubcategoryById(subcategoryId);
+
+  @override
+  Future<List<Subcategory>> fetchSubcategoriesByCategoryId(int categoryId) =>
+      _database.fetchSubcategoriesByCategoryId(categoryId);
+
+  @override
+  Future<int> insertSubcategory(
+          {required String name, required int categoryId}) =>
+      _database.insertSubcategory(
+          SubcategoriesCompanion.insert(name: name, categoryId: categoryId));
+
+  @override
+  Future<void> updateSubcategory(
+          {required int id, required String name, required int categoryId}) =>
+      _database.updateSubcategory(
+          Subcategory(id: id, name: name, categoryId: categoryId));
 }

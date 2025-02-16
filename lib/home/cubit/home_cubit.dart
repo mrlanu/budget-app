@@ -33,7 +33,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> initRequested() async {
     emit(state.copyWith(status: HomeStatus.loading));
-
+    _transactionsRepository.fetchTransactions(DateTime.now());
     _transactionsSubscription = _transactionsRepository.transactions.listen(
         (transactions) {
       final transactionTiles = _mapTransactionsToTiles(transactions);
@@ -59,15 +59,14 @@ class HomeCubit extends Cubit<HomeState> {
         onError: (_) => emit(state.copyWith(
             status: HomeStatus.failure, errorMessage: 'Something went wrong')));
 
-    _accountsSubscription = _accountRepository.accounts.listen(
-            (accounts) {
-          emit(
-            state.copyWith(
-              status: HomeStatus.success,
-              accounts: accounts,
-            ),
-          );
-        },
+    _accountsSubscription = _accountRepository.accounts.listen((accounts) {
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          accounts: accounts,
+        ),
+      );
+    },
         onError: (_) => emit(state.copyWith(
             status: HomeStatus.failure, errorMessage: 'Something went wrong')));
   }
@@ -96,45 +95,45 @@ class HomeCubit extends Cubit<HomeState> {
     return trList;
   }
 
-  List<TransactionTile> _toTile(TransactionWithDetails trwd) {
-    switch (trwd.transaction.type) {
+  List<TransactionTile> _toTile(TransactionWithDetails transaction) {
+    switch (transaction.type) {
       case TransactionType.EXPENSE || TransactionType.INCOME:
         return [
           TransactionTile(
-              id: trwd.transaction.id,
-              type: trwd.transaction.type,
-              amount: trwd.transaction.amount,
-              title: trwd.subcategory.name,
-              subtitle: trwd.fromAccount.name,
-              dateTime: trwd.transaction.date,
-              description: trwd.transaction.description,
-              category: trwd.category,
-              subcategory: trwd.subcategory,
-              fromAccount: trwd.fromAccount)
+              id: transaction.id,
+              type: transaction.type,
+              amount: transaction.amount,
+              title: transaction.subcategory.name,
+              subtitle: transaction.fromAccount.name,
+              dateTime: transaction.date,
+              description: transaction.description,
+              category: transaction.category,
+              subcategory: transaction.subcategory,
+              fromAccount: transaction.fromAccount)
         ];
       case TransactionType.TRANSFER:
         return [
           TransactionTile(
-            id: trwd.transaction.id,
+            id: transaction.id,
             type: TransactionType.TRANSFER,
-            amount: trwd.transaction.amount,
+            amount: transaction.amount,
             title: 'Transfer in',
-            subtitle: 'from ${trwd.fromAccount.name}',
-            dateTime: trwd.transaction.date,
-            description: trwd.transaction.description,
-            fromAccount: trwd.fromAccount,
-            toAccount: trwd.toAccount,
+            subtitle: 'from ${transaction.fromAccount.name}',
+            dateTime: transaction.date,
+            description: transaction.description,
+            fromAccount: transaction.fromAccount,
+            toAccount: transaction.toAccount,
           ),
           TransactionTile(
-              id: trwd.transaction.id,
+              id: transaction.id,
               type: TransactionType.TRANSFER,
-              amount: trwd.transaction.amount,
+              amount: transaction.amount,
               title: 'Transfer out',
-              subtitle: 'to ${trwd.toAccount!.name}',
-              dateTime: trwd.transaction.date,
-              description: trwd.transaction.description,
-              fromAccount: trwd.fromAccount,
-              toAccount: trwd.toAccount)
+              subtitle: 'to ${transaction.toAccount!.name}',
+              dateTime: transaction.date,
+              description: transaction.description,
+              fromAccount: transaction.fromAccount,
+              toAccount: transaction.toAccount)
         ];
       case _:
         return [];

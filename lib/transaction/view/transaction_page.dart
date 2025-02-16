@@ -9,12 +9,10 @@ import '../transaction.dart';
 class TransactionPage extends StatelessWidget {
   const TransactionPage({
     super.key,
-    this.transaction,
-    required this.transactionType,
+    this.transactionId,
   });
 
-  final TransactionTile? transaction;
-  final TransactionType transactionType;
+  final int? transactionId;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +21,7 @@ class TransactionPage extends StatelessWidget {
           transactionsRepository: context.read<TransactionRepository>(),
           categoryRepository: context.read<CategoryRepository>(),
           accountRepository: context.read<AccountRepository>())
-        ..add(TransactionFormLoaded(
-          transaction: transaction,
-          transactionType: transactionType,
-        )),
+        ..add(TransactionFormLoaded(transactionId: transactionId)),
       child: TransactionView(),
     );
   }
