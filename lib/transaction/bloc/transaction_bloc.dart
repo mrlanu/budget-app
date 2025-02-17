@@ -6,7 +6,7 @@ import 'package:budget_app/accounts_list/account_edit/model/account_with_details
 import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/database/database.dart';
-import 'package:budget_app/transaction/models/transaction_tile.dart';
+import 'package:budget_app/database/transaction_with_detail.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
@@ -65,6 +65,35 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     };
   }
 
+  Future<void> _onFormLoaded(
+    TransactionFormLoaded event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(trStatus: TransactionStatus.loading));
+    if (event.transactionId != null) {
+      final editedTransaction = await _transactionsRepository
+          .getTransactionById(event.transactionId!);
+      final account = await _accountsRepository
+          .getAccountById(editedTransaction.fromAccount.id);
+      emit(state.copyWith(
+          editedTransaction: editedTransaction,
+          id: editedTransaction.id,
+          transactionType: editedTransaction.type,
+          amount: Amount.dirty(editedTransaction.amount.toString()),
+          date: editedTransaction.date,
+          category: () => editedTransaction.category,
+          subcategory: () => editedTransaction.subcategory,
+          account: account,
+          description: editedTransaction.description,
+          trStatus: TransactionStatus.success,
+          isValid: true));
+    } else {
+      emit(state.copyWith(
+        trStatus: TransactionStatus.success,
+      ));
+    }
+  }
+
   Future<void> _onCategoriesChanged(
     TransactionCategoriesChanged event,
     Emitter<TransactionState> emit,
@@ -84,34 +113,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     emit(state.copyWith(accounts: event.accounts));
-  }
-
-  Future<void> _onFormLoaded(
-    TransactionFormLoaded event,
-    Emitter<TransactionState> emit,
-  ) async {
-    emit(state.copyWith(trStatus: TransactionStatus.loading));
-    if (event.transactionId != null) {
-      final tr = await _transactionsRepository
-          .getTransactionById(event.transactionId!);
-      final account =
-          await _accountsRepository.getAccountById(tr.fromAccount.id);
-      emit(state.copyWith(
-          id: tr.id,
-          transactionType: tr.type,
-          amount: Amount.dirty(tr.amount.toString()),
-          date: tr.date,
-          category: () => tr.category,
-          subcategory: () => tr.subcategory,
-          account: account,
-          description: tr.description,
-          trStatus: TransactionStatus.success,
-          isValid: true));
-    } else {
-      emit(state.copyWith(
-        trStatus: TransactionStatus.success,
-      ));
-    }
   }
 
   void _onAmountChanged(
@@ -162,26 +163,33 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       final isIdExist = state.id != null;
-      isIdExist
-          ? await _transactionsRepository.updateTransaction(
-              id: state.id!,
-              date: state.date!,
-              type: state.transactionType,
-              amount: double.parse(state.amount.value),
-              categoryId: state.category!.id,
-              subcategoryId: state.subcategory!.id,
-              fromAccountId: state.account!.id!,
-              description: state.description!)
-          : await _transactionsRepository.insertTransaction(
-              date: state.date!,
-              type: state.transactionType,
-              amount: double.parse(state.amount.value),
-              categoryId: state.category!.id,
-              subcategoryId: state.subcategory!.id,
-              fromAccountId: state.account!.id!,
-              description: state.description!);
-      /*_updateBudgetOnAddOrEditTransaction(
-          transaction: transaction, editedTransaction: state.editedTransaction);*/
+      int transactionId;
+      if (isIdExist) {
+        await _transactionsRepository.updateTransaction(
+            id: state.id!,
+            date: state.date!,
+            type: state.transactionType,
+            amount: double.parse(state.amount.value),
+            categoryId: state.category!.id,
+            subcategoryId: state.subcategory!.id,
+            fromAccountId: state.account!.id!,
+            description: state.description!);
+        transactionId = state.id!;
+      } else {
+        transactionId = await _transactionsRepository.insertTransaction(
+            date: state.date!,
+            type: state.transactionType,
+            amount: double.parse(state.amount.value),
+            categoryId: state.category!.id,
+            subcategoryId: state.subcategory!.id,
+            fromAccountId: state.account!.id!,
+            description: state.description!);
+      }
+      final newTransaction =
+          await _transactionsRepository.getTransactionById(transactionId);
+      _updateAccountOnAddOrEditTransaction(
+          editedTransaction: state.editedTransaction,
+          newTransaction: newTransaction);
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       Navigator.of(event.context!).pop();
     } catch (e) {
@@ -189,15 +197,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
   }
 
-  void _updateBudgetOnAddOrEditTransaction(
-      {required Transaction transaction, TransactionTile? editedTransaction}) {
-    /*List<Account> updatedAccounts = [];
-    final accounts = state.budget.accountList;
+  void _updateAccountOnAddOrEditTransaction(
+      {TransactionWithDetails? editedTransaction,
+      required TransactionWithDetails newTransaction}) async {
+    List<Account> updatedAccounts = [];
+    final accounts = await _accountsRepository.getAllAccounts();
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     if (editedTransaction != null) {
       updatedAccounts = accounts.map((acc) {
-        if (acc.id == editedTransaction.fromAccount!.id) {
+        if (acc.id == editedTransaction.fromAccount.id) {
           return acc.copyWith(
               balance: acc.balance +
                   (editedTransaction.type == TransactionType.EXPENSE
@@ -211,18 +220,27 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       updatedAccounts = [...accounts];
     }
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccountId) {
+      if (acc.id == newTransaction.fromAccount.id) {
         return acc.copyWith(
             balance: acc.balance +
-                (transaction.type == TransactionType.EXPENSE
-                    ? -transaction.amount
-                    : transaction.amount));
+                (newTransaction.type == TransactionType.EXPENSE
+                    ? -newTransaction.amount
+                    : newTransaction.amount));
       } else {
         return acc;
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
+    updatedAccounts.forEach(
+      (acc) => _accountsRepository.updateAccount(
+          id: acc.id,
+          name: acc.name,
+          includeInTotal: acc.includeInTotal,
+          balance: acc.balance,
+          initialBalance: acc.initialBalance,
+          currency: acc.currency ?? '',
+          categoryId: acc.categoryId),
+    );
   }
 
   @override

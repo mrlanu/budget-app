@@ -152,10 +152,10 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> deleteTransaction({required TransactionTile transaction}) async {
-    await _transactionsRepository.deleteTransactionOrTransfer(
-        transaction: transaction);
     final lastDeleted =
         state.transactionTilesList.where((tr) => tr.id == transaction.id).first;
+    await _transactionsRepository.deleteTransactionOrTransfer(
+        transaction: transaction);
     transaction.type == TransactionType.TRANSFER
         ? _updateBudgetOnDeleteTransfer(transaction: transaction)
         : _updateBudgetOnDeleteTransaction(transaction: transaction);
@@ -163,8 +163,15 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> undoDelete() async {
-    /*await _transactionsRepository
-        .createTransaction(state.lastDeletedTransaction!.toTransaction());
+    final lT = state.lastDeletedTransaction;
+    await _transactionsRepository.insertTransaction(
+        amount: lT!.amount,
+        date: lT.dateTime,
+        type: lT.type,
+        fromAccountId: lT.fromAccount!.id,
+        subcategoryId: lT.subcategory!.id,
+        categoryId: lT.category!.id,
+        description: lT.description);
     if (state.lastDeletedTransaction!.type == TransactionType.TRANSFER) {
       _updateBudgetOnUndoDeleteTransfer(
           transfer: state.lastDeletedTransaction!);
@@ -174,12 +181,12 @@ class HomeCubit extends Cubit<HomeState> {
     }
     emit(state.copyWith(
       lastDeletedTransaction: () => null,
-    ));*/
+    ));
   }
 
   void _updateBudgetOnDeleteTransaction(
-      {required TransactionTile transaction}) {
-    /*final accounts = state.budget.accountList;
+      {required TransactionTile transaction}) async {
+    final accounts = await _accountRepository.getAllAccounts();
     List<Account> updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
       if (acc.id == transaction.fromAccount!.id) {
@@ -193,12 +200,12 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
+    _updateAccounts(updatedAccounts);
   }
 
-  void _updateBudgetOnDeleteTransfer({required TransactionTile transaction}) {
-    List<AccountWithDetails> updatedAccounts = [];
-    final accounts = state.accounts;
+  void _updateBudgetOnDeleteTransfer({required TransactionTile transaction})async {
+    List<Account> updatedAccounts = [];
+    final accounts = await _accountRepository.getAllAccounts();
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     updatedAccounts = accounts.map((acc) {
@@ -216,13 +223,13 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    //_budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _updateAccounts(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransaction(
       {required TransactionTile transaction,
-      TransactionTile? editedTransaction}) {
-    /*final accounts = state.budget.accountList;
+      TransactionTile? editedTransaction}) async {
+    final accounts = await _accountRepository.getAllAccounts();
     var updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
       if (acc.id == transaction.fromAccount!.id) {
@@ -236,7 +243,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
+    _updateAccounts(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransfer({required TransactionTile transfer}) {
@@ -261,6 +268,19 @@ class HomeCubit extends Cubit<HomeState> {
     }).toList();
 
     _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
+  }
+
+  void _updateAccounts(List<Account> updatedAccounts) {
+    updatedAccounts.forEach(
+          (acc) => _accountRepository.updateAccount(
+          id: acc.id,
+          name: acc.name,
+          includeInTotal: acc.includeInTotal,
+          balance: acc.balance,
+          initialBalance: acc.initialBalance,
+          currency: acc.currency ?? '',
+          categoryId: acc.categoryId),
+    );
   }
 
   Future<void> deleteBudget() async {

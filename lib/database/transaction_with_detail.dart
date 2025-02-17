@@ -1,7 +1,9 @@
+import 'package:equatable/equatable.dart';
+
 import '../transaction/models/transaction_type.dart';
 import 'database.dart';
 
-class TransactionWithDetails {
+class TransactionWithDetails extends Equatable {
   final int id;
   final double amount;
   final DateTime date;
@@ -23,4 +25,17 @@ class TransactionWithDetails {
     required this.fromAccount,
     required this.toAccount,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        amount,
+        date,
+        description,
+        type,
+        category,
+        subcategory,
+        fromAccount,
+        toAccount
+      ];
 }

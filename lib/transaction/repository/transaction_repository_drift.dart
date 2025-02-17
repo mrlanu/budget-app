@@ -15,6 +15,10 @@ class TransactionRepositoryDrift extends TransactionRepository {
   final AppDatabase _database;
   final _transactionsStreamController =
       BehaviorSubject<List<TransactionWithDetails>>();
+  //stream for date range transactions
+  late Stream<List<TransactionWithDetails>>? _transactionsStream;
+  StreamSubscription<List<TransactionWithDetails>>?
+      _transactionsStreamSubscription;
 
   @override
   Stream<List<TransactionWithDetails>> get transactions =>
@@ -25,9 +29,12 @@ class TransactionRepositoryDrift extends TransactionRepository {
       _database.getTransactionWithDetailsById(transactionId);
 
   @override
-  void fetchTransactions(DateTime dateTime) async{
-   final tr = await _database.getTransactionsForCertainMonth(dateTime);
-   _transactionsStreamController.add(tr);
+  void fetchTransactions(DateTime dateTime) async {
+    _transactionsStreamSubscription?.cancel();
+    _transactionsStream = _database.getTransactionsForCertainMonth(dateTime);
+    _transactionsStreamSubscription = _transactionsStream?.listen(
+      (event) => _transactionsStreamController.add(event),
+    );
   }
 
   @override
@@ -88,5 +95,11 @@ class TransactionRepositoryDrift extends TransactionRepository {
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction}) async {}
+      {required TransactionTile transaction}) async {
+    final transactions = [..._transactionsStreamController.value];
+    final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
+    transactions.removeAt(trIndex);
+    _transactionsStreamController.add(transactions);
+    _database.deleteTransaction(transaction.id);
+  }
 }

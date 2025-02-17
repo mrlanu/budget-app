@@ -3,18 +3,18 @@ part of 'transaction_bloc.dart';
 enum TransactionStatus { loading, success, failure }
 
 class TransactionState extends Equatable {
-  final TransactionTile? editedTransaction;
+  final TransactionWithDetails? editedTransaction;
   final int? id;
   final TransactionType transactionType;
   final Amount amount;
   final DateTime? date;
   final Category? category;
-  final List<Category> categories;
-  final List<Subcategory> subcategories;
-  final List<AccountWithDetails> accounts;
   final Subcategory? subcategory;
   final AccountWithDetails? account;
   final String? description;
+  final List<AccountWithDetails> accounts;
+  final List<Category> categories;
+  final List<Subcategory> subcategories;
 
   final TransactionStatus trStatus;
   final FormzSubmissionStatus status;
@@ -40,7 +40,7 @@ class TransactionState extends Equatable {
       this.errorMessage});
 
   TransactionState copyWith({
-    TransactionTile? editedTransaction,
+    TransactionWithDetails? editedTransaction,
     int? id,
     TransactionType? transactionType,
     Amount? amount,
