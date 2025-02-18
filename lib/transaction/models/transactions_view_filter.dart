@@ -24,10 +24,10 @@ class TransactionsViewFilter {
         return transactionTile.category?.id == filterId!;
       case TransactionsViewFilterTypes.accountId:
         if(transactionTile.type == TransactionType.TRANSFER){
-          return (transactionTile.fromAccount!.id == filterId && transactionTile.title == 'Transfer out') ||
-              (transactionTile.toAccount?.id == filterId && transactionTile.title == 'Transfer in');
+          return (transactionTile.fromAccount == filterId && transactionTile.title == 'Transfer out') ||
+              (transactionTile.toAccount == filterId && transactionTile.title == 'Transfer in');
         }else{
-          return transactionTile.fromAccount!.id == filterId;
+          return transactionTile.fromAccount == filterId;
         }
     }
   }

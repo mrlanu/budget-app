@@ -63,7 +63,6 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                     current.lastDeletedTransaction &&
                 current.lastDeletedTransaction != null,
             listener: (context, state) {
-              final deletedTransaction = state.lastDeletedTransaction!;
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
@@ -137,7 +136,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                         );
                       },
                       body: TransactionsList(
-                          transactionTiles: summary.comprehensiveTr),
+                          transactionTiles: summary.transactionTiles),
                       isExpanded: isExpandedList[index]);
                 }))));
   }

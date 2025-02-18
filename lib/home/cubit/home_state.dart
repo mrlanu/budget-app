@@ -14,7 +14,7 @@ enum HomeTab {
 
 class HomeState extends Equatable {
   final HomeStatus status;
-  final List<TransactionTile> transactionTilesList;
+  final List<TransactionWithDetails> transactions;
 
   //here should be AccountWithDetails instead of Account
   final List<AccountWithDetails> accounts;
@@ -23,17 +23,17 @@ class HomeState extends Equatable {
   final DateTime? selectedDate;
   final HomeTab tab;
   final String? errorMessage;
-  final TransactionTile? lastDeletedTransaction;
+  final TransactionWithDetails? lastDeletedTransaction;
 
   double get expenses {
-    return transactionTilesList
+    return transactions
         .where((tr) => tr.type == TransactionType.EXPENSE)
         .fold<double>(
             0, (previousValue, element) => previousValue + element.amount);
   }
 
   double get incomes {
-    return transactionTilesList
+    return transactions
         .where((tr) => tr.type == TransactionType.INCOME)
         .fold<double>(
             0, (previousValue, element) => previousValue + element.amount);
@@ -47,58 +47,108 @@ class HomeState extends Equatable {
   List<SummaryTile> get summariesByCategory {
     switch (tab) {
       case HomeTab.expenses:
-        final tiles = transactionTilesList
+        final tiles = transactions
             .where((tr) =>
                 tr.type == TransactionType.EXPENSE && tr.toAccount == null)
+            .map(_toTile)
+            .expand((list) => list)
             .toList();
         return _getSummariesByCategory(tiles);
       case HomeTab.income:
-        final tiles = transactionTilesList
+        final tiles = transactions
             .where((tr) =>
                 tr.type == TransactionType.INCOME && tr.toAccount == null)
+            .map(_toTile)
+            .expand((list) => list)
             .toList();
         return _getSummariesByCategory(tiles);
       case HomeTab.accounts:
-        return _getSummariesByAccounts(transactionTiles: transactionTilesList);
+        return _getSummariesByAccounts(transactions: transactions);
+    }
+  }
+
+  List<TransactionTile> _toTile(TransactionWithDetails transaction) {
+    switch (transaction.type) {
+      case TransactionType.EXPENSE || TransactionType.INCOME:
+        return [
+          TransactionTile(
+              id: transaction.id,
+              type: transaction.type,
+              amount: transaction.amount,
+              title: transaction.subcategory.name,
+              subtitle: transaction.fromAccount.name,
+              dateTime: transaction.date,
+              description: transaction.description,
+              category: transaction.category,
+              subcategory: transaction.subcategory.name,
+              fromAccount: transaction.fromAccount.name)
+        ];
+      case TransactionType.TRANSFER:
+        return [
+          TransactionTile(
+            id: transaction.id,
+            type: TransactionType.TRANSFER,
+            amount: transaction.amount,
+            title: 'Transfer in',
+            subtitle: 'from ${transaction.fromAccount.name}',
+            dateTime: transaction.date,
+            description: transaction.description,
+            fromAccount: transaction.fromAccount.name,
+            toAccount: transaction.toAccount!.name,
+          ),
+          TransactionTile(
+              id: transaction.id,
+              type: TransactionType.TRANSFER,
+              amount: transaction.amount,
+              title: 'Transfer out',
+              subtitle: 'to ${transaction.toAccount!.name}',
+              dateTime: transaction.date,
+              description: transaction.description,
+              fromAccount: transaction.fromAccount.name,
+              toAccount: transaction.toAccount!.name)
+        ];
+      case _:
+        return [];
     }
   }
 
   List<SummaryTile> _getSummariesByCategory(
-      List<TransactionTile> filteredTiles) {
+      List<TransactionTile> transactions) {
     List<SummaryTile> summaries = [];
     final groupedTrByCat =
-        groupBy(filteredTiles, (TransactionTile tr) => tr.category!);
+        groupBy(transactions, (TransactionTile tr) => tr.category);
 
     groupedTrByCat.forEach((key, value) {
       final double sum = value.fold<double>(
           0.0, (previousValue, element) => previousValue + element.amount);
-
+      value.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       summaries.add(SummaryTile(
-          id: key.id,
-          name: key.name,
+          name: key!.name,
           total: sum,
-          comprehensiveTr: value,
+          transactionTiles: value,
           iconCodePoint: key.iconCode));
     });
     return summaries;
   }
 
   List<SummaryTile> _getSummariesByAccounts(
-      {required List<TransactionTile> transactionTiles}) {
+      {required List<TransactionWithDetails> transactions}) {
     List<SummaryTile> summaries = [];
     accounts.forEach((acc) {
+      final transactionTiles = transactions
+          .map(_toTile)
+          .expand((list) => list)
+          .where((tr) =>
+      (tr.fromAccount == acc.name &&
+          tr.type != TransactionType.TRANSFER) ||
+          (tr.toAccount == acc.name && tr.title == 'Transfer in') ||
+          (tr.fromAccount == acc.name && tr.title == 'Transfer out'))
+          .toList();
+      transactionTiles.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       summaries.add(SummaryTile(
-          id: acc.id!,
           name: acc.name,
           total: acc.balance,
-          comprehensiveTr: transactionTiles
-              .where((tr) =>
-                  (tr.fromAccount!.id == acc.id &&
-                      tr.type != TransactionType.TRANSFER) ||
-                  (tr.toAccount?.id == acc.id && tr.title == 'Transfer in') ||
-                  (tr.fromAccount?.id == acc.id && tr.title == 'Transfer out'))
-              .toList(),
-          //here should be AccountWithDetails instead of Account
+          transactionTiles: transactionTiles,
           iconCodePoint: acc.category.iconCode));
     });
     return summaries;
@@ -106,7 +156,7 @@ class HomeState extends Equatable {
 
   const HomeState({
     this.status = HomeStatus.initial,
-    this.transactionTilesList = const [],
+    this.transactions = const [],
     this.accounts = const [],
     this.categories = const [],
     this.subcategories = const [],
@@ -118,20 +168,19 @@ class HomeState extends Equatable {
 
   HomeState copyWith({
     HomeStatus? status,
-    List<TransactionTile>? transactionTilesList,
+    List<TransactionWithDetails>? transactions,
     List<AccountWithDetails>? accounts,
     List<Category>? categories,
     List<Subcategory>? subcategories,
-    TransactionsViewFilter? filter,
     List<SummaryTile>? summaryList,
     DateTime? selectedDate,
     HomeTab? tab,
     String? errorMessage,
-    TransactionTile? Function()? lastDeletedTransaction,
+    TransactionWithDetails? Function()? lastDeletedTransaction,
   }) {
     return HomeState(
       status: status ?? this.status,
-      transactionTilesList: transactionTilesList ?? this.transactionTilesList,
+      transactions: transactions ?? this.transactions,
       accounts: accounts ?? this.accounts,
       categories: categories ?? this.categories,
       subcategories: subcategories ?? this.subcategories,
@@ -150,7 +199,7 @@ class HomeState extends Equatable {
         accounts,
         categories,
         subcategories,
-        transactionTilesList,
+        transactions,
         selectedDate,
         tab,
         errorMessage,

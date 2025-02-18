@@ -202,7 +202,7 @@ class AppDatabase extends _$AppDatabase {
       category: result.readTable(categories),
       subcategory: result.readTable(subcategories),
       fromAccount: result.readTable(accounts),
-      toAccount: result.readTableOrNull(accounts),
+      toAccount: result.readTableOrNull(toAccount),
     );
   }
 
@@ -237,7 +237,7 @@ class AppDatabase extends _$AppDatabase {
           category: row.readTable(categories),
           subcategory: row.readTable(subcategories),
           fromAccount: row.readTable(accounts),
-          toAccount: row.readTableOrNull(accounts));
+          toAccount: row.readTableOrNull(toAccount));
     }).watch();
   }
 

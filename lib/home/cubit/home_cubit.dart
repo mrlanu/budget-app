@@ -36,11 +36,10 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransactions(DateTime.now());
     _transactionsSubscription = _transactionsRepository.transactions.listen(
         (transactions) {
-      final transactionTiles = _mapTransactionsToTiles(transactions);
       emit(
         state.copyWith(
           status: HomeStatus.success,
-          transactionTilesList: transactionTiles,
+          transactions: transactions,
         ),
       );
     },
@@ -87,59 +86,6 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }*/
 
-  List<TransactionTile> _mapTransactionsToTiles(
-      List<TransactionWithDetails> transactions) {
-    final trList =
-        transactions.map((t) => _toTile(t)).expand((list) => list).toList();
-    trList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    return trList;
-  }
-
-  List<TransactionTile> _toTile(TransactionWithDetails transaction) {
-    switch (transaction.type) {
-      case TransactionType.EXPENSE || TransactionType.INCOME:
-        return [
-          TransactionTile(
-              id: transaction.id,
-              type: transaction.type,
-              amount: transaction.amount,
-              title: transaction.subcategory.name,
-              subtitle: transaction.fromAccount.name,
-              dateTime: transaction.date,
-              description: transaction.description,
-              category: transaction.category,
-              subcategory: transaction.subcategory,
-              fromAccount: transaction.fromAccount)
-        ];
-      case TransactionType.TRANSFER:
-        return [
-          TransactionTile(
-            id: transaction.id,
-            type: TransactionType.TRANSFER,
-            amount: transaction.amount,
-            title: 'Transfer in',
-            subtitle: 'from ${transaction.fromAccount.name}',
-            dateTime: transaction.date,
-            description: transaction.description,
-            fromAccount: transaction.fromAccount,
-            toAccount: transaction.toAccount,
-          ),
-          TransactionTile(
-              id: transaction.id,
-              type: TransactionType.TRANSFER,
-              amount: transaction.amount,
-              title: 'Transfer out',
-              subtitle: 'to ${transaction.toAccount!.name}',
-              dateTime: transaction.date,
-              description: transaction.description,
-              fromAccount: transaction.fromAccount,
-              toAccount: transaction.toAccount)
-        ];
-      case _:
-        return [];
-    }
-  }
-
   Future<void> setTab(int tabIndex) async {
     emit(state.copyWith(
         status: HomeStatus.loading, tab: HomeTab.values[tabIndex]));
@@ -151,11 +97,13 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransactions(dateTime);
   }
 
-  Future<void> deleteTransaction({required TransactionTile transaction}) async {
+  Future<void> deleteTransaction({required int transactionId}) async {
+    final transaction =
+        await _transactionsRepository.getTransactionById(transactionId);
     final lastDeleted =
-        state.transactionTilesList.where((tr) => tr.id == transaction.id).first;
+        state.transactions.where((tr) => tr.id == transaction.id).first;
     await _transactionsRepository.deleteTransactionOrTransfer(
-        transaction: transaction);
+        transactionId: transactionId);
     transaction.type == TransactionType.TRANSFER
         ? _updateBudgetOnDeleteTransfer(transaction: transaction)
         : _updateBudgetOnDeleteTransaction(transaction: transaction);
@@ -166,11 +114,11 @@ class HomeCubit extends Cubit<HomeState> {
     final lT = state.lastDeletedTransaction;
     await _transactionsRepository.insertTransaction(
         amount: lT!.amount,
-        date: lT.dateTime,
+        date: lT.date,
         type: lT.type,
-        fromAccountId: lT.fromAccount!.id,
-        subcategoryId: lT.subcategory!.id,
-        categoryId: lT.category!.id,
+        fromAccountId: lT.fromAccount.id,
+        subcategoryId: lT.subcategory.id,
+        categoryId: lT.category.id,
         description: lT.description);
     if (state.lastDeletedTransaction!.type == TransactionType.TRANSFER) {
       _updateBudgetOnUndoDeleteTransfer(
@@ -185,11 +133,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _updateBudgetOnDeleteTransaction(
-      {required TransactionTile transaction}) async {
+      {required TransactionWithDetails transaction}) async {
     final accounts = await _accountRepository.getAllAccounts();
     List<Account> updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(
             balance: acc.balance +
                 (transaction.type == TransactionType.EXPENSE
@@ -203,13 +151,14 @@ class HomeCubit extends Cubit<HomeState> {
     _updateAccounts(updatedAccounts);
   }
 
-  void _updateBudgetOnDeleteTransfer({required TransactionTile transaction})async {
+  void _updateBudgetOnDeleteTransfer(
+      {required TransactionWithDetails transaction}) async {
     List<Account> updatedAccounts = [];
     final accounts = await _accountRepository.getAllAccounts();
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     updatedAccounts = accounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(balance: acc.balance + transaction.amount);
       } else {
         return acc;
@@ -227,12 +176,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _updateBudgetOnUndoDeleteTransaction(
-      {required TransactionTile transaction,
-      TransactionTile? editedTransaction}) async {
+      {required TransactionWithDetails transaction}) async {
     final accounts = await _accountRepository.getAllAccounts();
     var updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(
             balance: acc.balance +
                 (transaction.type == TransactionType.EXPENSE
@@ -246,7 +194,8 @@ class HomeCubit extends Cubit<HomeState> {
     _updateAccounts(updatedAccounts);
   }
 
-  void _updateBudgetOnUndoDeleteTransfer({required TransactionTile transfer}) {
+  void _updateBudgetOnUndoDeleteTransfer(
+      {required TransactionWithDetails transfer}) {
     /*final accounts = state.budget.accountList;
     List<Account> updatedAccounts = [];
 
@@ -272,7 +221,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void _updateAccounts(List<Account> updatedAccounts) {
     updatedAccounts.forEach(
-          (acc) => _accountRepository.updateAccount(
+      (acc) => _accountRepository.updateAccount(
           id: acc.id,
           name: acc.name,
           includeInTotal: acc.includeInTotal,

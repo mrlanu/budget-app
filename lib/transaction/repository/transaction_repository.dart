@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:budget_app/database/transaction_with_detail.dart';
 
-import '../models/transaction_tile.dart';
 import '../models/transaction_type.dart';
 
 class TransactionFailure implements Exception {
@@ -40,7 +39,7 @@ abstract class TransactionRepository {
       required String description});
 
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction});
+      {required int transactionId});
 }
 
 /*class TransactionsRepositoryImpl extends TransactionRepository {

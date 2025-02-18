@@ -5,7 +5,6 @@ import 'package:budget_app/database/transaction_with_detail.dart';
 import 'package:budget_app/transaction/repository/transaction_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../models/transaction_tile.dart';
 import '../models/transaction_type.dart';
 
 class TransactionRepositoryDrift extends TransactionRepository {
@@ -95,11 +94,11 @@ class TransactionRepositoryDrift extends TransactionRepository {
 
   @override
   Future<void> deleteTransactionOrTransfer(
-      {required TransactionTile transaction}) async {
+      {required int transactionId}) async {
     final transactions = [..._transactionsStreamController.value];
-    final trIndex = transactions.indexWhere((t) => t.id == transaction.id);
+    final trIndex = transactions.indexWhere((t) => t.id == transactionId);
     transactions.removeAt(trIndex);
     _transactionsStreamController.add(transactions);
-    _database.deleteTransaction(transaction.id);
+    _database.deleteTransaction(transactionId);
   }
 }

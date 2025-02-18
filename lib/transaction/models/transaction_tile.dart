@@ -1,7 +1,6 @@
+import 'package:budget_app/database/database.dart';
 import 'package:budget_app/transaction/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../database/database.dart';
 
 class TransactionTile extends Equatable {
   final int id;
@@ -10,9 +9,9 @@ class TransactionTile extends Equatable {
   final String title;
   final String subtitle;
   final Category? category;
-  final Subcategory? subcategory;
-  final Account? fromAccount;
-  final Account? toAccount;
+  final String? subcategory;
+  final String fromAccount;
+  final String? toAccount;
   final DateTime dateTime;
   final String description;
 
@@ -24,12 +23,12 @@ class TransactionTile extends Equatable {
       required this.subtitle,
       this.category,
       this.subcategory,
-      this.fromAccount,
+      required this.fromAccount,
       this.toAccount,
       required this.dateTime,
       required this.description});
 
   @override
   List<Object?> get props =>
-      [id, amount, fromAccount, toAccount, dateTime];
+      [id, amount, category, fromAccount, toAccount, dateTime];
 }

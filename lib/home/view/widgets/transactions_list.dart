@@ -13,7 +13,7 @@ class TransactionsList extends StatelessWidget {
 
   TransactionsList({super.key, required this.transactionTiles});
 
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
+  final ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class TransactionsList extends StatelessWidget {
                   transactionTile: tr,
                   onDismissed: (_) {
                     final trCub = context.read<HomeCubit>();
-                    trCub.deleteTransaction(transaction: tr);
+                    trCub.deleteTransaction(transactionId: tr.id);
                   },
                   onTap: openContainer,
                 );
