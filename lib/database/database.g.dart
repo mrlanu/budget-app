@@ -914,18 +914,18 @@ class $TransactionsTable extends Transactions
       const VerificationMeta('categoryId');
   @override
   late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
-      'category_id', aliasedName, false,
+      'category_id', aliasedName, true,
       type: DriftSqlType.int,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES categories (id)'));
   static const VerificationMeta _subcategoryIdMeta =
       const VerificationMeta('subcategoryId');
   @override
   late final GeneratedColumn<int> subcategoryId = GeneratedColumn<int>(
-      'subcategory_id', aliasedName, false,
+      'subcategory_id', aliasedName, true,
       type: DriftSqlType.int,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES subcategories (id)'));
   static const VerificationMeta _fromAccountIdMeta =
@@ -1000,16 +1000,12 @@ class $TransactionsTable extends Transactions
           _categoryIdMeta,
           categoryId.isAcceptableOrUnknown(
               data['category_id']!, _categoryIdMeta));
-    } else if (isInserting) {
-      context.missing(_categoryIdMeta);
     }
     if (data.containsKey('subcategory_id')) {
       context.handle(
           _subcategoryIdMeta,
           subcategoryId.isAcceptableOrUnknown(
               data['subcategory_id']!, _subcategoryIdMeta));
-    } else if (isInserting) {
-      context.missing(_subcategoryIdMeta);
     }
     if (data.containsKey('from_account_id')) {
       context.handle(
@@ -1050,9 +1046,9 @@ class $TransactionsTable extends Transactions
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       categoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id']),
       subcategoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}subcategory_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}subcategory_id']),
       fromAccountId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}from_account_id'])!,
       toAccountId: attachedDatabase.typeMapping
@@ -1078,8 +1074,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final int id;
   final double amount;
   final DateTime date;
-  final int categoryId;
-  final int subcategoryId;
+  final int? categoryId;
+  final int? subcategoryId;
   final int fromAccountId;
   final int? toAccountId;
   final String description;
@@ -1088,8 +1084,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       {required this.id,
       required this.amount,
       required this.date,
-      required this.categoryId,
-      required this.subcategoryId,
+      this.categoryId,
+      this.subcategoryId,
       required this.fromAccountId,
       this.toAccountId,
       required this.description,
@@ -1100,8 +1096,12 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['id'] = Variable<int>(id);
     map['amount'] = Variable<double>(amount);
     map['date'] = Variable<DateTime>(date);
-    map['category_id'] = Variable<int>(categoryId);
-    map['subcategory_id'] = Variable<int>(subcategoryId);
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<int>(categoryId);
+    }
+    if (!nullToAbsent || subcategoryId != null) {
+      map['subcategory_id'] = Variable<int>(subcategoryId);
+    }
     map['from_account_id'] = Variable<int>(fromAccountId);
     if (!nullToAbsent || toAccountId != null) {
       map['to_account_id'] = Variable<int>(toAccountId);
@@ -1119,8 +1119,12 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: Value(id),
       amount: Value(amount),
       date: Value(date),
-      categoryId: Value(categoryId),
-      subcategoryId: Value(subcategoryId),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
+      subcategoryId: subcategoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subcategoryId),
       fromAccountId: Value(fromAccountId),
       toAccountId: toAccountId == null && nullToAbsent
           ? const Value.absent()
@@ -1137,8 +1141,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: serializer.fromJson<int>(json['id']),
       amount: serializer.fromJson<double>(json['amount']),
       date: serializer.fromJson<DateTime>(json['date']),
-      categoryId: serializer.fromJson<int>(json['categoryId']),
-      subcategoryId: serializer.fromJson<int>(json['subcategoryId']),
+      categoryId: serializer.fromJson<int?>(json['categoryId']),
+      subcategoryId: serializer.fromJson<int?>(json['subcategoryId']),
       fromAccountId: serializer.fromJson<int>(json['fromAccountId']),
       toAccountId: serializer.fromJson<int?>(json['toAccountId']),
       description: serializer.fromJson<String>(json['description']),
@@ -1152,8 +1156,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'id': serializer.toJson<int>(id),
       'amount': serializer.toJson<double>(amount),
       'date': serializer.toJson<DateTime>(date),
-      'categoryId': serializer.toJson<int>(categoryId),
-      'subcategoryId': serializer.toJson<int>(subcategoryId),
+      'categoryId': serializer.toJson<int?>(categoryId),
+      'subcategoryId': serializer.toJson<int?>(subcategoryId),
       'fromAccountId': serializer.toJson<int>(fromAccountId),
       'toAccountId': serializer.toJson<int?>(toAccountId),
       'description': serializer.toJson<String>(description),
@@ -1165,8 +1169,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           {int? id,
           double? amount,
           DateTime? date,
-          int? categoryId,
-          int? subcategoryId,
+          Value<int?> categoryId = const Value.absent(),
+          Value<int?> subcategoryId = const Value.absent(),
           int? fromAccountId,
           Value<int?> toAccountId = const Value.absent(),
           String? description,
@@ -1175,8 +1179,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
         id: id ?? this.id,
         amount: amount ?? this.amount,
         date: date ?? this.date,
-        categoryId: categoryId ?? this.categoryId,
-        subcategoryId: subcategoryId ?? this.subcategoryId,
+        categoryId: categoryId.present ? categoryId.value : this.categoryId,
+        subcategoryId:
+            subcategoryId.present ? subcategoryId.value : this.subcategoryId,
         fromAccountId: fromAccountId ?? this.fromAccountId,
         toAccountId: toAccountId.present ? toAccountId.value : this.toAccountId,
         description: description ?? this.description,
@@ -1241,8 +1246,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> id;
   final Value<double> amount;
   final Value<DateTime> date;
-  final Value<int> categoryId;
-  final Value<int> subcategoryId;
+  final Value<int?> categoryId;
+  final Value<int?> subcategoryId;
   final Value<int> fromAccountId;
   final Value<int?> toAccountId;
   final Value<String> description;
@@ -1262,16 +1267,14 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.id = const Value.absent(),
     required double amount,
     required DateTime date,
-    required int categoryId,
-    required int subcategoryId,
+    this.categoryId = const Value.absent(),
+    this.subcategoryId = const Value.absent(),
     required int fromAccountId,
     this.toAccountId = const Value.absent(),
     required String description,
     required TransactionType type,
   })  : amount = Value(amount),
         date = Value(date),
-        categoryId = Value(categoryId),
-        subcategoryId = Value(subcategoryId),
         fromAccountId = Value(fromAccountId),
         description = Value(description),
         type = Value(type);
@@ -1303,8 +1306,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       {Value<int>? id,
       Value<double>? amount,
       Value<DateTime>? date,
-      Value<int>? categoryId,
-      Value<int>? subcategoryId,
+      Value<int?>? categoryId,
+      Value<int?>? subcategoryId,
       Value<int>? fromAccountId,
       Value<int?>? toAccountId,
       Value<String>? description,
@@ -2527,8 +2530,8 @@ typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
   Value<int> id,
   required double amount,
   required DateTime date,
-  required int categoryId,
-  required int subcategoryId,
+  Value<int?> categoryId,
+  Value<int?> subcategoryId,
   required int fromAccountId,
   Value<int?> toAccountId,
   required String description,
@@ -2539,8 +2542,8 @@ typedef $$TransactionsTableUpdateCompanionBuilder = TransactionsCompanion
   Value<int> id,
   Value<double> amount,
   Value<DateTime> date,
-  Value<int> categoryId,
-  Value<int> subcategoryId,
+  Value<int?> categoryId,
+  Value<int?> subcategoryId,
   Value<int> fromAccountId,
   Value<int?> toAccountId,
   Value<String> description,
@@ -2555,9 +2558,9 @@ final class $$TransactionsTableReferences
       db.categories.createAlias(
           $_aliasNameGenerator(db.transactions.categoryId, db.categories.id));
 
-  $$CategoriesTableProcessedTableManager get categoryId {
-    final $_column = $_itemColumn<int>('category_id')!;
-
+  $$CategoriesTableProcessedTableManager? get categoryId {
+    final $_column = $_itemColumn<int>('category_id');
+    if ($_column == null) return null;
     final manager = $$CategoriesTableTableManager($_db, $_db.categories)
         .filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
@@ -2570,9 +2573,9 @@ final class $$TransactionsTableReferences
       db.subcategories.createAlias($_aliasNameGenerator(
           db.transactions.subcategoryId, db.subcategories.id));
 
-  $$SubcategoriesTableProcessedTableManager get subcategoryId {
-    final $_column = $_itemColumn<int>('subcategory_id')!;
-
+  $$SubcategoriesTableProcessedTableManager? get subcategoryId {
+    final $_column = $_itemColumn<int>('subcategory_id');
+    if ($_column == null) return null;
     final manager = $$SubcategoriesTableTableManager($_db, $_db.subcategories)
         .filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_subcategoryIdTable($_db));
@@ -2959,8 +2962,8 @@ class $$TransactionsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<double> amount = const Value.absent(),
             Value<DateTime> date = const Value.absent(),
-            Value<int> categoryId = const Value.absent(),
-            Value<int> subcategoryId = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            Value<int?> subcategoryId = const Value.absent(),
             Value<int> fromAccountId = const Value.absent(),
             Value<int?> toAccountId = const Value.absent(),
             Value<String> description = const Value.absent(),
@@ -2981,8 +2984,8 @@ class $$TransactionsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             required double amount,
             required DateTime date,
-            required int categoryId,
-            required int subcategoryId,
+            Value<int?> categoryId = const Value.absent(),
+            Value<int?> subcategoryId = const Value.absent(),
             required int fromAccountId,
             Value<int?> toAccountId = const Value.absent(),
             required String description,

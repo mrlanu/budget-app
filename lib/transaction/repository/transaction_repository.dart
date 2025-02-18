@@ -23,9 +23,10 @@ abstract class TransactionRepository {
       {required DateTime date,
       required TransactionType type,
       required double amount,
-      required int categoryId,
-      required int subcategoryId,
+      int? categoryId,
+      int? subcategoryId,
       required int fromAccountId,
+      int? toAccountId,
       required String description});
 
   Future<void> updateTransaction(
@@ -33,9 +34,10 @@ abstract class TransactionRepository {
       required DateTime date,
       required TransactionType type,
       required double amount,
-      required int categoryId,
-      required int subcategoryId,
+      int? categoryId,
+      int? subcategoryId,
       required int fromAccountId,
+      int? toAccountId,
       required String description});
 
   Future<void> deleteTransactionOrTransfer(

@@ -8,11 +8,20 @@ sealed class TransferEvent extends Equatable {
 }
 
 final class TransferFormLoaded extends TransferEvent {
-  final TransactionTile? transaction;
-  const TransferFormLoaded({this.transaction});
+  final int? transactionId;
+  const TransferFormLoaded({this.transactionId});
 
   @override
-  List<Object?> get props => [transaction];
+  List<Object?> get props => [transactionId];
+}
+
+final class TransferAccountsChanged extends TransferEvent {
+  final List<AccountWithDetails> accounts;
+
+  const TransferAccountsChanged({required this.accounts});
+
+  @override
+  List<Object?> get props => [accounts];
 }
 
 final class TransferAmountChanged extends TransferEvent {
@@ -30,14 +39,14 @@ final class TransferDateChanged extends TransferEvent {
 }
 
 final class TransferFromAccountChanged extends TransferEvent {
-  final Account? account;
+  final AccountWithDetails? account;
   const TransferFromAccountChanged({this.account});
   @override
   List<Object?> get props => [account];
 }
 
 final class TransferToAccountChanged extends TransferEvent {
-  final Account? account;
+  final AccountWithDetails? account;
   const TransferToAccountChanged({this.account});
   @override
   List<Object?> get props => [account];

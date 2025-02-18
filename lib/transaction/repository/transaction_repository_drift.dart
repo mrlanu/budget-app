@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:budget_app/database/database.dart';
 import 'package:budget_app/database/transaction_with_detail.dart';
 import 'package:budget_app/transaction/repository/transaction_repository.dart';
+import 'package:drift/drift.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/transaction_type.dart';
@@ -39,31 +40,34 @@ class TransactionRepositoryDrift extends TransactionRepository {
   @override
   Future<int> insertTransaction(
           {required DateTime date,
-          required TransactionType type,
-          required double amount,
-          required int categoryId,
-          required int subcategoryId,
-          required int fromAccountId,
-          required String description}) =>
+            required TransactionType type,
+            required double amount,
+            int? categoryId,
+            int? subcategoryId,
+            required int fromAccountId,
+            int? toAccountId,
+            required String description}) =>
       _database.insertTransaction(TransactionsCompanion.insert(
           amount: amount,
           date: date,
-          categoryId: categoryId,
-          subcategoryId: subcategoryId,
+          categoryId: Value(categoryId),
+          subcategoryId: Value(subcategoryId),
           fromAccountId: fromAccountId,
+          toAccountId: Value(toAccountId),
           description: description,
           type: type));
 
   @override
   Future<void> updateTransaction(
           {required int id,
-          required DateTime date,
-          required TransactionType type,
-          required double amount,
-          required int categoryId,
-          required int subcategoryId,
-          required int fromAccountId,
-          required String description}) =>
+            required DateTime date,
+            required TransactionType type,
+            required double amount,
+            int? categoryId,
+            int? subcategoryId,
+            required int fromAccountId,
+            int? toAccountId,
+            required String description}) =>
       _database.updateTransaction(Transaction(
           id: id,
           amount: amount,
@@ -71,6 +75,7 @@ class TransactionRepositoryDrift extends TransactionRepository {
           categoryId: categoryId,
           subcategoryId: subcategoryId,
           fromAccountId: fromAccountId,
+          toAccountId: toAccountId,
           description: description,
           type: type));
 

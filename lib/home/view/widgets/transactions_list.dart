@@ -35,7 +35,7 @@ class TransactionsList extends StatelessWidget {
               openBuilder: (BuildContext _, VoidCallback openContainer) {
                 return tr.type == TransactionType.TRANSFER
                     ? TransferPage(
-                        transaction: tr,
+                        transactionId: tr.id,
                       )
                     : TransactionPage(transactionId: tr.id);
               },

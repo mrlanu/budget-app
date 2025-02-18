@@ -75,12 +75,12 @@ class HomeState extends Equatable {
               id: transaction.id,
               type: transaction.type,
               amount: transaction.amount,
-              title: transaction.subcategory.name,
+              title: transaction.subcategory!.name,
               subtitle: transaction.fromAccount.name,
               dateTime: transaction.date,
               description: transaction.description,
               category: transaction.category,
-              subcategory: transaction.subcategory.name,
+              subcategory: transaction.subcategory!.name,
               fromAccount: transaction.fromAccount.name)
         ];
       case TransactionType.TRANSFER:

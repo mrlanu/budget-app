@@ -33,8 +33,8 @@ class Transactions extends Table {
   IntColumn get id => integer().autoIncrement()();
   RealColumn get amount => real()();
   DateTimeColumn get date => dateTime()();
-  IntColumn get categoryId => integer().references(Categories, #id)();
-  IntColumn get subcategoryId => integer().references(Subcategories, #id)();
+  IntColumn get categoryId => integer().nullable().references(Categories, #id)();
+  IntColumn get subcategoryId => integer().nullable().references(Subcategories, #id)();
   @ReferenceName('fromAccount')
   IntColumn get fromAccountId => integer().references(Accounts, #id)();
   @ReferenceName('toAccount')

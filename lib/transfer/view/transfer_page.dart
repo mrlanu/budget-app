@@ -1,3 +1,4 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,15 +7,17 @@ import 'package:go_router/go_router.dart';
 import '../../transaction/transaction.dart';
 
 class TransferPage extends StatelessWidget {
-  const TransferPage({super.key, this.transaction});
+  const TransferPage({super.key, this.transactionId});
 
-  final TransactionTile? transaction;
+  final int? transactionId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TransferBloc(transactionsRepository: context.read<TransactionRepository>())
-        ..add(TransferFormLoaded(transaction: transaction)),
+      create: (context) => TransferBloc(
+          transactionsRepository: context.read<TransactionRepository>(),
+          accountRepository: context.read<AccountRepository>())
+        ..add(TransferFormLoaded(transactionId: transactionId)),
       child: TransferView(),
     );
   }

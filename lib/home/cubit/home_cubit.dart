@@ -117,8 +117,8 @@ class HomeCubit extends Cubit<HomeState> {
         date: lT.date,
         type: lT.type,
         fromAccountId: lT.fromAccount.id,
-        subcategoryId: lT.subcategory.id,
-        categoryId: lT.category.id,
+        subcategoryId: lT.subcategory!.id,
+        categoryId: lT.category!.id,
         description: lT.description);
     if (state.lastDeletedTransaction!.type == TransactionType.TRANSFER) {
       _updateBudgetOnUndoDeleteTransfer(

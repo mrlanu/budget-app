@@ -9,8 +9,8 @@ class TransactionWithDetails extends Equatable {
   final DateTime date;
   final String description;
   final TransactionType type;
-  final Category category;
-  final Subcategory subcategory;
+  final Category? category;
+  final Subcategory? subcategory;
   final Account fromAccount;
   final Account? toAccount;
 

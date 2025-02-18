@@ -183,11 +183,11 @@ class AppDatabase extends _$AppDatabase {
       int transactionId) async {
     final toAccount = alias(accounts, 'toAccount');
     final query = select(transactions).join([
-      innerJoin(categories, transactions.categoryId.equalsExp(categories.id)),
-      innerJoin(subcategories,
+      leftOuterJoin(categories, transactions.categoryId.equalsExp(categories.id)),
+      leftOuterJoin(subcategories,
           transactions.subcategoryId.equalsExp(subcategories.id)),
       innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
-      leftOuterJoin(toAccount, transactions.toAccountId.equalsExp(accounts.id))
+      leftOuterJoin(toAccount, transactions.toAccountId.equalsExp(toAccount.id))
     ])
       ..where(transactions.id.equals(transactionId));
 
@@ -199,8 +199,8 @@ class AppDatabase extends _$AppDatabase {
       date: result.readTable(transactions).date,
       description: result.readTable(transactions).description,
       type: result.readTable(transactions).type,
-      category: result.readTable(categories),
-      subcategory: result.readTable(subcategories),
+      category: result.readTableOrNull(categories),
+      subcategory: result.readTableOrNull(subcategories),
       fromAccount: result.readTable(accounts),
       toAccount: result.readTableOrNull(toAccount),
     );
@@ -216,11 +216,11 @@ class AppDatabase extends _$AppDatabase {
 
     // Build the query with joins
     final query = select(transactions).join([
-      innerJoin(categories, transactions.categoryId.equalsExp(categories.id)),
-      innerJoin(subcategories,
+      leftOuterJoin(categories, transactions.categoryId.equalsExp(categories.id)),
+      leftOuterJoin(subcategories,
           transactions.subcategoryId.equalsExp(subcategories.id)),
       innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
-      leftOuterJoin(toAccount, transactions.toAccountId.equalsExp(accounts.id))
+      leftOuterJoin(toAccount, transactions.toAccountId.equalsExp(toAccount.id))
     ])
       ..where(
           transactions.date.isBetweenValues(firstDayOfMonth, lastDayOfMonth))
@@ -234,8 +234,8 @@ class AppDatabase extends _$AppDatabase {
           date: row.readTable(transactions).date,
           description: row.readTable(transactions).description,
           type: row.readTable(transactions).type,
-          category: row.readTable(categories),
-          subcategory: row.readTable(subcategories),
+          category: row.readTableOrNull(categories),
+          subcategory: row.readTableOrNull(subcategories),
           fromAccount: row.readTable(accounts),
           toAccount: row.readTableOrNull(toAccount));
     }).watch();
