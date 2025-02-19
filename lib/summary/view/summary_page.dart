@@ -13,41 +13,14 @@ class SummaryPage extends StatelessWidget {
 
   final AppDatabase _database;
 
-  @override
-  Widget build(BuildContext context) {
-    return SummaryViewMobile(
-      database: _database,
-    );
-  }
-}
-
-class SummaryViewMobile extends StatefulWidget {
-  const SummaryViewMobile({super.key, required AppDatabase database})
-      : _database = database;
-  final AppDatabase _database;
-
-  @override
-  State<SummaryViewMobile> createState() => _SummaryViewMobileState();
-}
-
-class _SummaryViewMobileState extends State<SummaryViewMobile> {
-  late List<double> _data;
-
-  @override
-  void initState() {
-    super.initState();
-    _data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-    _calculateSummary();
-  }
-
-  Future<void> _calculateSummary() async {
+  Future<List<double>> _calculateSummary() async {
     final today = DateTime.now().toLocal();
     final firstDayOfYear = DateTime(today.year, 1, 1);
     final lastDayOfYear = DateTime(today.year, 12, 31, 23, 59, 59);
 
     // Fetch transactions for the year
-    final transactionsForYear = await (widget._database
-            .select(widget._database.transactions)
+    final transactionsForYear = await (_database
+            .select(_database.transactions)
           ..where((t) => t.date.isBetweenValues(firstDayOfYear, lastDayOfYear)))
         .get();
 
@@ -87,8 +60,7 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
         .toList();
     final dataForToday = _groupAndSum(transactionsForToday);
 
-    setState(() {
-      _data = [
+    return [
         dataForYear[TransactionType.INCOME] ?? 0.0,
         dataForYear[TransactionType.EXPENSE] ?? 0.0,
         dataForMonth[TransactionType.INCOME] ?? 0.0,
@@ -98,7 +70,6 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
         dataForToday[TransactionType.INCOME] ?? 0.0,
         dataForToday[TransactionType.EXPENSE] ?? 0.0,
       ];
-    });
   }
 
   @override
@@ -106,32 +77,42 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(title: Text('Summary')),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SummaryTile(
-                title: 'Year: ${DateFormat('yyyy').format(DateTime.now())}',
-                income: _data[0],
-                expenses: _data[1]),
-            SummaryTile(
-                title:
-                    'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
-                income: _data[2],
-                expenses: _data[3]),
-            SummaryTile(
-                title:
-                    'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
-                income: _data[4],
-                expenses: _data[5]),
-            SummaryTile(
-                title:
-                    'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
-                income: _data[6],
-                expenses: _data[7]),
-          ],
+      body: FutureBuilder(
+          future: _calculateSummary(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData){
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SummaryTile(
+                        title: 'Year: ${DateFormat('yyyy').format(DateTime.now())}',
+                        income: snapshot.data![0],
+                        expenses: snapshot.data![1]),
+                    SummaryTile(
+                        title:
+                        'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
+                        income: snapshot.data![2],
+                        expenses: snapshot.data![3]),
+                    SummaryTile(
+                        title:
+                        'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
+                        income: snapshot.data![4],
+                        expenses: snapshot.data![5]),
+                    SummaryTile(
+                        title:
+                        'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
+                        income: snapshot.data![6],
+                        expenses: snapshot.data![7]),
+                  ],
+                ),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator(),);
+            }
+          },
         ),
       ),
-    ));
+    );
   }
 }
 
