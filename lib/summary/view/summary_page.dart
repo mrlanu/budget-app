@@ -1,27 +1,30 @@
-import 'package:cache/cache.dart';
+import 'package:budget_app/database/database.dart';
+import 'package:drift/drift.dart' as db;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:network/network.dart';
 
-import '../../constants/api.dart';
 import '../../constants/colors.dart';
+import '../../transaction/models/transaction_type.dart';
 import '../../utils/theme/budget_theme.dart';
 
 class SummaryPage extends StatelessWidget {
-  const SummaryPage({super.key});
+  const SummaryPage({super.key, required AppDatabase database})
+      : _database = database;
 
-  static Route<void> route() {
-    return MaterialPageRoute(builder: (context) => SummaryPage());
-  }
+  final AppDatabase _database;
 
   @override
   Widget build(BuildContext context) {
-    return SummaryViewMobile();
+    return SummaryViewMobile(
+      database: _database,
+    );
   }
 }
 
 class SummaryViewMobile extends StatefulWidget {
-  const SummaryViewMobile({super.key});
+  const SummaryViewMobile({super.key, required AppDatabase database})
+      : _database = database;
+  final AppDatabase _database;
 
   @override
   State<SummaryViewMobile> createState() => _SummaryViewMobileState();
@@ -34,21 +37,68 @@ class _SummaryViewMobileState extends State<SummaryViewMobile> {
   void initState() {
     super.initState();
     _data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-    _fetchData();
+    _calculateSummary();
   }
 
-  Future<void> _fetchData() async {
-    try {
-      final response = await NetworkClient.instance.get<List<dynamic>>(
-          baseURL + '/api/summary',
-          queryParameters: {'budgetId': await Cache.instance.getBudgetId(),});
-      final result = (response.data!).map((e) => e as double).toList();
-      setState(() {
-        _data = result;
-      });
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+  Future<void> _calculateSummary() async {
+    final today = DateTime.now().toLocal();
+    final firstDayOfYear = DateTime(today.year, 1, 1);
+    final lastDayOfYear = DateTime(today.year, 12, 31, 23, 59, 59);
+
+    // Fetch transactions for the year
+    final transactionsForYear = await (widget._database
+            .select(widget._database.transactions)
+          ..where((t) => t.date.isBetweenValues(firstDayOfYear, lastDayOfYear)))
+        .get();
+
+    // Helper function to group transactions by type and sum amounts
+    Map<TransactionType, double> _groupAndSum(List<Transaction> transactions) {
+      final result = <TransactionType, double>{};
+      for (final transaction in transactions) {
+        final type = transaction.type;
+        final amount = transaction.amount;
+        result[type] = (result[type] ?? 0.0) + amount;
+      }
+      return result;
     }
+
+    // Group and sum transactions for the year
+    final dataForYear = _groupAndSum(transactionsForYear);
+
+    // Filter transactions for the current month
+    final transactionsForMonth =
+        transactionsForYear.where((t) => t.date.month == today.month).toList();
+    final dataForMonth = _groupAndSum(transactionsForMonth);
+
+    // Filter transactions for the current week
+    final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    final transactionsForWeek = transactionsForYear
+        .where((t) => t.date.isAfter(startOfWeek) && t.date.isBefore(endOfWeek))
+        .toList();
+    final dataForWeek = _groupAndSum(transactionsForWeek);
+
+    // Filter transactions for today
+    final transactionsForToday = transactionsForYear
+        .where((t) =>
+            t.date.year == today.year &&
+            t.date.month == today.month &&
+            t.date.day == today.day)
+        .toList();
+    final dataForToday = _groupAndSum(transactionsForToday);
+
+    setState(() {
+      _data = [
+        dataForYear[TransactionType.INCOME] ?? 0.0,
+        dataForYear[TransactionType.EXPENSE] ?? 0.0,
+        dataForMonth[TransactionType.INCOME] ?? 0.0,
+        dataForMonth[TransactionType.EXPENSE] ?? 0.0,
+        dataForWeek[TransactionType.INCOME] ?? 0.0,
+        dataForWeek[TransactionType.EXPENSE] ?? 0.0,
+        dataForToday[TransactionType.INCOME] ?? 0.0,
+        dataForToday[TransactionType.EXPENSE] ?? 0.0,
+      ];
+    });
   }
 
   @override
@@ -118,8 +168,8 @@ class SummaryTile extends StatelessWidget {
                       Text('Income', style: textStyle),
                       Expanded(child: Container()),
                       Text('\$ ${income.toStringAsFixed(2)}',
-                          style:
-                              textStyle!.copyWith(color: BudgetTheme.isDarkMode(context)
+                          style: textStyle!.copyWith(
+                              color: BudgetTheme.isDarkMode(context)
                                   ? BudgetColors.lightContainer
                                   : BudgetColors.primary)),
                     ],
@@ -143,8 +193,8 @@ class SummaryTile extends StatelessWidget {
                               color: (income - expenses) < 0
                                   ? BudgetColors.error
                                   : BudgetTheme.isDarkMode(context)
-                                  ? BudgetColors.lightContainer
-                                  : BudgetColors.primary)),
+                                      ? BudgetColors.lightContainer
+                                      : BudgetColors.primary)),
                     ],
                   )
                 ],

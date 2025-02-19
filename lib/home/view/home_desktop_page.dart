@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/constants/constants.dart';
+import 'package:budget_app/database/database.dart';
 import 'package:budget_app/navigation/main_drawer.dart';
 import 'package:budget_app/summary/view/summary_page.dart';
 import 'package:budget_app/transfer/view/view.dart';
@@ -75,7 +76,11 @@ class _HomeGridState extends State<HomeGrid> with TickerProviderStateMixin {
               HomeViewDesktop(),
               Center(
                   child: Container(
-                      width: w * 0.5, height: h * 0.9, child: SummaryPage())),
+                      width: w * 0.5,
+                      height: h * 0.9,
+                      child: SummaryPage(
+                        database: context.read<AppDatabase>(),
+                      ))),
               TrendChartDesktopView(),
               DebtPayoffViewDesktop(),
             ],

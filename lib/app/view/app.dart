@@ -27,6 +27,7 @@ class App extends StatelessWidget {
         CategoryRepositoryDrift(database: database);
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider(create: (context) => database),
         RepositoryProvider(create: (context) => categoryRepository),
         RepositoryProvider(create: (context) => accountRepository),
         RepositoryProvider(create: (context) => transactionRepository),

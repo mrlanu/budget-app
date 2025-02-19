@@ -5,6 +5,7 @@ import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/charts/view/category_chart_page.dart';
+import 'package:budget_app/database/database.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
@@ -216,7 +217,7 @@ final List<RouteBase> _individualRoutes = [
   GoRoute(
     path: '/summary',
     builder: (BuildContext context, GoRouterState state) {
-      return SummaryPage();
+      return SummaryPage(database: context.read<AppDatabase>(),);
     },
   ),
   GoRoute(
