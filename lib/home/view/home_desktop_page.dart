@@ -28,7 +28,7 @@ class HomeDesktopPage extends StatelessWidget {
             transactionsRepository: context.read<TransactionRepository>(),
             categoryRepository: context.read<CategoryRepository>(),
             accountRepository: context.read<AccountRepository>(),
-          )..add(TransactionFormLoaded()),
+          )..add(TransactionFormLoaded(transactionType: TransactionType.EXPENSE)),
         ),
         BlocProvider(
           create: (context) => TransferBloc(

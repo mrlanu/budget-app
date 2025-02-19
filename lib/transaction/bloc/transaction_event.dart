@@ -9,11 +9,12 @@ sealed class TransactionEvent extends Equatable {
 
 final class TransactionFormLoaded extends TransactionEvent {
   final int? transactionId;
+  final TransactionType transactionType;
 
-  const TransactionFormLoaded({this.transactionId});
+  const TransactionFormLoaded({this.transactionId, required this.transactionType});
 
   @override
-  List<Object?> get props => [transactionId];
+  List<Object?> get props => [transactionId, transactionType];
 }
 
 final class TransactionCategoriesChanged extends TransactionEvent {

@@ -68,7 +68,11 @@ class HomeMobilePage extends StatelessWidget {
                 ),
                 drawer: MainDrawer(),
                 body: navigationShell,
-                floatingActionButton: _buildFab(context),
+                floatingActionButton: _buildFab(
+                    context,
+                    state.tab.index == 0
+                        ? TransactionType.EXPENSE
+                        : TransactionType.INCOME),
                 bottomNavigationBar:
                     HomeBottomNavBar(navigationShell: navigationShell)));
       },
@@ -105,13 +109,15 @@ class HomeMobilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFab(BuildContext context) {
+  Widget _buildFab(BuildContext context, TransactionType transactionType) {
     return OpenContainer(
       transitionType: _transitionType,
       openBuilder: (BuildContext _, VoidCallback openContainer) {
         return navigationShell.currentIndex == 2
             ? TransferPage()
-            : TransactionPage();
+            : TransactionPage(
+                transactionType: transactionType,
+              );
       },
       closedElevation: 6.0,
       closedShape: RoundedRectangleBorder(

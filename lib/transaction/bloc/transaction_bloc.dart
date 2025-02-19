@@ -90,6 +90,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     } else {
       emit(state.copyWith(
         trStatus: TransactionStatus.success,
+        transactionType: event.transactionType
       ));
     }
   }

@@ -10,9 +10,11 @@ class TransactionPage extends StatelessWidget {
   const TransactionPage({
     super.key,
     this.transactionId,
+    required this.transactionType,
   });
 
   final int? transactionId;
+  final TransactionType transactionType;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,8 @@ class TransactionPage extends StatelessWidget {
           transactionsRepository: context.read<TransactionRepository>(),
           categoryRepository: context.read<CategoryRepository>(),
           accountRepository: context.read<AccountRepository>())
-        ..add(TransactionFormLoaded(transactionId: transactionId)),
+        ..add(TransactionFormLoaded(
+            transactionId: transactionId, transactionType: transactionType)),
       child: TransactionView(),
     );
   }

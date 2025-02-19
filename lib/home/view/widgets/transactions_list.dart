@@ -37,7 +37,7 @@ class TransactionsList extends StatelessWidget {
                     ? TransferPage(
                         transactionId: tr.id,
                       )
-                    : TransactionPage(transactionId: tr.id);
+                    : TransactionPage(transactionId: tr.id, transactionType: tr.type,);
               },
               tappable: true,
               closedShape: const RoundedRectangleBorder(),
