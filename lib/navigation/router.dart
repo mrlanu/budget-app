@@ -6,7 +6,6 @@ import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/charts/view/category_chart_page.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
-import 'package:budget_app/email_verification/view/email_verification_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
@@ -17,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../auth/auth.dart';
 import '../settings/settings.dart';
 import '../splash/view/splash_page.dart';
 
@@ -78,18 +76,6 @@ final List<RouteBase> _authRoutes = [
   GoRoute(
     path: '/',
     redirect: (_, __) => '/expenses',
-  ),
-  GoRoute(
-    path: '/login',
-    builder: (BuildContext context, GoRouterState state) {
-      return const LoginPage();
-    },
-  ),
-  GoRoute(
-    path: '/signup',
-    builder: (BuildContext context, GoRouterState state) {
-      return const SignUpPage();
-    },
   ),
   GoRoute(
     path: '/splash',
@@ -249,12 +235,6 @@ final List<RouteBase> _individualRoutes = [
     path: '/debt-payoff',
     builder: (BuildContext context, GoRouterState state) {
       return DebtPayoffPage();
-    },
-  ),
-  GoRoute(
-    path: '/verify-email',
-    builder: (BuildContext context, GoRouterState state) {
-      return EmailVerificationPage();
     },
   ),
 ];

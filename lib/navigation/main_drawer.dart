@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../auth/auth.dart';
 import '../constants/colors.dart';
 import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
@@ -87,21 +86,6 @@ class _MainDrawerState extends State<MainDrawer> {
                       routeName: 'settings'
                     ),
                     Divider(color: themeState.primaryColor[200]),
-                    ListTile(
-                      leading: FaIcon(FontAwesomeIcons.rightFromBracket,
-                          color: _getColor()),
-                      title: Text('Log out',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: _getColor())),
-                      onTap: () {
-                        context
-                            .read<AuthBloc>()
-                            .add(const AuthLogoutRequested());
-                      },
-                    ),
-                    Divider(color: themeState.primaryColor[200])
                   ],
                 ),
               ),
