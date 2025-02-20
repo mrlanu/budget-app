@@ -8,15 +8,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../charts.dart';
 
 class TrendChartPage extends StatelessWidget {
-  TrendChartPage({super.key});
-
-  final _repo = ChartRepositoryImpl();
+  TrendChartPage({super.key,});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ChartCubit(
-          chartRepository: _repo,
+          chartRepository: context.read<ChartRepository>(),
           categories: [])
         ..fetchTrendChart(),
       child: Scaffold(
@@ -61,10 +59,9 @@ class TrendChartDesktopView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _repo = ChartRepositoryImpl();
     return BlocProvider(
         create: (context) => ChartCubit(
-            chartRepository: _repo,
+            chartRepository: context.read<ChartRepository>(),
             categories: [])
           ..fetchTrendChart(),
         child: TrendChartDesktopViewBody());

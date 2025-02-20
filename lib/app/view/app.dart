@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/accounts_list/repository/account_repository_drift.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/categories/repository/category_repository_drift.dart';
+import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/database/database.dart';
 import 'package:budget_app/transaction/repository/transaction_repository.dart';
 import 'package:budget_app/transaction/repository/transaction_repository_drift.dart';
@@ -25,12 +26,14 @@ class App extends StatelessWidget {
         AccountRepositoryDrift(database: database);
     final CategoryRepository categoryRepository =
         CategoryRepositoryDrift(database: database);
+    final ChartRepository chartRepository = ChartRepositoryDrift(database: database);
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => database),
         RepositoryProvider(create: (context) => categoryRepository),
         RepositoryProvider(create: (context) => accountRepository),
         RepositoryProvider(create: (context) => transactionRepository),
+        RepositoryProvider(create: (context) => chartRepository,)
       ],
       child: MultiBlocProvider(
         providers: [

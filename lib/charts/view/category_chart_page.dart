@@ -16,7 +16,7 @@ class CategoryChartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ChartCubit(
-          chartRepository: ChartRepositoryImpl(),
+          chartRepository: context.read<ChartRepository>(),
           categories: [])
         ..fetchCategoryChart(),
       child: CategoryChartView(),
@@ -72,10 +72,9 @@ class TrendChartDesktopView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _repo = ChartRepositoryImpl();
     return BlocProvider(
         create: (context) => ChartCubit(
-            chartRepository: _repo,
+            chartRepository: context.read<ChartRepository>(),
             categories: [])
           ..fetchTrendChart(),
         child: TrendChartDesktopViewBody());
