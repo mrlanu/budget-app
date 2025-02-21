@@ -4,8 +4,6 @@ import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:network/network.dart';
 
-import '../../../constants/api.dart';
-
 part 'strategy_state.dart';
 
 class StrategyCubit extends Cubit<StrategyState> {
@@ -16,7 +14,7 @@ class StrategyCubit extends Cubit<StrategyState> {
     emit(LoadingStrategyState());
     try {
       final response = await NetworkClient.instance.get<Map<String, dynamic>>(
-          baseURL + '/api/debts/payoff',
+          'baseURL' + '/api/debts/payoff',
           queryParameters: {
             'budgetId': await Cache.instance.getBudgetId(),
             'extraPayment': extraPayment,

@@ -1,4 +1,3 @@
-import 'package:budget_app/constants/constants.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
@@ -39,38 +38,6 @@ class DebtPayoffViewMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Body();
-  }
-}
-
-class DebtPayoffViewDesktop extends StatelessWidget {
-  const DebtPayoffViewDesktop({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final repository = DebtRepositoryImpl();
-    return RepositoryProvider(
-        create: (context) => repository,
-        child: MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) =>
-                    DebtsCubit(debtsRepository: repository)..updateDebts(),
-              ),
-              BlocProvider(
-                create: (context) => StrategyCubit(),
-              ),
-            ],
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: w * 0.15, vertical: h * 0.05),
-              child: Card(
-                borderOnForeground: true,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: _Body()
-                ),
-              ),
-            )));
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:cache/cache.dart';
 import 'package:network/network.dart';
 
-import '../../constants/api.dart';
 import '../models/models.dart';
 
 class DebtFailure implements Exception {
@@ -30,7 +29,7 @@ class DebtRepositoryImpl extends DebtsRepository {
   Future<List<Debt>> fetchAllDebts() async {
     try {
       final response = await _networkClient
-          .get<List<dynamic>>(baseURL + '/api/debts', queryParameters: {
+          .get<List<dynamic>>('baseURL' + '/api/debts', queryParameters: {
         'budgetId': await Cache.instance.getBudgetId()
       });
       final result = List<Map<String, dynamic>>.from(response.data!)
@@ -46,7 +45,7 @@ class DebtRepositoryImpl extends DebtsRepository {
   Future<Debt> saveDebt({required Debt debt}) async {
     try {
       final response = await _networkClient.post<Map<String, dynamic>>(
-          baseURL + '/api/debts',
+          'baseURL' + '/api/debts',
           data: debt.toJson());
       final newDebt = Debt.fromJson(response.data!);
       return newDebt;
@@ -59,7 +58,7 @@ class DebtRepositoryImpl extends DebtsRepository {
   Future<void> deleteDebt({required String debtId}) async {
     try {
       await _networkClient
-          .delete(baseURL + '/api/debts', queryParameters: {'debtId': debtId});
+          .delete('baseURL' + '/api/debts', queryParameters: {'debtId': debtId});
     } on DioException catch (e) {
       throw NetworkException.fromDioError(e);
     }
