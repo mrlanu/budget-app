@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../utils/theme/budget_theme.dart';
 import '../cubit/chart_cubit.dart';
@@ -136,7 +137,7 @@ class TrendTable extends StatelessWidget {
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium,
-                                              '${e.date}'),
+                                              '${DateFormat('yyyy - MM').format(e.date)}'),
                                         ))),
                                 TableCell(
                                     verticalAlignment:

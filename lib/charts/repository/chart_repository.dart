@@ -13,8 +13,7 @@ abstract class ChartRepository {
 }
 
 class ChartRepositoryDrift extends ChartRepository {
-  ChartRepositoryDrift({required AppDatabase database})
-      : _database = database;
+  ChartRepositoryDrift({required AppDatabase database}) : _database = database;
 
   final AppDatabase _database;
 
@@ -30,8 +29,7 @@ class ChartRepositoryDrift extends ChartRepository {
 
     // Fetch transactions for the past year
     final transactions = await (_database.select(_database.transactions)
-      ..where((t) =>
-      t.date.isBetweenValues(dateStart, dateEnd)))
+          ..where((t) => t.date.isBetweenValues(dateStart, dateEnd)))
         .get();
 
     // Group transactions by type and month
@@ -42,15 +40,18 @@ class ChartRepositoryDrift extends ChartRepository {
       final amount = transaction.amount;
 
       groupedTransactions.putIfAbsent(type, () => {});
-      groupedTransactions[type]![month] = (groupedTransactions[type]![month] ?? 0.0) + amount;
+      groupedTransactions[type]![month] =
+          (groupedTransactions[type]![month] ?? 0.0) + amount;
     }
 
     // Generate the result for each month in the past year
     final result = <YearMonthSum>[];
     for (int i = 0; i < 12; i++) {
       final month = DateTime(dateStart.year, dateStart.month + i, 1);
-      final expenseSum = groupedTransactions[TransactionType.EXPENSE]?[month] ?? 0.0;
-      final incomeSum = groupedTransactions[TransactionType.INCOME]?[month] ?? 0.0;
+      final expenseSum =
+          groupedTransactions[TransactionType.EXPENSE]?[month] ?? 0.0;
+      final incomeSum =
+          groupedTransactions[TransactionType.INCOME]?[month] ?? 0.0;
 
       result.add(YearMonthSum(
         date: month,
@@ -63,44 +64,52 @@ class ChartRepositoryDrift extends ChartRepository {
   }
 
   @override
-  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) {
-    // TODO: implement fetchCategoryChartData
-    throw UnimplementedError();
-  }
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) =>
+      _getSumsByCategoryAndMonth(true, categoryId);
 
   @override
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(int id) {
-    // TODO: implement fetchSubcategoryChartData
-    throw UnimplementedError();
-  }
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(int subcategoryId) =>
+      _getSumsByCategoryAndMonth(false, subcategoryId);
 
-  /*@override
-  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/category-chart',
-          queryParameters: {'categoryId': categoryId});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
+  Future<List<YearMonthSum>> _getSumsByCategoryAndMonth(
+      bool isCategory, int categoryId) async {
+    final today = DateTime.now();
+    final dateEnd = DateTime(today.year, today.month + 1, 0, 23, 59, 59);
+    final dateStart = DateTime(dateEnd.year - 1, dateEnd.month, 1, 0, 0, 0);
 
-  @override
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(int id) async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/subcategory-chart',
-          queryParameters: {'categoryId': id});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+    // Fetch transactions for the past year
+    final transactions = isCategory
+        ? await (_database.select(_database.transactions)
+              ..where((t) =>
+                  t.categoryId.equals(categoryId) &
+                  t.date.isBetweenValues(dateStart, dateEnd)))
+            .get()
+        : await (_database.select(_database.transactions)
+              ..where((t) =>
+                  t.subcategoryId.equals(categoryId) &
+                  t.date.isBetweenValues(dateStart, dateEnd)))
+            .get();
+
+    // Group transactions by month and sum their amounts
+    final Map<DateTime, double> monthlySums = {};
+    for (final transaction in transactions) {
+      final month = DateTime(transaction.date.year, transaction.date.month, 1);
+      monthlySums[month] = (monthlySums[month] ?? 0.0) + transaction.amount;
     }
-  }*/
+
+    // Generate the result for each month in the past year
+    final result = <YearMonthSum>[];
+    for (int i = 0; i < 12; i++) {
+      final month = DateTime(dateStart.year, dateStart.month + i, 1);
+      final expenseSum = monthlySums[month] ?? 0.0;
+
+      result.add(YearMonthSum(
+        date: month,
+        expenseSum: expenseSum,
+        incomeSum: 0.0,
+      ));
+    }
+
+    return result;
+  }
 }

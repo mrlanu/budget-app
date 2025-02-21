@@ -1,3 +1,4 @@
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/charts/cubit/chart_cubit.dart';
 import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:budget_app/constants/constants.dart';
@@ -15,7 +16,7 @@ class TrendChartPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => ChartCubit(
           chartRepository: context.read<ChartRepository>(),
-          categories: [])
+          categoryRepository: context.read<CategoryRepository>())
         ..fetchTrendChart(),
       child: Scaffold(
         appBar: AppBar(title: Text('Trend for last 12 months')),
@@ -62,7 +63,7 @@ class TrendChartDesktopView extends StatelessWidget {
     return BlocProvider(
         create: (context) => ChartCubit(
             chartRepository: context.read<ChartRepository>(),
-            categories: [])
+            categoryRepository: context.read<CategoryRepository>())
           ..fetchTrendChart(),
         child: TrendChartDesktopViewBody());
   }
