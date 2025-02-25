@@ -1389,6 +1389,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [categories, accounts, subcategories, transactions];
+  @override
+  DriftDatabaseOptions get options =>
+      const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({

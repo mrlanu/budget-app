@@ -42,6 +42,8 @@ abstract class TransactionRepository {
 
   Future<void> deleteTransactionOrTransfer(
       {required int transactionId});
+
+  Future<int> countAllTransactions();
 }
 
 /*class TransactionsRepositoryImpl extends TransactionRepository {

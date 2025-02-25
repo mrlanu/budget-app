@@ -1,3 +1,7 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:budget_app/database/migration.dart';
+import 'package:budget_app/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,7 +30,9 @@ class _MainDrawerState extends State<MainDrawer> {
           DrawerHeader(
               child: Container(
                   width: double.infinity,
-                  child: Image.asset('assets/images/piggy_bank.png',))),
+                  child: Image.asset(
+                    'assets/images/piggy_bank.png',
+                  ))),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -80,12 +86,29 @@ class _MainDrawerState extends State<MainDrawer> {
                         routeName: 'debt-payoff'),
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
-                      menuIndex: 4,
-                      title: 'Settings',
-                      icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
-                      routeName: 'settings'
-                    ),
+                        menuIndex: 4,
+                        title: 'Settings',
+                        icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
+                        routeName: 'settings'),
                     Divider(color: themeState.primaryColor[200]),
+                    ListTile(
+                        tileColor: BudgetColors.light,
+                        leading: FaIcon(FontAwesomeIcons.database,
+                            color: _getColor()),
+                        title: Text('Migration',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(color: _getColor())),
+                        onTap: () {
+                          fetchOldData(
+                              transactionRepository:
+                                  context.read<TransactionRepository>(),
+                              accountRepository:
+                                  context.read<AccountRepository>(),
+                              categoryRepository:
+                                  context.read<CategoryRepository>());
+                        })
                   ],
                 ),
               ),
@@ -112,9 +135,9 @@ class _MainDrawerState extends State<MainDrawer> {
                 .titleLarge!
                 .copyWith(color: _getColor())),
         onTap: () {
-                context.pop();
-                context.push('/$routeName');
-              });
+          context.pop();
+          context.push('/$routeName');
+        });
   }
 
   Color _getColor() {

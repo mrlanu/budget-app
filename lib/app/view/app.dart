@@ -16,20 +16,22 @@ import '../../constants/constants.dart';
 import '../../navigation/router.dart';
 
 class App extends StatelessWidget {
-  final AppDatabase database = AppDatabase();
+  final AppDatabase _database;
+
+  const App({super.key, required AppDatabase database}): _database = database;
 
   @override
   Widget build(BuildContext context) {
     final TransactionRepository transactionRepository =
-        TransactionRepositoryDrift(database: database);
+        TransactionRepositoryDrift(database: _database);
     final AccountRepository accountRepository =
-        AccountRepositoryDrift(database: database);
+        AccountRepositoryDrift(database: _database);
     final CategoryRepository categoryRepository =
-        CategoryRepositoryDrift(database: database);
-    final ChartRepository chartRepository = ChartRepositoryDrift(database: database);
+        CategoryRepositoryDrift(database: _database);
+    final ChartRepository chartRepository = ChartRepositoryDrift(database: _database);
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (context) => database),
+        RepositoryProvider(create: (context) => _database),
         RepositoryProvider(create: (context) => categoryRepository),
         RepositoryProvider(create: (context) => accountRepository),
         RepositoryProvider(create: (context) => transactionRepository),

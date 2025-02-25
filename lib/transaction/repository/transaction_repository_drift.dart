@@ -106,4 +106,7 @@ class TransactionRepositoryDrift extends TransactionRepository {
     _transactionsStreamController.add(transactions);
     _database.deleteTransaction(transactionId);
   }
+
+  @override
+  Future<int> countAllTransactions() => _database.countAllTransactions();
 }

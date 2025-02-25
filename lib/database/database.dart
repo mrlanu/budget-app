@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
 import 'package:budget_app/database/tables.dart';
 import 'package:budget_app/database/transaction_with_detail.dart';
 import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+import 'package:drift/native.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../transaction/models/transaction_type.dart';
@@ -11,7 +14,12 @@ part 'database.g.dart';
 
 @DriftDatabase(tables: [Accounts, Categories, Subcategories, Transactions])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase._(QueryExecutor e) : super(e);
+
+  static Future<AppDatabase> create() async {
+    final executor = await _openConnection();
+    return AppDatabase._(executor);
+  }
 
   @override
   int get schemaVersion => 1;
@@ -208,8 +216,8 @@ class AppDatabase extends _$AppDatabase {
 
   Stream<List<TransactionWithDetails>> getTransactionsForCertainMonth(
       DateTime date) {
-    final firstDayOfMonth = DateTime(date.year, date.month, 1);
-    final lastDayOfMonth = DateTime(date.year, date.month + 1, 0);
+    final firstDayOfMonth = DateTime.utc(date.year, date.month, 1, 0, 0, 0);
+    final lastDayOfMonth = DateTime.utc(date.year, date.month + 1, 0, 23, 59,59);
 
     // Create an alias for the second accounts table
     final toAccount = alias(accounts, 'toAccount');
@@ -241,12 +249,17 @@ class AppDatabase extends _$AppDatabase {
     }).watch();
   }
 
-  static QueryExecutor _openConnection() {
-    return driftDatabase(
-      name: 'my_database',
-      native: const DriftNativeOptions(
-        databaseDirectory: getApplicationSupportDirectory,
-      ),
-    );
+  Future<int> countAllTransactions() async {
+    return await select(transactions).get().then((rows) => rows.length);
+  }
+
+  static Future<QueryExecutor> _openConnection() async {
+    final dbFolder = await getApplicationSupportDirectory();
+    final dbPath = p.join(dbFolder.path, 'qruto_budget.sqlite');
+
+    print('Database location: $dbPath');
+
+    final file = File(dbPath);
+    return NativeDatabase.createInBackground(file);
   }
 }
