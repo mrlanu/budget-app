@@ -57,3 +57,21 @@ class TransactionTypeConverter extends TypeConverter<TransactionType, String> {
     return value.name;
   }
 }
+
+class Debts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  RealColumn get startBalance => real()();
+  RealColumn get currentBalance => real()();
+  RealColumn get apr => real()();
+  RealColumn get minimumPayment => real()();
+  DateTimeColumn get nextPaymentDue => dateTime()();
+}
+
+class Payments extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get debtId => integer().references(Debts, #id)();
+  RealColumn get amount => real()();
+  DateTimeColumn get date => dateTime()();
+}
+

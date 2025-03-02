@@ -1,3 +1,4 @@
+import 'package:budget_app/database/database.dart';
 import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubits/debt_cubit/debts_cubit.dart';
 import '../debt_form/debt_form.dart';
-import '../models/models.dart';
 
 class DebtPayoffPage extends StatelessWidget {
 
@@ -15,15 +15,15 @@ class DebtPayoffPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-  create: (context) => DebtRepositoryImpl(),
+  create: (context) => DebtRepositoryDrift(database: context.read<AppDatabase>()),
     child: MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) =>
-          DebtsCubit(debtsRepository: context.read<DebtRepositoryImpl>())..updateDebts(),
+          DebtsCubit(debtsRepository: context.read<DebtRepositoryDrift>())..updateDebts(),
         ),
         BlocProvider(
-          create: (context) => StrategyCubit(),
+          create: (context) => StrategyCubit(database: context.read<AppDatabase>()),
         ),
       ],
       child: DebtPayoffViewMobile(),
@@ -81,7 +81,7 @@ void _openDialog({required BuildContext context, Debt? debt}) {
       providers: [
         BlocProvider(
           create: (_) =>
-          DebtBloc(debtsRepository: context.read<DebtRepositoryImpl>())
+          DebtBloc(debtsRepository: context.read<DebtRepositoryDrift>())
             ..add(FormInitEvent(debt: debt)),
         ),
         BlocProvider.value(

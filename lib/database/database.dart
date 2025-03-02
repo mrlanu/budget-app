@@ -12,7 +12,7 @@ import '../transaction/models/transaction_type.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Subcategories, Transactions])
+@DriftDatabase(tables: [Accounts, Categories, Subcategories, Transactions, Debts, Payments])
 class AppDatabase extends _$AppDatabase {
   AppDatabase._(QueryExecutor e) : super(e);
 
@@ -22,7 +22,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -40,16 +40,11 @@ class AppDatabase extends _$AppDatabase {
         }
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        /*if (from < 2) {
-          // we added the dueDate property in the change from version 1 to
-          // version 2
-          await m.addColumn(todos, todos.dueDate);
+        if (from == 1) {
+          // Upgrade from version 1 to 2: Add the Debts table
+          await m.createTable(debts);
+          await m.createTable(payments);
         }
-        if (from < 3) {
-          // we added the priority property in the change from version 1 or 2
-          // to version 3
-          await m.addColumn(todos, todos.priority);
-        }*/
       },
     );
   }
@@ -252,6 +247,17 @@ class AppDatabase extends _$AppDatabase {
   Future<int> countAllTransactions() async {
     return await select(transactions).get().then((rows) => rows.length);
   }
+
+  //DEBTS
+
+  Future<List<Debt>> getAllDebts() => select(debts).get();
+
+  Future<int> insertDebt(DebtsCompanion debt) => into(debts).insert(debt);
+
+  Future<void> updateDebt(Debt debt) => update(debts).replace(debt);
+
+  Future<void> deleteDebt(int debtId) =>
+      (delete(debts)..where((d) => d.id.equals(debtId))).go();
 
   static Future<QueryExecutor> _openConnection() async {
     final dbFolder = await getApplicationSupportDirectory();

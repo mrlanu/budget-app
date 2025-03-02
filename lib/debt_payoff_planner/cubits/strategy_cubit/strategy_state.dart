@@ -13,8 +13,8 @@ class LoadedStrategyState extends StrategyState {
   final DebtPayoffStrategy debtPayoffStrategy;
 
   LoadedStrategyState(
-      {required this.strategy,
-      required this.extraPayment,
+      {this.strategy = 'snowball',
+      this.extraPayment = '0',
       required this.debtPayoffStrategy});
 
   @override
