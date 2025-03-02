@@ -1,13 +1,5 @@
 import 'package:budget_app/database/database.dart';
 
-class DebtFailure implements Exception {
-  final String message;
-
-  const DebtFailure([
-    this.message = 'An unknown exception occurred.',
-  ]);
-}
-
 abstract class DebtsRepository {
   Future<List<Debt>> fetchAllDebts();
 
@@ -28,13 +20,7 @@ class DebtRepositoryDrift extends DebtsRepository {
   final AppDatabase _database;
 
   @override
-  Future<List<Debt>> fetchAllDebts() async {
-    try {
-      return await _database.getAllDebts();
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
+  Future<List<Debt>> fetchAllDebts() => _database.getAllDebts();
 
   @override
   Future<int> insertDebt(
@@ -43,26 +29,14 @@ class DebtRepositoryDrift extends DebtsRepository {
       required double currentBalance,
       required DateTime nextPaymentDue,
       required double apr,
-      required double minimumPayment}) async {
-    try {
-      return _database.insertDebt(DebtsCompanion.insert(
+      required double minimumPayment}) => _database.insertDebt(DebtsCompanion.insert(
           name: name,
           startBalance: startBalance,
           currentBalance: currentBalance,
           apr: apr,
           minimumPayment: minimumPayment,
           nextPaymentDue: nextPaymentDue));
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
 
   @override
-  Future<void> deleteDebt({required int debtId}) async {
-    try {
-      await _database.deleteDebt(debtId);
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
+  Future<void> deleteDebt({required int debtId}) => _database.deleteDebt(debtId);
 }

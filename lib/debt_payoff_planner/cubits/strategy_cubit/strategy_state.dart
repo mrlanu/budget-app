@@ -1,22 +1,34 @@
 part of 'strategy_cubit.dart';
 
-abstract class StrategyState extends Equatable {}
+enum StrategyStateStatus { loading, success, failure }
 
-class LoadingStrategyState extends StrategyState {
-  @override
-  List<Object?> get props => [];
-}
-
-class LoadedStrategyState extends StrategyState {
+class StrategyState extends Equatable {
   final String strategy;
   final String extraPayment;
-  final DebtPayoffStrategy debtPayoffStrategy;
+  final DebtPayoffStrategy? debtPayoffStrategy;
+  final StrategyStateStatus status;
 
-  LoadedStrategyState(
+  StrategyState(
       {this.strategy = 'snowball',
       this.extraPayment = '0',
-      required this.debtPayoffStrategy});
+      this.debtPayoffStrategy,
+      this.status = StrategyStateStatus.loading});
+
+  StrategyState copyWith({
+    String? strategy,
+    String? extraPayment,
+    DebtPayoffStrategy? debtPayoffStrategy,
+    StrategyStateStatus? status,
+}){
+    return StrategyState(
+      strategy: strategy ?? this.strategy,
+      extraPayment: extraPayment ?? this.extraPayment,
+      debtPayoffStrategy: debtPayoffStrategy ?? this.debtPayoffStrategy,
+      status: status ?? this.status
+    );
+}
 
   @override
-  List<Object?> get props => [strategy, extraPayment, debtPayoffStrategy];
+  List<Object?> get props =>
+      [strategy, extraPayment, debtPayoffStrategy, status];
 }

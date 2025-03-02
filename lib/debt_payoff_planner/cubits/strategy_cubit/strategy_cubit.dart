@@ -8,37 +8,41 @@ part 'strategy_state.dart';
 class StrategyCubit extends Cubit<StrategyState> {
   StrategyCubit({required AppDatabase database})
       : _database = database,
-        super(LoadingStrategyState());
+        super(StrategyState());
 
   final AppDatabase _database;
 
-  Future<void> fetchStrategy(
-      {String extraPayment = '0', String strategyName = 'snowball'}) async {
-    emit(LoadingStrategyState());
+  Future<void> fetchStrategy() async {
+    emit(state.copyWith(status: StrategyStateStatus.loading));
     try {
-      final strategy = await _countDebtsPayOffStrategy(
-          double.parse(extraPayment), strategyName);
-      emit(LoadedStrategyState(
-          strategy: strategyName,
-          extraPayment: extraPayment,
-          debtPayoffStrategy: strategy));
+      final strategy = await _countDebtsPayOffStrategy();
+      emit(state.copyWith(
+          debtPayoffStrategy: strategy,
+          status: StrategyStateStatus.success));
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<DebtPayoffStrategy> _countDebtsPayOffStrategy(
-      double extra, String strategy) async {
+  Future<void> changeExtraPayment(String extraPayment) async {
+    emit(state.copyWith(extraPayment: extraPayment));
+  }
+
+  Future<void> changeStrategy(String strategy) async {
+    emit(state.copyWith(strategy: strategy));
+  }
+
+  Future<DebtPayoffStrategy> _countDebtsPayOffStrategy() async {
     int duration = 0;
     double totalInterest = 0.0;
     final debtStrategyReports = <DebtStrategyReport>[];
     var report = DebtStrategyReport();
     final debts = await _database.getAllDebts();
-    _sortDebts(debts, strategy);
+    _sortDebts(debts, state.strategy);
 
     // 1. Check if there is any balance to pay
     while (debts.any((d) => d.currentBalance > 0)) {
-      double extraPayment = extra;
+      double extraPayment = double.parse(state.extraPayment);
       final isFullPayedDebt = _isCompletedDebt(debts, extraPayment);
       double tempCurrentBalance;
 
