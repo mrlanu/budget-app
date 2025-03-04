@@ -118,7 +118,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                               Text(
                                 '\$ ${summary.total.toStringAsFixed(2)}',
                                 style: TextStyle(
-                                  fontSize: textTheme.titleLarge!.fontSize,
+                                  fontSize: textTheme.titleMedium!.fontSize,
                                   fontWeight: FontWeight.bold,
                                   color: seedColor.primaryColor[900],
                                 ),
@@ -128,7 +128,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                           title: Text(
                             summary.name,
                             style: TextStyle(
-                              fontSize: textTheme.titleLarge!.fontSize,
+                              fontSize: textTheme.titleMedium!.fontSize,
                               fontWeight: FontWeight.bold,
                               color: seedColor.primaryColor[900],
                             ),

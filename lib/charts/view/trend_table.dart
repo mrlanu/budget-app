@@ -88,7 +88,7 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                                   '\$ ${sumInc.toStringAsFixed(2)}')),
                         ),
                         Padding(
@@ -96,7 +96,7 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                                   '\$ ${sumExp.toStringAsFixed(2)}')),
                         ),
                         Padding(
@@ -104,7 +104,7 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                                   '\$ ${balanceSum.toStringAsFixed(2)}')),
                         ),
                       ]),
@@ -136,7 +136,7 @@ class TrendTable extends StatelessWidget {
                                           child: Text(
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleMedium,
+                                                  .bodyMedium,
                                               '${DateFormat('yyyy - MM').format(e.date)}'),
                                         ))),
                                 TableCell(
@@ -149,7 +149,7 @@ class TrendTable extends StatelessWidget {
                                           child: Text(
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleMedium,
+                                                  .bodyMedium,
                                               '\$ ${e.incomeSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
@@ -162,7 +162,7 @@ class TrendTable extends StatelessWidget {
                                           child: Text(
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleMedium,
+                                                  .bodyMedium,
                                               '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
@@ -189,7 +189,7 @@ class TrendTable extends StatelessWidget {
                                             child: Text(
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .titleMedium!
+                                                    .bodyMedium!
                                                     .copyWith(
                                                     fontWeight:
                                                     FontWeight.bold),

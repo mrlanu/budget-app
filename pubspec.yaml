@@ -24,10 +24,6 @@ dependencies:
     path: packages/chart
   form_inputs:
     path: packages/form_inputs
-  network:
-    path: packages/network
-  cache:
-    path: packages/cache
   bloc_concurrency: ^0.2.1
   carousel_slider: ^5.0.0
   adaptive_breakpoints: ^0.1.6

@@ -79,7 +79,7 @@ class AccountsListView extends StatelessWidget {
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
-                                          .titleLarge!
+                                          .titleMedium!
                                           .fontSize),
                                 ),
                                 Expanded(child: Container()),
