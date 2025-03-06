@@ -48,28 +48,10 @@ final GoRouter _router = GoRouter(
         ]),
   ],
   redirect: _guard,
-  debugLogDiagnostics: true,
+  debugLogDiagnostics: false,
 );
 
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
-  /*final authStatus = context.read<AuthBloc>().state.status;
-  final bool signedIn = authStatus == AuthStatus.authenticated;
-
-  if (authStatus == AuthStatus.unknown) {
-    return '/splash';
-  }
-
-  if (authStatus == AuthStatus.unverified) {
-    return '/verify-email';
-  }
-
-  final bool signingIn =
-      ['/login', '/signup', '/splash'].contains(state.matchedLocation);
-  if (!signedIn && !signingIn) {
-    return '/login';
-  } else if (signedIn && signingIn) {
-    return '/expenses';
-  }*/
   return null;
 }
 

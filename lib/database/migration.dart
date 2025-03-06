@@ -15,7 +15,6 @@ Future<Map<String, dynamic>> fetchOldData(
   final count = await transactionRepository.countAllTransactions();
   print('Transactions: $count');
   final idMapping = <String, int>{};
-  final br = baseURL;
   final budgetResponse = await http
       .get(Uri.parse('$baseURL/api/budgets/64c00f7b68288437489cc18a'));
   if (budgetResponse.statusCode == 200) {
@@ -84,21 +83,3 @@ Future<Map<String, dynamic>> fetchOldData(
   }
   return {};
 }
-
-/*
-@override
-void fetchTransactions(DateTime dateTime) async {
-  try {
-    final response = await _networkClient
-        .get<List<dynamic>>(baseURL + '/api/transactions', queryParameters: {
-      'budgetId': await Cache.instance.getBudgetId(),
-      'date': dateTime.toString()
-    });
-    final transactions = List<Map<String, dynamic>>.from(response.data!)
-        .map((jsonMap) => Transaction.fromJson(jsonMap))
-        .toList();
-    _transactionsStreamController.add(transactions);
-  } on DioException catch (e) {
-    throw NetworkException.fromDioError(e);
-  }
-}*/

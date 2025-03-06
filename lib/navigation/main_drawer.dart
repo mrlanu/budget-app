@@ -1,7 +1,3 @@
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/database/migration.dart';
-import 'package:budget_app/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -90,7 +86,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         title: 'Settings',
                         icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
                         routeName: 'settings'),
-                    Divider(color: themeState.primaryColor[200]),
+                    /*Divider(color: themeState.primaryColor[200]),
                     ListTile(
                         tileColor: BudgetColors.light,
                         leading: FaIcon(FontAwesomeIcons.database,
@@ -108,7 +104,7 @@ class _MainDrawerState extends State<MainDrawer> {
                                   context.read<AccountRepository>(),
                               categoryRepository:
                                   context.read<CategoryRepository>());
-                        })
+                        })*/
                   ],
                 ),
               ),
