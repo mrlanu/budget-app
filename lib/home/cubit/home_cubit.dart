@@ -6,6 +6,7 @@ import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/database/transaction_with_detail.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../transaction/transaction.dart';
 import '../../accounts_list/repository/account_repository.dart';
@@ -18,9 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
   final TransactionRepository _transactionsRepository;
   final CategoryRepository _categoryRepository;
   final AccountRepository _accountRepository;
-  late final StreamSubscription _transactionsSubscription;
-  late final StreamSubscription _categoriesSubscription;
-  late final StreamSubscription _accountsSubscription;
+  late final StreamSubscription _combinedSubscription;
 
   HomeCubit(
       {required TransactionRepository transactionsRepository,
@@ -34,40 +33,24 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> initRequested() async {
     emit(state.copyWith(status: HomeStatus.loading));
     _transactionsRepository.fetchTransactions(DateTime.now());
-    _transactionsSubscription = _transactionsRepository.transactions.listen(
-        (transactions) {
+    _combinedSubscription = Rx.combineLatest3(
+      _transactionsRepository.transactions,
+      _categoryRepository.categories,
+      _accountRepository.accounts,
+      (transactions, categories, accounts) {
+        return (transactions, categories, accounts);
+      },
+    ).listen((record) {
       emit(
         state.copyWith(
           status: HomeStatus.success,
-          transactions: transactions,
+          transactions: record.$1,
+          categories: record.$2,
+          accounts: record.$3,
         ),
       );
-    },
-        onError: (_) => emit(state.copyWith(
-            status: HomeStatus.failure, errorMessage: 'Something went wrong')));
-
-    _categoriesSubscription = _categoryRepository.categories.listen(
-        (categories) {
-      emit(
-        state.copyWith(
-          status: HomeStatus.success,
-          categories: categories,
-        ),
-      );
-    },
-        onError: (_) => emit(state.copyWith(
-            status: HomeStatus.failure, errorMessage: 'Something went wrong')));
-
-    _accountsSubscription = _accountRepository.accounts.listen((accounts) {
-      emit(
-        state.copyWith(
-          status: HomeStatus.success,
-          accounts: accounts,
-        ),
-      );
-    },
-        onError: (_) => emit(state.copyWith(
-            status: HomeStatus.failure, errorMessage: 'Something went wrong')));
+    }, onError: (_) => emit(state.copyWith(
+        status: HomeStatus.failure, errorMessage: 'Something went wrong')));
   }
 
   /*Future<String> _checkInitialBudget() async {
@@ -238,9 +221,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   @override
   Future<void> close() {
-    _transactionsSubscription.cancel();
-    _categoriesSubscription.cancel();
-    _accountsSubscription.cancel();
+    _combinedSubscription.cancel();
     return super.close();
   }
 }
