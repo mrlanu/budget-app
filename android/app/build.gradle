@@ -32,7 +32,7 @@ if (flutterVersionName == null) {
 android {
     namespace "xyz.qruto.qruto_budget"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion "29.0.13113456"
 
     signingConfigs {
         release {
