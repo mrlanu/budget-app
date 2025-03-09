@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "xyz.qruto.qruto_budget"
+    namespace "xyz.qruto.budget_app"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion "29.0.13113456"
 
