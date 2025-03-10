@@ -12,7 +12,14 @@ import '../transaction/models/transaction_type.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Accounts, Categories, Subcategories, Transactions, Debts, Payments])
+@DriftDatabase(tables: [
+  Accounts,
+  Categories,
+  Subcategories,
+  Transactions,
+  Debts,
+  Payments
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase._(QueryExecutor e) : super(e);
 
@@ -29,6 +36,41 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
+        // Insert initial categories
+        await batch((batch) {
+          batch.insertAll(categories, [
+            CategoriesCompanion(
+                name: Value('Fun'),
+                iconCode: Value(62922),
+                type: Value(TransactionType.EXPENSE)),
+            CategoriesCompanion(
+                name: Value('Bills'),
+                iconCode: Value(61675),
+                type: Value(TransactionType.EXPENSE)),
+            CategoriesCompanion(
+                name: Value('Checking'),
+                iconCode: Value(61675),
+                type: Value(TransactionType.ACCOUNT)),
+          ]);
+        });
+
+        //get id for Checking category
+        final categoryList = await select(categories).get();
+        final checkingId =
+            categoryList.firstWhere((c) => c.name == 'Checking').id;
+
+        // Insert initial accounts
+        await batch((batch) {
+          batch.insertAll(accounts, [
+            AccountsCompanion(
+                name: Value('Chase'),
+                balance: Value(1000.0),
+                initialBalance: Value(1000.0),
+                currency: Value('USD'),
+                includeInTotal: Value(true),
+                categoryId: Value(checkingId)),
+          ]);
+        });
       },
       beforeOpen: (details) async {
         if (false) {
@@ -95,7 +137,7 @@ class AppDatabase extends _$AppDatabase {
   Future<List<Subcategory>> fetchSubcategoriesByCategoryId(
       int categoryId) async {
     return await (select(subcategories)
-      ..where((s) => s.categoryId.equals(categoryId)))
+          ..where((s) => s.categoryId.equals(categoryId)))
         .get();
   }
 
@@ -186,7 +228,8 @@ class AppDatabase extends _$AppDatabase {
       int transactionId) async {
     final toAccount = alias(accounts, 'toAccount');
     final query = select(transactions).join([
-      leftOuterJoin(categories, transactions.categoryId.equalsExp(categories.id)),
+      leftOuterJoin(
+          categories, transactions.categoryId.equalsExp(categories.id)),
       leftOuterJoin(subcategories,
           transactions.subcategoryId.equalsExp(subcategories.id)),
       innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
@@ -212,14 +255,16 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<TransactionWithDetails>> getTransactionsForCertainMonth(
       DateTime date) {
     final firstDayOfMonth = DateTime.utc(date.year, date.month, 1, 0, 0, 0);
-    final lastDayOfMonth = DateTime.utc(date.year, date.month + 1, 0, 23, 59,59);
+    final lastDayOfMonth =
+        DateTime.utc(date.year, date.month + 1, 0, 23, 59, 59);
 
     // Create an alias for the second accounts table
     final toAccount = alias(accounts, 'toAccount');
 
     // Build the query with joins
     final query = select(transactions).join([
-      leftOuterJoin(categories, transactions.categoryId.equalsExp(categories.id)),
+      leftOuterJoin(
+          categories, transactions.categoryId.equalsExp(categories.id)),
       leftOuterJoin(subcategories,
           transactions.subcategoryId.equalsExp(subcategories.id)),
       innerJoin(accounts, transactions.fromAccountId.equalsExp(accounts.id)),
@@ -244,9 +289,14 @@ class AppDatabase extends _$AppDatabase {
     }).watch();
   }
 
-  Future<int> countAllTransactions() async {
-    return await select(transactions).get().then((rows) => rows.length);
-  }
+  Future<int> countAllTransactions() =>
+      select(transactions).get().then((rows) => rows.length);
+
+  Future<int> countAllAccounts() =>
+      select(accounts).get().then((rows) => rows.length);
+
+  Future<int> countAllCategories() =>
+      select(categories).get().then((rows) => rows.length);
 
   //DEBTS
 

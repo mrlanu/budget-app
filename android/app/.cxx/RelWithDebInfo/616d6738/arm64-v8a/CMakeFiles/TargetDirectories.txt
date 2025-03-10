@@ -1,0 +1,2 @@
+/home/mrlanu/development/flutter/budget-app/android/app/.cxx/RelWithDebInfo/616d6738/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/mrlanu/development/flutter/budget-app/android/app/.cxx/RelWithDebInfo/616d6738/arm64-v8a/CMakeFiles/rebuild_cache.dir
