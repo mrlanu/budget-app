@@ -1,9 +1,14 @@
+import 'package:budget_app/database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
+import '../accounts_list/repository/account_repository.dart';
+import '../categories/repository/category_repository.dart';
 import '../constants/colors.dart';
+import '../database/migration.dart';
+import '../transaction/repository/transaction_repository.dart';
 import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
 
@@ -17,6 +22,48 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
+
+  late int count;
+
+
+  @override
+  void initState() {
+    super.initState();
+    count = 0;
+  }
+
+  void _migration() async {
+    if(mounted){
+      setState(() {
+        count++;
+      });
+    }
+    if(count == 10){
+      final db = context.read<AppDatabase>();
+      await db.truncateTables();
+      fetchOldData(
+            transactionRepository:
+            context.read<TransactionRepository>(),
+            accountRepository:
+            context.read<AccountRepository>(),
+            categoryRepository:
+            context.read<CategoryRepository>());
+      count = 0;
+      final messenger = ScaffoldMessenger.of(context);
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(duration: Duration(seconds: 5),
+            backgroundColor: BudgetColors.warning,
+            content: Text('Fetching data...',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 20)),
+          ),
+        );
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeState = context.read<ThemeCubit>().state;
@@ -24,11 +71,14 @@ class _MainDrawerState extends State<MainDrawer> {
       child: Column(
         children: [
           DrawerHeader(
-              child: Container(
-                  width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/piggy_bank.png',
-                  ))),
+              child: GestureDetector(
+                onTap: _migration,
+                child: Container(
+                    width: double.infinity,
+                    child: Image.asset(
+                      'assets/images/piggy_bank.png',
+                    )),
+              )),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(

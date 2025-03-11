@@ -46,30 +46,32 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Debt payoff planner'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () async {
-                _openDialog(context: context);
-              },
-              icon: Icon(Icons.add)),
-          StrategySelectButton()
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Debt payoff planner'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  _openDialog(context: context);
+                },
+                icon: Icon(Icons.add)),
+            StrategySelectButton()
+          ],
+        ),
+        //bottomNavigationBar: DebtController(),
+        body: SingleChildScrollView(
+            child: Column(
+              children: [
+                DebtController(),
+                DebtCarousel(
+                    onEdit: (debt) =>
+                        _openDialog(debt: debt, context: context)),
+                DebtStrategy(),
+              ],
+            )),
       ),
-      //bottomNavigationBar: DebtController(),
-      body: SingleChildScrollView(
-          child: Column(
-            children: [
-              DebtController(),
-              DebtCarousel(
-                  onEdit: (debt) =>
-                      _openDialog(debt: debt, context: context)),
-              DebtStrategy(),
-            ],
-          )),
     );
   }
 }

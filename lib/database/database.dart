@@ -309,6 +309,15 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteDebt(int debtId) =>
       (delete(debts)..where((d) => d.id.equals(debtId))).go();
 
+  Future<void> truncateTables() async {
+    await customStatement('DELETE FROM categories');
+    await customStatement('DELETE FROM subcategories');
+    await customStatement('DELETE FROM accounts');
+    await customStatement('DELETE FROM transactions');
+    await customStatement('DELETE FROM debts');
+    await customStatement('DELETE FROM payments');
+  }
+
   static Future<QueryExecutor> _openConnection() async {
     final dbFolder = await getApplicationSupportDirectory();
     final dbPath = p.join(dbFolder.path, 'qruto_budget.sqlite');

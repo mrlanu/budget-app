@@ -16,7 +16,7 @@ Future<Map<String, dynamic>> fetchOldData(
   print('Transactions: $count');
   final idMapping = <String, int>{};
   final budgetResponse = await http
-      .get(Uri.parse('$baseURL/api/budgets/64c00f7b68288437489cc18a'));
+      .get(Uri.parse('$baseURL/migration/budgets/64c00f7b68288437489cc18a'));
   if (budgetResponse.statusCode == 200) {
     final budgetData = jsonDecode(budgetResponse.body);
     for (var category in budgetData['categoryList']) {
@@ -55,7 +55,7 @@ Future<Map<String, dynamic>> fetchOldData(
     throw Exception('Failed to load data');
   }
   final transactionsResponse = await http.get(
-      Uri.parse('$baseURL/api/transactions/budgets/64c00f7b68288437489cc18a'));
+      Uri.parse('$baseURL/migration/budgets/64c00f7b68288437489cc18a/transactions'));
   if (transactionsResponse.statusCode == 200) {
     final transactionsData = jsonDecode(transactionsResponse.body);
     for (var tr in transactionsData) {
