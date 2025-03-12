@@ -14,7 +14,8 @@ Future<void> main() async {
         : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
   //Bloc.observer = const AppBlocObserver();
-  final db = await AppDatabase.create();
+
+  final db = AppDatabase();
 
   runApp(App(database: db,));
 }

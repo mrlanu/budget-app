@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
 import 'package:budget_app/database/tables.dart';
 import 'package:budget_app/database/transaction_with_detail.dart';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../transaction/models/transaction_type.dart';
@@ -21,12 +18,7 @@ part 'database.g.dart';
   Payments
 ])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase._(QueryExecutor e) : super(e);
-
-  static Future<AppDatabase> create() async {
-    final executor = await _openConnection();
-    return AppDatabase._(executor);
-  }
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
   int get schemaVersion => 2;
@@ -72,15 +64,7 @@ class AppDatabase extends _$AppDatabase {
           ]);
         });
       },
-      beforeOpen: (details) async {
-        if (false) {
-          final m = Migrator(this);
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-            await m.createTable(table);
-          }
-        }
-      },
+      beforeOpen: (details) async {},
       onUpgrade: (Migrator m, int from, int to) async {
         if (from == 1) {
           // Upgrade from version 1 to 2: Add the Debts table
@@ -318,13 +302,12 @@ class AppDatabase extends _$AppDatabase {
     await customStatement('DELETE FROM payments');
   }
 
-  static Future<QueryExecutor> _openConnection() async {
-    final dbFolder = await getApplicationSupportDirectory();
-    final dbPath = p.join(dbFolder.path, 'qruto_budget.sqlite');
-
-    print('Database location: $dbPath');
-
-    final file = File(dbPath);
-    return NativeDatabase.createInBackground(file);
+  static QueryExecutor _openConnection() {
+    return driftDatabase(
+      name: 'qruto_budget',
+      native: const DriftNativeOptions(
+        databaseDirectory: getApplicationSupportDirectory,
+      ),
+    );
   }
 }
