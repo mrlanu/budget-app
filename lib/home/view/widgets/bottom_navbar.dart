@@ -15,7 +15,7 @@ class HomeBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeState = context.read<ThemeCubit>().state;
     return Container(
-      height: 80,
+      height: 82,
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           return BottomNavigationBar(

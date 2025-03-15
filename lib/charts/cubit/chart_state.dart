@@ -12,7 +12,7 @@ class ChartState extends Equatable {
   final String categoryType;
 
   List<String> get titles {
-    return data.map((e) => e.date.split('-')[1]).toList();
+    return data.map((e) => e.date.month.toString()).toList();
   }
 
   List<double> get dataPoints {

@@ -63,7 +63,6 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                     current.lastDeletedTransaction &&
                 current.lastDeletedTransaction != null,
             listener: (context, state) {
-              final deletedTransaction = state.lastDeletedTransaction!;
               final messenger = ScaffoldMessenger.of(context);
               messenger
                 ..hideCurrentSnackBar()
@@ -119,7 +118,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                               Text(
                                 '\$ ${summary.total.toStringAsFixed(2)}',
                                 style: TextStyle(
-                                  fontSize: textTheme.titleLarge!.fontSize,
+                                  fontSize: textTheme.titleMedium!.fontSize,
                                   fontWeight: FontWeight.bold,
                                   color: seedColor.primaryColor[900],
                                 ),
@@ -129,7 +128,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                           title: Text(
                             summary.name,
                             style: TextStyle(
-                              fontSize: textTheme.titleLarge!.fontSize,
+                              fontSize: textTheme.titleMedium!.fontSize,
                               fontWeight: FontWeight.bold,
                               color: seedColor.primaryColor[900],
                             ),
@@ -137,7 +136,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                         );
                       },
                       body: TransactionsList(
-                          transactionTiles: summary.comprehensiveTr),
+                          transactionTiles: summary.transactionTiles),
                       isExpanded: isExpandedList[index]);
                 }))));
   }

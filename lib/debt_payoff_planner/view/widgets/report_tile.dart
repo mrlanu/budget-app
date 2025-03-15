@@ -1,10 +1,10 @@
-import 'package:budget_app/debt_payoff_planner/models/debt_report_item.dart';
-import 'package:budget_app/debt_payoff_planner/models/debt_strategy_report.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../utils/theme/budget_theme.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
+import '../../cubits/strategy_cubit/strategy_cubit.dart';
 
 class ReportTile extends StatelessWidget {
   final DebtStrategyReport report;

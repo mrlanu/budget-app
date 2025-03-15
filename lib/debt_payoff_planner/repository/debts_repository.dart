@@ -1,67 +1,42 @@
-import 'package:cache/cache.dart';
-import 'package:network/network.dart';
-
-import '../../constants/api.dart';
-import '../models/models.dart';
-
-class DebtFailure implements Exception {
-  final String message;
-
-  const DebtFailure([
-    this.message = 'An unknown exception occurred.',
-  ]);
-}
+import 'package:budget_app/database/database.dart';
 
 abstract class DebtsRepository {
   Future<List<Debt>> fetchAllDebts();
 
-  Future<Debt> saveDebt({required Debt debt});
+  Future<int> insertDebt(
+      {required String name,
+      required double startBalance,
+      required double currentBalance,
+      required DateTime nextPaymentDue,
+      required double apr,
+      required double minimumPayment});
 
-  Future<void> deleteDebt({required String debtId});
+  Future<void> deleteDebt({required int debtId});
 }
 
-class DebtRepositoryImpl extends DebtsRepository {
-  DebtRepositoryImpl({NetworkClient? networkClient})
-      : _networkClient = networkClient ?? NetworkClient.instance;
+class DebtRepositoryDrift extends DebtsRepository {
+  DebtRepositoryDrift({required AppDatabase database}) : _database = database;
 
-  final NetworkClient _networkClient;
-
-  @override
-  Future<List<Debt>> fetchAllDebts() async {
-    try {
-      final response = await _networkClient
-          .get<List<dynamic>>(baseURL + '/api/debts', queryParameters: {
-        'budgetId': await Cache.instance.getBudgetId()
-      });
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => Debt.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
+  final AppDatabase _database;
 
   @override
-  Future<Debt> saveDebt({required Debt debt}) async {
-    try {
-      final response = await _networkClient.post<Map<String, dynamic>>(
-          baseURL + '/api/debts',
-          data: debt.toJson());
-      final newDebt = Debt.fromJson(response.data!);
-      return newDebt;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
+  Future<List<Debt>> fetchAllDebts() => _database.getAllDebts();
 
   @override
-  Future<void> deleteDebt({required String debtId}) async {
-    try {
-      await _networkClient
-          .delete(baseURL + '/api/debts', queryParameters: {'debtId': debtId});
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
+  Future<int> insertDebt(
+      {required String name,
+      required double startBalance,
+      required double currentBalance,
+      required DateTime nextPaymentDue,
+      required double apr,
+      required double minimumPayment}) => _database.insertDebt(DebtsCompanion.insert(
+          name: name,
+          startBalance: startBalance,
+          currentBalance: currentBalance,
+          apr: apr,
+          minimumPayment: minimumPayment,
+          nextPaymentDue: nextPaymentDue));
+
+  @override
+  Future<void> deleteDebt({required int debtId}) => _database.deleteDebt(debtId);
 }

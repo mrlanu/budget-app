@@ -1,27 +1,27 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
-import '../../models/account.dart';
 import '../account_edit.dart';
 
 class AccountEditDialog extends StatelessWidget {
-  const AccountEditDialog({super.key, this.account});
+  const AccountEditDialog({super.key, this.accountId});
 
-  final Account? account;
+  final int? accountId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          AccountEditBloc(budgetRepository: context.read<BudgetRepository>())
-            ..add(AccountBudgetChanged(
-                budget: context.read<HomeCubit>().state.budget))
-            ..add(AccountEditFormLoaded(account: account)),
+      create: (_) {
+        return AccountEditBloc(
+            accountRepository: context.read<AccountRepository>(),
+            categoryRepository: context.read<CategoryRepository>())
+          ..add(AccountEditFormLoaded(accountId: accountId));
+      },
       child: AccountEditForm(),
     );
   }
@@ -30,7 +30,6 @@ class AccountEditDialog extends StatelessWidget {
 class AccountEditForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.read<ThemeCubit>().state;
     final accStatus =
         context.select((AccountEditBloc bloc) => bloc.state.accStatus);
     return accStatus == AccountEditStatus.loading

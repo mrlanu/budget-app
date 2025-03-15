@@ -5,10 +5,10 @@ sealed class AccountEditEvent extends Equatable {
 }
 
 final class AccountEditFormLoaded extends AccountEditEvent {
-  final Account? account;
-  AccountEditFormLoaded({this.account});
+  final int? accountId;
+  AccountEditFormLoaded({this.accountId});
   @override
-  List<Object?> get props => [account];
+  List<Object?> get props => [accountId];
 }
 
 final class AccountNameChanged extends AccountEditEvent {
@@ -29,18 +29,18 @@ final class AccountBalanceChanged extends AccountEditEvent {
   List<Object?> get props => [balance];
 }
 
-final class AccountBudgetChanged extends AccountEditEvent {
-  final Budget budget;
-  const AccountBudgetChanged({required this.budget});
-  @override
-  List<Object?> get props => [budget];
-}
-
 final class AccountCategoryChanged extends AccountEditEvent {
   final Category? category;
   const AccountCategoryChanged({this.category});
   @override
   List<Object?> get props => [category];
+}
+
+final class AccountCategoriesChanged extends AccountEditEvent {
+  final List<Category> categories;
+  const AccountCategoriesChanged({this.categories = const []});
+  @override
+  List<Object?> get props => [categories];
 }
 
 final class AccountIncludeInTotalsChanged extends AccountEditEvent {

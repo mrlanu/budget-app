@@ -14,7 +14,7 @@ class TransactionsViewFilter {
   final String? filterId;
   const TransactionsViewFilter({required this.type, this.filterId});
 
-  bool apply({required ComprehensiveTransaction transactionTile}) {
+  bool apply({required TransactionTile transactionTile}) {
     switch (this.type) {
       case TransactionsViewFilterTypes.allExpenses:
         return transactionTile.type == TransactionType.EXPENSE;
@@ -24,15 +24,15 @@ class TransactionsViewFilter {
         return transactionTile.category?.id == filterId!;
       case TransactionsViewFilterTypes.accountId:
         if(transactionTile.type == TransactionType.TRANSFER){
-          return (transactionTile.fromAccount!.id == filterId && transactionTile.title == 'Transfer out') ||
-              (transactionTile.toAccount?.id == filterId && transactionTile.title == 'Transfer in');
+          return (transactionTile.fromAccount == filterId && transactionTile.title == 'Transfer out') ||
+              (transactionTile.toAccount == filterId && transactionTile.title == 'Transfer in');
         }else{
-          return transactionTile.fromAccount!.id == filterId;
+          return transactionTile.fromAccount == filterId;
         }
     }
   }
 
-  List<ComprehensiveTransaction> applyAll(Iterable<ComprehensiveTransaction> transactionTiles) {
+  List<TransactionTile> applyAll(Iterable<TransactionTile> transactionTiles) {
     return transactionTiles.where(
       (trT) => apply(transactionTile: trT),
     ).toList();

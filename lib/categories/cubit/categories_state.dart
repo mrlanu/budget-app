@@ -14,6 +14,12 @@ class CategoriesState extends Equatable {
       this.transactionType = TransactionType.EXPENSE,
       this.errorMessage});
 
+  List<Category> get filteredCategories => categories
+      .where(
+        (c) => c.type == transactionType,
+      )
+      .toList();
+
   CategoriesState copyWith(
       {CategoriesStatus? status,
       List<Category>? categories,

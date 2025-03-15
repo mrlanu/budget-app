@@ -1,9 +1,10 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../budgets/repository/budget_repository.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/accounts_cubit.dart';
@@ -14,8 +15,9 @@ class AccountsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AccountsCubit(budgetRepository: context.read<BudgetRepository>()),
+      create: (context) => AccountsCubit(
+          accountRepository: context.read<AccountRepository>(),
+          categoryRepository: context.read<CategoryRepository>()),
       child: AccountsListView(),
     );
   }
@@ -73,22 +75,17 @@ class AccountsListView extends StatelessWidget {
                             title: Row(
                               children: [
                                 Text(
-                                  account.extendName(state.accountCategories),
+                                  account.extendName(),
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
-                                          .titleLarge!
+                                          .titleMedium!
                                           .fontSize),
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(
                                     color: themeState.primaryColor[900],
-                                    IconData(
-                                        state.accountCategories
-                                            .firstWhere((element) =>
-                                                element.id ==
-                                                account.categoryId)
-                                            .iconCode,
+                                    IconData(account.category.iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
                             ),

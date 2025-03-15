@@ -1,29 +1,23 @@
-import 'package:budget_app/home/cubit/home_cubit.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../budgets/repository/budget_repository.dart';
-import '../../../categories/models/category.dart';
-import '../../models/subcategory.dart';
-
 class SubcategoryEditDialog extends StatelessWidget {
   const SubcategoryEditDialog(
-      {super.key, required this.category, this.subcategory});
+      {super.key, required this.categoryId, this.subcategoryId});
 
-  final Category category;
-  final Subcategory? subcategory;
+  final int categoryId;
+  final int? subcategoryId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => SubcategoryEditBloc(
-          budgetRepository: context.read<BudgetRepository>())
-        ..add(SubcategoryBudgetChanged(
-            budget: context.read<HomeCubit>().state.budget))
+          categoryRepository: context.read<CategoryRepository>())
         ..add(SubcategoryEditFormLoaded(
-            category: category, subcategory: subcategory)),
+            categoryId: categoryId, subcategoryId: subcategoryId)),
       child: SubcategoryEditForm(),
     );
   }

@@ -1,65 +1,115 @@
 import 'package:budget_app/charts/models/year_month_sum.dart';
-import 'package:cache/cache.dart';
-import 'package:network/network.dart';
+import 'package:drift/drift.dart';
 
-import '../../constants/api.dart';
+import '../../database/database.dart';
+import '../../transaction/models/transaction_type.dart';
 
 abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
 
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId);
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId);
 
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id);
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(int id);
 }
 
-class ChartRepositoryImpl extends ChartRepository {
-  ChartRepositoryImpl({NetworkClient? networkClient})
-      : _networkClient = networkClient ?? NetworkClient.instance;
+class ChartRepositoryDrift extends ChartRepository {
+  ChartRepositoryDrift({required AppDatabase database}) : _database = database;
 
-  final NetworkClient _networkClient;
+  final AppDatabase _database;
 
   @override
   Future<List<YearMonthSum>> fetchTrendChartData() async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/trend-chart',
-          queryParameters: {'budgetId': await Cache.instance.getBudgetId()});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+    return _getSumsOfIncomesExpensesForYearByMonth();
+  }
+
+  Future<List<YearMonthSum>> _getSumsOfIncomesExpensesForYearByMonth() async {
+    final today = DateTime.now();
+    final dateEnd = DateTime(today.year, today.month + 1, 0, 23, 59, 59);
+    final dateStart = DateTime(dateEnd.year - 1, dateEnd.month, 1, 0, 0, 0);
+
+    // Fetch transactions for the past year
+    final transactions = await (_database.select(_database.transactions)
+          ..where((t) => t.date.isBetweenValues(dateStart, dateEnd)))
+        .get();
+
+    // Group transactions by type and month
+    final Map<TransactionType, Map<DateTime, double>> groupedTransactions = {};
+    for (final transaction in transactions) {
+      final type = transaction.type;
+      final month = DateTime(transaction.date.year, transaction.date.month, 1);
+      final amount = transaction.amount;
+
+      groupedTransactions.putIfAbsent(type, () => {});
+      groupedTransactions[type]![month] =
+          (groupedTransactions[type]![month] ?? 0.0) + amount;
     }
+
+    // Generate the result for each month in the past year
+    final result = <YearMonthSum>[];
+    for (int i = 0; i < 12; i++) {
+      final month = DateTime(dateStart.year, dateStart.month + i, 1);
+      final expenseSum =
+          groupedTransactions[TransactionType.EXPENSE]?[month] ?? 0.0;
+      final incomeSum =
+          groupedTransactions[TransactionType.INCOME]?[month] ?? 0.0;
+
+      result.add(YearMonthSum(
+        date: month,
+        expenseSum: expenseSum,
+        incomeSum: incomeSum,
+      ));
+    }
+
+    return result;
   }
 
   @override
-  Future<List<YearMonthSum>> fetchCategoryChartData(String categoryId) async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/category-chart',
-          queryParameters: {'categoryId': categoryId});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
-    }
-  }
+  Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId) =>
+      _getSumsByCategoryAndMonth(true, categoryId);
 
   @override
-  Future<List<YearMonthSum>> fetchSubcategoryChartData(String id) async {
-    try {
-      final response = await _networkClient.get<List<dynamic>>(
-          baseURL + '/api/charts/subcategory-chart',
-          queryParameters: {'categoryId': id});
-      final result = List<Map<String, dynamic>>.from(response.data!)
-          .map((jsonMap) => YearMonthSum.fromJson(jsonMap))
-          .toList();
-      return result;
-    } on DioException catch (e) {
-      throw NetworkException.fromDioError(e);
+  Future<List<YearMonthSum>> fetchSubcategoryChartData(int subcategoryId) =>
+      _getSumsByCategoryAndMonth(false, subcategoryId);
+
+  Future<List<YearMonthSum>> _getSumsByCategoryAndMonth(
+      bool isCategory, int categoryId) async {
+    final today = DateTime.now();
+    final dateEnd = DateTime(today.year, today.month + 1, 0, 23, 59, 59);
+    final dateStart = DateTime(dateEnd.year - 1, dateEnd.month, 1, 0, 0, 0);
+
+    // Fetch transactions for the past year
+    final transactions = isCategory
+        ? await (_database.select(_database.transactions)
+              ..where((t) =>
+                  t.categoryId.equals(categoryId) &
+                  t.date.isBetweenValues(dateStart, dateEnd)))
+            .get()
+        : await (_database.select(_database.transactions)
+              ..where((t) =>
+                  t.subcategoryId.equals(categoryId) &
+                  t.date.isBetweenValues(dateStart, dateEnd)))
+            .get();
+
+    // Group transactions by month and sum their amounts
+    final Map<DateTime, double> monthlySums = {};
+    for (final transaction in transactions) {
+      final month = DateTime(transaction.date.year, transaction.date.month, 1);
+      monthlySums[month] = (monthlySums[month] ?? 0.0) + transaction.amount;
     }
+
+    // Generate the result for each month in the past year
+    final result = <YearMonthSum>[];
+    for (int i = 0; i < 12; i++) {
+      final month = DateTime(dateStart.year, dateStart.month + i, 1);
+      final expenseSum = monthlySums[month] ?? 0.0;
+
+      result.add(YearMonthSum(
+        date: month,
+        expenseSum: expenseSum,
+        incomeSum: 0.0,
+      ));
+    }
+
+    return result;
   }
 }

@@ -9,11 +9,11 @@ import '../../../transaction/transaction.dart';
 import '../../home.dart';
 
 class TransactionsList extends StatelessWidget {
-  final List<ComprehensiveTransaction> transactionTiles;
+  final List<TransactionTile> transactionTiles;
 
   TransactionsList({super.key, required this.transactionTiles});
 
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
+  final ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +35,9 @@ class TransactionsList extends StatelessWidget {
               openBuilder: (BuildContext _, VoidCallback openContainer) {
                 return tr.type == TransactionType.TRANSFER
                     ? TransferPage(
-                        transaction: tr,
-                        budget: context.read<HomeCubit>().state.budget,
+                        transactionId: tr.id,
                       )
-                    : TransactionPage(
-                        transaction: tr,
-                        transactionType: tr.type,
-                        budget: context.read<HomeCubit>().state.budget,
-                      );
+                    : TransactionPage(transactionId: tr.id, transactionType: tr.type,);
               },
               tappable: true,
               closedShape: const RoundedRectangleBorder(),
@@ -52,7 +47,7 @@ class TransactionsList extends StatelessWidget {
                   transactionTile: tr,
                   onDismissed: (_) {
                     final trCub = context.read<HomeCubit>();
-                    trCub.deleteTransaction(transaction: tr);
+                    trCub.deleteTransaction(transactionId: tr.id);
                   },
                   onTap: openContainer,
                 );
