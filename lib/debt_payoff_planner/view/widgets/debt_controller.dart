@@ -29,14 +29,10 @@ class _DebtControllerState extends State<DebtController> {
   }
 
   void _onChanged(BuildContext context) {
-    final doubleText = _parseString(_textEditingController.text);
     setState(() {});
-    final strategyCubit = context.read<StrategyCubit>();
-    final state = strategyCubit.state;
-    final isLoadedState = state is LoadedStrategyState;
-    strategyCubit.fetchStrategy(
-        extraPayment: doubleText.toString(),
-        strategyName: isLoadedState ? state.strategy : 'snowball');
+    context.read<StrategyCubit>()
+      ..changeExtraPayment(_textEditingController.text)
+      ..fetchStrategy();
   }
 
   double _parseString(String text) {

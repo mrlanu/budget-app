@@ -1,10 +1,12 @@
+import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
 import 'package:budget_app/categories/category_edit/view/category_edit_dialog.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/categories/view/categories_page.dart';
 import 'package:budget_app/charts/charts.dart';
 import 'package:budget_app/charts/view/category_chart_page.dart';
+import 'package:budget_app/database/database.dart';
 import 'package:budget_app/debt_payoff_planner/view/payoff_page.dart';
-import 'package:budget_app/email_verification/view/email_verification_page.dart';
 import 'package:budget_app/home/home.dart';
 import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:budget_app/subcategories/view/subcategories_page.dart';
@@ -15,8 +17,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../auth/auth.dart';
-import '../budgets/repository/budget_repository.dart';
 import '../settings/settings.dart';
 import '../splash/view/splash_page.dart';
 
@@ -36,9 +36,9 @@ final GoRouter _router = GoRouter(
     ShellRoute(
         builder: (context, state, child) => BlocProvider(
               create: (context) => HomeCubit(
-                  transactionsRepository:
-                      context.read<TransactionsRepository>(),
-                  budgetRepository: context.read<BudgetRepository>())
+                  transactionsRepository: context.read<TransactionRepository>(),
+                  categoryRepository: context.read<CategoryRepository>(),
+                  accountRepository: context.read<AccountRepository>())
                 ..initRequested(),
               child: child,
             ),
@@ -48,47 +48,17 @@ final GoRouter _router = GoRouter(
         ]),
   ],
   redirect: _guard,
-  debugLogDiagnostics: true,
+  debugLogDiagnostics: false,
 );
 
 Future<String?> _guard(BuildContext context, GoRouterState state) async {
-  final authStatus = context.read<AuthBloc>().state.status;
-  final bool signedIn = authStatus == AuthStatus.authenticated;
-
-  if (authStatus == AuthStatus.unknown) {
-    return '/splash';
-  }
-
-  if(authStatus == AuthStatus.unverified){
-    return '/verify-email';
-  }
-
-  final bool signingIn =
-      ['/login', '/signup', '/splash'].contains(state.matchedLocation);
-  if (!signedIn && !signingIn) {
-    return '/login';
-  } else if (signedIn && signingIn) {
-    return '/expenses';
-  }
   return null;
 }
 
 final List<RouteBase> _authRoutes = [
   GoRoute(
     path: '/',
-    redirect: (_, __) => '/login',
-  ),
-  GoRoute(
-    path: '/login',
-    builder: (BuildContext context, GoRouterState state) {
-      return const LoginPage();
-    },
-  ),
-  GoRoute(
-    path: '/signup',
-    builder: (BuildContext context, GoRouterState state) {
-      return const SignUpPage();
-    },
+    redirect: (_, __) => '/expenses',
   ),
   GoRoute(
     path: '/splash',
@@ -154,14 +124,12 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
-            final cat = homeCubit.state.budget.categoryList
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+            final categoryId = int.parse(state.pathParameters['id']!);
             final type = TransactionType
                 .values[int.parse(state.uri.queryParameters['typeIndex']!)];
             return DialogPage(
                 builder: (_) => CategoryEditDialog(
-                      category: cat,
+                      categoryId: categoryId,
                       type: type,
                     ));
           },
@@ -170,38 +138,31 @@ final List<RouteBase> _individualRoutes = [
   GoRoute(
       path: '/subcategories',
       builder: (BuildContext context, GoRouterState state) {
-        final catId = state.uri.queryParameters['categoryId']!;
-        final category =
-            context.read<HomeCubit>().state.budget.getCategoryById(catId);
+        final catId = int.parse(state.uri.queryParameters['categoryId']!);
         return SubcategoriesPage(
-          category: category,
+          categoryId: catId,
         );
       },
       routes: [
         GoRoute(
           path: 'new',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final catId = state.uri.queryParameters['categoryId']!;
-            final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);
+            final catId = int.parse(state.uri.queryParameters['categoryId']!);
             return DialogPage(
                 builder: (_) => SubcategoryEditDialog(
-                      category: category,
+                      categoryId: catId,
                     ));
           },
         ),
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final catId = state.uri.queryParameters['categoryId']!;
-            final category =
-                context.read<HomeCubit>().state.budget.getCategoryById(catId);
-            final subcategory = category.subcategoryList
-                .firstWhere((cat) => cat.id == state.pathParameters['id']!);
+            final catId = int.parse(state.uri.queryParameters['categoryId']!);
+            final subcategoryId = int.parse(state.pathParameters['id']!);
             return DialogPage(
                 builder: (_) => SubcategoryEditDialog(
-                      category: category,
-                      subcategory: subcategory,
+                      categoryId: catId,
+                      subcategoryId: subcategoryId,
                     ));
           },
         ),
@@ -221,12 +182,10 @@ final List<RouteBase> _individualRoutes = [
         GoRoute(
           path: 'edit/:id',
           pageBuilder: (BuildContext context, GoRouterState state) {
-            final homeCubit = context.read<HomeCubit>();
-            final acc = homeCubit.state.budget.accountList
-                .firstWhere((acc) => acc.id == state.pathParameters['id']!);
+            final accId = int.parse(state.pathParameters['id']!);
             return DialogPage(
                 builder: (_) => AccountEditDialog(
-                      account: acc,
+                      accountId: accId,
                     ));
           },
         ),
@@ -240,7 +199,7 @@ final List<RouteBase> _individualRoutes = [
   GoRoute(
     path: '/summary',
     builder: (BuildContext context, GoRouterState state) {
-      return SummaryPage();
+      return SummaryPage(database: context.read<AppDatabase>(),);
     },
   ),
   GoRoute(
@@ -259,12 +218,6 @@ final List<RouteBase> _individualRoutes = [
     path: '/debt-payoff',
     builder: (BuildContext context, GoRouterState state) {
       return DebtPayoffPage();
-    },
-  ),
-  GoRoute(
-    path: '/verify-email',
-    builder: (BuildContext context, GoRouterState state) {
-      return EmailVerificationPage();
     },
   ),
 ];

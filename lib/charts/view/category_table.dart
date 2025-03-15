@@ -2,8 +2,8 @@ import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
-import '../../constants/colors.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../cubit/chart_cubit.dart';
 
@@ -105,7 +105,7 @@ class CategoryTable extends StatelessWidget {
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium,
-                                              '${e.date}'),
+                                              '${DateFormat('MMMM, yyyy').format(e.date)}'),
                                         ))),
                                 TableCell(
                                     verticalAlignment:

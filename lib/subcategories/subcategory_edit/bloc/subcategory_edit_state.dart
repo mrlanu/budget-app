@@ -3,8 +3,8 @@ part of 'subcategory_edit_bloc.dart';
 enum SubcategoryEditStatus { loading, success, failure }
 
 class SubcategoryEditState extends Equatable {
-  final String? id;
-  final Budget? budget;
+  final int? id;
+  final List<Subcategory> subcategories;
   final Category? category;
   final String? name;
   final FormzSubmissionStatus status;
@@ -15,7 +15,7 @@ class SubcategoryEditState extends Equatable {
   const SubcategoryEditState({
     this.id,
     this.name,
-    this.budget,
+    this.subcategories = const [],
     this.category,
     this.status = FormzSubmissionStatus.initial,
     this.isValid = false,
@@ -24,9 +24,9 @@ class SubcategoryEditState extends Equatable {
   });
 
   SubcategoryEditState copyWith({
-    String? id,
+    int? id,
     String? name,
-    Budget? budget,
+    List<Subcategory>? subcategories,
     Category? category,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -36,7 +36,7 @@ class SubcategoryEditState extends Equatable {
     return SubcategoryEditState(
       id: id ?? this.id,
       name: name ?? this.name,
-      budget: budget ?? this.budget,
+      subcategories: subcategories ?? this.subcategories,
       category: category ?? this.category,
       isValid: isValid ?? this.isValid,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -46,5 +46,5 @@ class SubcategoryEditState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [budget, id, name, category, status, isValid, errorMessage, catStatus];
+      [id, name, subcategories, category, status, isValid, errorMessage, catStatus];
 }

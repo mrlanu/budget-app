@@ -25,7 +25,7 @@ class _MonthPaginatorState extends State<MonthPaginator> {
   @override
   void initState() {
     super.initState();
-    _myDate = DateTime.now()..copyWith(day: 15);
+    _myDate = DateTime.now().copyWith(day: 15);
   }
 
   @override

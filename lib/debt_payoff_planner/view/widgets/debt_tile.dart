@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../database/database.dart';
 import '../../../utils/theme/budget_theme.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
-import '../../models/debt.dart';
 
 class DebtTile extends StatelessWidget {
   final Debt debtModel;

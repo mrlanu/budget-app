@@ -1,10 +1,14 @@
+import 'package:budget_app/database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-import '../auth/auth.dart';
+import '../accounts_list/repository/account_repository.dart';
+import '../categories/repository/category_repository.dart';
 import '../constants/colors.dart';
+import '../database/migration.dart';
+import '../transaction/repository/transaction_repository.dart';
 import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
 
@@ -18,6 +22,48 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
+
+  late int count;
+
+
+  @override
+  void initState() {
+    super.initState();
+    count = 0;
+  }
+
+  void _migration() async {
+    if(mounted){
+      setState(() {
+        count++;
+      });
+    }
+    if(count == 10){
+      final db = context.read<AppDatabase>();
+      await db.truncateTables();
+      fetchOldData(
+            transactionRepository:
+            context.read<TransactionRepository>(),
+            accountRepository:
+            context.read<AccountRepository>(),
+            categoryRepository:
+            context.read<CategoryRepository>());
+      count = 0;
+      final messenger = ScaffoldMessenger.of(context);
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(duration: Duration(seconds: 5),
+            backgroundColor: BudgetColors.warning,
+            content: Text('Fetching data...',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 20)),
+          ),
+        );
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeState = context.read<ThemeCubit>().state;
@@ -25,9 +71,14 @@ class _MainDrawerState extends State<MainDrawer> {
       child: Column(
         children: [
           DrawerHeader(
-              child: Container(
-                  width: double.infinity,
-                  child: Image.asset('assets/images/piggy_bank.png',))),
+              child: GestureDetector(
+                onTap: _migration,
+                child: Container(
+                    width: double.infinity,
+                    child: Image.asset(
+                      'assets/images/piggy_bank.png',
+                    )),
+              )),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -81,27 +132,29 @@ class _MainDrawerState extends State<MainDrawer> {
                         routeName: 'debt-payoff'),
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
-                      menuIndex: 4,
-                      title: 'Settings',
-                      icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
-                      routeName: 'settings'
-                    ),
-                    Divider(color: themeState.primaryColor[200]),
+                        menuIndex: 4,
+                        title: 'Settings',
+                        icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
+                        routeName: 'settings'),
+                    /*Divider(color: themeState.primaryColor[200]),
                     ListTile(
-                      leading: FaIcon(FontAwesomeIcons.rightFromBracket,
-                          color: _getColor()),
-                      title: Text('Log out',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(color: _getColor())),
-                      onTap: () {
-                        context
-                            .read<AuthBloc>()
-                            .add(const AuthLogoutRequested());
-                      },
-                    ),
-                    Divider(color: themeState.primaryColor[200])
+                        tileColor: BudgetColors.light,
+                        leading: FaIcon(FontAwesomeIcons.database,
+                            color: _getColor()),
+                        title: Text('Migration',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(color: _getColor())),
+                        onTap: () {
+                          fetchOldData(
+                              transactionRepository:
+                                  context.read<TransactionRepository>(),
+                              accountRepository:
+                                  context.read<AccountRepository>(),
+                              categoryRepository:
+                                  context.read<CategoryRepository>());
+                        })*/
                   ],
                 ),
               ),
@@ -128,9 +181,9 @@ class _MainDrawerState extends State<MainDrawer> {
                 .titleLarge!
                 .copyWith(color: _getColor())),
         onTap: () {
-                context.pop();
-                context.push('/$routeName');
-              });
+          context.pop();
+          context.push('/$routeName');
+        });
   }
 
   Color _getColor() {

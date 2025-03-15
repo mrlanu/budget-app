@@ -4,7 +4,7 @@ enum AccountsStatus { loading, success, failure }
 
 class AccountsState extends Equatable {
   final AccountsStatus status;
-  final List<Account> accountList;
+  final List<AccountWithDetails> accountList;
   final List<Category> accountCategories;
   final String? errorMessage;
 
@@ -17,7 +17,7 @@ class AccountsState extends Equatable {
   AccountsState copyWith({
     String? budgetId,
     AccountsStatus? status,
-    List<Account>? accountList,
+    List<AccountWithDetails>? accountList,
     List<Category>? accountCategories,
     String? errorMessage,
   }) {

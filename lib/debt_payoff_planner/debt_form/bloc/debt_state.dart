@@ -4,7 +4,7 @@ enum DebtStateStatus { loading, success, failure }
 
 class DebtState extends Equatable {
   final DebtStateStatus status;
-  final String? id;
+  final int? id;
   final String name;
   final MyDigit balance;
   final MyDigit minPayment;
@@ -26,7 +26,7 @@ class DebtState extends Equatable {
 
   DebtState copyWith({
     DebtStateStatus? status,
-    String? id,
+    int? id,
     String? name,
     MyDigit? balance,
     MyDigit? minPayment,

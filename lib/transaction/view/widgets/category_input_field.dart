@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../categories/models/category.dart';
+import '../../../database/database.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
@@ -10,7 +10,7 @@ class CategoryInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
-    final budget = context.select((TransactionBloc bloc) => bloc.state.budget);
+    final categories = context.select((TransactionBloc bloc) => bloc.state.categories);
     final transactionType =
         context.select((TransactionBloc bloc) => bloc.state.transactionType);
     final category =
@@ -22,7 +22,7 @@ class CategoryInput extends StatelessWidget {
             context.push('/categories?typeIndex=${transactionType.index}');
           },
         ),
-        items: budget.categoryList
+        items: categories
             .where((cat) => cat.type == transactionType)
             .map((Category cat) {
           return DropdownMenuItem(
@@ -37,7 +37,7 @@ class CategoryInput extends StatelessWidget {
         },
         value: category == null
             ? null
-            : budget.categoryList.firstWhere((c) => c.id == category.id),
+            : categories.firstWhere((c) => c.id == category.id),
         decoration: InputDecoration(
           icon: Icon(
             Icons.category,

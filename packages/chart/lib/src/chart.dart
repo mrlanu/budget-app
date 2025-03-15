@@ -199,6 +199,7 @@ class BarChartModel {
       required Color firstColor,
       required Color secondColor}) {
     return BarChartModel(
+      dataPoints: List.filled(amount, 0.0),
         bars: List.generate(
             amount,
             (index) => BarModel(

@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:cache/cache.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:formz/formz.dart';
 
-import '../../models/debt.dart';
+import '../../../database/database.dart';
 import '../../repository/debts_repository.dart';
 import '../debt_form.dart';
 
@@ -86,22 +85,15 @@ class DebtBloc extends Bloc<DebtEvent, DebtState> {
       DebtFormSubmitted event, Emitter<DebtState> emit) async {
     emit(state.copyWith(submissionStatus: FormzSubmissionStatus.inProgress));
     try {
-      final debt = await _debtRepository.saveDebt(
-          debt: Debt(
-              id: state.id,
+      final debt = await _debtRepository.insertDebt(
               name: state.name,
               startBalance: double.parse(state.balance.value),
               currentBalance: double.parse(state.balance.value),
               nextPaymentDue: DateTime.now(),
-              budgetId: await Cache.instance.getBudgetId()?? '',
               apr: double.parse(state.apr.value),
-              minimumPayment: double.parse(state.minPayment.value)));
+              minimumPayment: double.parse(state.minPayment.value));
       emit(state.copyWith(submissionStatus: FormzSubmissionStatus.success));
       Navigator.pop(event.context);
-    } on DebtFailure catch (e) {
-      emit(state.copyWith(
-          submissionStatus: FormzSubmissionStatus.failure,
-          errorMessage: e.message));
     } catch (e) {
       emit(state.copyWith(
           submissionStatus: FormzSubmissionStatus.failure,

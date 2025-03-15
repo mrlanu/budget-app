@@ -7,7 +7,7 @@ import '../../../transaction/transaction.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final ComprehensiveTransaction transactionTile;
+  final TransactionTile transactionTile;
   final DismissDirectionCallback? onDismissed;
   final VoidCallback? onTap;
 
@@ -47,7 +47,7 @@ class TransactionListTile extends StatelessWidget {
                           transactionTile.title == 'Transfer out')
                       ? BudgetColors.error
                       : BudgetColors.primary,
-                  fontSize: textTheme.titleLarge!.fontSize,
+                  fontSize: textTheme.titleMedium!.fontSize,
                   fontWeight: FontWeight.bold),
             ),
             SizedBox(
@@ -62,7 +62,7 @@ class TransactionListTile extends StatelessWidget {
         title: Text(
           transactionTile.title,
           style: TextStyle(
-            fontSize: textTheme.titleLarge!.fontSize,
+            fontSize: textTheme.titleMedium!.fontSize,
             color: Colors.black87,
           ),
         ),

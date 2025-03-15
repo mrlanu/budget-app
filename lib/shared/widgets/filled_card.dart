@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../constants/constants.dart';
 
 class FilledCard extends StatelessWidget {
@@ -12,7 +13,7 @@ class FilledCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/money_back.jpg'),
+          image: AssetImage('assets/images/logo.png'),
           fit: BoxFit.cover,
         ),
       ),

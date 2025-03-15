@@ -1,63 +1,59 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/budgets/budgets.dart';
-import 'package:cache/cache.dart';
+import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
+import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:budget_app/database/transaction_with_detail.dart';
 import "package:collection/collection.dart";
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../transaction/transaction.dart';
-import '../../accounts_list/models/account.dart';
-import '../../budgets/repository/budget_repository.dart';
+import '../../accounts_list/repository/account_repository.dart';
+import '../../database/database.dart';
 import '../models/summary_tile.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final TransactionsRepository _transactionsRepository;
-  final BudgetRepository _budgetRepository;
+  final TransactionRepository _transactionsRepository;
+  final CategoryRepository _categoryRepository;
+  final AccountRepository _accountRepository;
   late final StreamSubscription _combinedSubscription;
 
-  HomeCubit({
-    required TransactionsRepository transactionsRepository,
-    required BudgetRepository budgetRepository,
-  })  : _transactionsRepository = transactionsRepository,
-        _budgetRepository = budgetRepository,
+  HomeCubit(
+      {required TransactionRepository transactionsRepository,
+      required CategoryRepository categoryRepository,
+      required AccountRepository accountRepository})
+      : _transactionsRepository = transactionsRepository,
+        _categoryRepository = categoryRepository,
+        _accountRepository = accountRepository,
         super(HomeState(selectedDate: DateTime.now())) {}
 
   Future<void> initRequested() async {
     emit(state.copyWith(status: HomeStatus.loading));
-    String currentBudgetId = await _checkInitialBudget();
-
-    await _budgetRepository.fetchBudget(currentBudgetId);
     _transactionsRepository.fetchTransactions(DateTime.now());
-
-    _combinedSubscription = Rx.combineLatest2(
-      _budgetRepository.budget,
+    _combinedSubscription = Rx.combineLatest3(
       _transactionsRepository.transactions,
-      (budget, transactions) {
-        final transactionList =
-            _mapTransactionsToComprehensiveTr(transactions, budget);
-        return (
-          transactionList: transactionList,
-          budget: budget,
-        );
+      _categoryRepository.categories,
+      _accountRepository.accounts,
+      (transactions, categories, accounts) {
+        return (transactions, categories, accounts);
       },
     ).listen((record) {
       emit(
         state.copyWith(
           status: HomeStatus.success,
-          budget: record.budget,
-          transactionList: record.transactionList,
+          transactions: record.$1,
+          categories: record.$2,
+          accounts: record.$3,
         ),
       );
-    },
-        onError: (_) => emit(state.copyWith(
-            status: HomeStatus.failure, errorMessage: 'Something went wrong')));
+    }, onError: (_) => emit(state.copyWith(
+        status: HomeStatus.failure, errorMessage: 'Something went wrong')));
   }
 
-  Future<String> _checkInitialBudget() async {
+  /*Future<String> _checkInitialBudget() async {
     try {
       final budgetIds = await _budgetRepository.fetchAvailableBudgets();
       String currentBudgetId;
@@ -71,17 +67,7 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       rethrow;
     }
-  }
-
-  List<ComprehensiveTransaction> _mapTransactionsToComprehensiveTr(
-      List<Transaction> transactions, Budget budget) {
-    final trList = transactions
-        .map((t) => t.toTile(budget))
-        .expand((list) => list)
-        .toList();
-    trList.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    return trList;
-  }
+  }*/
 
   Future<void> setTab(int tabIndex) async {
     emit(state.copyWith(
@@ -94,12 +80,13 @@ class HomeCubit extends Cubit<HomeState> {
     _transactionsRepository.fetchTransactions(dateTime);
   }
 
-  Future<void> deleteTransaction(
-      {required ComprehensiveTransaction transaction}) async {
-    await _transactionsRepository.deleteTransactionOrTransfer(
-        transaction: transaction);
+  Future<void> deleteTransaction({required int transactionId}) async {
+    final transaction =
+        await _transactionsRepository.getTransactionById(transactionId);
     final lastDeleted =
-        state.transactionList.where((tr) => tr.id == transaction.id).first;
+        state.transactions.where((tr) => tr.id == transaction.id).first;
+    await _transactionsRepository.deleteTransactionOrTransfer(
+        transactionId: transactionId);
     transaction.type == TransactionType.TRANSFER
         ? _updateBudgetOnDeleteTransfer(transaction: transaction)
         : _updateBudgetOnDeleteTransaction(transaction: transaction);
@@ -107,8 +94,15 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> undoDelete() async {
-    await _transactionsRepository
-        .createTransaction(state.lastDeletedTransaction!.toTransaction());
+    final lT = state.lastDeletedTransaction;
+    await _transactionsRepository.insertTransaction(
+        amount: lT!.amount,
+        date: lT.date,
+        type: lT.type,
+        fromAccountId: lT.fromAccount.id,
+        subcategoryId: lT.subcategory!.id,
+        categoryId: lT.category!.id,
+        description: lT.description);
     if (state.lastDeletedTransaction!.type == TransactionType.TRANSFER) {
       _updateBudgetOnUndoDeleteTransfer(
           transfer: state.lastDeletedTransaction!);
@@ -122,11 +116,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _updateBudgetOnDeleteTransaction(
-      {required ComprehensiveTransaction transaction}) {
-    final accounts = state.budget.accountList;
+      {required TransactionWithDetails transaction}) async {
+    final accounts = await _accountRepository.getAllAccounts();
     List<Account> updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(
             balance: acc.balance +
                 (transaction.type == TransactionType.EXPENSE
@@ -137,17 +131,17 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _updateAccounts(updatedAccounts);
   }
 
   void _updateBudgetOnDeleteTransfer(
-      {required ComprehensiveTransaction transaction}) {
+      {required TransactionWithDetails transaction}) async {
     List<Account> updatedAccounts = [];
-    final accounts = state.budget.accountList;
+    final accounts = await _accountRepository.getAllAccounts();
     //find the acc from editedTransaction and return amount
     //find the acc from transaction and update amount
     updatedAccounts = accounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(balance: acc.balance + transaction.amount);
       } else {
         return acc;
@@ -161,16 +155,15 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _updateAccounts(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransaction(
-      {required ComprehensiveTransaction transaction,
-      ComprehensiveTransaction? editedTransaction}) {
-    final accounts = state.budget.accountList;
+      {required TransactionWithDetails transaction}) async {
+    final accounts = await _accountRepository.getAllAccounts();
     var updatedAccounts = [...accounts];
     updatedAccounts = updatedAccounts.map((acc) {
-      if (acc.id == transaction.fromAccount!.id) {
+      if (acc.id == transaction.fromAccount.id) {
         return acc.copyWith(
             balance: acc.balance +
                 (transaction.type == TransactionType.EXPENSE
@@ -181,12 +174,12 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _updateAccounts(updatedAccounts);
   }
 
   void _updateBudgetOnUndoDeleteTransfer(
-      {required ComprehensiveTransaction transfer}) {
-    final accounts = state.budget.accountList;
+      {required TransactionWithDetails transfer}) {
+    /*final accounts = state.budget.accountList;
     List<Account> updatedAccounts = [];
 
     //find the acc from editedTransaction and return amount
@@ -206,11 +199,24 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }).toList();
 
-    _budgetRepository.pushUpdatedAccounts(updatedAccounts);
+    _budgetRepository.pushUpdatedAccounts(updatedAccounts);*/
+  }
+
+  void _updateAccounts(List<Account> updatedAccounts) {
+    updatedAccounts.forEach(
+      (acc) => _accountRepository.updateAccount(
+          id: acc.id,
+          name: acc.name,
+          includeInTotal: acc.includeInTotal,
+          balance: acc.balance,
+          initialBalance: acc.initialBalance,
+          currency: acc.currency ?? '',
+          categoryId: acc.categoryId),
+    );
   }
 
   Future<void> deleteBudget() async {
-    await _budgetRepository.deleteBudget();
+    //await _budgetRepository.deleteBudget();
   }
 
   @override
