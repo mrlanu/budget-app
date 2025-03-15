@@ -1,0 +1,66 @@
+name: Build and Release Flutter APK
+
+on:
+  push:
+    tags:
+      - 'v*'  # Runs when you push a tag like v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.29.1  # Adjust to your Flutter version
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Decode and save Keystore
+        env:
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+        run: |
+          echo "$ANDROID_KEYSTORE" | base64 --decode > android/app/release-keystore.jks
+
+      - name: Create key.properties
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "storeFile=release-keystore.jks" > android/key.properties
+          echo "storePassword=$KEYSTORE_PASSWORD" >> android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: Build AAB
+        run: flutter build appbundle --release --no-tree-shake-icons
+
+      - name: Upload APK & AAB as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flutter-Android-Build
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab"
+          tag: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
