@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,11 +18,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      UpdateChecker.checkForUpdate(context);
+      UpdateChecker.checkIfUpdated(context);
+    });
+    Future.delayed(Duration.zero, () {
+      if (kReleaseMode) {
+        UpdateChecker.checkForUpdate(context);
+      } else {
+        print("Skipping update check in debug mode.");
+      }
     });
   }
 
