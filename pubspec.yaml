@@ -1,6 +1,6 @@
 name: budget_app
 description: A Budget app.
-version: 3.0.3+4
+version: 4.0.0+5
 publish_to: none
 
 
@@ -37,6 +37,8 @@ dependencies:
   drift: ^2.24.0
   drift_flutter: ^0.2.4
   json_annotation: ^4.8.1
+  shared_preferences: ^2.5.2
+  package_info_plus: ^8.3.0
 
 dev_dependencies:
   bloc_test: ^10.0.0
