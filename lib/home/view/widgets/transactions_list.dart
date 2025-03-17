@@ -4,7 +4,6 @@ import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../constants/constants.dart';
 import '../../../transaction/transaction.dart';
 import '../../home.dart';
 
@@ -18,6 +17,7 @@ class TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
+    final h = MediaQuery.of(context).size.height;
     final maxHeight = h * 0.55;
     return Container(
       margin: EdgeInsets.only(bottom: 10),

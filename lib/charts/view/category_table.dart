@@ -2,6 +2,7 @@ import 'package:budget_app/constants/colors.dart';
 import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../utils/theme/budget_theme.dart';
@@ -40,12 +41,16 @@ class CategoryTable extends StatelessWidget {
                         Align(
                             alignment: Alignment.center,
                             child: Text(
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold),
                                 'Date')),
                         Align(
                             alignment: Alignment.center,
                             child: Text(
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold),
                                 'Spent')),
                       ]),
                   TableRow(
@@ -60,6 +65,7 @@ class CategoryTable extends StatelessWidget {
                                 children: [
                                   Text(
                                       style: TextStyle(
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold),
                                       'Total'),
                                   Icon(
@@ -74,7 +80,9 @@ class CategoryTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold),
                                   '\$ ${sumExp.toStringAsFixed(2)}')),
                         ),
                       ]),
@@ -102,9 +110,8 @@ class CategoryTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
+                                              style: TextStyle(
+                                                  fontSize: 18.sp,),
                                               '${DateFormat('MMMM, yyyy').format(e.date)}'),
                                         ))),
                                 TableCell(
@@ -115,9 +122,8 @@ class CategoryTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
+                                              style: TextStyle(
+                                                  fontSize: 18.sp,),
                                               '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
                               ],
