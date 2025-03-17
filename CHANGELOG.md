@@ -1,0 +1,11 @@
+# Changelog
+
+## [4.1.0] - 03-16-2025
+### Added
+- Check in the app for any update
+- New Font
+
+## [4.0.0] - 03-15-2025
+### First release with internal DB
+### Added
+- New "What's New" bottom sheet
