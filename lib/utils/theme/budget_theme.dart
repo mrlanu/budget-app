@@ -51,10 +51,10 @@ class BudgetTheme {
       );
 
   static TextTheme _buildLightTextTheme() =>
-      GoogleFonts.robotoCondensedTextTheme();
+      GoogleFonts.interTextTheme();
 
   static TextTheme _buildDarkTextTheme() =>
-      GoogleFonts.robotoCondensedTextTheme().copyWith(
+      GoogleFonts.interTextTheme().copyWith(
           bodySmall: TextStyle(color: BudgetColors.lightContainer),
           bodyLarge: TextStyle(color: BudgetColors.lightContainer),
           titleLarge: TextStyle(color: BudgetColors.lightContainer),
