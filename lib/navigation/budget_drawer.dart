@@ -93,13 +93,12 @@ class _BudgetDrawerState extends State<BudgetDrawer>
   Widget _buildLogo() {
     return Positioned(
       bottom: 70,
+      left: 50.w,
       child: Opacity(
         opacity: 0.2,
-        child: Center(
-          child: Image.asset(
-            'assets/images/piggy_bank.png', // Replace with your image path
-            width: 400, // Adjust size as needed
-          ),
+        child: Image.asset(
+          'assets/images/piggy_bank.png', // Replace with your image path
+          width: 400.w, // Adjust size as needed
         ),
       ),
     );
