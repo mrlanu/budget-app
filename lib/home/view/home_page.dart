@@ -72,28 +72,10 @@ class _HomePageState extends State<HomePage>
       animation: _drawerSlideController,
       builder: (context, child) {
         return FractionalTranslation(
-          translation: Offset(_drawerSlideController.value - 1.0, 0.0),
+          translation: Offset(1.0 - _drawerSlideController.value, 0.0),
           child: _isDrawerClosed() ? const SizedBox() : BudgetDrawer(onDrawer: _toggleDrawer,),
         );
       },
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text('Budget Menu', style: TextStyle(color: Colors.black)),
-      backgroundColor: Colors.transparent,
-      elevation: 0.0,
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.clear, color: Colors.black),
-          onPressed: () {
-            _toggleDrawer();
-            Future.delayed(Duration(milliseconds: 150), () => context.pop());
-          },
-        ),
-      ],
     );
   }
 

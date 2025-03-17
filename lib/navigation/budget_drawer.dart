@@ -95,9 +95,11 @@ class _BudgetDrawerState extends State<BudgetDrawer>
       bottom: 70,
       child: Opacity(
         opacity: 0.2,
-        child: Image.asset(
-          'assets/images/piggy_bank.png', // Replace with your image path
-          width: 400, // Adjust size as needed
+        child: Center(
+          child: Image.asset(
+            'assets/images/piggy_bank.png', // Replace with your image path
+            width: 400, // Adjust size as needed
+          ),
         ),
       ),
     );
@@ -127,7 +129,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
               _itemSlideIntervals[i].transform(_staggeredController.value),
             );
             final opacity = animationPercent;
-            final slideDistance = (1.0 - animationPercent) * -150;
+            final slideDistance = (1.0 - animationPercent) * 150;
 
             return Opacity(
               opacity: opacity,
