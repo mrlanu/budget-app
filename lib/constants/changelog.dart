@@ -3,7 +3,7 @@ const changelog = [
     'version': 'v4.1.0',
     'date': 'Mar 16, 2025',
     'titles': [],
-    'added': ['Check in the app for any update', 'New Font'],
+    'added': ['Check in the app for any update', 'New Drawer', 'Inter Font'],
     'fixed': [],
   },
   {
