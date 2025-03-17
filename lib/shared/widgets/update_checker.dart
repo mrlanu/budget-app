@@ -50,7 +50,7 @@ class UpdateChecker {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset("assets/images/update.png", height: 120), // Add your image
+            Image.asset("assets/images/update.png", height: 120),
             SizedBox(height: 10),
             Text(
               "New Update Available!",
@@ -75,7 +75,8 @@ class UpdateChecker {
                 ),
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
               ),
-              child: Text("Update Now", style: TextStyle(fontSize: 18, color: Colors.white)),
+              child: Text("Update Now",
+                  style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
             SizedBox(height: 10),
             TextButton(
@@ -97,65 +98,132 @@ class UpdateChecker {
         return Container(
           height: 600,
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 40),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Text("What's New",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                SizedBox(height: 20),
-                Divider(),
-                SizedBox(height: 15,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50.0, vertical: 0),
-                  child: Column(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("What's New",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  SizedBox(height: 20),
+                  Divider(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ...changelog.map((item) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8), // Padding inside the box
-                                decoration: BoxDecoration(
-                                  color: prColor[100], // Background color
-                                  borderRadius: BorderRadius.circular(8), // Rounded corners
-                                ),
-                                child: Text(
-                                  item['version'] as String,
-                                  // Assuming `item` has a `version` field
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22),
-                                ),
+                      ...changelog.map((item) {
+                        final isTitle =
+                            (item['titles'] as List<dynamic>).isNotEmpty;
+                        final isAdded =
+                            (item['added'] as List<dynamic>).isNotEmpty;
+                        final isFixed =
+                            (item['fixed'] as List<dynamic>).isNotEmpty;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 8),
+                              // Padding inside the box
+                              decoration: BoxDecoration(
+                                color: prColor[100], // Background color
+                                borderRadius:
+                                    BorderRadius.circular(8), // Rounded corners
                               ),
-                              Text(
-                                item['date'] as String,
+                              child: Text(
+                                item['version'] as String,
                                 // Assuming `item` has a `version` field
                                 style: TextStyle(
-                                    fontSize: 12),
+                                    fontWeight: FontWeight.bold, fontSize: 22),
                               ),
-                              SizedBox(height: 15),
-                              RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.black),
-                                  children: (item['changes'] as List<String>)
-                                      .map<TextSpan>((change) =>
-                                          TextSpan(text: ' - $change\n'))
-                                      .toList(),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Divider(),
-                              SizedBox(height: 15),
-                            ],
-                          )),
+                            ),
+                            Text(
+                              item['date'] as String,
+                              // Assuming `item` has a `version` field
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            SizedBox(height: 15,),
+                            isTitle
+                                ? RichText(
+                                    text: TextSpan(
+                                        style: TextStyle(
+                                            height: 1.5,
+                                            fontSize: 20,
+                                            color: Colors.black),
+                                        children: (item['titles']
+                                                as List<String>)
+                                            .map<TextSpan>((change) =>
+                                                TextSpan(text: '$change\n'))
+                                            .toList()),
+                                  )
+                                : Container(),
+                            isAdded
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Added:',
+                                          // Assuming `item` has a `version` field
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold)),
+                                      RichText(
+                                          text: TextSpan(
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                  height: 1.5),
+                                              children: (item['added']
+                                                      as List<String>)
+                                                  .map<TextSpan>((change) =>
+                                                      TextSpan(
+                                                          text: ' - $change\n'))
+                                                  .toList())),
+                                    ],
+                                  )
+                                : Container(),
+                            isFixed
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Fixed:',
+                                        // Assuming `item` has a `version` field
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      RichText(
+                                          text: TextSpan(
+                                              style: TextStyle(
+                                                  height: 1.5,
+                                                  fontSize: 20,
+                                                  color: Colors.black),
+                                              children: (item['fixed']
+                                                      as List<String>)
+                                                  .map<TextSpan>((change) =>
+                                                      TextSpan(
+                                                          text: ' - $change\n'))
+                                                  .toList()))
+                                    ],
+                                  )
+                                : Container(),
+                            Divider(),
+                            SizedBox(height: 15),
+                          ],
+                        );
+                      }),
                     ],
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         );
