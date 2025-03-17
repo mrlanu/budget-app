@@ -1,12 +1,16 @@
-final changelog = [
+const changelog = [
+  {
+    'version': 'v4.1.0',
+    'date': 'Mar 16, 2025',
+    'titles': [],
+    'added': ['Check in the app for any update', 'New Drawer', 'Inter Font'],
+    'fixed': [],
+  },
   {
     'version': 'v4.0.0',
     'date': 'Mar 15, 2025',
-    'changes': ['First release with internal DB',],
+    'titles': ['First release with internal DB',],
+    'added': ['New "What\'s New" bottom sheet'],
+    'fixed': [],
   },
-  /*{
-    'version': 'v3.9.0',
-    'date': 'Mar 15, 2025',
-    'changes': ['Added feature X', 'Improved performance'],
-  },*/
 ];

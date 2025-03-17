@@ -1,6 +1,6 @@
 name: budget_app
 description: A Budget app.
-version: 4.0.0+5
+version: 4.1.0+6
 publish_to: none
 
 
@@ -39,6 +39,7 @@ dependencies:
   json_annotation: ^4.8.1
   shared_preferences: ^2.5.2
   package_info_plus: ^8.3.0
+  in_app_update: ^4.2.3
 
 dev_dependencies:
   bloc_test: ^10.0.0
