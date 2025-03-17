@@ -16,9 +16,10 @@ import '../home.dart';
 class HomeMobilePage extends StatelessWidget {
   HomeMobilePage({
     required this.navigationShell,
-    Key? key,
+    Key? key, required this.onDrawer,
   }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
+  final Function() onDrawer;
   final StatefulNavigationShell navigationShell;
   final ContainerTransitionType _transitionType =
       ContainerTransitionType.fadeThrough;
@@ -28,53 +29,58 @@ class HomeMobilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        return SafeArea(
-            child: Scaffold(
-                appBar: AppBar(
-                  title: MonthPaginator(
-                    onLeft: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                    onRight: (date) =>
-                        context.read<HomeCubit>().changeDate(date),
-                  ),
-                  centerTitle: true,
-                  actions: <Widget>[
-                    /*IconButton(
-                      key: const Key('homePage_deleteBudget'),
-                      icon: const Icon(Icons.delete_forever),
-                      onPressed: () {
-                        context.read<HomeCubit>().deleteBudget();
-                      },
-                    ),*/
-                    /*IconButton(
-                      key: const Key('homePage_logout_iconButton'),
-                      icon: const Icon(Icons.create_new_folder_outlined),
-                      onPressed: () {
-                        switch (navigationShell.currentIndex) {
-                          case 0:
-                            context.push('/categories?typeIndex=0');
-                            break;
-                          case 1:
-                            context.push('/categories?typeIndex=1');
-                            break;
-                          case 2:
-                            context.push('/accounts-list');
-                            break;
-                        }
-                      },
-                    ),*/
-                    _buildActionButton(),
-                  ],
-                ),
-                drawer: MainDrawer(),
-                body: navigationShell,
-                floatingActionButton: _buildFab(
-                    context,
-                    state.tab.index == 0
-                        ? TransactionType.EXPENSE
-                        : TransactionType.INCOME),
-                bottomNavigationBar:
-                    HomeBottomNavBar(navigationShell: navigationShell)));
+        return Scaffold(
+            appBar: AppBar(
+              title: MonthPaginator(
+                onLeft: (date) =>
+                    context.read<HomeCubit>().changeDate(date),
+                onRight: (date) =>
+                    context.read<HomeCubit>().changeDate(date),
+              ),
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  onDrawer();
+                },
+              ),
+              actions: <Widget>[
+                /*IconButton(
+                  key: const Key('homePage_deleteBudget'),
+                  icon: const Icon(Icons.delete_forever),
+                  onPressed: () {
+                    context.read<HomeCubit>().deleteBudget();
+                  },
+                ),*/
+                /*IconButton(
+                  key: const Key('homePage_logout_iconButton'),
+                  icon: const Icon(Icons.create_new_folder_outlined),
+                  onPressed: () {
+                    switch (navigationShell.currentIndex) {
+                      case 0:
+                        context.push('/categories?typeIndex=0');
+                        break;
+                      case 1:
+                        context.push('/categories?typeIndex=1');
+                        break;
+                      case 2:
+                        context.push('/accounts-list');
+                        break;
+                    }
+                  },
+                ),*/
+                _buildActionButton(),
+              ],
+            ),
+            //drawer: MainDrawer(),
+            body: navigationShell,
+            floatingActionButton: _buildFab(
+                context,
+                state.tab.index == 0
+                    ? TransactionType.EXPENSE
+                    : TransactionType.INCOME),
+            bottomNavigationBar:
+                HomeBottomNavBar(navigationShell: navigationShell));
       },
     );
   }
