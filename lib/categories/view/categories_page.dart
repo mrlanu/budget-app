@@ -2,6 +2,7 @@ import 'package:budget_app/categories/cubit/categories_cubit.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,10 +72,9 @@ class CategoriesView extends StatelessWidget {
                             Text(
                               category.name,
                               style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .fontSize),
+                                  color: themeState.primaryColor[900],
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.bold),
                             ),
                             Expanded(child: Container()),
                             FaIcon(
@@ -108,17 +108,18 @@ class CategoriesView extends StatelessWidget {
                     : themeState.secondaryColor,
                 title: Text(
                   'Add Category',
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: BudgetTheme.isDarkMode(context)
-                            ? themeState.primaryColor[900]
-                            : themeState.primaryColor[100],
-                      ),
+                  style: TextStyle(
+                      color: BudgetTheme.isDarkMode(context)
+                          ? themeState.primaryColor[900]
+                          : themeState.primaryColor[900],
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold),
                 ),
                 trailing: Icon(
                   Icons.add,
                   color: BudgetTheme.isDarkMode(context)
                       ? themeState.primaryColor[900]
-                      : themeState.primaryColor[100],
+                      : themeState.primaryColor[900],
                 ),
                 onTap: () {
                   context.push(

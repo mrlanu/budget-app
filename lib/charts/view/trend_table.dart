@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../utils/theme/budget_theme.dart';
@@ -36,22 +37,26 @@ class TrendTable extends StatelessWidget {
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: TextStyle(
+                                fontSize: 18.sp, fontWeight: FontWeight.bold),
                             'Date')),
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: TextStyle(
+                                fontSize: 18.sp, fontWeight: FontWeight.bold),
                             'Income')),
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: TextStyle(
+                                fontSize: 18.sp, fontWeight: FontWeight.bold),
                             'Expenses')),
                     Align(
                         alignment: Alignment.center,
                         child: Text(
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: TextStyle(
+                                fontSize: 18.sp, fontWeight: FontWeight.bold),
                             'Balance')),
                   ]),
                   TableRow(
@@ -74,6 +79,7 @@ class TrendTable extends StatelessWidget {
                                 children: [
                                   Text(
                                       style: TextStyle(
+                                          fontSize: 14.sp,
                                           fontWeight: FontWeight.bold),
                                       'Total'),
                                   Icon(
@@ -88,7 +94,9 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold),
                                   '\$ ${sumInc.toStringAsFixed(2)}')),
                         ),
                         Padding(
@@ -96,7 +104,9 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold),
                                   '\$ ${sumExp.toStringAsFixed(2)}')),
                         ),
                         Padding(
@@ -104,7 +114,9 @@ class TrendTable extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold),
                                   '\$ ${balanceSum.toStringAsFixed(2)}')),
                         ),
                       ]),
@@ -134,9 +146,8 @@ class TrendTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
+                                              style: TextStyle(
+                                                  fontSize: 14.sp),
                                               '${DateFormat('yyyy - MM').format(e.date)}'),
                                         ))),
                                 TableCell(
@@ -147,9 +158,8 @@ class TrendTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
+                                              style: TextStyle(
+                                                  fontSize: 14.sp),
                                               '\$ ${e.incomeSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
@@ -160,9 +170,8 @@ class TrendTable extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: Text(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium,
+                                              style: TextStyle(
+                                                  fontSize: 14.sp),
                                               '\$ ${e.expenseSum.toStringAsFixed(2)}'),
                                         ))),
                                 TableCell(
@@ -187,12 +196,8 @@ class TrendTable extends StatelessWidget {
                                           child: Padding(
                                             padding: const EdgeInsets.all(5.0),
                                             child: Text(
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                    fontWeight:
-                                                    FontWeight.bold),
+                                                style: TextStyle(
+                                                    fontSize: 14.sp),
                                                 '\$ ${(e.incomeSum - e.expenseSum).toStringAsFixed(2)}'),
                                           )),
                                     )),

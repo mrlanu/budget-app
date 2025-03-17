@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.5.2
   package_info_plus: ^8.3.0
   in_app_update: ^4.2.3
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   bloc_test: ^10.0.0

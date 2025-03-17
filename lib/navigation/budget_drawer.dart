@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,7 +9,10 @@ import '../utils/theme/budget_theme.dart';
 import '../utils/theme/cubit/theme_cubit.dart';
 
 class BudgetDrawer extends StatefulWidget {
-  const BudgetDrawer({super.key, required this.onDrawer,});
+  const BudgetDrawer({
+    super.key,
+    required this.onDrawer,
+  });
 
   final Function() onDrawer;
 
@@ -16,7 +20,8 @@ class BudgetDrawer extends StatefulWidget {
   State<BudgetDrawer> createState() => _BudgetDrawerState();
 }
 
-class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderStateMixin {
+class _BudgetDrawerState extends State<BudgetDrawer>
+    with SingleTickerProviderStateMixin {
   static const _menuLength = 5;
   static const _initialDelayTime = Duration(milliseconds: 50);
   static const _itemSlideTime = Duration(milliseconds: 250);
@@ -75,7 +80,9 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final color = context.read<ThemeCubit>().state.primaryColor;
     return Container(
-      color: color[100],
+      color: BudgetTheme.isDarkMode(context)
+          ? Color(0xFF272727)
+          : color[100],
       child: Stack(
         fit: StackFit.expand,
         children: [_buildLogo(), _buildContent()],
@@ -145,6 +152,7 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
           menuIndex: 1,
           title: 'Summary',
           icon: FaIcon(
+            color: _getColor(),
             FontAwesomeIcons.listUl,
           ),
           routeName: 'summary',
@@ -153,6 +161,7 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
             menuIndex: 2,
             title: 'Trend',
             icon: FaIcon(
+              color: _getColor(),
               FontAwesomeIcons.chartSimple,
             ),
             routeName: 'trend'),
@@ -160,6 +169,7 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
             menuIndex: 2,
             title: 'Sum by Category',
             icon: FaIcon(
+              color: _getColor(),
               FontAwesomeIcons.chartPie,
             ),
             routeName: 'category-trend'),
@@ -167,6 +177,7 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
             menuIndex: 3,
             title: 'Debt payoff planner',
             icon: FaIcon(
+              color: _getColor(),
               FontAwesomeIcons.moneyCheckDollar,
             ),
             routeName: 'debt-payoff'),
@@ -174,13 +185,14 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
             menuIndex: 4,
             title: 'Settings',
             icon: FaIcon(
+              color: _getColor(),
               FontAwesomeIcons.gear,
             ),
             routeName: 'settings'),
       ];
 
   Widget _buildGetStartedButton(BuildContext context) {
-    final color = context.read<ThemeCubit>().state.secondaryColor;
+    final colors = context.read<ThemeCubit>().state;
     return SizedBox(
       width: double.infinity,
       child: Padding(
@@ -202,13 +214,18 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const StadiumBorder(),
-              backgroundColor: color,
+              backgroundColor: colors.secondaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 14),
             ),
             onPressed: widget.onDrawer,
-            child: const Text(
+            child: Text(
               'Close',
-              style: TextStyle(color: Colors.white, fontSize: 22),
+              style: TextStyle(
+                  color: BudgetTheme.isDarkMode(context)
+                      ? Colors.black
+                      : Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22.sp),
             ),
           ),
         ),
@@ -218,16 +235,16 @@ class _BudgetDrawerState extends State<BudgetDrawer> with SingleTickerProviderSt
 
   ListTile _buildMenuItem(
       {required int menuIndex,
-        required String title,
-        required Widget? icon,
-        required String routeName}) {
+      required String title,
+      required Widget? icon,
+      required String routeName}) {
     return ListTile(
         leading: icon,
         title: Text(title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: _getColor())),
+            style: TextStyle(
+                color: _getColor(),
+                fontSize: 24.sp,
+                fontWeight: FontWeight.bold)),
         onTap: () {
           widget.onDrawer();
           context.push('/$routeName');

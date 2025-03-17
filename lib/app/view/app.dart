@@ -11,6 +11,7 @@ import 'package:budget_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../navigation/router.dart';
 
@@ -57,18 +58,23 @@ class AppView extends StatelessWidget {
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           _setSystemUIOverlayStyle(state.primaryColor);
-          return MaterialApp.router(
-            routerConfig: router,
-            debugShowCheckedModeBanner: false,
-            themeMode: ThemeMode.values[state.mode],
-            theme: BudgetTheme(seedColors: (
-              primaryColor: state.primaryColor,
-              secondaryColor: state.secondaryColor
-            )).lightTheme,
-            darkTheme: BudgetTheme(seedColors: (
-              primaryColor: state.primaryColor,
-              secondaryColor: state.secondaryColor
-            )).darkTheme,
+          return ScreenUtilInit(
+            designSize: const Size(415, 900),
+            minTextAdapt: true,
+            splitScreenMode: true,
+            child: MaterialApp.router(
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              themeMode: ThemeMode.values[state.mode],
+              theme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).lightTheme,
+              darkTheme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).darkTheme,
+            ),
           );
         },
       ),

@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -77,10 +78,9 @@ class AccountsListView extends StatelessWidget {
                                 Text(
                                   account.extendName(),
                                   style: TextStyle(
-                                      fontSize: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .fontSize),
+                                      color: themeState.primaryColor[900],
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(
@@ -113,17 +113,18 @@ class AccountsListView extends StatelessWidget {
                         : themeState.secondaryColor,
                     title: Text(
                       'Add Account',
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: BudgetTheme.isDarkMode(context)
-                                ? themeState.primaryColor[900]
-                                : themeState.primaryColor[100],
-                          ),
+                      style: TextStyle(
+                          color: BudgetTheme.isDarkMode(context)
+                              ? themeState.primaryColor[900]
+                              : themeState.primaryColor[900],
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold),
                     ),
                     trailing: Icon(
                       Icons.add,
                       color: BudgetTheme.isDarkMode(context)
                           ? themeState.primaryColor[900]
-                          : themeState.primaryColor[100],
+                          : themeState.primaryColor[900],
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();
