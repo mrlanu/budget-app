@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../constants/constants.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../category_edit.dart';
 
@@ -32,6 +31,7 @@ class CategoryEditForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryEditBloc, CategoryEditState>(
       builder: (context, state) {
+        final h = MediaQuery.of(context).size.height;
         final themeState = context.read<ThemeCubit>().state;
         return Center(
           child: SingleChildScrollView(

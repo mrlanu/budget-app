@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../constants/constants.dart';
 import '../../navigation/router.dart';
 
 class App extends StatelessWidget {
@@ -54,8 +53,6 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    w = MediaQuery.of(context).size.width;
-    h = MediaQuery.of(context).size.height;
     return Responsive(
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
