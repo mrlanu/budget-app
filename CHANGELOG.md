@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0] - 03-17-2025
+### Added
+- Adapting screen and font size
+- New Drawer direction
+### Fixed
+- Font size
+
 ## [4.1.0] - 03-16-2025
 ### Added
 - Check in the app for any update

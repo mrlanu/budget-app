@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/colors.dart';
 import '../../../transaction/transaction.dart';
-import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class TransactionListTile extends StatelessWidget {
   final TransactionTile transactionTile;
@@ -18,8 +17,6 @@ class TransactionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
-    final seedColor = context.watch<ThemeCubit>().state;
-    final textTheme = Theme.of(context).textTheme;
     return Dismissible(
       key: Key('transaction_dismissible_${transactionTile.id}'),
       onDismissed: onDismissed,
@@ -47,7 +44,7 @@ class TransactionListTile extends StatelessWidget {
                           transactionTile.title == 'Transfer out')
                       ? BudgetColors.error
                       : BudgetColors.primary,
-                  fontSize: textTheme.titleMedium!.fontSize,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold),
             ),
             SizedBox(
@@ -62,13 +59,13 @@ class TransactionListTile extends StatelessWidget {
         title: Text(
           transactionTile.title,
           style: TextStyle(
-            fontSize: textTheme.titleMedium!.fontSize,
+            fontSize: 20.sp,
             color: Colors.black87,
           ),
         ),
         subtitle: Text(
           '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}',
-          style: TextStyle(color: Colors.black87, fontSize: textTheme.titleMedium!.fontSize,),
+          style: TextStyle(color: Colors.black87, fontSize: 18.sp,),
         ),
         isThreeLine: false,
         onTap: onTap,

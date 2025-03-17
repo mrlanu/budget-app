@@ -1,6 +1,7 @@
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../constants/colors.dart';
@@ -53,7 +54,6 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final seedColor = context.watch<ThemeCubit>().state;
     return MultiBlocListener(
         listeners: [
@@ -118,8 +118,8 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                               Text(
                                 '\$ ${summary.total.toStringAsFixed(2)}',
                                 style: TextStyle(
-                                  fontSize: textTheme.titleLarge!.fontSize,
-                                  //fontWeight: FontWeight.bold,
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.bold,
                                   color: seedColor.primaryColor[900],
                                 ),
                               ),
@@ -128,8 +128,8 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                           title: Text(
                             summary.name,
                             style: TextStyle(
-                              fontSize: textTheme.titleLarge!.fontSize,
-                              //fontWeight: FontWeight.bold,
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.bold,
                               color: seedColor.primaryColor[900],
                             ),
                           ),

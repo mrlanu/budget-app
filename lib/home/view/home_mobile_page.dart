@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../navigation/main_drawer.dart';
 import '../../shared/widgets/month_paginator.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../../transaction/view/transaction_page.dart';
@@ -38,12 +37,7 @@ class HomeMobilePage extends StatelessWidget {
                     context.read<HomeCubit>().changeDate(date),
               ),
               centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  onDrawer();
-                },
-              ),
+              leading: _buildActionButton(),
               actions: <Widget>[
                 /*IconButton(
                   key: const Key('homePage_deleteBudget'),
@@ -69,7 +63,12 @@ class HomeMobilePage extends StatelessWidget {
                     }
                   },
                 ),*/
-                _buildActionButton(),
+                IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    onDrawer();
+                  },
+                ),
               ],
             ),
             //drawer: MainDrawer(),
