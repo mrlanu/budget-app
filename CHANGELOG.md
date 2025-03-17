@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.2.1] - 03-17-2025
+### Hotfix
+### Fixed
+- Font size
+
 ## [4.2.0] - 03-17-2025
 ### Added
 - Adapting screen and font size

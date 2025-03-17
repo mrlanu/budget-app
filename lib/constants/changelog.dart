@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.2.1',
+    'date': 'Mar 17, 2025',
+    'titles': ['Hotfix'],
+    'added': [],
+    'fixed': ['Font size'],
+  },
+  {
     'version': 'v4.2.0',
     'date': 'Mar 17, 2025',
     'titles': [],

@@ -136,25 +136,6 @@ class _MainDrawerState extends State<MainDrawer> {
                         title: 'Settings',
                         icon: FaIcon(FontAwesomeIcons.gear, color: _getColor()),
                         routeName: 'settings'),
-                    /*Divider(color: themeState.primaryColor[200]),
-                    ListTile(
-                        tileColor: BudgetColors.light,
-                        leading: FaIcon(FontAwesomeIcons.database,
-                            color: _getColor()),
-                        title: Text('Migration',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .copyWith(color: _getColor())),
-                        onTap: () {
-                          fetchOldData(
-                              transactionRepository:
-                                  context.read<TransactionRepository>(),
-                              accountRepository:
-                                  context.read<AccountRepository>(),
-                              categoryRepository:
-                                  context.read<CategoryRepository>());
-                        })*/
                   ],
                 ),
               ),

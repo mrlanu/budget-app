@@ -59,7 +59,7 @@ class AppView extends StatelessWidget {
         builder: (context, state) {
           _setSystemUIOverlayStyle(state.primaryColor);
           return ScreenUtilInit(
-            designSize: const Size(415, 900),
+            designSize: const Size(500, 1085),
             minTextAdapt: true,
             splitScreenMode: true,
             child: MaterialApp.router(
