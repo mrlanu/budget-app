@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.?.?] - ??-??-????
+### Added
+- New Subcategory form
+- Submit buttons appear just on the valid forms
+
 ## [4.2.1] - 03-17-2025
 ### Hotfix
 ### Fixed

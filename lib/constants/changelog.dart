@@ -1,5 +1,13 @@
 const changelog = [
   {
+    'version': 'v4.?.?',
+    'date': '??? ??, 2025',
+    'titles': [],
+    'added': ['New Subcategory form',
+        'Submit buttons appear just on the valid forms'],
+    'fixed': [],
+  },
+  {
     'version': 'v4.2.1',
     'date': 'Mar 17, 2025',
     'titles': ['Hotfix'],
