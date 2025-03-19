@@ -5,7 +5,7 @@ const changelog = [
     'titles': [],
     'added': ['New Subcategory form',
         'Submit buttons appear just on the valid forms'],
-    'fixed': [],
+    'fixed': ['Transaction bar title (new/edit)'],
   },
   {
     'version': 'v4.2.1',

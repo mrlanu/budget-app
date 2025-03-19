@@ -36,13 +36,17 @@ class TransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionType =
-        context.select((TransactionBloc bloc) => bloc.state.transactionType);
+    context.select((TransactionBloc bloc) => bloc.state.transactionType);
     final status =
         context.select((TransactionBloc bloc) => bloc.state.trStatus);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_buildTitle(transactionType), style: TextStyle(fontSize: 36.sp),),
+          title: Builder(builder: (context) {
+            final isIdExist =
+                context.select((TransactionBloc bloc) => bloc.state.id) != null;
+            return Text(isIdExist ? 'Edit Transaction' : 'New Transaction',
+                style: TextStyle(fontSize: 36.sp));
+          }),
           leading: IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
@@ -55,18 +59,6 @@ class TransactionView extends StatelessWidget {
             : Center(
                 child: CircularProgressIndicator(),
               ));
-  }
-
-  String _buildTitle(TransactionType type) {
-    //final prefix = state.isEdit ? 'Edit' : 'New';
-    final prefix = 'New';
-    final body = switch (type) {
-      TransactionType.EXPENSE => 'Expense',
-      TransactionType.INCOME => 'Income',
-      TransactionType.TRANSFER => 'Transfer',
-      TransactionType.ACCOUNT => 'Account',
-    };
-    return '$prefix $body';
   }
 }
 
