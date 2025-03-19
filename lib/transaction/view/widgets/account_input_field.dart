@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../utils/theme/budget_theme.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
 class AccountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final account =
-    context.select((TransactionBloc bloc) => bloc.state.account);
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
+        final colors = context.read<ThemeCubit>().state;
         return DropdownButtonFormField<AccountWithDetails>(
             icon: GestureDetector(
               child: Icon(Icons.edit_note),
@@ -38,7 +38,9 @@ class AccountInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.account_balance,
-                color: context.read<ThemeCubit>().state.secondaryColor,
+                color: BudgetTheme.isDarkMode(context)
+                    ? Colors.white
+                    : colors.primaryColor[900],
               ),
               border: OutlineInputBorder(),
               labelText: 'Account',

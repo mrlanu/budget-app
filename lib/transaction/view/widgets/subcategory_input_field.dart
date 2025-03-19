@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../database/database.dart';
+import '../../../utils/theme/budget_theme.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../../transaction.dart';
 
@@ -11,6 +12,7 @@ class SubcategoryInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
+        final colors = context.read<ThemeCubit>().state;
         return DropdownButtonFormField<Subcategory>(
             icon: GestureDetector(
               child: Icon(
@@ -46,7 +48,9 @@ class SubcategoryInput extends StatelessWidget {
             decoration: InputDecoration(
               icon: Icon(
                 Icons.category_outlined,
-                color: context.read<ThemeCubit>().state.secondaryColor,
+                color: BudgetTheme.isDarkMode(context)
+                    ? Colors.white
+                    : colors.primaryColor[900],
               ),
               border: OutlineInputBorder(),
               labelText: 'Subcategory',

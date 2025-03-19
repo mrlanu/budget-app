@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../bloc/transfer_bloc.dart';
 
 class DateInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
+    final colors = context.watch<ThemeCubit>().state;
     final date = context.select((TransferBloc bloc) => bloc.state.date);
     return TextFormField(
         controller: TextEditingController(
@@ -19,7 +20,9 @@ class DateInputField extends StatelessWidget {
             border: OutlineInputBorder(),
             icon: Icon(
               Icons.calendar_today,
-              color: themeState.secondaryColor,
+              color: BudgetTheme.isDarkMode(context)
+                  ? Colors.white
+                  : colors.primaryColor[900],
             ),
             labelText: "Date"),
         readOnly: true,

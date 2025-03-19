@@ -73,13 +73,17 @@ class CategoriesView extends StatelessWidget {
                               category.name,
                               style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
-                                  color: themeState.primaryColor[900],
+                                  color: BudgetTheme.isDarkMode(context)
+                                      ? Colors.white
+                                      : Colors.black,
                                   fontSize: 28.sp,
                                   fontWeight: FontWeight.w500),
                             ),
                             Expanded(child: Container()),
                             FaIcon(
-                                color: themeState.primaryColor[900],
+                                color: BudgetTheme.isDarkMode(context)
+                                    ? Colors.white
+                                    : Colors.black,
                                 IconData(category.iconCode,
                                     fontFamily: 'FontAwesomeSolid')),
                           ],
@@ -110,17 +114,13 @@ class CategoriesView extends StatelessWidget {
                 title: Text(
                   'Add Category',
                   style: TextStyle(
-                      color: BudgetTheme.isDarkMode(context)
-                          ? themeState.primaryColor[900]
-                          : themeState.primaryColor[900],
+                      color: Colors.white,
                       fontSize: 22.sp,
                       fontWeight: FontWeight.bold),
                 ),
                 trailing: Icon(
                   Icons.add,
-                  color: BudgetTheme.isDarkMode(context)
-                      ? themeState.primaryColor[900]
-                      : themeState.primaryColor[900],
+                  color: Colors.white,
                 ),
                 onTap: () {
                   context.push(

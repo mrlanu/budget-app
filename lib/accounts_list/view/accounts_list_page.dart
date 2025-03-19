@@ -79,13 +79,17 @@ class AccountsListView extends StatelessWidget {
                                   account.extendName(),
                                   style: TextStyle(
                                       overflow: TextOverflow.ellipsis,
-                                      color: themeState.primaryColor[900],
+                                      color: BudgetTheme.isDarkMode(context)
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontSize: 28.sp,
                                       fontWeight: FontWeight.w500),
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(
-                                    color: themeState.primaryColor[900],
+                                    color: BudgetTheme.isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black,
                                     IconData(account.category.iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
@@ -115,17 +119,13 @@ class AccountsListView extends StatelessWidget {
                     title: Text(
                       'Add Account',
                       style: TextStyle(
-                          color: BudgetTheme.isDarkMode(context)
-                              ? themeState.primaryColor[900]
-                              : themeState.primaryColor[900],
+                          color: Colors.white,
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold),
                     ),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetTheme.isDarkMode(context)
-                          ? themeState.primaryColor[900]
-                          : themeState.primaryColor[900],
+                      color: Colors.white,
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

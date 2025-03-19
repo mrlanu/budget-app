@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
+import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../transaction.dart';
 
@@ -56,21 +57,24 @@ class TransactionForm extends StatelessWidget {
 class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
-    final description = context.select((TransactionBloc bloc) => bloc.state.description);
+    final description =
+        context.select((TransactionBloc bloc) => bloc.state.description);
+    final colors = context.read<ThemeCubit>().state;
     return TextFormField(
-            initialValue: description,
-            decoration: InputDecoration(
-              icon: Icon(
-                Icons.notes,
-                color: themeState.secondaryColor,
-              ),
-              border: OutlineInputBorder(),
-              labelText: 'Notes',
-            ),
-            onChanged: (description) => context.read<TransactionBloc>().add(
-                  TransactionNotesChanged(description: description),
-                ));
+        initialValue: description,
+        decoration: InputDecoration(
+          icon: Icon(
+            Icons.notes,
+            color: BudgetTheme.isDarkMode(context)
+                ? Colors.white
+                : colors.primaryColor[900],
+          ),
+          border: OutlineInputBorder(),
+          labelText: 'Notes',
+        ),
+        onChanged: (description) => context.read<TransactionBloc>().add(
+              TransactionNotesChanged(description: description),
+            ));
   }
 }
 
@@ -83,31 +87,33 @@ class _SubmitButton extends StatelessWidget {
         final themeState = context.watch<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
-            :  state.isValid &&
-            state.category != null &&
-            state.subcategory != null &&
-            state.account != null
-            ?
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: const StadiumBorder(),
-            backgroundColor: themeState.secondaryColor,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 48, vertical: 14),
-          ),
-          onPressed: () => context
-              .read<TransactionBloc>()
-              .add(TransactionFormSubmitted(context: context)),
-          child: SizedBox(width: 150.w,
-            child: Center(
-              child: Text(
-                'Submit',
-                style: TextStyle(
-                    color: colors.primaryColor[500],
-                    fontSize: 26.sp, fontWeight: FontWeight.w600),
-              ),
-            ),
-          )) : SizedBox();
+            : state.isValid &&
+                    state.category != null &&
+                    state.subcategory != null &&
+                    state.account != null
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: themeState.secondaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 48, vertical: 14),
+                    ),
+                    onPressed: () => context
+                        .read<TransactionBloc>()
+                        .add(TransactionFormSubmitted(context: context)),
+                    child: SizedBox(
+                      width: 150.w,
+                      child: Center(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                              color: colors.primaryColor[500],
+                              fontSize: 26.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ))
+                : SizedBox();
       },
     );
   }

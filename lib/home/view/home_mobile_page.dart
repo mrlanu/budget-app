@@ -107,7 +107,7 @@ class HomeMobilePage extends StatelessWidget {
           padding: const EdgeInsets.only(right: 12.0),
           child: Icon(
             Icons.create_new_folder_outlined,
-            color: Theme.of(context).colorScheme.onSecondary,
+            color: Colors.white,
           ),
         );
       },
@@ -138,7 +138,7 @@ class HomeMobilePage extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.add,
-              color: Theme.of(context).colorScheme.onSecondary,
+              color: Colors.white,
             ),
           ),
         );
