@@ -7,6 +7,7 @@
 ### Fixed
 - Transaction app bar title (new/edit)
 - Edit buttons in the Form fields
+- Some Theme issues
 
 ## [4.2.1] - 03-17-2025
 ### Hotfix

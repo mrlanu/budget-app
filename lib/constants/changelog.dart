@@ -9,7 +9,8 @@ const changelog = [
     ],
     'fixed': [
       'Transaction bar title (new/edit)',
-      'Edit buttons in the Form fields'
+      'Edit buttons in the Form fields',
+      'Some Theme issues',
     ],
   },
   {
