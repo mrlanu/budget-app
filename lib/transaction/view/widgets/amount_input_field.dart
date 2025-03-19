@@ -8,7 +8,6 @@ import '../../transaction.dart';
 class AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
     final amount = context.select((TransactionBloc bloc) => bloc.state.amount);
     return TextFormField(
           initialValue: amount.value,
@@ -19,7 +18,7 @@ class AmountInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.attach_money,
-              color: themeState.secondaryColor,
+              color: context.watch<ThemeCubit>().state.secondaryColor,
             ),
             border: OutlineInputBorder(),
             labelText: 'Amount',

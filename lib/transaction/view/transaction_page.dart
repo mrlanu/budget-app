@@ -36,9 +36,6 @@ class TransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.select((TransactionBloc bloc) => bloc.state.transactionType);
-    final status =
-        context.select((TransactionBloc bloc) => bloc.state.trStatus);
     return Scaffold(
         appBar: AppBar(
           title: Builder(builder: (context) {
@@ -54,36 +51,14 @@ class TransactionView extends StatelessWidget {
             },
           ),
         ),
-        body: status == TransactionStatus.success
-            ? TransactionForm()
-            : Center(
-                child: CircularProgressIndicator(),
-              ));
-  }
-}
-
-class TransactionWindow extends StatelessWidget {
-  const TransactionWindow({Key? key}) : super(key: key);
-
-  static Widget window(
-      {Key? key,
-      TransactionTile? transaction,
-      required TransactionType transactionType}) {
-    return TransactionWindow(
-      key: key,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        return state.trStatus == TransactionStatus.success
-            ? TransactionForm()
-            : Center(
-                child: CircularProgressIndicator(),
-              );
-      },
-    );
+        body: Builder(
+          builder: (context) {
+            final status =
+            context.select((TransactionBloc bloc) => bloc.state.trStatus);
+            return status == TransactionStatus.success
+                ? TransactionForm()
+                : Center(child: CircularProgressIndicator());
+          },
+        ));
   }
 }

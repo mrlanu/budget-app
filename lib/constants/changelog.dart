@@ -3,9 +3,14 @@ const changelog = [
     'version': 'v4.?.?',
     'date': '??? ??, 2025',
     'titles': [],
-    'added': ['New Subcategory form',
-        'Submit buttons appear just on the valid forms'],
-    'fixed': ['Transaction bar title (new/edit)'],
+    'added': [
+      'New Subcategory form',
+      'Submit buttons appear just on the valid forms'
+    ],
+    'fixed': [
+      'Transaction bar title (new/edit)',
+      'Edit buttons in the Form fields'
+    ],
   },
   {
     'version': 'v4.2.1',
@@ -31,7 +36,9 @@ const changelog = [
   {
     'version': 'v4.0.0',
     'date': 'Mar 15, 2025',
-    'titles': ['First release with internal DB',],
+    'titles': [
+      'First release with internal DB',
+    ],
     'added': ['New "What\'s New" bottom sheet'],
     'fixed': [],
   },

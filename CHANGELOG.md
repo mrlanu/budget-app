@@ -5,7 +5,8 @@
 - New Subcategory form
 - Submit buttons appear just on the valid forms
 ### Fixed
-- Transaction bar title (new/edit)
+- Transaction app bar title (new/edit)
+- Edit buttons in the Form fields
 
 ## [4.2.1] - 03-17-2025
 ### Hotfix

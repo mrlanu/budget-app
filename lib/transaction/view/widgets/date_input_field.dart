@@ -8,7 +8,6 @@ import '../../transaction.dart';
 class DateInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
     final date = context.select((TransactionBloc bloc) => bloc.state.date);
     return TextFormField(
         controller: TextEditingController(
@@ -19,7 +18,7 @@ class DateInput extends StatelessWidget {
             border: OutlineInputBorder(),
             icon: Icon(
               Icons.calendar_today,
-              color: themeState.secondaryColor,
+              color: context.watch<ThemeCubit>().state.secondaryColor,
             ),
             labelText: "Date"),
         readOnly: true,
