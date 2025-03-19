@@ -72,9 +72,10 @@ class CategoriesView extends StatelessWidget {
                             Text(
                               category.name,
                               style: TextStyle(
+                                  overflow: TextOverflow.ellipsis,
                                   color: themeState.primaryColor[900],
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.bold),
+                                  fontSize: 28.sp,
+                                  fontWeight: FontWeight.w500),
                             ),
                             Expanded(child: Container()),
                             FaIcon(
@@ -135,11 +136,11 @@ class CategoriesView extends StatelessWidget {
 
   Widget _buildTitle(CategoriesState state) {
     final body = switch (state.transactionType) {
-      TransactionType.EXPENSE => 'Expenses categories',
+      TransactionType.EXPENSE => 'Expense categories',
       TransactionType.INCOME => 'Income categories',
       TransactionType.TRANSFER => 'Transfer',
       TransactionType.ACCOUNT => 'Account categories',
     };
-    return Text(body);
+    return Text(body, style: TextStyle(fontSize: 36.sp));
   }
 }

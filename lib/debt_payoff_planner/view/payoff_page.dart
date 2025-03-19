@@ -4,6 +4,7 @@ import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart'
 import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../cubits/debt_cubit/debts_cubit.dart';
 import '../debt_form/debt_form.dart';
@@ -49,7 +50,7 @@ class _Body extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Debt payoff planner'),
+          title: Text('Debt payoff planner', style: TextStyle(fontSize: 30.sp)),
           centerTitle: true,
           actions: [
             IconButton(

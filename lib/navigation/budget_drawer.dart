@@ -222,11 +222,9 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             child: Text(
               'Close',
               style: TextStyle(
-                  color: BudgetTheme.isDarkMode(context)
-                      ? Colors.black
-                      : Colors.white,
+                  color: colors.primaryColor[500],
                   fontWeight: FontWeight.bold,
-                  fontSize: 22.sp),
+                  fontSize: 26.sp),
             ),
           ),
         ),
@@ -244,7 +242,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
         title: Text(title,
             style: TextStyle(
                 color: _getColor(),
-                fontSize: 24.sp,
+                fontSize: 28.sp,
                 fontWeight: FontWeight.bold)),
         onTap: () {
           widget.onDrawer();

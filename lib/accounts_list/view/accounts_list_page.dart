@@ -52,7 +52,7 @@ class AccountsListView extends StatelessWidget {
             final themeState = context.watch<ThemeCubit>().state;
             return Scaffold(
               appBar: AppBar(
-                title: Text('Accounts'),
+                title: Text('Accounts', style: TextStyle(fontSize: 36.sp)),
                 leading: IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
@@ -78,9 +78,10 @@ class AccountsListView extends StatelessWidget {
                                 Text(
                                   account.extendName(),
                                   style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
                                       color: themeState.primaryColor[900],
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold),
+                                      fontSize: 28.sp,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(

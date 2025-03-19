@@ -1,6 +1,7 @@
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
 import '../../constants/colors.dart';
@@ -39,7 +40,7 @@ class TransferForm extends StatelessWidget {
                 ),
                 NotesInputField(),
                 SizedBox(
-                  height: 20,
+                  height: 50,
                 ),
                 _SubmitButton(),
               ],
@@ -54,38 +55,38 @@ class TransferForm extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colors = context.read<ThemeCubit>().state;
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         final themeState = context.watch<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
-            : ListTile(
-          tileColor: state.isValid &&
-              state.fromAccount != null &&
-              state.toAccount != null
-              ? themeState.secondaryColor
-              : BudgetColors.grey,
-                title: Center(
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                        color: state.isValid &&
-                                state.fromAccount != null &&
-                                state.toAccount != null
-                            ? Colors.black
-                            : Colors.grey,
-                        fontSize:
-                            Theme.of(context).textTheme.titleLarge!.fontSize),
-                  ),
-                ),
-                onTap: state.isValid &&
-                        state.fromAccount != null &&
-                        state.toAccount != null
-                    ? () => context
+            : state.isValid &&
+                    state.fromAccount != null &&
+                    state.toAccount != null
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: themeState.secondaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 48, vertical: 14),
+                    ),
+                    onPressed: () => context
                         .read<TransferBloc>()
-                        .add(TransferFormSubmitted(context: context))
-                    : null,
-              );
+                        .add(TransferFormSubmitted(context: context)),
+                    child: SizedBox(
+                      width: 150.w,
+                      child: Center(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                              color: colors.primaryColor[500],
+                              fontSize: 26.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ))
+                : SizedBox();
       },
     );
   }

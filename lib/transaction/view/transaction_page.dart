@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../transaction.dart';
@@ -41,7 +42,7 @@ class TransactionView extends StatelessWidget {
         context.select((TransactionBloc bloc) => bloc.state.trStatus);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_buildTitle(transactionType)),
+          title: Text(_buildTitle(transactionType), style: TextStyle(fontSize: 36.sp),),
           leading: IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
