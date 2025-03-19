@@ -1,4 +1,4 @@
-import 'package:budget_app/app/app.dart';
+import 'package:qruto_budget/app/app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';

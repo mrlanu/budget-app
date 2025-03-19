@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="xyz.qruto.qruto_budget">
    <application
         android:label="Qruto Budget"
         android:name="${applicationName}"

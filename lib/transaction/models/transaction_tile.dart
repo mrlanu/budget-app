@@ -1,5 +1,5 @@
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/transaction/models/transaction_type.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/transaction/models/transaction_type.dart';
 import 'package:equatable/equatable.dart';
 
 class TransactionTile extends Equatable {

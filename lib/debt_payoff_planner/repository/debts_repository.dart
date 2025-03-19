@@ -1,4 +1,4 @@
-import 'package:budget_app/database/database.dart';
+import 'package:qruto_budget/database/database.dart';
 
 abstract class DebtsRepository {
   Future<List<Debt>> fetchAllDebts();

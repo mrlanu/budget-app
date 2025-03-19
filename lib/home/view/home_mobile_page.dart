@@ -1,8 +1,8 @@
 import 'package:animations/animations.dart';
-import 'package:budget_app/accounts_list/view/accounts_list_page.dart';
-import 'package:budget_app/categories/view/categories_page.dart';
-import 'package:budget_app/transfer/transfer.dart';
-import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
+import 'package:qruto_budget/accounts_list/view/accounts_list_page.dart';
+import 'package:qruto_budget/categories/view/categories_page.dart';
+import 'package:qruto_budget/transfer/transfer.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

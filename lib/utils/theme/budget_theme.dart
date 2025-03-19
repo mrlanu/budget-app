@@ -1,4 +1,4 @@
-import 'package:budget_app/constants/colors.dart';
+import 'package:qruto_budget/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

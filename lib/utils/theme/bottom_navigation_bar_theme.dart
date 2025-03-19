@@ -1,4 +1,4 @@
-import 'package:budget_app/utils/theme/theme.dart';
+import 'package:qruto_budget/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class BudgetBottomNavigationBarTheme {

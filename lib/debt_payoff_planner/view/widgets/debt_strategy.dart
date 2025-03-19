@@ -1,5 +1,5 @@
-import 'package:budget_app/debt_payoff_planner/view/widgets/payoff_summary.dart';
-import 'package:budget_app/debt_payoff_planner/view/widgets/report_tile.dart';
+import 'package:qruto_budget/debt_payoff_planner/view/widgets/payoff_summary.dart';
+import 'package:qruto_budget/debt_payoff_planner/view/widgets/report_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

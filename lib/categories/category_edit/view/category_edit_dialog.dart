@@ -1,5 +1,5 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/transaction/models/models.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/transaction/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -1,6 +1,6 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
-import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/subcategories/subcategory_edit/subcategory_edit.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
