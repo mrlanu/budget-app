@@ -1,7 +1,7 @@
 const changelog = [
   {
-    'version': 'v4.?.?',
-    'date': '??? ??, 2025',
+    'version': 'v4.2.2',
+    'date': 'Mar 19, 2025',
     'titles': [],
     'added': [
       'New Subcategory form',
