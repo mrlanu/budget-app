@@ -2,6 +2,7 @@ import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:budget_app/transaction/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../utils/theme/cubit/theme_cubit.dart';
@@ -32,7 +33,7 @@ class CategoryEditForm extends StatelessWidget {
     return BlocBuilder<CategoryEditBloc, CategoryEditState>(
       builder: (context, state) {
         final h = MediaQuery.of(context).size.height;
-        final themeState = context.read<ThemeCubit>().state;
+        final colors = context.read<ThemeCubit>().state;
         return Center(
           child: SingleChildScrollView(
             child: Dialog(
@@ -52,7 +53,7 @@ class CategoryEditForm extends StatelessWidget {
                             Text(
                                 state.id == null
                                     ? 'Add ${state.type == TransactionType.EXPENSE ? 'expense' : 'income'} category'
-                                    : 'Edit ${state.type == TransactionType.EXPENSE ? 'expense' : 'income'}category',
+                                    : 'Edit ${state.type == TransactionType.EXPENSE ? 'expense' : 'income'} category',
                                 style: Theme.of(context).textTheme.titleLarge),
                             SizedBox(height: 20),
                             TextFormField(
@@ -60,7 +61,7 @@ class CategoryEditForm extends StatelessWidget {
                                 decoration: InputDecoration(
                                   icon: Icon(
                                     Icons.notes,
-                                    color: themeState.secondaryColor,
+                                    color: colors.secondaryColor,
                                   ),
                                   border: OutlineInputBorder(),
                                   labelText: 'Name',
@@ -78,22 +79,27 @@ class CategoryEditForm extends StatelessWidget {
                                         .read<CategoryEditBloc>()
                                         .add(CategoryIconChanged(code: code)))),
                             Divider(),
-                            TextButton(
+                            SizedBox(height: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: const StadiumBorder(),
+                                backgroundColor: colors.secondaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 48, vertical: 14),
+                              ),
                               onPressed: state.name == null ||
-                                      state.name?.length == 0 ||
-                                      state.iconCode < 0
+                                  state.name?.length == 0 ||
+                                  state.iconCode < 0
                                   ? null
                                   : () => _submit(context),
-                              child: Text('SAVE',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: state.name == null ||
-                                              state.name?.length == 0 ||
-                                              state.iconCode < 0
-                                          ? Colors.grey
-                                          : themeState.secondaryColor)),
-                            )
+                              child: Text(
+                                'Submit',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 26.sp),
+                              ),
+                            ),
                           ],
                         ),
                       ),

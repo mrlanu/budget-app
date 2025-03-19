@@ -4,11 +4,14 @@ import 'package:budget_app/charts/repository/chart_repository.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../charts.dart';
 
 class TrendChartPage extends StatelessWidget {
-  TrendChartPage({super.key,});
+  TrendChartPage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,9 @@ class TrendChartPage extends StatelessWidget {
           categoryRepository: context.read<CategoryRepository>())
         ..fetchTrendChart(),
       child: Scaffold(
-        appBar: AppBar(title: Text('Trend for last 12 months')),
+        appBar: AppBar(
+            title: Text('Trend for last 12 months',
+                style: TextStyle(fontSize: 32.sp))),
         body: BlocBuilder<ChartCubit, ChartState>(
           builder: (context, state) {
             return Center(

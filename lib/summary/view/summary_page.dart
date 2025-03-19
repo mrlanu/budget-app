@@ -1,6 +1,7 @@
 import 'package:budget_app/database/database.dart';
 import 'package:drift/drift.dart' as db;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants/colors.dart';
@@ -76,7 +77,7 @@ class SummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(title: Text('Summary')),
+      appBar: AppBar(title: Text('Summary', style: TextStyle(fontSize: 36.sp))),
       body: FutureBuilder(
           future: _calculateSummary(),
           builder: (context, snapshot) {

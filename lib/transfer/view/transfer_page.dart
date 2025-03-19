@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../transaction/transaction.dart';
@@ -32,7 +33,13 @@ class TransferView extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text('Transfer'),
+              title: Builder(builder: (context) {
+                final isIdExist =
+                    context.select((TransferBloc bloc) => bloc.state.id) !=
+                        null;
+                return Text(isIdExist ? 'Edit Transfer' : 'New Transfer',
+                    style: TextStyle(fontSize: 36.sp));
+              }),
               leading: IconButton(
                 icon: Icon(Icons.close),
                 onPressed: () {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formz/formz.dart';
 
-import '../../../constants/constants.dart';
-import '../../constants/colors.dart';
+import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../transaction.dart';
 
@@ -42,7 +42,7 @@ class TransactionForm extends StatelessWidget {
                 ),
                 _NotesInput(),
                 SizedBox(
-                  height: 20,
+                  height: 50,
                 ),
                 _SubmitButton(),
               ],
@@ -57,62 +57,63 @@ class TransactionForm extends StatelessWidget {
 class _NotesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
-    final description = context.select((TransactionBloc bloc) => bloc.state.description);
+    final description =
+        context.select((TransactionBloc bloc) => bloc.state.description);
+    final colors = context.read<ThemeCubit>().state;
     return TextFormField(
-            initialValue: description,
-            decoration: InputDecoration(
-              icon: Icon(
-                Icons.notes,
-                color: themeState.secondaryColor,
-              ),
-              border: OutlineInputBorder(),
-              labelText: 'Notes',
-            ),
-            onChanged: (description) => context.read<TransactionBloc>().add(
-                  TransactionNotesChanged(description: description),
-                ));
+        initialValue: description,
+        decoration: InputDecoration(
+          icon: Icon(
+            Icons.notes,
+            color: BudgetTheme.isDarkMode(context)
+                ? Colors.white
+                : colors.primaryColor[900],
+          ),
+          border: OutlineInputBorder(),
+          labelText: 'Notes',
+        ),
+        onChanged: (description) => context.read<TransactionBloc>().add(
+              TransactionNotesChanged(description: description),
+            ));
   }
 }
 
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colors = context.read<ThemeCubit>().state;
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         final themeState = context.watch<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
-            : ListTile(
-          tileColor: state.isValid &&
-              state.category != null &&
-              state.subcategory != null &&
-              state.account != null
-              ? themeState.secondaryColor
-              : BudgetColors.grey,
-                title: Center(
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                        color: state.isValid &&
-                            state.category != null &&
-                            state.subcategory != null &&
-                            state.account != null
-                            ? BudgetColors.primary
-                            : Colors.grey,
-                        fontSize:
-                            Theme.of(context).textTheme.titleLarge!.fontSize),
-                  ),
-                ),
-                onTap: state.isValid &&
-                        state.category != null &&
-                        state.subcategory != null &&
-                        state.account != null
-                    ? () => context
+            : state.isValid &&
+                    state.category != null &&
+                    state.subcategory != null &&
+                    state.account != null
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: themeState.secondaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 48, vertical: 14),
+                    ),
+                    onPressed: () => context
                         .read<TransactionBloc>()
-                        .add(TransactionFormSubmitted(context: context))
-                    : null,
-              );
+                        .add(TransactionFormSubmitted(context: context)),
+                    child: SizedBox(
+                      width: 150.w,
+                      child: Center(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                              color: colors.primaryColor[500],
+                              fontSize: 26.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ))
+                : SizedBox();
       },
     );
   }

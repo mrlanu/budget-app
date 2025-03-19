@@ -1,3 +1,4 @@
+import 'package:budget_app/utils/theme/budget_theme.dart';
 import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,22 +27,13 @@ class HomeBottomNavBar extends StatelessWidget {
                 initialLocation: index == navigationShell.currentIndex,
               );
               context.read<HomeCubit>().setTab(index);
-              /*if (isDisplayDesktop(context)) {
-                final tab = HomeTab.values[value];
-                var tType = switch (tab) {
-                  HomeTab.expenses => TransactionType.EXPENSE,
-                  HomeTab.income => TransactionType.INCOME,
-                  HomeTab.accounts => TransactionType.TRANSFER,
-                };
-                context.read<TransactionBloc>().add(TransactionFormLoaded(
-                    transactionType: tType,
-                    date: context.read<HomeCubit>().state.selectedDate!));
-              }*/
             },
             elevation: 0,
             showSelectedLabels: true,
             showUnselectedLabels: false,
-            selectedItemColor: themeState.secondaryColor,
+            selectedItemColor: BudgetTheme.isDarkMode(context)
+                ? Colors.white
+                : context.read<ThemeCubit>().state.secondaryColor,
             unselectedItemColor: BudgetColors.light,
             items: [
               _buildBottomNavigationBarItem(
@@ -50,21 +42,24 @@ class HomeBottomNavBar extends StatelessWidget {
                   color: BudgetColors.light,
                   selectedTab: state.tab,
                   amount: state.expenses,
-                  tab: HomeTab.expenses),
+                  tab: HomeTab.expenses,
+                  context: context),
               _buildBottomNavigationBarItem(
                   label: 'income',
                   icon: Icons.monetization_on_outlined,
                   color: BudgetColors.light,
                   selectedTab: state.tab,
                   amount: state.incomes,
-                  tab: HomeTab.income),
+                  tab: HomeTab.income,
+                  context: context),
               _buildBottomNavigationBarItem(
                   label: 'accounts',
                   icon: Icons.account_balance_outlined,
                   color: BudgetColors.light,
                   amount: state.accountsTotal,
                   selectedTab: state.tab,
-                  tab: HomeTab.accounts),
+                  tab: HomeTab.accounts,
+                  context: context),
             ],
           );
         },
@@ -78,7 +73,8 @@ class HomeBottomNavBar extends StatelessWidget {
       required Color color,
       required HomeTab selectedTab,
       required double amount,
-      required HomeTab tab}) {
+      required HomeTab tab,
+      required BuildContext context}) {
     return BottomNavigationBarItem(
       label: label,
       icon: Column(
@@ -87,7 +83,7 @@ class HomeBottomNavBar extends StatelessWidget {
           Text(
             '\$ ${amount.toStringAsFixed(2)}',
             style: TextStyle(
-                color: color,
+                color: Colors.white,
                 fontWeight:
                     selectedTab == tab ? FontWeight.bold : FontWeight.normal),
           )

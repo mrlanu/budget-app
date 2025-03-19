@@ -5,6 +5,7 @@ import 'package:budget_app/charts/view/category_table.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../database/database.dart';
 import '../charts.dart';
@@ -32,7 +33,8 @@ class CategoryChartView extends StatelessWidget {
     return BlocBuilder<ChartCubit, ChartState>(
       builder: (context, state) => Scaffold(
           appBar: AppBar(
-              title: Text(state.category?.name ?? ''),
+              title: Text(state.category?.name ?? '',
+                  style: TextStyle(fontSize: 36.sp)),
               actions: [CategoryTypeSelectButton()]),
           body: Center(
               child: state.status == ChartStatus.loading

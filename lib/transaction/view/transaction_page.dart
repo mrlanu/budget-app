@@ -2,6 +2,7 @@ import 'package:budget_app/accounts_list/repository/account_repository.dart';
 import 'package:budget_app/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../transaction.dart';
@@ -35,13 +36,14 @@ class TransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionType =
-        context.select((TransactionBloc bloc) => bloc.state.transactionType);
-    final status =
-        context.select((TransactionBloc bloc) => bloc.state.trStatus);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_buildTitle(transactionType)),
+          title: Builder(builder: (context) {
+            final isIdExist =
+                context.select((TransactionBloc bloc) => bloc.state.id) != null;
+            return Text(isIdExist ? 'Edit Transaction' : 'New Transaction',
+                style: TextStyle(fontSize: 36.sp));
+          }),
           leading: IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
@@ -49,48 +51,14 @@ class TransactionView extends StatelessWidget {
             },
           ),
         ),
-        body: status == TransactionStatus.success
-            ? TransactionForm()
-            : Center(
-                child: CircularProgressIndicator(),
-              ));
-  }
-
-  String _buildTitle(TransactionType type) {
-    //final prefix = state.isEdit ? 'Edit' : 'New';
-    final prefix = 'New';
-    final body = switch (type) {
-      TransactionType.EXPENSE => 'Expense',
-      TransactionType.INCOME => 'Income',
-      TransactionType.TRANSFER => 'Transfer',
-      TransactionType.ACCOUNT => 'Account',
-    };
-    return '$prefix $body';
-  }
-}
-
-class TransactionWindow extends StatelessWidget {
-  const TransactionWindow({Key? key}) : super(key: key);
-
-  static Widget window(
-      {Key? key,
-      TransactionTile? transaction,
-      required TransactionType transactionType}) {
-    return TransactionWindow(
-      key: key,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        return state.trStatus == TransactionStatus.success
-            ? TransactionForm()
-            : Center(
-                child: CircularProgressIndicator(),
-              );
-      },
-    );
+        body: Builder(
+          builder: (context) {
+            final status =
+            context.select((TransactionBloc bloc) => bloc.state.trStatus);
+            return status == TransactionStatus.success
+                ? TransactionForm()
+                : Center(child: CircularProgressIndicator());
+          },
+        ));
   }
 }

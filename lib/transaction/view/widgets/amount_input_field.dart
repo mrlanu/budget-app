@@ -2,13 +2,14 @@ import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../utils/theme/budget_theme.dart';
 import '../../transaction.dart';
 
 
 class AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeState = context.watch<ThemeCubit>().state;
+    final colors = context.read<ThemeCubit>().state;
     final amount = context.select((TransactionBloc bloc) => bloc.state.amount);
     return TextFormField(
           initialValue: amount.value,
@@ -19,7 +20,9 @@ class AmountInput extends StatelessWidget {
           decoration: InputDecoration(
             icon: Icon(
               Icons.attach_money,
-              color: themeState.secondaryColor,
+              color: BudgetTheme.isDarkMode(context)
+                  ? Colors.white
+                  : colors.primaryColor[900],
             ),
             border: OutlineInputBorder(),
             labelText: 'Amount',

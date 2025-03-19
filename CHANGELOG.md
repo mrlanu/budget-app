@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.2.2] - 03-19-2025
+### Added
+- New Subcategory form
+- Submit buttons appear just on the valid forms
+### Fixed
+- Transaction app bar title (new/edit)
+- Edit buttons in the Form fields
+- Some Theme issues
+
 ## [4.2.1] - 03-17-2025
 ### Hotfix
 ### Fixed

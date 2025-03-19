@@ -52,7 +52,7 @@ class AccountsListView extends StatelessWidget {
             final themeState = context.watch<ThemeCubit>().state;
             return Scaffold(
               appBar: AppBar(
-                title: Text('Accounts'),
+                title: Text('Accounts', style: TextStyle(fontSize: 36.sp)),
                 leading: IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {
@@ -78,13 +78,18 @@ class AccountsListView extends StatelessWidget {
                                 Text(
                                   account.extendName(),
                                   style: TextStyle(
-                                      color: themeState.primaryColor[900],
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                      color: BudgetTheme.isDarkMode(context)
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 28.sp,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 Expanded(child: Container()),
                                 FaIcon(
-                                    color: themeState.primaryColor[900],
+                                    color: BudgetTheme.isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black,
                                     IconData(account.category.iconCode,
                                         fontFamily: 'FontAwesomeSolid')),
                               ],
@@ -114,17 +119,13 @@ class AccountsListView extends StatelessWidget {
                     title: Text(
                       'Add Account',
                       style: TextStyle(
-                          color: BudgetTheme.isDarkMode(context)
-                              ? themeState.primaryColor[900]
-                              : themeState.primaryColor[900],
+                          color: Colors.white,
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold),
                     ),
                     trailing: Icon(
                       Icons.add,
-                      color: BudgetTheme.isDarkMode(context)
-                          ? themeState.primaryColor[900]
-                          : themeState.primaryColor[900],
+                      color: Colors.white,
                     ),
                     onTap: () {
                       //context.read<AccountsListCubit>().onNewAccount();

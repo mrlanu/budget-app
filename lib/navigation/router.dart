@@ -44,8 +44,8 @@ final GoRouter _router = GoRouter(
             ),
         routes: [
           ..._homeTabsRoutes,
-          ..._individualRoutes,
         ]),
+    ..._individualRoutes,
   ],
   redirect: _guard,
   debugLogDiagnostics: false,
@@ -74,7 +74,7 @@ final List<RouteBase> _homeTabsRoutes = [
               StatefulNavigationShell navigationShell) =>
           HomePage(navigationShell: navigationShell),
       branches: [
-        StatefulShellBranch(navigatorKey: _buildingsNavigatorKey, routes: [
+        StatefulShellBranch(routes: [
           GoRoute(
             path: '/expenses',
             builder: (BuildContext context, GoRouterState state) {
