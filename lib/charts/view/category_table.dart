@@ -1,5 +1,5 @@
-import 'package:budget_app/constants/colors.dart';
-import 'package:budget_app/utils/utils.dart';
+import 'package:qruto_budget/constants/colors.dart';
+import 'package:qruto_budget/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

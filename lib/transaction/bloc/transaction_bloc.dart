@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/database/transaction_with_detail.dart';
+import 'package:qruto_budget/accounts_list/account_edit/model/account_with_details.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';

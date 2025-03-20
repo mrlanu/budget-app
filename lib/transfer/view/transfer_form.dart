@@ -1,4 +1,4 @@
-import 'package:budget_app/transfer/transfer.dart';
+import 'package:qruto_budget/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

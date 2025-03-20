@@ -1,4 +1,4 @@
-import 'package:budget_app/charts/cubit/chart_cubit.dart';
+import 'package:qruto_budget/charts/cubit/chart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

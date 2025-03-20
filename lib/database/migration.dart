@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/constants/api.dart';
-import 'package:budget_app/transaction/models/models.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/constants/api.dart';
+import 'package:qruto_budget/transaction/models/models.dart';
 import 'package:http/http.dart' as http;
 
 import '../transaction/repository/transaction_repository.dart';

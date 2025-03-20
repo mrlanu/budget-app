@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/database/transaction_with_detail.dart';
-import 'package:budget_app/transaction/repository/transaction_repository.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
+import 'package:qruto_budget/transaction/repository/transaction_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:rxdart/rxdart.dart';
 
