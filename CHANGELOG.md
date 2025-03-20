@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.?.?] - ??-??-????
+### Added
+- Lock app orientation to portrait mode
+### Fixed
+
+
 ## [4.2.2] - 03-19-2025
 ### Added
 - New Subcategory form

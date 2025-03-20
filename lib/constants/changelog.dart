@@ -1,5 +1,14 @@
 const changelog = [
   {
+    'version': 'v?.?.?',
+    'date': '??? ??, ???',
+    'titles': [],
+    'added': [
+      'Lock app orientation to portrait mode',
+    ],
+    'fixed': [],
+  },
+  {
     'version': 'v4.2.2',
     'date': 'Mar 19, 2025',
     'titles': [],
