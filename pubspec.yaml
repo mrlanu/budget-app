@@ -43,6 +43,7 @@ dependencies:
   google_sign_in: ^6.2.1
   googleapis: ^11.4.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  awesome_snackbar_content: ^0.1.5
 
 dev_dependencies:
   bloc_test: ^10.0.0
