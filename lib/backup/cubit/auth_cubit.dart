@@ -121,6 +121,32 @@ class AuthCubit extends Cubit<AuthState> {
     print('Database downloaded from Google Drive');
   }
 
+  Future<void> deleteOldBackups(String folderId) async {
+    if (state.driveApi == null) {
+      print("Google Drive authentication failed");
+      return;
+    }
+
+    final fileList = await state.driveApi!.files.list(
+      spaces: 'appDataFolder',
+      q: "name contains 'qruto_backup_'",
+      orderBy: "createdTime desc",
+    );
+
+    if (fileList.files == null || fileList.files!.length <= 7) {
+      print("No need to delete backups. Less than 7 exist.");
+      return;
+    }
+
+    // Keep only the latest 7 backups, delete the rest
+    for (int i = 7; i < fileList.files!.length; i++) {
+      final fileId = fileList.files![i].id!;
+      await state.driveApi!.files.delete(fileId);
+      print("Deleted old backup: ${fileList.files![i].name}");
+    }
+  }
+
+
   Future<String?> _getDatabasePath() async {
     final directory = await getApplicationSupportDirectory();
     return '${directory.path}/$_dbName';
