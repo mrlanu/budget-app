@@ -1,5 +1,6 @@
 import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
 import 'package:qruto_budget/accounts_list/repository/account_repository_drift.dart';
+import 'package:qruto_budget/backup/cubit/auth_cubit.dart';
 import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:qruto_budget/categories/repository/category_repository_drift.dart';
 import 'package:qruto_budget/charts/repository/chart_repository.dart';
@@ -41,6 +42,9 @@ class App extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => ThemeCubit(),
+          ),
+          BlocProvider(
+            create: (context) => AuthCubit()..checkUserStatus(),
           ),
         ],
         child: AppView(),

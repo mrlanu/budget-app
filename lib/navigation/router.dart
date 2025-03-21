@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
+import '../actions/view/actions_page.dart';
 import '../settings/settings.dart';
 import '../splash/view/splash_page.dart';
 
@@ -190,6 +191,12 @@ final List<RouteBase> _individualRoutes = [
           },
         ),
       ]),
+  GoRoute(
+    path: '/actions',
+    builder: (BuildContext context, GoRouterState state) {
+      return ActionsPage();
+    },
+  ),
   GoRoute(
     path: '/settings',
     builder: (BuildContext context, GoRouterState state) {
