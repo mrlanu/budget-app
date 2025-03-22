@@ -137,7 +137,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 26, vertical: 5.h),
             child: menuTiles[i],
           ),
         ),
@@ -177,12 +177,12 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             ),
             routeName: 'debt-payoff'),
         _buildMenuItem(
-            title: 'Actions',
+            title: 'Backup',
             icon: FaIcon(
               color: _getColor(),
-              FontAwesomeIcons.rectangleList,
+              FontAwesomeIcons.googleDrive,
             ),
-            routeName: 'actions'),
+            routeName: 'backup'),
     _buildMenuItem(
         title: 'Settings',
         icon: FaIcon(
@@ -222,7 +222,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             child: Text(
               'Close',
               style: TextStyle(
-                  color: colors.primaryColor[500],
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 26.sp),
             ),
@@ -241,8 +241,9 @@ class _BudgetDrawerState extends State<BudgetDrawer>
         title: Text(title,
             style: TextStyle(
                 color: _getColor(),
-                fontSize: 28.sp,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.bold)),
+        subtitle: Divider(color: _getColor(),),
         onTap: () {
           widget.onDrawer();
           context.push('/$routeName');

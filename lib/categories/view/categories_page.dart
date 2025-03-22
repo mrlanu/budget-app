@@ -65,43 +65,36 @@ class CategoriesView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final category = state.filteredCategories[index];
                     return Card(
-                      elevation: Theme.of(context).cardTheme.elevation,
-                      child: ListTile(
-                        title: Row(
-                          children: [
-                            Text(
-                              category.name,
-                              style: TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  color: BudgetTheme.isDarkMode(context)
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 28.sp,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            Expanded(child: Container()),
-                            FaIcon(
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.highlight_remove,
+                                color: Theme.of(context).colorScheme.error),
+                            onPressed: () {
+                              context
+                                  .read<CategoriesCubit>()
+                                  .onCategoryDeleted(category);
+                            },
+                          ),
+                          Text(
+                            category.name,
+                            style: TextStyle(
                                 color: BudgetTheme.isDarkMode(context)
                                     ? Colors.white
                                     : Colors.black,
-                                IconData(category.iconCode,
-                                    fontFamily: 'FontAwesomeSolid')),
-                          ],
-                        ),
-                        leading: IconButton(
-                          icon: Icon(Icons.highlight_remove,
-                              color: Theme.of(context).colorScheme.error),
-                          onPressed: () {
-                            context
-                                .read<CategoriesCubit>()
-                                .onCategoryDeleted(category);
-                          },
-                        ),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          context.push('/categories/edit/${category.id}?'
-                              'typeIndex=${state.transactionType.index}');
-                        },
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          Spacer(),
+                          FaIcon(
+                              color: BudgetTheme.isDarkMode(context)
+                                  ? Colors.white
+                                  : Colors.black,
+                              IconData(category.iconCode,
+                                  fontFamily: 'FontAwesomeSolid')),
+                          IconButton(onPressed: () => context.push('/categories/edit/${category.id}?'
+                              'typeIndex=${state.transactionType.index}'), icon: Icon(Icons.chevron_right))
+                        ],
                       ),
                     );
                   },
@@ -141,6 +134,6 @@ class CategoriesView extends StatelessWidget {
       TransactionType.TRANSFER => 'Transfer',
       TransactionType.ACCOUNT => 'Account categories',
     };
-    return Text(body, style: TextStyle(fontSize: 36.sp));
+    return Text(body, style: TextStyle(fontSize: 30.sp));
   }
 }

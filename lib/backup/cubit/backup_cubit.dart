@@ -5,14 +5,14 @@ import 'package:equatable/equatable.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-part 'auth_state.dart';
+part 'backup_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthState(isAuthenticated: false));
+class BackupCubit extends Cubit<BackupState> {
+  BackupCubit() : super(BackupState(isAuthenticated: false));
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [drive.DriveApi.driveFileScope, drive.DriveApi.driveAppdataScope],
@@ -28,7 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
             await _googleSignIn.authenticatedClient();
         final driveApi = drive.DriveApi(client as http.Client);
         final availableBackups = await fetchAvailableBackups(driveApi);
-        emit(AuthState(
+        emit(BackupState(
             isAuthenticated: true,
             userName: account.displayName,
             userAvatar: account.photoUrl,
@@ -39,7 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
       ;
     } catch (e) {
       print("Google Sign-In Error: $e");
-      emit(AuthState(isAuthenticated: false));
+      emit(BackupState(isAuthenticated: false));
     }
   }
 
@@ -60,7 +60,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (account != null) {
       final driveApi = await _initializeDriveApi();
       final availableBackups = await fetchAvailableBackups(driveApi);
-      emit(AuthState(
+      emit(BackupState(
           isAuthenticated: true,
           userName: account.displayName,
           userAvatar: account.photoUrl,
@@ -91,7 +91,7 @@ class AuthCubit extends Cubit<AuthState> {
         DateTime.now().toIso8601String().split('T')[0]; // YYYY-MM-DD
 
     final driveFile = drive.File()
-      ..name = 'qruto_backup_$timestamp.sqlite'
+      ..name = 'backup_$timestamp.sqlite'
       ..parents = ['appDataFolder'];
 
     await state.driveApi!.files.create(
@@ -106,42 +106,7 @@ class AuthCubit extends Cubit<AuthState> {
     return true;
   }
 
-  Future<void> restoreLatestBackup() async {
-    if (state.driveApi == null) {
-      print("Google Drive is not authenticated.");
-      return;
-    }
-
-    final fileList = await state.driveApi!.files.list(
-        spaces: 'appDataFolder',
-        q: "name contains 'qruto_backup_'",
-        orderBy: "createdTime desc",
-        $fields: "files(id, name, createdTime)");
-
-    if (fileList.files == null || fileList.files!.isEmpty) {
-      print("No backup found.");
-      return;
-    }
-
-    // Download the file
-    final latestBackup = fileList.files!.first;
-    print("Restoring backup: ${latestBackup.name}");
-
-    final fileId = fileList.files!.first.id!;
-    final response = await state.driveApi!.files.get(
-      fileId,
-      downloadOptions: drive.DownloadOptions.fullMedia,
-    ) as drive.Media;
-
-    // Save the file to the local database path
-    final dbPath = await _getDatabasePath();
-    final dbFile = File(dbPath!);
-    await response.stream.pipe(dbFile.openWrite());
-
-    print('Database downloaded from Google Drive');
-  }
-
-  Future<bool> restoreCertainBackup(String fileId) async {
+  Future<bool> restoreBackup(String fileId) async {
     if (state.driveApi == null) {
       print("Google Drive is not authenticated.");
       return false;
@@ -162,36 +127,11 @@ class AuthCubit extends Cubit<AuthState> {
     return true;
   }
 
-  Future<void> deleteOldBackups(String folderId) async {
-    if (state.driveApi == null) {
-      print("Google Drive authentication failed");
-      return;
-    }
-
-    final fileList = await state.driveApi!.files.list(
-      spaces: 'appDataFolder',
-      q: "name contains 'qruto_backup_'",
-      orderBy: "createdTime desc",
-    );
-
-    if (fileList.files == null || fileList.files!.length <= 7) {
-      print("No need to delete backups. Less than 7 exist.");
-      return;
-    }
-
-    // Keep only the latest 7 backups, delete the rest
-    for (int i = 7; i < fileList.files!.length; i++) {
-      final fileId = fileList.files![i].id!;
-      await state.driveApi!.files.delete(fileId);
-      print("Deleted old backup: ${fileList.files![i].name}");
-    }
-  }
-
   Future<List<drive.File>> fetchAvailableBackups(
       drive.DriveApi driveApi) async {
     final fileList = await driveApi.files.list(
         spaces: 'appDataFolder',
-        q: "name contains 'qruto_backup_'",
+        q: "name contains 'backup_'",
         orderBy: "createdTime desc",
         $fields: "files(id, name, createdTime)");
 
@@ -203,7 +143,7 @@ class AuthCubit extends Cubit<AuthState> {
     return fileList.files!;
   }
 
-  Future<bool> deleteCertainBackup(drive.File file) async {
+  Future<bool> deleteBackup(drive.File file) async {
     if (state.driveApi == null) {
       print("Google Drive authentication failed");
       return false;

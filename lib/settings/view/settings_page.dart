@@ -11,7 +11,7 @@ class SettingsPage extends StatelessWidget {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: TextStyle(fontSize: 36.sp)),
+        title: Text('Settings', style: TextStyle(fontSize: 30.sp)),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close),

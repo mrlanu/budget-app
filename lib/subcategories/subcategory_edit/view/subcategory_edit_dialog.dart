@@ -36,17 +36,21 @@ class SubcategoryEditForm extends StatelessWidget {
       builder: (context, state) {
         final categoryName = state.category?.name ?? '';
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
           child: Container(
-            height: h * 0.3,
+            height: h * 0.35,
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    overflow: TextOverflow.ellipsis,
-                    state.id == null ? 'Subcategory for $categoryName' : 'Edit subcategory',
-                    style: Theme.of(context).textTheme.titleLarge),
+                      overflow: TextOverflow.ellipsis,
+                      state.id == null
+                          ? 'Subcategory for $categoryName'
+                          : 'Edit subcategory',
+                      style: TextStyle(
+                          fontSize: 24.sp, fontWeight: FontWeight.w600)),
                   TextFormField(
                       initialValue: state.name,
                       autofocus: true,

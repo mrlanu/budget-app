@@ -1,6 +1,6 @@
-part of 'auth_cubit.dart';
+part of 'backup_cubit.dart';
 
-class AuthState extends Equatable {
+class BackupState extends Equatable {
   final bool isAuthenticated;
   final String? userName;
   final String? userAvatar;
@@ -9,7 +9,7 @@ class AuthState extends Equatable {
   final bool isAuthCheckingStatus;
   final bool isUploading;
 
-  AuthState({
+  BackupState({
     required this.isAuthenticated,
     this.userName,
     this.userAvatar,
@@ -19,7 +19,7 @@ class AuthState extends Equatable {
     this.isUploading = false,
   });
 
-  AuthState copyWith({
+  BackupState copyWith({
     bool? isAuthenticated,
     String? Function()? userName,
     String? Function()? userAvatar,
@@ -28,7 +28,7 @@ class AuthState extends Equatable {
     bool? isAuthCheckingStatus,
     bool? isUploading,
   }) {
-    return AuthState(
+    return BackupState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       userName: userName != null ? userName() : this.userName,
       userAvatar: userAvatar != null ? userAvatar() : this.userAvatar,

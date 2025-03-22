@@ -4,9 +4,10 @@ const changelog = [
     'date': '??? ??, ???',
     'titles': [],
     'added': [
+      'Google Drive backup',
       'Lock app orientation to portrait mode',
     ],
-    'fixed': [],
+    'fixed': ['Font sizes'],
   },
   {
     'version': 'v4.2.2',

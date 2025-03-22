@@ -81,7 +81,6 @@ class _NotesInput extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = context.read<ThemeCubit>().state;
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         final themeState = context.watch<ThemeCubit>().state;
@@ -107,7 +106,7 @@ class _SubmitButton extends StatelessWidget {
                         child: Text(
                           'Submit',
                           style: TextStyle(
-                              color: colors.primaryColor[500],
+                              color: Colors.white,
                               fontSize: 26.sp,
                               fontWeight: FontWeight.w600),
                         ),

@@ -1,5 +1,6 @@
 import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
 import 'package:qruto_budget/accounts_list/view/accounts_list_page.dart';
+import 'package:qruto_budget/backup/view/backup_page.dart';
 import 'package:qruto_budget/categories/category_edit/view/category_edit_dialog.dart';
 import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:qruto_budget/categories/view/categories_page.dart';
@@ -17,7 +18,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../accounts_list/account_edit/view/account_edit_dialog.dart';
-import '../actions/view/actions_page.dart';
 import '../settings/settings.dart';
 import '../splash/view/splash_page.dart';
 
@@ -25,8 +25,6 @@ GoRouter get router => _router;
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
-final GlobalKey<NavigatorState> _buildingsNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'buildingsNav');
 
 /// The route configuration.
 final GoRouter _router = GoRouter(
@@ -192,9 +190,9 @@ final List<RouteBase> _individualRoutes = [
         ),
       ]),
   GoRoute(
-    path: '/actions',
+    path: '/backup',
     builder: (BuildContext context, GoRouterState state) {
-      return ActionsPage();
+      return BackupPage();
     },
   ),
   GoRoute(

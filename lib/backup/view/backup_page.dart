@@ -6,26 +6,26 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 
-import '../../backup/cubit/auth_cubit.dart';
+import '../../backup/cubit/backup_cubit.dart';
 
-class ActionsPage extends StatelessWidget {
-  const ActionsPage({super.key});
+class BackupPage extends StatelessWidget {
+  const BackupPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const ActionsPageView();
+    return const BackupPageView();
   }
 }
 
-class ActionsPageView extends StatelessWidget {
-  const ActionsPageView({super.key});
+class BackupPageView extends StatelessWidget {
+  const BackupPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text('Actions', style: TextStyle(fontSize: 36.sp)),
+        title: Text('Backup', style: TextStyle(fontSize: 30.sp)),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close),
@@ -35,7 +35,7 @@ class ActionsPageView extends StatelessWidget {
         ),
       ),
       body: BlocProvider(
-        create: (context) => AuthCubit()..checkUserStatus(),
+        create: (context) => BackupCubit()..checkUserStatus(),
         child: ProfileContainer(),
       ),
     ));
@@ -45,7 +45,7 @@ class ActionsPageView extends StatelessWidget {
 class ProfileContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocBuilder<BackupCubit, BackupState>(
       builder: (context, state) {
         final colors = context.read<ThemeCubit>().state;
         return state.isAuthCheckingStatus
@@ -82,8 +82,8 @@ class ProfileContainer extends StatelessWidget {
                               IconButton(
                                 icon: Icon(Icons.logout),
                                 onPressed: () =>
-                                    context.read<AuthCubit>().signOut(),
-                              ),
+                                    context.read<BackupCubit>().signOut(),
+                              )
                             ],
                           ),
                         ),
@@ -101,7 +101,7 @@ class ProfileContainer extends StatelessWidget {
                                   child: ListTile(
                                       title: Text(
                                         overflow: TextOverflow.ellipsis,
-                                        '${file.name}',
+                                        '${file.name}'.split('.').first,
                                         style: TextStyle(
                                             fontSize: 20.sp,
                                             fontWeight: FontWeight.w600),
@@ -114,28 +114,15 @@ class ProfileContainer extends StatelessWidget {
                                                 .error),
                                         onPressed: () async {
                                           final success = await context
-                                              .read<AuthCubit>()
-                                              .deleteCertainBackup(file);
-                                          final snackBar = SnackBar(
-                                            elevation: 0,
-                                            behavior: SnackBarBehavior.floating,
-                                            backgroundColor: Colors.transparent,
-                                            content: AwesomeSnackbarContent(
-                                              title: success
-                                                  ? 'Success !'
-                                                  : 'Ups !',
-                                              message: success
-                                                  ? 'Backup has been deleted !'
-                                                  : 'Something went wrong.',
-                                              contentType: success
-                                                  ? ContentType.success
-                                                  : ContentType.failure,
-                                            ),
-                                          );
-
-                                          ScaffoldMessenger.of(context)
-                                            ..hideCurrentSnackBar()
-                                            ..showSnackBar(snackBar);
+                                              .read<BackupCubit>()
+                                              .deleteBackup(file);
+                                          _showSnackbar(
+                                              context,
+                                              success,
+                                              success ? 'Success !' : 'Ups !',
+                                              success
+                                                  ? 'Backup has been deleted.'
+                                                  : 'Something went wrong.');
                                         },
                                       ),
                                       trailing: CircleAvatar(
@@ -145,27 +132,15 @@ class ProfileContainer extends StatelessWidget {
                                       ),
                                       onTap: () async {
                                         final success = await context
-                                            .read<AuthCubit>()
-                                            .restoreCertainBackup(file.id!);
-                                        final snackBar = SnackBar(
-                                          elevation: 0,
-                                          behavior: SnackBarBehavior.floating,
-                                          backgroundColor: Colors.transparent,
-                                          content: AwesomeSnackbarContent(
-                                            title:
-                                                success ? 'Success !' : 'Ups !',
-                                            message: success
-                                                ? 'Database downloaded from Google Drive !'
-                                                : 'Something went wrong.',
-                                            contentType: success
-                                                ? ContentType.success
-                                                : ContentType.failure,
-                                          ),
-                                        );
-
-                                        ScaffoldMessenger.of(context)
-                                          ..hideCurrentSnackBar()
-                                          ..showSnackBar(snackBar);
+                                            .read<BackupCubit>()
+                                            .restoreBackup(file.id!);
+                                        _showSnackbar(
+                                            context,
+                                            success,
+                                            success ? 'Success !' : 'Ups !',
+                                            success
+                                                ? 'Backup has been restored.'
+                                                : 'Something went wrong.');
                                       }),
                                 );
                               },
@@ -179,29 +154,20 @@ class ProfileContainer extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 48, vertical: 14),
                           ),
-                          onPressed: () async {
-                            final success = await context
-                                .read<AuthCubit>()
-                                .uploadBackupToDrive();
-                            final snackBar = SnackBar(
-                              elevation: 0,
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.transparent,
-                              content: AwesomeSnackbarContent(
-                                title: success ? 'Success !' : 'Ups !',
-                                message: success
-                                    ? 'Backup uploaded successfully !'
-                                    : 'Backup failed.',
-                                contentType: success
-                                    ? ContentType.success
-                                    : ContentType.failure,
-                              ),
-                            );
-
-                            ScaffoldMessenger.of(context)
-                              ..hideCurrentSnackBar()
-                              ..showSnackBar(snackBar);
-                          },
+                          onPressed: state.availableBackups.length >= 3
+                              ? null
+                              : () async {
+                                  final success = await context
+                                      .read<BackupCubit>()
+                                      .uploadBackupToDrive();
+                                  _showSnackbar(
+                                      context,
+                                      success,
+                                      success ? 'Success !' : 'Ups !',
+                                      success
+                                          ? 'Backup has been uploaded.'
+                                          : 'Something went wrong.');
+                                },
                           child: SizedBox(
                             width: 300.w,
                             height: 60.h,
@@ -215,7 +181,7 @@ class ProfileContainer extends StatelessWidget {
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 26.sp),
+                                          fontSize: 22.sp),
                                     ),
                                   ),
                           ),
@@ -225,12 +191,47 @@ class ProfileContainer extends StatelessWidget {
                   )
                 : Center(
                     child: ElevatedButton(
-                      onPressed: () =>
-                          context.read<AuthCubit>().signInAndGetDriveApi(),
-                      child: Text("Sign in with Google"),
-                    ),
-                  );
+                        style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          backgroundColor:
+                              context.read<ThemeCubit>().state.secondaryColor,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 48, vertical: 14),
+                        ),
+                        onPressed: () =>
+                            context.read<BackupCubit>().signInAndGetDriveApi(),
+                        child: SizedBox(
+                          width: 290.w,
+                          height: 50.h,
+                          child: Center(
+                            child: Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26.sp,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        )));
       },
     );
+  }
+
+  void _showSnackbar(
+      BuildContext context, bool success, String title, String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: title,
+        message: message,
+        contentType: success ? ContentType.success : ContentType.failure,
+      ),
+    );
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 }
