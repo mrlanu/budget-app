@@ -34,7 +34,7 @@ class CategoryChartView extends StatelessWidget {
       builder: (context, state) => Scaffold(
           appBar: AppBar(
               title: Text(state.category?.name ?? '',
-                  style: TextStyle(fontSize: 36.sp)),
+                  style: TextStyle(fontSize: 30.sp)),
               actions: [CategoryTypeSelectButton()]),
           body: Center(
               child: state.status == ChartStatus.loading

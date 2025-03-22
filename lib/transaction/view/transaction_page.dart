@@ -42,7 +42,7 @@ class TransactionView extends StatelessWidget {
             final isIdExist =
                 context.select((TransactionBloc bloc) => bloc.state.id) != null;
             return Text(isIdExist ? 'Edit Transaction' : 'New Transaction',
-                style: TextStyle(fontSize: 36.sp));
+                style: TextStyle(fontSize: 30.sp));
           }),
           leading: IconButton(
             icon: Icon(Icons.close),

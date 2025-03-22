@@ -40,13 +40,6 @@ class HomeMobilePage extends StatelessWidget {
               leading: _buildActionButton(),
               actions: <Widget>[
                 /*IconButton(
-                  key: const Key('homePage_deleteBudget'),
-                  icon: const Icon(Icons.delete_forever),
-                  onPressed: () {
-                    context.read<HomeCubit>().deleteBudget();
-                  },
-                ),*/
-                /*IconButton(
                   key: const Key('homePage_logout_iconButton'),
                   icon: const Icon(Icons.create_new_folder_outlined),
                   onPressed: () {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../utils/theme/cubit/theme_cubit.dart';
 import '../../bloc/account_edit_bloc.dart';
@@ -15,13 +16,10 @@ class IncludeSwitch extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          'Include in totals',
-          style: TextStyle(
-              fontSize: Theme.of(context).textTheme.titleLarge?.fontSize),
-        ),
+        Text('Include in totals', style: TextStyle(fontSize: 24.sp)),
         SizedBox(width: 10),
-        Switch(activeColor: themeState.secondaryColor,
+        Switch(
+          activeColor: themeState.secondaryColor,
           thumbIcon: _thumbIcon,
           value: isIncludeInTotals,
           onChanged: (bool value) {

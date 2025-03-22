@@ -38,7 +38,7 @@ class TransferView extends StatelessWidget {
                     context.select((TransferBloc bloc) => bloc.state.id) !=
                         null;
                 return Text(isIdExist ? 'Edit Transfer' : 'New Transfer',
-                    style: TextStyle(fontSize: 36.sp));
+                    style: TextStyle(fontSize: 30.sp));
               }),
               leading: IconButton(
                 icon: Icon(Icons.close),

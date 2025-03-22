@@ -1,5 +1,15 @@
 const changelog = [
   {
+    'version': 'v?.?.?',
+    'date': '??? ??, ???',
+    'titles': [],
+    'added': [
+      'Google Drive backup',
+      'Lock app orientation to portrait mode',
+    ],
+    'fixed': ['Font sizes'],
+  },
+  {
     'version': 'v4.2.2',
     'date': 'Mar 19, 2025',
     'titles': [],

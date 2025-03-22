@@ -23,7 +23,7 @@ class TrendChartPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
             title: Text('Trend for last 12 months',
-                style: TextStyle(fontSize: 32.sp))),
+                style: TextStyle(fontSize: 30.sp))),
         body: BlocBuilder<ChartCubit, ChartState>(
           builder: (context, state) {
             return Center(
