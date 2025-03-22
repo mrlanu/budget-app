@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:budget_app/database/transaction_with_detail.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
 
 import '../models/transaction_type.dart';
 

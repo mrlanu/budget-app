@@ -1,4 +1,5 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,8 @@ import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
 
 class SubcategoriesPage extends StatelessWidget {
-  const SubcategoriesPage({Key? key, required this.categoryId}) : super(key: key);
+  const SubcategoriesPage({Key? key, required this.categoryId})
+      : super(key: key);
 
   final int categoryId;
 
@@ -18,8 +20,8 @@ class SubcategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SubcategoriesCubit(
-          categoryRepository: context.read<CategoryRepository>(),)
-        ..onInit(categoryId: categoryId),
+        categoryRepository: context.read<CategoryRepository>(),
+      )..onInit(categoryId: categoryId),
       child: SubcategoriesView(),
     );
   }
@@ -51,39 +53,40 @@ class SubcategoriesView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   itemCount: state.subcategoriesByCategory.length,
                   itemBuilder: (context, index) {
                     final subcategory = state.subcategoriesByCategory[index];
                     return Card(
-                      elevation: Theme.of(context).cardTheme.elevation,
-                      child: ListTile(
-                        title: Text(
-                          subcategory.name,
-                          style: TextStyle(
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .fontSize),
-                        ),
-                        leading: IconButton(
-                          icon: Icon(Icons.highlight_remove,
-                              color: Theme.of(context).colorScheme.error),
-                          onPressed: () {
-                            context
-                                .read<SubcategoriesCubit>()
-                                .onSubcategoryDeleted(subcategory.id);
-                          },
-                        ),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          context.push('/subcategories/edit/${subcategory.id}'
-                              '?categoryId=${state.category!.id}');
-                        },
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.highlight_remove,
+                                color: Theme.of(context).colorScheme.error),
+                            onPressed: () {
+                              context
+                                  .read<SubcategoriesCubit>()
+                                  .onSubcategoryDeleted(subcategory.id);
+                            },
+                          ),
+                          Text(
+                            subcategory.name,
+                            style: TextStyle(
+                                color: BudgetTheme.isDarkMode(context)
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          Spacer(),
+                          IconButton(
+                              onPressed: () => context
+                                  .push('/subcategories/edit/${subcategory.id}'
+                                      '?categoryId=${state.category!.id}'),
+                              icon: Icon(Icons.chevron_right))
+                        ],
                       ),
                     );
                   },
@@ -94,15 +97,13 @@ class SubcategoriesView extends StatelessWidget {
                     ? BudgetColors.accentDark
                     : themeState.secondaryColor,
                 title: Text(
-                  'New Subcategory',
+                  'Add Subcategory',
                   style: TextStyle(
-                      fontSize:
-                          Theme.of(context).textTheme.titleLarge!.fontSize),
+                      color: Colors.white,
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold),
                 ),
-                trailing: Icon(
-                  Icons.add,
-                  color: BudgetColors.primary,
-                ),
+                trailing: Icon(Icons.add, color: Colors.white),
                 onTap: () => context.push(
                     '/subcategories/new?categoryId=${state.category!.id}'),
               ),

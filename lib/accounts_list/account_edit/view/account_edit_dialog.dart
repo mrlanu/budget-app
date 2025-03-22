@@ -1,10 +1,12 @@
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../utils/theme/budget_theme.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 import '../account_edit.dart';
 
@@ -37,7 +39,7 @@ class AccountEditForm extends StatelessWidget {
         : Center(
             child: SingleChildScrollView(
               child: Dialog(
-                  insetPadding: EdgeInsets.all(10),
+                  insetPadding: EdgeInsets.all(20.w),
                   child: Stack(
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
@@ -54,26 +56,18 @@ class AccountEditForm extends StatelessWidget {
                             Text(
                               'New Account',
                               style: TextStyle(
-                                  fontSize: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.fontSize),
+                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
+                            SizedBox(height: 20),
                             CategoryInputField(),
-                            SizedBox(
-                              height: 25,
-                            ),
+                            SizedBox(height: 25),
                             NameInputField(),
-                            SizedBox(
-                              height: 25,
-                            ),
+                            SizedBox(height: 25),
                             BalanceInputField(),
                             Divider(),
                             IncludeSwitch(),
                             Divider(),
+                            SizedBox(height: 10),
                             _SubmitButton(),
                           ],
                         ),
@@ -89,12 +83,17 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AccountEditBloc, AccountEditState>(
-      //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        final themeState = context.read<ThemeCubit>().state;
+        final colors = context.read<ThemeCubit>().state;
         return state.status.isInProgress
             ? const CircularProgressIndicator()
-            : TextButton(
+            : ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  backgroundColor: colors.secondaryColor,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 48, vertical: 14),
+                ),
                 onPressed: state.isValid && state.category != null
                     ? () {
                         context
@@ -103,13 +102,15 @@ class _SubmitButton extends StatelessWidget {
                         context.pop();
                       }
                     : null,
-                child: Text('SAVE',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: state.isValid && state.category != null
-                            ? themeState.secondaryColor
-                            : Colors.grey)),
+                child: Text(
+                  'Submit',
+                  style: TextStyle(
+                      color: BudgetTheme.isDarkMode(context)
+                          ? Colors.black
+                          : Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 26.sp),
+                ),
               );
       },
     );

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/database/transaction_with_detail.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';

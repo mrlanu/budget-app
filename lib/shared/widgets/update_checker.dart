@@ -1,5 +1,5 @@
-import 'package:budget_app/constants/changelog.dart';
-import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
+import 'package:qruto_budget/constants/changelog.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_update/in_app_update.dart';

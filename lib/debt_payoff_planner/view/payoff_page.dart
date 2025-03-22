@@ -1,7 +1,7 @@
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
-import 'package:budget_app/debt_payoff_planner/repository/debts_repository.dart';
-import 'package:budget_app/debt_payoff_planner/view/widgets/widgets.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
+import 'package:qruto_budget/debt_payoff_planner/repository/debts_repository.dart';
+import 'package:qruto_budget/debt_payoff_planner/view/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/accounts_list/account_edit/model/account_with_details.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../categories/repository/category_repository.dart';

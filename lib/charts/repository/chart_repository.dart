@@ -1,4 +1,4 @@
-import 'package:budget_app/charts/models/year_month_sum.dart';
+import 'package:qruto_budget/charts/models/year_month_sum.dart';
 import 'package:drift/drift.dart';
 
 import '../../database/database.dart';

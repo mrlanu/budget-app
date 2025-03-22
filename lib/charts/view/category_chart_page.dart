@@ -1,7 +1,7 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/charts/cubit/chart_cubit.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
-import 'package:budget_app/charts/view/category_table.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/charts/cubit/chart_cubit.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
+import 'package:qruto_budget/charts/view/category_table.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +34,7 @@ class CategoryChartView extends StatelessWidget {
       builder: (context, state) => Scaffold(
           appBar: AppBar(
               title: Text(state.category?.name ?? '',
-                  style: TextStyle(fontSize: 36.sp)),
+                  style: TextStyle(fontSize: 30.sp)),
               actions: [CategoryTypeSelectButton()]),
           body: Center(
               child: state.status == ChartStatus.loading

@@ -1,6 +1,6 @@
-import 'package:budget_app/accounts_list/account_edit/model/account_with_details.dart';
-import 'package:budget_app/database/tables.dart';
-import 'package:budget_app/database/transaction_with_detail.dart';
+import 'package:qruto_budget/accounts_list/account_edit/model/account_with_details.dart';
+import 'package:qruto_budget/database/tables.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';

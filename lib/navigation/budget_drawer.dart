@@ -22,7 +22,7 @@ class BudgetDrawer extends StatefulWidget {
 
 class _BudgetDrawerState extends State<BudgetDrawer>
     with SingleTickerProviderStateMixin {
-  static const _menuLength = 5;
+  static const _menuLength = 6;
   static const _initialDelayTime = Duration(milliseconds: 50);
   static const _itemSlideTime = Duration(milliseconds: 250);
   static const _staggerTime = Duration(milliseconds: 50);
@@ -80,9 +80,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
   Widget build(BuildContext context) {
     final color = context.read<ThemeCubit>().state.primaryColor;
     return Container(
-      color: BudgetTheme.isDarkMode(context)
-          ? Color(0xFF272727)
-          : color[100],
+      color: BudgetTheme.isDarkMode(context) ? Color(0xFF272727) : color[100],
       child: Stack(
         fit: StackFit.expand,
         children: [_buildLogo(), _buildContent()],
@@ -139,7 +137,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 26, vertical: 5.h),
             child: menuTiles[i],
           ),
         ),
@@ -150,7 +148,6 @@ class _BudgetDrawerState extends State<BudgetDrawer>
 
   List<ListTile> _createMenuTiles() => [
         _buildMenuItem(
-          menuIndex: 1,
           title: 'Summary',
           icon: FaIcon(
             color: _getColor(),
@@ -159,7 +156,6 @@ class _BudgetDrawerState extends State<BudgetDrawer>
           routeName: 'summary',
         ),
         _buildMenuItem(
-            menuIndex: 2,
             title: 'Trend',
             icon: FaIcon(
               color: _getColor(),
@@ -167,7 +163,6 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             ),
             routeName: 'trend'),
         _buildMenuItem(
-            menuIndex: 2,
             title: 'Sum by Category',
             icon: FaIcon(
               color: _getColor(),
@@ -175,7 +170,6 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             ),
             routeName: 'category-trend'),
         _buildMenuItem(
-            menuIndex: 3,
             title: 'Debt payoff planner',
             icon: FaIcon(
               color: _getColor(),
@@ -183,13 +177,19 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             ),
             routeName: 'debt-payoff'),
         _buildMenuItem(
-            menuIndex: 4,
-            title: 'Settings',
+            title: 'Backup',
             icon: FaIcon(
               color: _getColor(),
-              FontAwesomeIcons.gear,
+              FontAwesomeIcons.googleDrive,
             ),
-            routeName: 'settings'),
+            routeName: 'backup'),
+    _buildMenuItem(
+        title: 'Settings',
+        icon: FaIcon(
+          color: _getColor(),
+          FontAwesomeIcons.gear,
+        ),
+        routeName: 'settings'),
       ];
 
   Widget _buildGetStartedButton(BuildContext context) {
@@ -222,7 +222,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             child: Text(
               'Close',
               style: TextStyle(
-                  color: colors.primaryColor[500],
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 26.sp),
             ),
@@ -233,8 +233,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
   }
 
   ListTile _buildMenuItem(
-      {required int menuIndex,
-      required String title,
+      {required String title,
       required Widget? icon,
       required String routeName}) {
     return ListTile(
@@ -242,8 +241,9 @@ class _BudgetDrawerState extends State<BudgetDrawer>
         title: Text(title,
             style: TextStyle(
                 color: _getColor(),
-                fontSize: 28.sp,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.bold)),
+        subtitle: Divider(color: _getColor(),),
         onTap: () {
           widget.onDrawer();
           context.push('/$routeName');

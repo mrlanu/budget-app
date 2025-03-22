@@ -1,4 +1,4 @@
-import 'package:budget_app/database/database.dart';
+import 'package:qruto_budget/database/database.dart';
 import 'package:equatable/equatable.dart';
 
 class AccountWithDetails extends Equatable{

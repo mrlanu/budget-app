@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0] - 03-22-2025
+### Added
+- Google Drive backup
+- Lock app orientation to portrait mode
+### Fixed
+- Font sizes
+
 ## [4.2.2] - 03-19-2025
 ### Added
 - New Subcategory form

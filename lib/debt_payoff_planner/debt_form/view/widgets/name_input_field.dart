@@ -1,4 +1,4 @@
-import 'package:budget_app/debt_payoff_planner/debt_form/bloc/debt_bloc.dart';
+import 'package:qruto_budget/debt_payoff_planner/debt_form/bloc/debt_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

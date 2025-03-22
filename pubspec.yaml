@@ -1,6 +1,6 @@
-name: budget_app
+name: qruto_budget
 description: A Budget app.
-version: 4.2.2+9
+version: 4.3.0+10
 publish_to: none
 
 
@@ -40,6 +40,10 @@ dependencies:
   package_info_plus: ^8.3.0
   in_app_update: ^4.2.3
   flutter_screenutil: ^5.9.3
+  google_sign_in: ^6.2.1
+  googleapis: ^11.4.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  awesome_snackbar_content: ^0.1.5
 
 dev_dependencies:
   bloc_test: ^10.0.0

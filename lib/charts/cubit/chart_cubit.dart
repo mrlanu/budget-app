@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/charts/models/year_month_sum.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/charts/models/year_month_sum.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../database/database.dart';

@@ -1,4 +1,4 @@
-import 'package:budget_app/transfer/transfer.dart';
+import 'package:qruto_budget/transfer/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,7 +55,6 @@ class TransferForm extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = context.read<ThemeCubit>().state;
     return BlocBuilder<TransferBloc, TransferState>(
       builder: (context, state) {
         final themeState = context.watch<ThemeCubit>().state;
@@ -80,7 +79,7 @@ class _SubmitButton extends StatelessWidget {
                         child: Text(
                           'Submit',
                           style: TextStyle(
-                              color: colors.primaryColor[500],
+                              color: Colors.white,
                               fontSize: 26.sp,
                               fontWeight: FontWeight.w600),
                         ),

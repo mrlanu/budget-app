@@ -1,4 +1,4 @@
-import 'package:budget_app/utils/utils.dart';
+import 'package:qruto_budget/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';

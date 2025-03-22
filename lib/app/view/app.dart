@@ -1,13 +1,14 @@
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/accounts_list/repository/account_repository_drift.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/categories/repository/category_repository_drift.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
-import 'package:budget_app/database/database.dart';
-import 'package:budget_app/transaction/repository/transaction_repository.dart';
-import 'package:budget_app/transaction/repository/transaction_repository_drift.dart';
-import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
-import 'package:budget_app/utils/utils.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository_drift.dart';
+import 'package:qruto_budget/backup/cubit/backup_cubit.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository_drift.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
+import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/transaction/repository/transaction_repository.dart';
+import 'package:qruto_budget/transaction/repository/transaction_repository_drift.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
+import 'package:qruto_budget/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +42,9 @@ class App extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => ThemeCubit(),
+          ),
+          BlocProvider(
+            create: (context) => BackupCubit()..checkUserStatus(),
           ),
         ],
         child: AppView(),

@@ -1,5 +1,5 @@
-import 'package:budget_app/accounts_list/repository/account_repository.dart';
-import 'package:budget_app/categories/repository/category_repository.dart';
+import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,7 +42,7 @@ class TransactionView extends StatelessWidget {
             final isIdExist =
                 context.select((TransactionBloc bloc) => bloc.state.id) != null;
             return Text(isIdExist ? 'Edit Transaction' : 'New Transaction',
-                style: TextStyle(fontSize: 36.sp));
+                style: TextStyle(fontSize: 30.sp));
           }),
           leading: IconButton(
             icon: Icon(Icons.close),

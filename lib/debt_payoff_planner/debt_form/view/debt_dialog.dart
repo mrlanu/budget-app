@@ -1,5 +1,5 @@
-import 'package:budget_app/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
-import 'package:budget_app/debt_payoff_planner/debt_form/debt_form.dart';
+import 'package:qruto_budget/debt_payoff_planner/cubits/debt_cubit/debts_cubit.dart';
+import 'package:qruto_budget/debt_payoff_planner/debt_form/debt_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';

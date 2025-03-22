@@ -1,6 +1,6 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/charts/cubit/chart_cubit.dart';
-import 'package:budget_app/charts/repository/chart_repository.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/charts/cubit/chart_cubit.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
 import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +23,7 @@ class TrendChartPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
             title: Text('Trend for last 12 months',
-                style: TextStyle(fontSize: 32.sp))),
+                style: TextStyle(fontSize: 30.sp))),
         body: BlocBuilder<ChartCubit, ChartState>(
           builder: (context, state) {
             return Center(

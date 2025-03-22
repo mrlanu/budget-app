@@ -1,6 +1,6 @@
-import 'package:budget_app/categories/repository/category_repository.dart';
-import 'package:budget_app/subcategories/subcategory_edit/subcategory_edit.dart';
-import 'package:budget_app/utils/theme/cubit/theme_cubit.dart';
+import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/subcategories/subcategory_edit/subcategory_edit.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,17 +36,21 @@ class SubcategoryEditForm extends StatelessWidget {
       builder: (context, state) {
         final categoryName = state.category?.name ?? '';
         return Dialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0),
           child: Container(
-            height: h * 0.3,
+            height: h * 0.35,
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    overflow: TextOverflow.ellipsis,
-                    state.id == null ? 'Subcategory for $categoryName' : 'Edit subcategory',
-                    style: Theme.of(context).textTheme.titleLarge),
+                      overflow: TextOverflow.ellipsis,
+                      state.id == null
+                          ? 'Subcategory for $categoryName'
+                          : 'Edit subcategory',
+                      style: TextStyle(
+                          fontSize: 24.sp, fontWeight: FontWeight.w600)),
                   TextFormField(
                       initialValue: state.name,
                       autofocus: true,

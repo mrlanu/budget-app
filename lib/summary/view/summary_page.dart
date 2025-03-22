@@ -1,4 +1,4 @@
-import 'package:budget_app/database/database.dart';
+import 'package:qruto_budget/database/database.dart';
 import 'package:drift/drift.dart' as db;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -77,7 +77,7 @@ class SummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(title: Text('Summary', style: TextStyle(fontSize: 36.sp))),
+      appBar: AppBar(title: Text('Summary', style: TextStyle(fontSize: 30.sp))),
       body: FutureBuilder(
           future: _calculateSummary(),
           builder: (context, snapshot) {
@@ -130,7 +130,7 @@ class SummaryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.titleLarge;
+    final textStyle = TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w500);
     final theme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -138,7 +138,7 @@ class SummaryTile extends StatelessWidget {
         children: [
           Text(
             '$title',
-            style: textStyle,
+            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
           ),
           Card(
             child: Container(
