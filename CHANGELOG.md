@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.?.?] - ??-??-????
+## [4.3.0] - 03-22-2025
 ### Added
 - Google Drive backup
 - Lock app orientation to portrait mode
