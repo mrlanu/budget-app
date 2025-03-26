@@ -1,3 +1,5 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:qruto_budget/backup/cubit/backup_cubit.dart';
 import 'package:qruto_budget/constants/changelog.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +8,7 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UpdateChecker {
-
+class BackgroundWorker {
   static Future<void> checkForUpdate(BuildContext context) async {
     try {
       AppUpdateInfo updateInfo = await InAppUpdate.checkForUpdate();
@@ -35,6 +36,35 @@ class UpdateChecker {
 
       // Update stored version
       await prefs.setString('last_opened_version', currentVersion);
+    }
+  }
+
+  static Future<void> checkLastAutoBackup(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final dateString = prefs.getString('last_backup_time');
+    final dateLastAutoBackup =
+        dateString != null ? DateTime.parse(dateString) : null;
+
+    if (dateLastAutoBackup == null ||
+        DateTime.now().difference(dateLastAutoBackup).inHours > 24) {
+      final success = await context.read<BackupCubit>().autoBackup();
+      if(success){
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'Auto Backup !',
+            message: 'Auto Backup has been uploaded.',
+            contentType: ContentType.success,
+          ),
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+      }
     }
   }
 
@@ -148,7 +178,9 @@ class UpdateChecker {
                               // Assuming `item` has a `version` field
                               style: TextStyle(fontSize: 12),
                             ),
-                            SizedBox(height: 15,),
+                            SizedBox(
+                              height: 15,
+                            ),
                             isTitle
                                 ? RichText(
                                     text: TextSpan(
@@ -156,11 +188,11 @@ class UpdateChecker {
                                             height: 1.5,
                                             fontSize: 20,
                                             color: Colors.black),
-                                        children: (item['titles']
-                                                as List<String>)
-                                            .map<TextSpan>((change) =>
-                                                TextSpan(text: '$change\n'))
-                                            .toList()),
+                                        children:
+                                            (item['titles'] as List<String>)
+                                                .map<TextSpan>((change) =>
+                                                    TextSpan(text: '$change\n'))
+                                                .toList()),
                                   )
                                 : Container(),
                             isAdded

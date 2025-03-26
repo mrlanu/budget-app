@@ -29,15 +29,15 @@ class _HomePageState extends State<HomePage>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    Future.delayed(Duration.zero, () {
-      UpdateChecker.checkIfUpdated(context);
-    });
-    Future.delayed(Duration.zero, () {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      BackgroundWorker.checkIfUpdated(context);
       if (kReleaseMode) {
-        UpdateChecker.checkForUpdate(context);
+        BackgroundWorker.checkForUpdate(context);
       } else {
         print("Skipping update check in debug mode.");
       }
+      BackgroundWorker.checkLastAutoBackup(context);
     });
   }
 
@@ -73,7 +73,11 @@ class _HomePageState extends State<HomePage>
       builder: (context, child) {
         return FractionalTranslation(
           translation: Offset(1.0 - _drawerSlideController.value, 0.0),
-          child: _isDrawerClosed() ? const SizedBox() : BudgetDrawer(onDrawer: _toggleDrawer,),
+          child: _isDrawerClosed()
+              ? const SizedBox()
+              : BudgetDrawer(
+                  onDrawer: _toggleDrawer,
+                ),
         );
       },
     );

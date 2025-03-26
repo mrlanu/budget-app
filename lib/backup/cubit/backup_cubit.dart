@@ -8,6 +8,8 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:qruto_budget/constants/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'backup_state.dart';
 
@@ -20,23 +22,19 @@ class BackupCubit extends Cubit<BackupState> {
 
   static const _dbName = 'qruto_budget.sqlite';
 
-  Future<void> signInAndGetDriveApi() async {
+  Future<void> signIn() async {
     try {
       final account = await _googleSignIn.signIn();
       if (account != null) {
-        final auth.AuthClient? client =
-            await _googleSignIn.authenticatedClient();
-        final driveApi = drive.DriveApi(client as http.Client);
-        final availableBackups = await fetchAvailableBackups(driveApi);
+        final availableBackups = await fetchAvailableBackups();
         emit(BackupState(
             isAuthenticated: true,
             userName: account.displayName,
             userAvatar: account.photoUrl,
-            driveApi: driveApi,
+            userEmail: account.email,
             availableBackups: availableBackups,
             isAuthCheckingStatus: false));
       }
-      ;
     } catch (e) {
       print("Google Sign-In Error: $e");
       emit(BackupState(isAuthenticated: false));
@@ -50,7 +48,6 @@ class BackupCubit extends Cubit<BackupState> {
       userName: null,
       userAvatar: null,
       availableBackups: [],
-      driveApi: null,
     ));
   }
 
@@ -58,13 +55,12 @@ class BackupCubit extends Cubit<BackupState> {
     emit(state.copyWith(isAuthCheckingStatus: true));
     final account = await _googleSignIn.signInSilently();
     if (account != null) {
-      final driveApi = await _initializeDriveApi();
-      final availableBackups = await fetchAvailableBackups(driveApi);
+      final availableBackups = await fetchAvailableBackups();
       emit(BackupState(
           isAuthenticated: true,
           userName: account.displayName,
           userAvatar: account.photoUrl,
-          driveApi: driveApi,
+          userEmail: account.email,
           availableBackups: availableBackups,
           isAuthCheckingStatus: false));
     } else {
@@ -72,13 +68,23 @@ class BackupCubit extends Cubit<BackupState> {
     }
   }
 
-  Future<bool> uploadBackupToDrive() async {
-    if (state.driveApi == null) {
-      print("Google Drive is not authenticated.");
-      return false;
+  Future<bool> autoBackup() async {
+    final account = await _googleSignIn.signInSilently();
+    if (account != null) {
+      final backups = await fetchAvailableBackups();
+      await uploadBackupToDrive();
+      if (backups.length >= Constants.maxBackups) {
+        await deleteBackup(backups.last);
+      }
+      return true;
     }
+    return false;
+  }
 
+  Future<bool> uploadBackupToDrive() async {
     emit(state.copyWith(isUploading: true));
+    final driveApi = await _initializeDriveApi();
+    final prefs = await SharedPreferences.getInstance();
     final dbPath = await _getDatabasePath();
     final file = File(dbPath!);
 
@@ -94,12 +100,14 @@ class BackupCubit extends Cubit<BackupState> {
       ..name = 'backup_$timestamp.sqlite'
       ..parents = ['appDataFolder'];
 
-    await state.driveApi!.files.create(
+    await driveApi.files.create(
       driveFile,
       uploadMedia: drive.Media(file.openRead(), file.lengthSync()),
     );
+    await prefs.setString(
+        'last_backup_time', DateTime.now().toIso8601String());
 
-    final availableBackups = await fetchAvailableBackups(state.driveApi!);
+    final availableBackups = await fetchAvailableBackups();
     emit(
         state.copyWith(availableBackups: availableBackups, isUploading: false));
 
@@ -107,12 +115,9 @@ class BackupCubit extends Cubit<BackupState> {
   }
 
   Future<bool> restoreBackup(String fileId) async {
-    if (state.driveApi == null) {
-      print("Google Drive is not authenticated.");
-      return false;
-    }
+    final driveApi = await _initializeDriveApi();
 
-    final response = await state.driveApi!.files.get(
+    final response = await driveApi.files.get(
       fileId,
       downloadOptions: drive.DownloadOptions.fullMedia,
     ) as drive.Media;
@@ -121,17 +126,17 @@ class BackupCubit extends Cubit<BackupState> {
     final dbPath = await _getDatabasePath();
     final dbFile = File(dbPath!);
     await response.stream.pipe(dbFile.openWrite());
-    final availableBackups = await fetchAvailableBackups(state.driveApi!);
+    final availableBackups = await fetchAvailableBackups();
     emit(state.copyWith(availableBackups: availableBackups));
     print('Database downloaded from Google Drive');
     return true;
   }
 
-  Future<List<drive.File>> fetchAvailableBackups(
-      drive.DriveApi driveApi) async {
+  Future<List<drive.File>> fetchAvailableBackups() async {
+    final driveApi = await _initializeDriveApi();
     final fileList = await driveApi.files.list(
         spaces: 'appDataFolder',
-        q: "name contains 'backup_'",
+        q: "name contains 'backup'",
         orderBy: "createdTime desc",
         $fields: "files(id, name, createdTime)");
 
@@ -144,13 +149,18 @@ class BackupCubit extends Cubit<BackupState> {
   }
 
   Future<bool> deleteBackup(drive.File file) async {
-    if (state.driveApi == null) {
-      print("Google Drive authentication failed");
-      return false;
-    }
+    final driveApi = await _initializeDriveApi();
 
-    await state.driveApi!.files.delete(file.id!);
-    final availableBackups = await fetchAvailableBackups(state.driveApi!);
+    await driveApi.files.delete(file.id!);
+    final availableBackups = await fetchAvailableBackups();
+
+    //called in order to trigger auto backup when there is no one
+    //BackgroundWorker.checkLastAutoBackup
+    //dateLastAutoBackup == null
+    if(availableBackups.isEmpty){
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('last_backup_time');
+    }
     emit(state.copyWith(availableBackups: availableBackups));
     return true;
   }

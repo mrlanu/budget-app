@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.?.?] - ??-??-????
+### Added
+- Auto backup to Google Drive
+
 ## [4.3.0] - 03-22-2025
 ### Added
 - Google Drive backup
