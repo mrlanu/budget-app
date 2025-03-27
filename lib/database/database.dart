@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:drift/native.dart';
 import 'package:qruto_budget/accounts_list/account_edit/model/account_with_details.dart';
 import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/database/transaction_with_detail.dart';
@@ -309,5 +311,12 @@ class AppDatabase extends _$AppDatabase {
         databaseDirectory: getApplicationSupportDirectory,
       ),
     );
+  }
+
+  factory AppDatabase.fromFile(File file) {
+    final executor = LazyDatabase(() async {
+      return NativeDatabase(file);
+    });
+    return AppDatabase(executor);
   }
 }

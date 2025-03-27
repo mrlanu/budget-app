@@ -5,6 +5,7 @@ const changelog = [
     'titles': [],
     'added': [
       'Auto backup to Google Drive',
+      'Restored backup overrides live database'
     ],
     'fixed': [],
   },

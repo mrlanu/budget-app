@@ -13,10 +13,9 @@ import '../../transaction/view/transaction_page.dart';
 import '../home.dart';
 
 class HomeMobilePage extends StatelessWidget {
-  HomeMobilePage({
-    required this.navigationShell,
-    Key? key, required this.onDrawer,
-  }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
+  HomeMobilePage(
+      {required this.navigationShell, Key? key, required this.onDrawer})
+      : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
   final Function() onDrawer;
   final StatefulNavigationShell navigationShell;
@@ -26,55 +25,35 @@ class HomeMobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
-        return Scaffold(
-            appBar: AppBar(
-              title: MonthPaginator(
-                onLeft: (date) =>
-                    context.read<HomeCubit>().changeDate(date),
-                onRight: (date) =>
-                    context.read<HomeCubit>().changeDate(date),
-              ),
-              centerTitle: true,
-              leading: _buildActionButton(),
-              actions: <Widget>[
-                /*IconButton(
-                  key: const Key('homePage_logout_iconButton'),
-                  icon: const Icon(Icons.create_new_folder_outlined),
-                  onPressed: () {
-                    switch (navigationShell.currentIndex) {
-                      case 0:
-                        context.push('/categories?typeIndex=0');
-                        break;
-                      case 1:
-                        context.push('/categories?typeIndex=1');
-                        break;
-                      case 2:
-                        context.push('/accounts-list');
-                        break;
-                    }
-                  },
-                ),*/
-                IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {
-                    onDrawer();
-                  },
-                ),
-              ],
+    return Scaffold(
+        appBar: AppBar(
+          title: MonthPaginator(
+              onLeft: (date) => context.read<HomeCubit>().changeDate(date),
+              onRight: (date) => context.read<HomeCubit>().changeDate(date)),
+          centerTitle: true,
+          leading: _buildActionButton(),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                onDrawer();
+              },
             ),
-            //drawer: MainDrawer(),
-            body: navigationShell,
-            floatingActionButton: _buildFab(
+          ],
+        ),
+        body: navigationShell,
+        floatingActionButton: Builder(
+          builder: (context) {
+            final tab = context.select((HomeCubit cubit) => cubit.state.tab);
+            return _buildFab(
                 context,
-                state.tab.index == 0
+                tab.index == 0
                     ? TransactionType.EXPENSE
-                    : TransactionType.INCOME),
-            bottomNavigationBar:
-                HomeBottomNavBar(navigationShell: navigationShell));
-      },
-    );
+                    : TransactionType.INCOME);
+          },
+        ),
+        bottomNavigationBar:
+            HomeBottomNavBar(navigationShell: navigationShell));
   }
 
   Widget _buildActionButton() {

@@ -41,7 +41,8 @@ class App extends StatelessWidget {
       ],
       child: MultiBlocProvider(providers: [
         BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(lazy: false, create: (context) => BackupCubit())
+        BlocProvider(
+            lazy: false, create: (context) => BackupCubit(database: _database))
       ], child: AppView()),
     );
   }

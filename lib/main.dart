@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/services.dart';
 import 'package:qruto_budget/app/app.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ Future<void> main() async {
   );
   //Bloc.observer = const AppBlocObserver();
 
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final db = AppDatabase();
 
   runApp(App(database: db,));

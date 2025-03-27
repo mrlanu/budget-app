@@ -8,13 +8,19 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:qruto_budget/backup/backup.dart';
 import 'package:qruto_budget/constants/constants.dart';
+import 'package:qruto_budget/database/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'backup_state.dart';
 
 class BackupCubit extends Cubit<BackupState> {
-  BackupCubit() : super(BackupState(isAuthenticated: false));
+  BackupCubit({required AppDatabase database})
+      : _database = database,
+        super(BackupState(isAuthenticated: false));
+
+  final AppDatabase _database;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [drive.DriveApi.driveFileScope, drive.DriveApi.driveAppdataScope],
@@ -104,8 +110,7 @@ class BackupCubit extends Cubit<BackupState> {
       driveFile,
       uploadMedia: drive.Media(file.openRead(), file.lengthSync()),
     );
-    await prefs.setString(
-        'last_backup_time', DateTime.now().toIso8601String());
+    await prefs.setString('last_backup_time', DateTime.now().toIso8601String());
 
     final availableBackups = await fetchAvailableBackups();
     emit(
@@ -114,22 +119,37 @@ class BackupCubit extends Cubit<BackupState> {
     return true;
   }
 
-  Future<bool> restoreBackup(String fileId) async {
+  Future<bool> restoreBackup(String backupFileId) async {
     final driveApi = await _initializeDriveApi();
 
-    final response = await driveApi.files.get(
+    final backupFile =
+        await _downloadBackupFile(driveApi: driveApi, fileId: backupFileId);
+
+    final backupImporterService = BackupImporterService(_database);
+    await backupImporterService.importBackupFromFile(backupFile);
+
+    await backupFile.delete();
+    return true;
+  }
+
+  Future<File> _downloadBackupFile({
+    required drive.DriveApi driveApi,
+    required String fileId,
+    String fileName = 'temp.sqlite',
+  }) async {
+    final dir = await getApplicationSupportDirectory();
+    final file = File('${dir.path}/$fileName');
+
+    final media = await driveApi.files.get(
       fileId,
       downloadOptions: drive.DownloadOptions.fullMedia,
     ) as drive.Media;
 
-    // Save the file to the local database path
-    final dbPath = await _getDatabasePath();
-    final dbFile = File(dbPath!);
-    await response.stream.pipe(dbFile.openWrite());
-    final availableBackups = await fetchAvailableBackups();
-    emit(state.copyWith(availableBackups: availableBackups));
-    print('Database downloaded from Google Drive');
-    return true;
+    final sink = file.openWrite();
+    await media.stream.pipe(sink);
+    await sink.close();
+
+    return file;
   }
 
   Future<List<drive.File>> fetchAvailableBackups() async {
@@ -157,7 +177,7 @@ class BackupCubit extends Cubit<BackupState> {
     //called in order to trigger auto backup when there is no one
     //BackgroundWorker.checkLastAutoBackup
     //dateLastAutoBackup == null
-    if(availableBackups.isEmpty){
+    if (availableBackups.isEmpty) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('last_backup_time');
     }
