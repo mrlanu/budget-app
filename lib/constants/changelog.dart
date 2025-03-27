@@ -1,7 +1,7 @@
 const changelog = [
   {
-    'version': 'v4.?.?',
-    'date': '??? ??, ????',
+    'version': 'v4.4.0',
+    'date': 'Mar 26, 2025',
     'titles': [],
     'added': [
       'Auto backup to Google Drive',
