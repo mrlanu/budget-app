@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../constants/colors.dart';
 import '../utils/theme/budget_theme.dart';
@@ -110,6 +111,26 @@ class _BudgetDrawerState extends State<BudgetDrawer>
         ..._buildListItems(),
         const Spacer(),
         _buildGetStartedButton(context),
+        FutureBuilder(
+          future: Future<String>(
+            () async {
+              final packageInfo = await PackageInfo.fromPlatform();
+              return packageInfo.version;
+            },
+          ),
+          builder: (context, snapshot) {
+            return Container(
+                padding: EdgeInsets.all(10.w),
+                child: snapshot.hasData
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'v${snapshot.data}',
+                          style: TextStyle(fontSize: 18.sp),
+                        ))
+                    : SizedBox());
+          },
+        ),
       ],
     );
   }
@@ -183,13 +204,13 @@ class _BudgetDrawerState extends State<BudgetDrawer>
               FontAwesomeIcons.googleDrive,
             ),
             routeName: 'backup'),
-    _buildMenuItem(
-        title: 'Settings',
-        icon: FaIcon(
-          color: _getColor(),
-          FontAwesomeIcons.gear,
-        ),
-        routeName: 'settings'),
+        _buildMenuItem(
+            title: 'Settings',
+            icon: FaIcon(
+              color: _getColor(),
+              FontAwesomeIcons.gear,
+            ),
+            routeName: 'settings'),
       ];
 
   Widget _buildGetStartedButton(BuildContext context) {
@@ -197,7 +218,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w,),
         child: AnimatedBuilder(
           animation: _staggeredController,
           builder: (context, child) {
@@ -243,7 +264,9 @@ class _BudgetDrawerState extends State<BudgetDrawer>
                 color: _getColor(),
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold)),
-        subtitle: Divider(color: _getColor(),),
+        subtitle: Divider(
+          color: _getColor(),
+        ),
         onTap: () {
           widget.onDrawer();
           context.push('/$routeName');

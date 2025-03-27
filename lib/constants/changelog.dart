@@ -1,5 +1,16 @@
 const changelog = [
   {
+    'version': 'v4.4.0',
+    'date': 'Mar 26, 2025',
+    'titles': [],
+    'added': [
+      'Auto backup to Google Drive',
+      'Restored backup overrides live database'
+      'Showing the app\'s current version in the drawer'
+    ],
+    'fixed': [],
+  },
+  {
     'version': 'v4.3.0',
     'date': 'Mar 22, 2025',
     'titles': [],

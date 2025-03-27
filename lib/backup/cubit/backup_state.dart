@@ -4,7 +4,7 @@ class BackupState extends Equatable {
   final bool isAuthenticated;
   final String? userName;
   final String? userAvatar;
-  final drive.DriveApi? driveApi;
+  final String? userEmail;
   final List<drive.File> availableBackups;
   final bool isAuthCheckingStatus;
   final bool isUploading;
@@ -13,7 +13,7 @@ class BackupState extends Equatable {
     required this.isAuthenticated,
     this.userName,
     this.userAvatar,
-    this.driveApi,
+    this.userEmail,
     this.availableBackups = const [],
     this.isAuthCheckingStatus = true,
     this.isUploading = false,
@@ -23,7 +23,7 @@ class BackupState extends Equatable {
     bool? isAuthenticated,
     String? Function()? userName,
     String? Function()? userAvatar,
-    drive.DriveApi? Function()? driveApi,
+    String? Function()? userEmail,
     List<drive.File>? availableBackups,
     bool? isAuthCheckingStatus,
     bool? isUploading,
@@ -32,7 +32,7 @@ class BackupState extends Equatable {
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       userName: userName != null ? userName() : this.userName,
       userAvatar: userAvatar != null ? userAvatar() : this.userAvatar,
-      driveApi: driveApi != null ? driveApi() : this.driveApi,
+      userEmail: userEmail != null ? userEmail() : this.userEmail,
       availableBackups: availableBackups ?? this.availableBackups,
       isAuthCheckingStatus: isAuthCheckingStatus ?? this.isAuthCheckingStatus,
       isUploading: isUploading ?? this.isUploading,
@@ -44,7 +44,7 @@ class BackupState extends Equatable {
         isAuthenticated,
         userName,
         userAvatar,
-        driveApi,
+        userEmail,
         availableBackups,
         isAuthCheckingStatus,
         isUploading,

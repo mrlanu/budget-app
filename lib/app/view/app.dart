@@ -19,7 +19,7 @@ import '../../navigation/router.dart';
 class App extends StatelessWidget {
   final AppDatabase _database;
 
-  const App({super.key, required AppDatabase database}): _database = database;
+  const App({super.key, required AppDatabase database}) : _database = database;
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +29,21 @@ class App extends StatelessWidget {
         AccountRepositoryDrift(database: _database);
     final CategoryRepository categoryRepository =
         CategoryRepositoryDrift(database: _database);
-    final ChartRepository chartRepository = ChartRepositoryDrift(database: _database);
+    final ChartRepository chartRepository =
+        ChartRepositoryDrift(database: _database);
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => _database),
         RepositoryProvider(create: (context) => categoryRepository),
         RepositoryProvider(create: (context) => accountRepository),
         RepositoryProvider(create: (context) => transactionRepository),
-        RepositoryProvider(create: (context) => chartRepository,)
+        RepositoryProvider(create: (context) => chartRepository)
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => ThemeCubit(),
-          ),
-          BlocProvider(
-            create: (context) => BackupCubit()..checkUserStatus(),
-          ),
-        ],
-        child: AppView(),
-      ),
+      child: MultiBlocProvider(providers: [
+        BlocProvider(create: (context) => ThemeCubit()),
+        BlocProvider(
+            lazy: false, create: (context) => BackupCubit(database: _database))
+      ], child: AppView()),
     );
   }
 }

@@ -71,7 +71,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                     backgroundColor: BudgetColors.warning,
                     content: Text('Transaction has been deleted.',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)),
+                            fontWeight: FontWeight.bold, fontSize: 20.sp)),
                     action: SnackBarAction(
                       textColor: Colors.black,
                       label: 'UNDO',
@@ -93,13 +93,6 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                   setState(() {
                     isExpandedList[index] = isExpanded;
                   });
-                  /*if (isDisplayDesktop(context)) {
-                context.read<TransactionBloc>().add(TransactionFormLoaded(
-                      transactionType: state.tab == HomeTab.expenses
-                          ? TransactionType.EXPENSE
-                          : TransactionType.INCOME,
-                    ));
-              }*/
                 },
                 children: List.generate(widget.summaryList.length, (index) {
                   final summary = widget.summaryList[index];
