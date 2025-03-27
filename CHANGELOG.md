@@ -4,6 +4,7 @@
 ### Added
 - Auto backup to Google Drive
 - Restored backup overrides live database
+- Showing the app's current version in the drawer
 
 ## [4.3.0] - 03-22-2025
 ### Added

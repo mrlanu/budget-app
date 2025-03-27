@@ -6,6 +6,7 @@ const changelog = [
     'added': [
       'Auto backup to Google Drive',
       'Restored backup overrides live database'
+      'Showing the app\'s current version in the drawer'
     ],
     'fixed': [],
   },
