@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.?.?] - ??-??-????
+## [4.4.0] - 03-26-2025
 ### Added
 - Auto backup to Google Drive
 - Restored backup overrides live database
