@@ -1,11 +1,20 @@
 const changelog = [
   {
+    'version': 'v?.?.?',
+    'date': '??? ??, ????',
+    'titles': [],
+    'added': [
+      'Select a custom range in the Summary',
+    ],
+    'fixed': [],
+  },
+  {
     'version': 'v4.4.0',
     'date': 'Mar 26, 2025',
     'titles': [],
     'added': [
       'Auto backup to Google Drive',
-      'Restored backup overrides live database'
+      'Restored backup overrides live database',
       'Showing the app\'s current version in the drawer'
     ],
     'fixed': [],

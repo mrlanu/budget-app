@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.?.?] - ??-??-????
+### Added
+- Select a custom range in the Summary
+
 ## [4.4.0] - 03-26-2025
 ### Added
 - Auto backup to Google Drive
