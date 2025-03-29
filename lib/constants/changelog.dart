@@ -5,6 +5,7 @@ const changelog = [
     'titles': [],
     'added': [
       'Select a custom range in the Summary',
+      'Predefined income or expense categories',
     ],
     'fixed': [],
   },
