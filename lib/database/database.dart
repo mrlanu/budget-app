@@ -24,7 +24,12 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
+
+  Future<int> getSchemaVersion() async {
+    final versionRow = await customSelect('PRAGMA user_version').getSingle();
+    return versionRow.data.values.first;
+  }
 
   @override
   MigrationStrategy get migration {
@@ -61,7 +66,7 @@ class AppDatabase extends _$AppDatabase {
         }
         // Upgrade from version 2 to 3:
         // Add the custom constraints to the Categories
-        /*if (from == 2) {
+        if (from == 2) {
           //Rename old table
           await customStatement('ALTER TABLE categories RENAME TO old_categories;');
 
@@ -76,7 +81,7 @@ class AppDatabase extends _$AppDatabase {
 
           //Drop old table
           await customStatement('DROP TABLE old_categories;');
-        }*/
+        }
       },
     );
   }
