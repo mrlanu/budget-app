@@ -8,6 +8,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../transaction/models/transaction_type.dart';
+import 'data/predefined_category.dart';
 
 part 'database.g.dart';
 
@@ -31,22 +32,7 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
         // Insert initial categories
-        await batch((batch) {
-          batch.insertAll(categories, [
-            CategoriesCompanion(
-                name: Value('Fun'),
-                iconCode: Value(62922),
-                type: Value(TransactionType.EXPENSE)),
-            CategoriesCompanion(
-                name: Value('Bills'),
-                iconCode: Value(61675),
-                type: Value(TransactionType.EXPENSE)),
-            CategoriesCompanion(
-                name: Value('Checking'),
-                iconCode: Value(61675),
-                type: Value(TransactionType.ACCOUNT)),
-          ]);
-        });
+        await insertDefaultCategories(TransactionType.ACCOUNT);
 
         //get id for Checking category
         final categoryList = await select(categories).get();
@@ -73,8 +59,53 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(debts);
           await m.createTable(payments);
         }
+        // Upgrade from version 2 to 3:
+        // Add the custom constraints to the Categories
+        /*if (from == 2) {
+          //Rename old table
+          await customStatement('ALTER TABLE categories RENAME TO old_categories;');
+
+          //Recreate table with new constraints (name & type)
+          await m.createTable(categories);
+
+          //Copy data
+          await customStatement('''
+        INSERT OR IGNORE INTO categories (id, name, icon_code, type)
+        SELECT id, name, icon_code, type FROM old_categories;
+      ''');
+
+          //Drop old table
+          await customStatement('DROP TABLE old_categories;');
+        }*/
       },
     );
+  }
+
+  Future<void> insertDefaultCategories(TransactionType type) async {
+    for (final cat in predefinedCategories.where(
+      (cat) => cat.type == type,
+    )) {
+      final categoryId = await into(categories).insert(
+        CategoriesCompanion.insert(
+          name: cat.name,
+          iconCode: cat.icon.codePoint,
+          type: cat.type,
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+
+      // If insert was ignored (conflict), categoryId will be 0
+      if (categoryId != 0) {
+        for (final sub in cat.subcategories) {
+          await into(subcategories).insert(
+            SubcategoriesCompanion.insert(
+              name: sub,
+              categoryId: categoryId,
+            ),
+          );
+        }
+      }
+    }
   }
 
   //CATEGORIES

@@ -95,7 +95,7 @@ class AccountsListView extends StatelessWidget {
                               FaIcon(
                                   color: BudgetTheme.isDarkMode(context)
                                       ? Colors.white
-                                      : Colors.black,
+                                      : themeState.primaryColor[700],
                                   IconData(account.category.iconCode,
                                       fontFamily: 'FontAwesomeSolid')),
                               IconButton(
