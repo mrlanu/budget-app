@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import '../constants/colors.dart';
 import '../utils/theme/budget_theme.dart';
@@ -110,27 +109,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
         const SizedBox(height: 16),
         ..._buildListItems(),
         const Spacer(),
-        _buildGetStartedButton(context),
-        FutureBuilder(
-          future: Future<String>(
-            () async {
-              final packageInfo = await PackageInfo.fromPlatform();
-              return packageInfo.version;
-            },
-          ),
-          builder: (context, snapshot) {
-            return Container(
-                padding: EdgeInsets.all(10.w),
-                child: snapshot.hasData
-                    ? Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'v${snapshot.data}',
-                          style: TextStyle(fontSize: 18.sp),
-                        ))
-                    : SizedBox());
-          },
-        ),
+        _buildCloseButton(context),
       ],
     );
   }
@@ -213,12 +192,16 @@ class _BudgetDrawerState extends State<BudgetDrawer>
             routeName: 'settings'),
       ];
 
-  Widget _buildGetStartedButton(BuildContext context) {
+  Widget _buildCloseButton(BuildContext context) {
     final colors = context.read<ThemeCubit>().state;
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: EdgeInsets.only(left: 24.w, right: 24.w,),
+        padding: EdgeInsets.only(
+          left: 24.w,
+          right: 24.w,
+          bottom: 35.h,
+        ),
         child: AnimatedBuilder(
           animation: _staggeredController,
           builder: (context, child) {

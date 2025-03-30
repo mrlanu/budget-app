@@ -3,6 +3,10 @@
 ## [4.?.?] - ??-??-????
 ### Added
 - Select a custom range in the Summary
+- Predefined income or expense categories
+- About section in the Settings page
+### Fixed
+- Category or Account can't be deleted if they contain any transaction
 
 ## [4.4.0] - 03-26-2025
 ### Added

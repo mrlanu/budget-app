@@ -20,20 +20,23 @@ class AccountsCubit extends Cubit<AccountsState> {
   AccountsCubit(
       {required AccountRepository accountRepository,
       required CategoryRepository categoryRepository})
-      : _accountRepository = accountRepository, _categoryRepository = categoryRepository,
+      : _accountRepository = accountRepository,
+        _categoryRepository = categoryRepository,
         super(AccountsState()) {
     _accountsSubscription = _accountRepository.accounts.listen((accounts) {
       accountsChanged(accounts);
     });
-    _categoriesSubscription = _categoryRepository.categories.listen((categories) {
+    _categoriesSubscription =
+        _categoryRepository.categories.listen((categories) {
       categoriesChanged(categories);
     });
   }
 
   Future<void> accountsChanged(List<AccountWithDetails> accounts) async {
     emit(state.copyWith(
-        status: AccountsStatus.success,
-        accountList: accounts,));
+      status: AccountsStatus.success,
+      accountList: accounts,
+    ));
   }
 
   Future<void> categoriesChanged(List<Category> categories) async {
@@ -48,6 +51,9 @@ class AccountsCubit extends Cubit<AccountsState> {
     emit(state.copyWith(status: AccountsStatus.loading));
     try {
       await _accountRepository.deleteAccount(account.id!);
+    } on AccountInUseException catch (e) {
+      emit(state.copyWith(
+          status: AccountsStatus.failure, errorMessage: e.message));
     } catch (e) {
       emit(state.copyWith(
           status: AccountsStatus.failure, errorMessage: 'Unknown error'));
