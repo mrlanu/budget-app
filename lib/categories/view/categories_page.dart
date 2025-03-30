@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:qruto_budget/categories/cubit/categories_cubit.dart';
 import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qruto_budget/database/database.dart';
 
+import '../../shared/shared.dart';
 import '../../transaction/models/transaction_type.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
@@ -36,13 +39,8 @@ class CategoriesView extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == CategoriesStatus.failure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-              ),
-            );
+          SharedFunctions.showSnackbar(
+              context, false, 'Ups', state.errorMessage!);
         }
       },
       builder: (context, state) {
@@ -55,6 +53,16 @@ class CategoriesView extends StatelessWidget {
                 context.pop();
               },
             ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    final db = context.read<AppDatabase>();
+                    state.transactionType == TransactionType.EXPENSE
+                        ? db.insertDefaultCategories(TransactionType.EXPENSE)
+                        : db.insertDefaultCategories(TransactionType.INCOME);
+                  },
+                  icon: Icon(Icons.download))
+            ],
           ),
           body: Column(
             children: [
@@ -89,11 +97,14 @@ class CategoriesView extends StatelessWidget {
                           FaIcon(
                               color: BudgetTheme.isDarkMode(context)
                                   ? Colors.white
-                                  : Colors.black,
+                                  : themeState.primaryColor[700],
                               IconData(category.iconCode,
                                   fontFamily: 'FontAwesomeSolid')),
-                          IconButton(onPressed: () => context.push('/categories/edit/${category.id}?'
-                              'typeIndex=${state.transactionType.index}'), icon: Icon(Icons.chevron_right))
+                          IconButton(
+                              onPressed: () => context.push(
+                                  '/categories/edit/${category.id}?'
+                                  'typeIndex=${state.transactionType.index}'),
+                              icon: Icon(Icons.chevron_right))
                         ],
                       ),
                     );

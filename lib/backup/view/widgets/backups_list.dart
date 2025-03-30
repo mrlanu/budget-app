@@ -1,10 +1,10 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:qruto_budget/backup/backup.dart';
 
+import '../../../shared/shared_functions.dart';
 import '../../../utils/theme/cubit/theme_cubit.dart';
 
 class BackupsList extends StatelessWidget {
@@ -40,7 +40,7 @@ class BackupsList extends StatelessWidget {
                     onPressed: () async {
                       final success =
                           await context.read<BackupCubit>().deleteBackup(file);
-                      _showSnackbar(
+                      SharedFunctions.showSnackbar(
                           context,
                           success,
                           success ? 'Success !' : 'Ups !',
@@ -60,7 +60,7 @@ class BackupsList extends StatelessWidget {
                         final success = await context
                             .read<BackupCubit>()
                             .restoreBackup(file.id!);
-                        _showSnackbar(
+                        SharedFunctions.showSnackbar(
                             context,
                             success,
                             success ? 'Success !' : 'Ups !',
@@ -77,23 +77,5 @@ class BackupsList extends StatelessWidget {
         },
       ),
     );
-  }
-
-  void _showSnackbar(
-      BuildContext context, bool success, String title, String message) {
-    final snackBar = SnackBar(
-      elevation: 0,
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      content: AwesomeSnackbarContent(
-        title: title,
-        message: message,
-        contentType: success ? ContentType.success : ContentType.failure,
-      ),
-    );
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
   }
 }

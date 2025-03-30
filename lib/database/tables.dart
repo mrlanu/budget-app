@@ -8,6 +8,9 @@ class Categories extends Table {
   TextColumn get name => text().withLength(min: 1, max: 50)();
   IntColumn get iconCode => integer()();
   TextColumn get type => text().map(const TransactionTypeConverter())();
+
+  @override
+  List<String> get customConstraints => ['UNIQUE(name, type)'];
 }
 
 // Subcategories Table

@@ -1,6 +1,14 @@
 import '../../database/database.dart';
 import '../../transaction/models/transaction_type.dart';
 
+class CategoryInUseException implements Exception {
+  final String message;
+  CategoryInUseException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 abstract class CategoryRepository {
   Stream<List<Category>> get categories;
 

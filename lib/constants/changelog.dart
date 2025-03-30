@@ -1,11 +1,24 @@
 const changelog = [
   {
+    'version': 'v4.5.0',
+    'date': 'Mar 29, 2025',
+    'titles': [],
+    'added': [
+      'Select a custom range in the Summary',
+      'Predefined income or expense categories',
+      'About section in the Settings page',
+    ],
+    'fixed': [
+      'Category or Account can\'t be deleted if they contain any transaction'
+    ],
+  },
+  {
     'version': 'v4.4.0',
     'date': 'Mar 26, 2025',
     'titles': [],
     'added': [
       'Auto backup to Google Drive',
-      'Restored backup overrides live database'
+      'Restored backup overrides live database',
       'Showing the app\'s current version in the drawer'
     ],
     'fixed': [],

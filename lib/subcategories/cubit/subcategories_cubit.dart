@@ -49,6 +49,9 @@ class SubcategoriesCubit extends Cubit<SubcategoriesState> {
   Future<void> onSubcategoryDeleted(int subcategoryId) async {
     try {
       await _categoryRepository.deleteSubcategory(subcategoryId);
+    } on CategoryInUseException catch (e) {
+      emit(state.copyWith(
+          status: SubcategoriesStatus.failure, errorMessage: e.message));
     } catch (e) {
       emit(state.copyWith(
           status: SubcategoriesStatus.failure, errorMessage: 'Unknown error'));

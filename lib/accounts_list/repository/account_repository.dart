@@ -2,6 +2,15 @@ import 'package:qruto_budget/accounts_list/account_edit/model/account_with_detai
 
 import '../../database/database.dart';
 
+class AccountInUseException implements Exception {
+  final String message;
+
+  AccountInUseException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 abstract class AccountRepository {
   Stream<List<AccountWithDetails>> get accounts;
 
