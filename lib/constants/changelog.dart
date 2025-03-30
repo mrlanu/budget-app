@@ -6,6 +6,7 @@ const changelog = [
     'added': [
       'Select a custom range in the Summary',
       'Predefined income or expense categories',
+      'About section in the Settings page',
     ],
     'fixed': [
       'Category or Account can\'t be deleted if they contain any transaction'

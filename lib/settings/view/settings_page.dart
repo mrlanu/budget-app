@@ -1,11 +1,11 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:qruto_budget/settings/view/widgets/theme_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../database/database.dart';
+import '../settings.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -56,6 +56,7 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           children: [
             ThemeSection(),
+            AboutSection(),
           ],
         ),
       ),
