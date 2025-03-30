@@ -154,6 +154,15 @@ class AppDatabase extends _$AppDatabase {
     return result != null;
   }
 
+  Future<bool> hasTransactionsForSubcategory(int subcategoryId) async {
+    final query = select(transactions)
+      ..where((t) => t.subcategoryId.equals(subcategoryId))
+      ..limit(1); // Only need to find one match
+
+    final result = await query.getSingleOrNull();
+    return result != null;
+  }
+
   Future<int> deleteSubcategory(int id) async {
     return await (delete(subcategories)..where((c) => c.id.equals(id))).go();
   }

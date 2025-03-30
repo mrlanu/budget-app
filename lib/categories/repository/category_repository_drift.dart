@@ -52,8 +52,15 @@ class CategoryRepositoryDrift extends CategoryRepository {
   }
 
   @override
-  Future<int> deleteSubcategory(int subcategoryId) =>
-      _database.deleteSubcategory(subcategoryId);
+  Future<int> deleteSubcategory(int subcategoryId) async {
+    final hasTransactions =
+    await _database.hasTransactionsForSubcategory(subcategoryId);
+    if (hasTransactions) {
+      throw CategoryInUseException(
+          'Can\'t be deleted. Some transactions belong to this subcategory.\n');
+    }
+    return await _database.deleteSubcategory(subcategoryId);
+  }
 
   @override
   Future<Subcategory> getSubcategoryById(int subcategoryId) =>

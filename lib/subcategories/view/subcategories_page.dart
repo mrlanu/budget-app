@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../constants/colors.dart';
 import '../../database/database.dart';
+import '../../shared/shared.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/subcategories_cubit.dart';
@@ -36,13 +37,10 @@ class SubcategoriesView extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == SubcategoriesStatus.failure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-              ),
-            );
+          if (state.status == SubcategoriesStatus.failure) {
+            SharedFunctions.showSnackbar(
+                context, false, 'Ups', state.errorMessage!);
+          }
         }
       },
       builder: (context, state) {
