@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.?.?] - ??-??-????
+## [4.5.0] - 03-29-2025
 ### Added
 - Select a custom range in the Summary
 - Predefined income or expense categories

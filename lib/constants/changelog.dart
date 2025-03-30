@@ -1,7 +1,7 @@
 const changelog = [
   {
-    'version': 'v?.?.?',
-    'date': '??? ??, ????',
+    'version': 'v4.5.0',
+    'date': 'Mar 29, 2025',
     'titles': [],
     'added': [
       'Select a custom range in the Summary',
