@@ -1,4 +1,12 @@
-# Qruto Budget
+<h1 align="center" style="font-size:28px; line-height:1"><b>Qruto budget</b></h1>
+
+<a href="https://cashewapp.web.app/">
+  <div align="center">
+    <img alt="Icon" src="assets/images/piggy_bank.png" width="150px">
+  </div>
+</a>
+
+
 Qruto Budget is a powerful yet easy-to-use personal finance app designed to help you take full control of your money. Built with Flutter for a smooth experience across devices, Qruto makes budgeting simple, convenient, and even a little fun.
 
 Key features include:
@@ -33,4 +41,10 @@ Whether you're budgeting for a vacation, tracking your daily coffee spending, or
   <img src="assets/screenshots/themes.png" alt="MyPic" width="170" style="margin: 10px;">
   <img src="assets/screenshots/dark.png" alt="MyPic" width="170" style="margin: 10px;">
 </p>
+
+<a href="https://cashewapp.web.app/">
+  <div align="center">
+    <img alt="Icon" src="assets/images/logo.png" width="150px">
+  </div>
+</a>
 
