@@ -52,6 +52,13 @@ class AccountRepositoryDrift extends AccountRepository {
           includeInTotal: includeInTotal));
 
   @override
-  Future<int> deleteAccount(int accountId) =>
-      _database.deleteAccount(accountId);
+  Future<int> deleteAccount(int accountId) async {
+    final hasTransactions =
+        await _database.hasTransactionsForAccount(accountId);
+    if (hasTransactions) {
+      throw AccountInUseException(
+          'Can\'t be deleted. Some transactions belong to this account.\n');
+    }
+    return await _database.deleteAccount(accountId);
+  }
 }

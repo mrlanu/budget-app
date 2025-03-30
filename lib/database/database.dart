@@ -68,7 +68,8 @@ class AppDatabase extends _$AppDatabase {
         // Add the custom constraints to the Categories
         if (from == 2) {
           //Rename old table
-          await customStatement('ALTER TABLE categories RENAME TO old_categories;');
+          await customStatement(
+              'ALTER TABLE categories RENAME TO old_categories;');
 
           //Recreate table with new constraints (name & type)
           await m.createTable(categories);
@@ -144,6 +145,15 @@ class AppDatabase extends _$AppDatabase {
     return await (delete(categories)..where((c) => c.id.equals(id))).go();
   }
 
+  Future<bool> hasTransactionsForCategory(int categoryId) async {
+    final query = select(transactions)
+      ..where((t) => t.categoryId.equals(categoryId))
+      ..limit(1); // Only need to find one match
+
+    final result = await query.getSingleOrNull();
+    return result != null;
+  }
+
   Future<int> deleteSubcategory(int id) async {
     return await (delete(subcategories)..where((c) => c.id.equals(id))).go();
   }
@@ -184,6 +194,18 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> deleteAccount(int id) async {
     return await (delete(accounts)..where((c) => c.id.equals(id))).go();
+  }
+
+  Future<bool> hasTransactionsForAccount(int accountId) async {
+    final query = select(transactions)
+      ..where((t) => Expression.or([
+            t.fromAccountId.equals(accountId),
+            t.toAccountId.equals(accountId),
+          ]))
+      ..limit(1); // Only need to find one match
+
+    final result = await query.getSingleOrNull();
+    return result != null;
   }
 
   Future<Account> accountById(int id) {

@@ -33,6 +33,9 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(state.copyWith(status: CategoriesStatus.loading));
     try {
       await _categoryRepository.deleteCategory(category.id);
+    } on CategoryInUseException catch (e) {
+      emit(state.copyWith(
+          status: CategoriesStatus.failure, errorMessage: e.message));
     } catch (e) {
       emit(state.copyWith(
           status: CategoriesStatus.failure, errorMessage: 'Unknown error'));

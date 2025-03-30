@@ -1,6 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:qruto_budget/backup/cubit/backup_cubit.dart';
 import 'package:qruto_budget/constants/changelog.dart';
+import 'package:qruto_budget/shared/shared_snackbar.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,21 +50,9 @@ class BackgroundWorker {
     if (dateLastAutoBackup == null ||
         DateTime.now().difference(dateLastAutoBackup).inHours > 24) {
       final success = await context.read<BackupCubit>().autoBackup();
-      if(success){
-        final snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Auto Backup !',
-            message: 'Auto Backup has been uploaded.',
-            contentType: ContentType.success,
-          ),
-        );
-
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
+      if (success) {
+        SharedFunctions.showSnackbar(
+            context, true, 'Auto Backup !', 'Auto Backup has been uploaded.');
       }
     }
   }

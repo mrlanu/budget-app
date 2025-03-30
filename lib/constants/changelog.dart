@@ -7,7 +7,9 @@ const changelog = [
       'Select a custom range in the Summary',
       'Predefined income or expense categories',
     ],
-    'fixed': [],
+    'fixed': [
+      'Category or Account can\'t be deleted if they contain any transaction'
+    ],
   },
   {
     'version': 'v4.4.0',

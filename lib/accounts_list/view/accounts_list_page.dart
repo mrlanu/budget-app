@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/shared.dart';
 import '../../utils/theme/budget_theme.dart';
 import '../../utils/theme/cubit/theme_cubit.dart';
 import '../cubit/accounts_cubit.dart';
@@ -36,13 +37,8 @@ class AccountsListView extends StatelessWidget {
                 previous.status != current.status,
             listener: (context, state) {
               if (state.status == AccountsStatus.failure) {
-                ScaffoldMessenger.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Text(state.errorMessage!),
-                    ),
-                  );
+                SharedFunctions.showSnackbar(
+                    context, false, 'Ups', state.errorMessage!);
               }
             },
           ),
@@ -73,8 +69,7 @@ class AccountsListView extends StatelessWidget {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.highlight_remove,
-                                    color:
-                                        Theme.of(context).colorScheme.error),
+                                    color: Theme.of(context).colorScheme.error),
                                 onPressed: () {
                                   context
                                       .read<AccountsCubit>()
@@ -99,8 +94,8 @@ class AccountsListView extends StatelessWidget {
                                   IconData(account.category.iconCode,
                                       fontFamily: 'FontAwesomeSolid')),
                               IconButton(
-                                onPressed: () => context.push(
-                                    '/accounts-list/edit/${account.id}'),
+                                onPressed: () => context
+                                    .push('/accounts-list/edit/${account.id}'),
                                 icon: Icon(Icons.chevron_right),
                               )
                             ],
