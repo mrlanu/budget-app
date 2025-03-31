@@ -32,38 +32,36 @@ class BackupPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text('Backup', style: TextStyle(fontSize: 30.sp)),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                context.pop();
-              },
-            ),
-          ),
-          body: BlocBuilder<BackupCubit, BackupState>(
-            builder: (context, state) {
-              return state.isAuthCheckingStatus
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : state.isAuthenticated
-                      ? Padding(
-                          padding: const EdgeInsets.only(bottom: 25.0),
-                          child: Column(
-                            children: [
-                              GoogleProfile(state: state),
-                              Expanded(child: BackupsList(state: state)),
-                              BackupButton(state: state)
-                            ],
-                          ),
-                        )
-                      : SignInButton();
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Backup', style: TextStyle(fontSize: 30.sp)),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              context.pop();
             },
-          )),
-    );
+          ),
+        ),
+        body: BlocBuilder<BackupCubit, BackupState>(
+          builder: (context, state) {
+            return state.isAuthCheckingStatus
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : state.isAuthenticated
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 25.0),
+                        child: Column(
+                          children: [
+                            GoogleProfile(state: state),
+                            Expanded(child: BackupsList(state: state)),
+                            BackupButton(state: state)
+                          ],
+                        ),
+                      )
+                    : SignInButton();
+          },
+        ));
   }
 }

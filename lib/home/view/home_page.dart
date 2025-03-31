@@ -85,15 +85,13 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          body: Stack(children: [
-        HomeMobilePage(
-          navigationShell: widget.navigationShell,
-          onDrawer: _toggleDrawer,
-        ),
-        _buildDrawer(),
-      ])),
-    );
+    return Scaffold(
+        body: Stack(children: [
+      HomeMobilePage(
+        navigationShell: widget.navigationShell,
+        onDrawer: _toggleDrawer,
+      ),
+      _buildDrawer(),
+    ]));
   }
 }

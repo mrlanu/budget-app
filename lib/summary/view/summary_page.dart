@@ -130,61 +130,59 @@ class _SummaryPageState extends State<SummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar:
-            AppBar(title: Text('Summary', style: TextStyle(fontSize: 30.sp))),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SummaryTile(
-                      callback: _pickDateRange,
-                      title:
-                          '${DateFormat('MMM dd, yyyy').format(selectedRange.start)} - ${DateFormat('MMM dd, yyyy').format(selectedRange.end)}',
-                      income: dataForRange[0],
-                      expenses: dataForRange[1]),
-                ],
-              ),
-              FutureBuilder(
-                future: _calculateSummary(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(
-                      children: [
-                        SummaryTile(
-                            title:
-                                'Year: ${DateFormat('yyyy').format(DateTime.now())}',
-                            income: snapshot.data![0],
-                            expenses: snapshot.data![1]),
-                        SummaryTile(
-                            title:
-                                'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
-                            income: snapshot.data![2],
-                            expenses: snapshot.data![3]),
-                        SummaryTile(
-                            title:
-                                'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
-                            income: snapshot.data![4],
-                            expenses: snapshot.data![5]),
-                        SummaryTile(
-                            title:
-                                'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
-                            income: snapshot.data![6],
-                            expenses: snapshot.data![7]),
-                      ],
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
+    return Scaffold(
+      appBar:
+          AppBar(title: Text('Summary', style: TextStyle(fontSize: 30.sp))),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SummaryTile(
+                    callback: _pickDateRange,
+                    title:
+                        '${DateFormat('MMM dd, yyyy').format(selectedRange.start)} - ${DateFormat('MMM dd, yyyy').format(selectedRange.end)}',
+                    income: dataForRange[0],
+                    expenses: dataForRange[1]),
+              ],
+            ),
+            FutureBuilder(
+              future: _calculateSummary(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Column(
+                    children: [
+                      SummaryTile(
+                          title:
+                              'Year: ${DateFormat('yyyy').format(DateTime.now())}',
+                          income: snapshot.data![0],
+                          expenses: snapshot.data![1]),
+                      SummaryTile(
+                          title:
+                              'Month: ${DateFormat('MMM yyyy').format(DateTime.now())}',
+                          income: snapshot.data![2],
+                          expenses: snapshot.data![3]),
+                      SummaryTile(
+                          title:
+                              'Week: ${DateFormat('MMM dd').format(DateTime.now().subtract(Duration(days: DateTime.now().day)))} - ${DateFormat('MMM dd').format(DateTime.now().add(Duration(days: 6 - DateTime.now().day)))}',
+                          income: snapshot.data![4],
+                          expenses: snapshot.data![5]),
+                      SummaryTile(
+                          title:
+                              'Day: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}',
+                          income: snapshot.data![6],
+                          expenses: snapshot.data![7]),
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
