@@ -1,5 +1,14 @@
 const changelog = [
   {
+    'version': 'v4.5.1',
+    'date': 'Apr 25, 2025',
+    'titles': [],
+    'added': [],
+    'fixed': [
+      'Edge-to-edge for API 35'
+    ],
+  },
+  {
     'version': 'v4.5.0',
     'date': 'Mar 29, 2025',
     'titles': [],
