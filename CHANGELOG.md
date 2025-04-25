@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.5.1] - 04-25-2025
+### Fixed
+- Edge-to-edge for API 35
+
 ## [4.5.0] - 03-29-2025
 ### Added
 - Select a custom range in the Summary
