@@ -36,18 +36,14 @@ class TrendChartPage extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 30, horizontal: 8),
-                              child: BlocBuilder<ChartCubit, ChartState>(
-                                builder: (context, state) {
-                                  return BarChart(
-                                    dataPoints: state.dataPointsGrouped,
-                                    labels: state.titles,
-                                    isGrouped: true,
-                                  );
-                                },
+                              child: BarChart(
+                                dataPoints: state.dataPointsGrouped,
+                                labels: state.titles,
+                                isGrouped: true,
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          IncludeCurrentMonthSwitch(),
                           //Divider(color: BudgetColors.teal900, indent: 20, endIndent: 20,),
                           Expanded(child: TrendTable())
                         ],

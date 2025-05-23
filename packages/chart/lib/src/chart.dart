@@ -105,7 +105,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
   void didUpdateWidget(covariant _BarChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.dataPoints != oldWidget.dataPoints) {
-      updateData(widget.dataPoints);
+      updateData(widget.dataPoints, widget.labels);
     }
   }
 
@@ -115,7 +115,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void updateData(List<double> newData) {
+  void updateData(List<double> newData, List<String> newLabels) {
     var maxBar = newData.reduce(max);
     if (maxBar == 0) {
       maxBar = 1.0;
@@ -125,6 +125,7 @@ class _BarChartState extends State<_BarChart> with TickerProviderStateMixin {
       _tappedIndex = -1;
       _dataPoints = newData;
       maxBarHeight = maxBar;
+      _labels = newLabels;
       tween = BarChartTween(
           tween.evaluate(controller),
           BarChartModel.fromArray(
