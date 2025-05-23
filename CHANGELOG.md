@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.6.0] - ??-??-????
+## [4.6.0] - 05-23-2025
 ### Added
 - A switch to the charts which will either include or exclude the current month
 

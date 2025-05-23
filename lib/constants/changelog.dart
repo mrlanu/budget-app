@@ -1,7 +1,7 @@
 const changelog = [
   {
     'version': 'v4.6.0',
-    'date': '??? ??, ????',
+    'date': 'May 23, 2025',
     'titles': [],
     'added': [
       'A switch to the charts which will either include or exclude the current month',
