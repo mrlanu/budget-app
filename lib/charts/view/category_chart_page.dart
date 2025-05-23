@@ -16,56 +16,42 @@ class CategoryChartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ChartCubit(
-          chartRepository: context.read<ChartRepository>(),
-          categoryRepository: context.read<CategoryRepository>())
-        ..fetchCategoryChart(),
-      child: CategoryChartView(),
-    );
-  }
-}
-
-class CategoryChartView extends StatelessWidget {
-  const CategoryChartView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ChartCubit, ChartState>(
-      builder: (context, state) => Scaffold(
-          appBar: AppBar(
-              title: Text(state.category?.name ?? '',
-                  style: TextStyle(fontSize: 30.sp)),
-              actions: [CategoryTypeSelectButton()]),
-          body: Center(
-              child: state.status == ChartStatus.loading
-                  ? CircularProgressIndicator()
-                  : Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1.3 / 1,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 30, horizontal: 8),
-                            child: BlocBuilder<ChartCubit, ChartState>(
-                              builder: (context, state) {
-                                return BarChart(
-                                  dataPoints: state.dataPoints,
-                                  labels: state.titles,
-                                  isGrouped: false,
-                                  firstColor: state.categoryType == 'Expenses'
-                                      ? Colors.red
-                                      : Colors.green,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        CategoryInput(),
-                        SubcategoryInput(),
-                        Expanded(child: CategoryTable())
-                      ],
-                    ))),
-    );
+        create: (context) => ChartCubit(
+            chartRepository: context.read<ChartRepository>(),
+            categoryRepository: context.read<CategoryRepository>())
+          ..fetchCategoryChart(),
+        child: BlocBuilder<ChartCubit, ChartState>(
+            builder: (context, state) => Scaffold(
+                appBar: AppBar(
+                    title: Text(state.category?.name ?? '',
+                        style: TextStyle(fontSize: 30.sp)),
+                    actions: [CategoryTypeSelectButton()]),
+                body: Center(
+                    child: state.status == ChartStatus.loading
+                        ? CircularProgressIndicator()
+                        : Column(
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 1.3 / 1,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 30, horizontal: 8),
+                                  child: BarChart(
+                                    dataPoints: state.dataPoints,
+                                    labels: state.titles,
+                                    isGrouped: false,
+                                    firstColor: state.categoryType == 'Expenses'
+                                        ? Colors.red
+                                        : Colors.green,
+                                  ),
+                                ),
+                              ),
+                              CategoryInput(),
+                              SubcategoryInput(),
+                              IncludeCurrentMonthSwitch(),
+                              Expanded(child: CategoryTable())
+                            ],
+                          )))));
   }
 }
 

@@ -75,4 +75,8 @@ class ChartCubit extends Cubit<ChartState> {
     emit(state.copyWith(categoryType: categoryType));
     fetchCategoryChart();
   }
+
+  void switchMonth(bool value) {
+    emit(state.copyWith(includeCurrentMonth: value));
+  }
 }

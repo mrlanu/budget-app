@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.6.0] - 05-23-2025
+### Added
+- A switch to the charts which will either include or exclude the current month
+
 ## [4.5.1] - 04-25-2025
 ### Fixed
 - Edge-to-edge for API 35

@@ -4,12 +4,19 @@ enum ChartStatus { loading, success, failure }
 
 class ChartState extends Equatable {
   final ChartStatus status;
-  final List<YearMonthSum> data;
+  final List<YearMonthSum> _data;
   final List<Category> categories;
   final Category? category;
   final List<Subcategory> subcategories;
   final Subcategory? subcategory;
   final String categoryType;
+  final bool includeCurrentMonth;
+
+  List<YearMonthSum> get data {
+    return includeCurrentMonth
+        ? _data.sublist(1)
+        : _data.sublist(0, _data.length - 1);
+  }
 
   List<String> get titles {
     return data.map((e) => e.date.month.toString()).toList();
@@ -40,12 +47,13 @@ class ChartState extends Equatable {
 
   const ChartState(
       {this.status = ChartStatus.loading,
-      this.data = const <YearMonthSum>[],
+        List<YearMonthSum> data = const <YearMonthSum>[],
       this.categories = const [],
       this.category,
       this.subcategories = const [],
       this.subcategory,
-      this.categoryType = 'Expenses'});
+      this.categoryType = 'Expenses',
+      this.includeCurrentMonth = false}) : _data = data;
 
   ChartState copyWith(
       {ChartStatus? status,
@@ -54,25 +62,28 @@ class ChartState extends Equatable {
       Category? category,
       List<Subcategory>? subcategories,
       Subcategory? Function()? subcategory,
-      String? categoryType}) {
+      String? categoryType,
+      bool? includeCurrentMonth}) {
     return ChartState(
         status: status ?? this.status,
-        data: data ?? this.data,
+        data: data ?? this._data,
         categories: categories ?? this.categories,
         category: category ?? this.category,
         subcategory: subcategory != null ? subcategory() : this.subcategory,
         subcategories: subcategories ?? this.subcategories,
-        categoryType: categoryType ?? this.categoryType);
+        categoryType: categoryType ?? this.categoryType,
+        includeCurrentMonth: includeCurrentMonth ?? this.includeCurrentMonth);
   }
 
   @override
   List<Object?> get props => [
         status,
-        data,
+        _data,
         categories,
         category,
         subcategory,
         subcategories,
-        categoryType
+        categoryType,
+        includeCurrentMonth
       ];
 }

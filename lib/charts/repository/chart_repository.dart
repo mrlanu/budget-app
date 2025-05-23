@@ -23,9 +23,11 @@ class ChartRepositoryDrift extends ChartRepository {
   }
 
   Future<List<YearMonthSum>> _getSumsOfIncomesExpensesForYearByMonth() async {
-    final today = DateTime.now();
-    final dateEnd = DateTime(today.year, today.month + 1, 0, 23, 59, 59);
-    final dateStart = DateTime(dateEnd.year - 1, dateEnd.month, 1, 0, 0, 0);
+    final now = DateTime.now();
+    // Start: One year ago at 00:00:00
+    final dateStart = DateTime(now.year - 1, now.month, now.day, 0, 0, 0);
+    // End: Today at 23:59:59
+    final dateEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     // Fetch transactions for the past year
     final transactions = await (_database.select(_database.transactions)
@@ -46,7 +48,7 @@ class ChartRepositoryDrift extends ChartRepository {
 
     // Generate the result for each month in the past year
     final result = <YearMonthSum>[];
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i <= 12; i++) {
       final month = DateTime(dateStart.year, dateStart.month + i, 1);
       final expenseSum =
           groupedTransactions[TransactionType.EXPENSE]?[month] ?? 0.0;
@@ -73,9 +75,11 @@ class ChartRepositoryDrift extends ChartRepository {
 
   Future<List<YearMonthSum>> _getSumsByCategoryAndMonth(
       bool isCategory, int categoryId) async {
-    final today = DateTime.now();
-    final dateEnd = DateTime(today.year, today.month + 1, 0, 23, 59, 59);
-    final dateStart = DateTime(dateEnd.year - 1, dateEnd.month, 1, 0, 0, 0);
+    final now = DateTime.now();
+    // Start: One year ago at 00:00:00
+    final dateStart = DateTime(now.year - 1, now.month, now.day, 0, 0, 0);
+    // End: Today at 23:59:59
+    final dateEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     // Fetch transactions for the past year
     final transactions = isCategory
@@ -99,7 +103,7 @@ class ChartRepositoryDrift extends ChartRepository {
 
     // Generate the result for each month in the past year
     final result = <YearMonthSum>[];
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i <= 12; i++) {
       final month = DateTime(dateStart.year, dateStart.month + i, 1);
       final expenseSum = monthlySums[month] ?? 0.0;
 
