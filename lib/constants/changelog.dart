@@ -1,12 +1,19 @@
 const changelog = [
   {
+    'version': 'v4.6.0',
+    'date': '??? ??, ????',
+    'titles': [],
+    'added': [
+      'A switch to the charts which will either include or exclude the current month',
+    ],
+    'fixed': [],
+  },
+  {
     'version': 'v4.5.1',
     'date': 'Apr 25, 2025',
     'titles': [],
     'added': [],
-    'fixed': [
-      'Edge-to-edge for API 35'
-    ],
+    'fixed': ['Edge-to-edge for API 35'],
   },
   {
     'version': 'v4.5.0',
