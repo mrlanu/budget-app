@@ -1,7 +1,7 @@
 const changelog = [
   {
-    'version': 'v4.?.?',
-    'date': '??? ??, ????',
+    'version': 'v4.6.1',
+    'date': 'Aug 07, 2025',
     'titles': [],
     'added': [],
     'fixed': [
