@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.6.1] - 08-07-2025
+### Added
+
+### Fixed
+- First month of the chart\'s range started with wrong day
+
 ## [4.6.0] - 05-23-2025
 ### Added
 - A switch to the charts which will either include or exclude the current month

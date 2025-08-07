@@ -25,7 +25,7 @@ class ChartRepositoryDrift extends ChartRepository {
   Future<List<YearMonthSum>> _getSumsOfIncomesExpensesForYearByMonth() async {
     final now = DateTime.now();
     // Start: One year ago at 00:00:00
-    final dateStart = DateTime(now.year - 1, now.month, now.day, 0, 0, 0);
+    final dateStart = DateTime(now.year - 1, now.month, 1, 0, 0, 0);
     // End: Today at 23:59:59
     final dateEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
@@ -77,7 +77,7 @@ class ChartRepositoryDrift extends ChartRepository {
       bool isCategory, int categoryId) async {
     final now = DateTime.now();
     // Start: One year ago at 00:00:00
-    final dateStart = DateTime(now.year - 1, now.month, now.day, 0, 0, 0);
+    final dateStart = DateTime(now.year - 1, now.month, 1, 0, 0, 0);
     // End: Today at 23:59:59
     final dateEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 

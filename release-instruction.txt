@@ -1,0 +1,10 @@
+git checkout -b release-*.*.* develop
+git commit -a -m "docs: bump version to *.*.*"
+git checkout master
+git merge --no-ff release-*.*.*
+git tag -a v*.*.* -m "Release version *.*.*"
+git push origin v*.*.*
+git checkout develop
+git merge --no-ff release-4.6.0
+git branch -d release-*.*.*
+

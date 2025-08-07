@@ -1,5 +1,14 @@
 const changelog = [
   {
+    'version': 'v4.6.1',
+    'date': 'Aug 07, 2025',
+    'titles': [],
+    'added': [],
+    'fixed': [
+      'First month of the chart\'s range started with wrong day'
+    ],
+  },
+  {
     'version': 'v4.6.0',
     'date': 'May 23, 2025',
     'titles': [],
