@@ -16,7 +16,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.29.1  # Adjust to your Flutter version
+          flutter-version: 3.38.1  # Adjust to your Flutter version
 
       - name: Setup Java
         uses: actions/setup-java@v3

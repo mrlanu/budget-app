@@ -1,11 +1,11 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/home/mrlanu/snap/flutter/common/flutter"
+export "FLUTTER_ROOT=/home/mrlanu/flutter"
 export "FLUTTER_APPLICATION_PATH=/home/mrlanu/development/flutter/budget-app"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=4.5.0"
-export "FLUTTER_BUILD_NUMBER=13"
+export "FLUTTER_BUILD_NAME=4.6.1"
+export "FLUTTER_BUILD_NUMBER=16"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"
