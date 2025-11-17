@@ -1,6 +1,6 @@
 name: qruto_budget
 description: A Budget app.
-version: 4.6.1+16
+version: 4.7.0+17
 publish_to: none
 
 
@@ -9,7 +9,7 @@ environment:
   flutter: ">=3.1.0 <4.0.0"
 
 dependencies:
-  intl: ^0.19.0
+  intl: ^0.20.2
   bloc: ^9.0.0
   rxdart: ^0.28.0
   equatable: ^2.0.3
@@ -17,7 +17,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.0
   formz: ^0.8.0
-  google_fonts: ^6.2.1
+  google_fonts: ^6.3.2
   meta: ^1.7.0
   http: ^1.1.0
   chart:
@@ -32,8 +32,8 @@ dependencies:
   hydrated_bloc: ^10.0.0
   path_provider: ^2.0.8
   animations: ^2.0.11
-  drift: ^2.26.0
-  drift_flutter: ^0.2.4
+  drift: ^2.29.0
+  drift_flutter: ^0.2.7
   json_annotation: ^4.8.1
   shared_preferences: ^2.5.3
   package_info_plus: ^8.3.0
@@ -54,7 +54,7 @@ dev_dependencies:
   plugin_platform_interface: ^2.1.4
   very_good_analysis: ^7.0.0
   flutter_launcher_icons: ^0.14.3
-  drift_dev: ^2.26.0
+  drift_dev: ^2.29.0
 
 flutter_launcher_icons:
   android: true

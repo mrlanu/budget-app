@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.7.0] - 11-16-2025
+### Added
+- Support 16 KB memory page sizes
+
+### Fixed
+
 ## [4.6.1] - 08-07-2025
 ### Added
 
