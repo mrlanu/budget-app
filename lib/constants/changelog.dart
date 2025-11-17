@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.7.0',
+    'date': 'Nov 16, 2025',
+    'titles': [],
+    'added': ['Support 16 KB memory page sizes'],
+    'fixed': [],
+  },
+  {
     'version': 'v4.6.1',
     'date': 'Aug 07, 2025',
     'titles': [],
