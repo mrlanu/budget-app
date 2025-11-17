@@ -37,8 +37,8 @@ class BudgetTheme {
         scaffoldBackgroundColor: Color(0xFF272727),
         textTheme: _buildDarkTextTheme(),
         appBarTheme: BudgetAppBarTheme(seedColors).dark,
-        cardTheme: CardTheme(color: BudgetColors.darkerGrey),
-        dialogTheme: DialogTheme(
+        cardTheme: CardThemeData(color: BudgetColors.darkerGrey),
+        dialogTheme: DialogThemeData(
           backgroundColor: BudgetColors.darkerGrey,
         ),
         floatingActionButtonTheme: BudgetFloatingButtonTheme(seedColors).dark,
