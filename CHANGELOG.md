@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.8.0] - 12-30-2025
+### Added
+- Summary bar
+- New navigation bar
+### Fixed
+- Title of transaction
+- Snackbar after delete transaction
+
 ## [4.7.0] - 11-16-2025
 ### Added
 - Support 16 KB memory page sizes
