@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qruto_budget/accounts_list/view/accounts_list_page.dart';
 import 'package:qruto_budget/categories/view/categories_page.dart';
+import 'package:qruto_budget/home/view/widgets/home_navbar.dart';
 import 'package:qruto_budget/transfer/transfer.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class HomeMobilePage extends StatelessWidget {
           },
         ),
         bottomNavigationBar:
-            HomeBottomNavBar(navigationShell: navigationShell));
+            HomeNavBar(navigationShell: navigationShell));
   }
 
   PreferredSizeWidget _buildSummaryBar(

@@ -1,6 +1,7 @@
 import 'package:qruto_budget/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qruto_budget/utils/theme/navigation_bar_theme.dart';
 
 import '../utils.dart';
 
@@ -20,8 +21,7 @@ class BudgetTheme {
         textTheme: _buildLightTextTheme(),
         appBarTheme: BudgetAppBarTheme(seedColors).light,
         floatingActionButtonTheme: BudgetFloatingButtonTheme(seedColors).light,
-        bottomNavigationBarTheme:
-            BudgetBottomNavigationBarTheme(color: seedColors).light,
+        navigationBarTheme: BudgetNavigationBarTheme(color: seedColors).light,
         drawerTheme: BudgetDrawerTheme.light,
         checkboxTheme: BudgetCheckboxTheme(seedColors).lightCheckboxTheme,
         cardColor: seedColors.primaryColor.shade100,
@@ -42,8 +42,7 @@ class BudgetTheme {
           backgroundColor: BudgetColors.darkerGrey,
         ),
         floatingActionButtonTheme: BudgetFloatingButtonTheme(seedColors).dark,
-        bottomNavigationBarTheme:
-            BudgetBottomNavigationBarTheme(color: seedColors).dark,
+        navigationBarTheme: BudgetNavigationBarTheme(color: seedColors).dark,
         inputDecorationTheme: BudgetTextFormFieldTheme.dark,
         drawerTheme: BudgetDrawerTheme.dark,
         splashColor: Colors.transparent,
