@@ -161,7 +161,7 @@ class HomeState extends Equatable {
     this.categories = const [],
     this.subcategories = const [],
     this.selectedDate,
-    this.tab = HomeTab.expenses,
+    this.tab = HomeTab.accounts,
     this.errorMessage,
     this.lastDeletedTransaction,
   });

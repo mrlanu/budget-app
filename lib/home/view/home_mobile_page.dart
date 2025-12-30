@@ -1,6 +1,9 @@
 import 'package:animations/animations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qruto_budget/accounts_list/view/accounts_list_page.dart';
 import 'package:qruto_budget/categories/view/categories_page.dart';
+import 'package:qruto_budget/home/view/widgets/home_navbar.dart';
 import 'package:qruto_budget/transfer/transfer.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +28,9 @@ class HomeMobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const bottomH = 60.0;
+    final colorState = context.read<ThemeCubit>().state;
+
     return Scaffold(
         appBar: AppBar(
           title: MonthPaginator(
@@ -40,6 +46,8 @@ class HomeMobilePage extends StatelessWidget {
               },
             ),
           ],
+          bottom: _buildSummaryBar(
+              size: bottomH, color: colorState.primaryColor[300]!),
         ),
         body: navigationShell,
         floatingActionButton: Builder(
@@ -53,7 +61,123 @@ class HomeMobilePage extends StatelessWidget {
           },
         ),
         bottomNavigationBar:
-            HomeBottomNavBar(navigationShell: navigationShell));
+            HomeNavBar(navigationShell: navigationShell));
+  }
+
+  PreferredSizeWidget _buildSummaryBar(
+      {required double size, required Color color}) {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(size),
+      child: Container(
+        color: color,
+        height: size,
+        child: SizedBox.expand(
+          child: Builder(builder: (context) {
+            final state = context.watch<HomeCubit>().state;
+            final balance = state.incomes - state.expenses;
+            return state.tab.index == HomeTab.accounts.index
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              text: '\$ ',
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: state.accountsTotal.toStringAsFixed(2),
+                                  style: TextStyle(
+                                    fontSize: 25.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            'total balance',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        ],
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _getBalanceItem(
+                        amount: state.expenses,
+                        selectedTab: HomeTab.expenses == state.tab,
+                        label: 'expenses',
+                      ),
+                      _getBalanceItem(
+                        amount: state.incomes,
+                        selectedTab: HomeTab.income == state.tab,
+                        label: 'income',
+                      ),
+                      Stack(
+                        children: [
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    text: '\$ ',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: balance.toStringAsFixed(2),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Text(
+                                  'balance',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                          balance > 0
+                              ? Container()
+                              : const Positioned(
+                                  bottom: 10,
+                                  right: 0,
+                                  child: FaIcon(
+                                    size: 14,
+                                    color: Colors.white,
+                                    FontAwesomeIcons.triangleExclamation,
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ],
+                  );
+          }),
+        ),
+      ),
+    );
   }
 
   Widget _buildActionButton() {
@@ -115,6 +239,44 @@ class HomeMobilePage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _getBalanceItem({
+    required double amount,
+    required bool selectedTab,
+    required String label,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: '\$ ',
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: selectedTab ? Colors.white : Colors.white60),
+            children: <TextSpan>[
+              TextSpan(
+                  text: '${amount.toStringAsFixed(2)}',
+                  style: selectedTab
+                      ? TextStyle(
+                          color: Colors.white,
+                          fontSize: 25.sp,
+                          fontWeight: FontWeight.w900)
+                      : TextStyle(
+                          color: Colors.white60,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.normal)),
+            ],
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(color: selectedTab ? Colors.white : Colors.white60),
+        )
+      ],
     );
   }
 }

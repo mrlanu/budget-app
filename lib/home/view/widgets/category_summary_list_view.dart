@@ -67,7 +67,7 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
               messenger
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  SnackBar(
+                  SnackBar(showCloseIcon: true,closeIconColor: Colors.black,
                     backgroundColor: BudgetColors.warning,
                     content: Text('Transaction has been deleted.',
                         style: TextStyle(
