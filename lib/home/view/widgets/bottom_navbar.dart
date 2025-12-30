@@ -14,13 +14,12 @@ class HomeBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeState = context.read<ThemeCubit>().state;
     return Container(
       height: 82,
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
           return BottomNavigationBar(
-            currentIndex: navigationShell.currentIndex,
+            currentIndex: state.tab.index,
             onTap: (index) {
               navigationShell.goBranch(
                 index,
