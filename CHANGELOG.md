@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.8.1] - 12-31-2025
+### Added
+- New style to summary bar
+### Fixed
+- Notes of transaction
+
 ## [4.8.0] - 12-30-2025
 ### Added
 - Summary bar
