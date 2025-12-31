@@ -3,8 +3,8 @@ part of 'home_cubit.dart';
 enum HomeStatus { initial, loading, success, failure }
 
 enum HomeTab {
-  expenses(name: 'EXPENSE'),
   income(name: 'INCOME'),
+  expenses(name: 'EXPENSE'),
   accounts(name: 'ACCOUNTS');
 
   final String name;

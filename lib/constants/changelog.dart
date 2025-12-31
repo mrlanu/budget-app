@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.8.1',
+    'date': 'Dec 31, 2025',
+    'titles': [],
+    'added': ['New style to summary bar'],
+    'fixed': ['Notes of transaction'],
+  },
+  {
     'version': 'v4.8.0',
     'date': 'Dec 30, 2025',
     'titles': [],
