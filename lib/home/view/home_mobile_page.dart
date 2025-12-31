@@ -28,7 +28,7 @@ class HomeMobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const bottomH = 60.0;
+    const bottomH = 48.0;
     final colorState = context.read<ThemeCubit>().state;
 
     return Scaffold(
@@ -47,7 +47,7 @@ class HomeMobilePage extends StatelessWidget {
             ),
           ],
           bottom: _buildSummaryBar(
-              size: bottomH, color: colorState.primaryColor[300]!),
+              size: bottomH, color: colorState.primaryColor),
         ),
         body: navigationShell,
         floatingActionButton: Builder(
@@ -55,21 +55,27 @@ class HomeMobilePage extends StatelessWidget {
             final tab = context.select((HomeCubit cubit) => cubit.state.tab);
             return _buildFab(
                 context,
-                tab.index == 0
+                tab.index == HomeTab.expenses.index
                     ? TransactionType.EXPENSE
                     : TransactionType.INCOME);
           },
         ),
-        bottomNavigationBar:
-            HomeNavBar(navigationShell: navigationShell));
+        bottomNavigationBar: HomeNavBar(navigationShell: navigationShell));
   }
 
   PreferredSizeWidget _buildSummaryBar(
-      {required double size, required Color color}) {
+      {required double size, required MaterialColor color}) {
     return PreferredSize(
       preferredSize: Size.fromHeight(size),
       child: Container(
-        color: color,
+        decoration: BoxDecoration(color: color[300],
+          border: Border(
+            bottom: BorderSide(
+              color: color[50]!,
+              width: 2,
+            ),
+          ),
+        ),
         height: size,
         child: SizedBox.expand(
           child: Builder(builder: (context) {
@@ -87,7 +93,7 @@ class HomeMobilePage extends StatelessWidget {
                             text: TextSpan(
                               text: '\$ ',
                               style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -95,7 +101,7 @@ class HomeMobilePage extends StatelessWidget {
                                 TextSpan(
                                   text: state.accountsTotal.toStringAsFixed(2),
                                   style: TextStyle(
-                                    fontSize: 25.sp,
+                                    fontSize: 30.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
@@ -103,10 +109,10 @@ class HomeMobilePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Text(
+                          /*Text(
                             'total balance',
                             style: TextStyle(color: Colors.white),
-                          )
+                          )*/
                         ],
                       ),
                     ],
@@ -116,61 +122,48 @@ class HomeMobilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       _getBalanceItem(
-                        amount: state.expenses,
-                        selectedTab: HomeTab.expenses == state.tab,
-                        label: 'expenses',
-                      ),
-                      _getBalanceItem(
                         amount: state.incomes,
                         selectedTab: HomeTab.income == state.tab,
                         label: 'income',
                       ),
-                      Stack(
-                        children: [
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    text: '\$ ',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: balance.toStringAsFixed(2),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.normal,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Text(
-                                  'balance',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
+                      Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 25.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      _getBalanceItem(
+                        amount: state.expenses,
+                        selectedTab: HomeTab.expenses == state.tab,
+                        label: 'expenses',
+                      ),
+                      Text(
+                        '=',
+                        style: TextStyle(
+                          fontSize: 25.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: '\$ ',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          balance > 0
-                              ? Container()
-                              : const Positioned(
-                                  bottom: 10,
-                                  right: 0,
-                                  child: FaIcon(
-                                    size: 14,
-                                    color: Colors.white,
-                                    FontAwesomeIcons.triangleExclamation,
-                                  ),
-                                ),
-                        ],
+                          children: [
+                            TextSpan(
+                              text: balance.toStringAsFixed(2),
+                              style: TextStyle(
+                                fontSize: 25.sp,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   );
@@ -187,7 +180,7 @@ class HomeMobilePage extends StatelessWidget {
         return navigationShell.currentIndex == 2
             ? AccountsListPage()
             : CategoriesPage(
-                transactionType: navigationShell.currentIndex == 0
+                transactionType: navigationShell.currentIndex == 1
                     ? TransactionType.EXPENSE
                     : TransactionType.INCOME);
       },
@@ -263,19 +256,19 @@ class HomeMobilePage extends StatelessWidget {
                   style: selectedTab
                       ? TextStyle(
                           color: Colors.white,
-                          fontSize: 25.sp,
-                          fontWeight: FontWeight.w900)
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.bold)
                       : TextStyle(
                           color: Colors.white60,
-                          fontSize: 20.sp,
+                          fontSize: 25.sp,
                           fontWeight: FontWeight.normal)),
             ],
           ),
         ),
-        Text(
+        /*Text(
           label,
           style: TextStyle(color: selectedTab ? Colors.white : Colors.white60),
-        )
+        )*/
       ],
     );
   }

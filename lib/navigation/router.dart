@@ -75,7 +75,7 @@ final List<RouteBase> _homeTabsRoutes = [
       branches: [
         StatefulShellBranch(routes: [
           GoRoute(
-            path: '/expenses',
+            path: '/incomes',
             builder: (BuildContext context, GoRouterState state) {
               return CategorySummaryList();
             },
@@ -83,7 +83,7 @@ final List<RouteBase> _homeTabsRoutes = [
         ]),
         StatefulShellBranch(routes: [
           GoRoute(
-            path: '/incomes',
+            path: '/expenses',
             builder: (BuildContext context, GoRouterState state) {
               return CategorySummaryList();
             },

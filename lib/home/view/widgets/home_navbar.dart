@@ -29,17 +29,17 @@ class HomeNavBar extends StatelessWidget {
               BudgetTheme.isDarkMode(context) ? Colors.white38 : Colors.white38,
           destinations: [
             NavigationDestination(
-              label: 'expenses',
-              icon: FaIcon(
-                color: Colors.white,
-                FontAwesomeIcons.rightFromBracket,
-              ),
-            ),
-            NavigationDestination(
               label: 'income',
               icon: FaIcon(
                 color: Colors.white,
                 FontAwesomeIcons.rightToBracket,
+              ),
+            ),
+            NavigationDestination(
+              label: 'expenses',
+              icon: FaIcon(
+                color: Colors.white,
+                FontAwesomeIcons.rightFromBracket,
               ),
             ),
             NavigationDestination(
