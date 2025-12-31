@@ -18,12 +18,12 @@ class TransactionsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
     final h = MediaQuery.of(context).size.height;
-    final maxHeight = h * 0.55;
+    final maxHeight = h * 0.6;
     return Container(
       margin: EdgeInsets.only(bottom: 10),
-      height: transactionTiles.length * 80 > maxHeight
+      height: transactionTiles.length * 95 > maxHeight
           ? maxHeight
-          : transactionTiles.length * 80,
+          : transactionTiles.length * 95,
       child: ListView.separated(
           itemCount: transactionTiles.length,
           itemBuilder: (context, index) {

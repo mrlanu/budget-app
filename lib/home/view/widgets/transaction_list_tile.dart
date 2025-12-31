@@ -60,14 +60,17 @@ class TransactionListTile extends StatelessWidget {
           transactionTile.title,
           style: TextStyle(
             fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
         ),
         subtitle: Text(
-          '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle}',
-          style: TextStyle(color: Colors.black87, fontSize: 18.sp,),
+          '${DateFormat('MM-dd-yyyy').format(transactionTile.dateTime)} ${transactionTile.subtitle} \n${transactionTile.description}',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 18.sp,
+          ),
         ),
-        isThreeLine: false,
         onTap: onTap,
       ),
     );
