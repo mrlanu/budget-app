@@ -35,11 +35,18 @@ class TrendChartPage extends StatelessWidget {
                             aspectRatio: 1.3 / 1,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 30, horizontal: 8),
-                              child: BarChart(
-                                dataPoints: state.dataPointsGrouped,
-                                labels: state.titles,
-                                isGrouped: true,
+                                  vertical: 20, horizontal: 12),
+                              child: ChartPanel(
+                                child: BarChart(
+                                  dataPoints: state.dataPointsGrouped,
+                                  labels: state.titles,
+                                  isGrouped: true,
+                                  firstColor: Theme.of(context)
+                                      .colorScheme
+                                      .tertiary,
+                                  secondColor:
+                                      Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                             ),
                           ),

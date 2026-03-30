@@ -1,6 +1,6 @@
 name: chart
-description: My chart
-version: 1.0.0
+description: Custom animated bar chart for Qruto Budget (grouped/single series).
+version: 1.1.0
 publish_to: none
 
 environment:

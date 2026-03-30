@@ -1,3 +1,4 @@
+/// Custom bar chart widgets for Flutter.
 library chart;
 
-export 'src/chart.dart';
+export 'src/bar_chart.dart';

@@ -199,7 +199,7 @@ packages:
       path: "packages/chart"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.1.0"
   checked_yaml:
     dependency: transitive
     description:
