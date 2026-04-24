@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.9.0',
+    'date': 'Apr 23, 2026',
+    'titles': [],
+    'added': ['New style to charts'],
+    'fixed': [],
+  },
+  {
     'version': 'v4.8.1',
     'date': 'Dec 31, 2025',
     'titles': [],
