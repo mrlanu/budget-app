@@ -1,7 +1,6 @@
 import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:qruto_budget/charts/cubit/chart_cubit.dart';
 import 'package:qruto_budget/charts/repository/chart_repository.dart';
-import 'package:chart/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,14 +31,12 @@ class TrendChartPage extends StatelessWidget {
                     : Column(
                         children: [
                           AspectRatio(
-                            aspectRatio: 1.3 / 1,
+                            aspectRatio: 1.25 / 1,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 30, horizontal: 8),
-                              child: BarChart(
-                                dataPoints: state.dataPointsGrouped,
-                                labels: state.titles,
-                                isGrouped: true,
+                                  vertical: 16, horizontal: 12),
+                              child: TrendIncomeExpenseChart(
+                                monthlyData: state.data,
                               ),
                             ),
                           ),

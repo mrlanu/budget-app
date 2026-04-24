@@ -35,14 +35,21 @@ class CategoryChartPage extends StatelessWidget {
                                 aspectRatio: 1.3 / 1,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 30, horizontal: 8),
-                                  child: BarChart(
-                                    dataPoints: state.dataPoints,
-                                    labels: state.titles,
-                                    isGrouped: false,
-                                    firstColor: state.categoryType == 'Expenses'
-                                        ? Colors.red
-                                        : Colors.green,
+                                      vertical: 20, horizontal: 12),
+                                  child: ChartPanel(
+                                    child: BarChart(
+                                      dataPoints: state.dataPoints,
+                                      labels: state.titles,
+                                      isGrouped: false,
+                                      firstColor: state.categoryType ==
+                                              'Expenses'
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .error
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                    ),
                                   ),
                                 ),
                               ),
