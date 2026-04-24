@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.9.0] - 04-23-2026
+### Added
+- New style to charts
+### Fixed
+
 ## [4.8.1] - 12-31-2025
 ### Added
 - New style to summary bar
