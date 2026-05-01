@@ -1,3 +1,4 @@
+import 'package:qruto_budget/charts/models/net_worth_month_point.dart';
 import 'package:qruto_budget/charts/models/year_month_sum.dart';
 import 'package:drift/drift.dart';
 
@@ -10,6 +11,14 @@ abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchCategoryChartData(int categoryId);
 
   Future<List<YearMonthSum>> fetchSubcategoryChartData(int id);
+
+  /// Opening net worth on the first day of each month for the last 12 months (Option A replay).
+  ///
+  /// When [includeHiddenAccounts] is false, only accounts included in totals (`include_in_total`) count.
+  /// When true, every account is summed (those excluded from totals are usually treated as “hidden”).
+  Future<List<NetWorthMonthPoint>> fetchNetWorthMonthlyOpeningBalances({
+    bool includeHiddenAccounts = false,
+  });
 }
 
 class ChartRepositoryDrift extends ChartRepository {
@@ -115,5 +124,90 @@ class ChartRepositoryDrift extends ChartRepository {
     }
 
     return result;
+  }
+
+  /// First instant of calendar month containing [ref].
+  DateTime _monthStart(DateTime ref) =>
+      DateTime(ref.year, ref.month, 1, 0, 0, 0);
+
+  /// Add whole calendar months (negative allowed).
+  DateTime _addMonths(DateTime start, int deltaMonths) {
+    final totalMonths = start.year * 12 + start.month - 1 + deltaMonths;
+    final y = totalMonths ~/ 12;
+    final m = totalMonths % 12 + 1;
+    return DateTime(y, m, 1, start.hour, start.minute, start.second);
+  }
+
+  @override
+  Future<List<NetWorthMonthPoint>> fetchNetWorthMonthlyOpeningBalances({
+    bool includeHiddenAccounts = false,
+  }) async {
+    final accounts = await _database.select(_database.accounts).get();
+    final balances = <int, double>{
+      for (final a in accounts) a.id: a.balance,
+    };
+
+    final txs = await (_database.select(_database.transactions)
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.date),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
+        .get();
+
+    final now = DateTime.now();
+    final currentStart = _monthStart(now);
+    final firstCutoff = _addMonths(currentStart, -11);
+
+    final cutoffs = List<DateTime>.generate(
+      12,
+      (i) => _addMonths(firstCutoff, i),
+    );
+
+    final includedIds = includeHiddenAccounts
+        ? accounts.map((a) => a.id).toSet()
+        : accounts.where((a) => a.includeInTotal).map((a) => a.id).toSet();
+
+    double netWorthTotal() =>
+        includedIds.fold<double>(0, (sum, id) => sum + (balances[id] ?? 0));
+
+    // Reverse replay: current balances -> opening balances at month cutoffs.
+    void rollback(Transaction tx) {
+      switch (tx.type) {
+        case TransactionType.EXPENSE:
+          final id = tx.fromAccountId;
+          balances[id] = (balances[id] ?? 0) + tx.amount;
+          break;
+        case TransactionType.INCOME:
+          final id = tx.fromAccountId;
+          balances[id] = (balances[id] ?? 0) - tx.amount;
+          break;
+        case TransactionType.TRANSFER:
+          final from = tx.fromAccountId;
+          balances[from] = (balances[from] ?? 0) + tx.amount;
+          final to = tx.toAccountId;
+          if (to != null) {
+            balances[to] = (balances[to] ?? 0) - tx.amount;
+          }
+          break;
+        case TransactionType.ACCOUNT:
+          break;
+      }
+    }
+
+    final resultDesc = <NetWorthMonthPoint>[];
+    var txIdx = 0;
+
+    for (final cutoff in cutoffs.reversed) {
+      while (txIdx < txs.length && !txs[txIdx].date.isBefore(cutoff)) {
+        rollback(txs[txIdx]);
+        txIdx++;
+      }
+      resultDesc.add(NetWorthMonthPoint(
+        monthStart: cutoff,
+        totalBalance: netWorthTotal(),
+      ));
+    }
+
+    return resultDesc.reversed.toList();
   }
 }

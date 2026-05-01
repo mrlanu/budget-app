@@ -22,7 +22,7 @@ class BudgetDrawer extends StatefulWidget {
 
 class _BudgetDrawerState extends State<BudgetDrawer>
     with SingleTickerProviderStateMixin {
-  static const _menuLength = 6;
+  static const _menuLength = 7;
   static const _initialDelayTime = Duration(milliseconds: 50);
   static const _itemSlideTime = Duration(milliseconds: 250);
   static const _staggerTime = Duration(milliseconds: 50);
@@ -146,7 +146,7 @@ class _BudgetDrawerState extends State<BudgetDrawer>
     return listItems;
   }
 
-  List<ListTile> _createMenuTiles() => [
+  List<Widget> _createMenuTiles() => [
         _buildMenuItem(
           title: 'Summary',
           icon: FaIcon(
@@ -169,6 +169,13 @@ class _BudgetDrawerState extends State<BudgetDrawer>
               FontAwesomeIcons.chartPie,
             ),
             routeName: 'category-trend'),
+        _buildMenuItem(
+            title: 'Net Worth',
+            icon: FaIcon(
+              color: _getColor(),
+              FontAwesomeIcons.chartLine,
+            ),
+            routeName: 'net-worth'),
         _buildMenuItem(
             title: 'Debt payoff planner',
             icon: FaIcon(
