@@ -5,6 +5,8 @@ import 'package:drift/drift.dart';
 import '../../database/database.dart';
 import '../../transaction/models/transaction_type.dart';
 
+enum NetWorthAggregation { monthly, yearly }
+
 abstract class ChartRepository {
   Future<List<YearMonthSum>> fetchTrendChartData();
 
@@ -16,8 +18,9 @@ abstract class ChartRepository {
   ///
   /// When [includeHiddenAccounts] is false, only accounts included in totals (`include_in_total`) count.
   /// When true, every account is summed (those excluded from totals are usually treated as “hidden”).
-  Future<List<NetWorthMonthPoint>> fetchNetWorthMonthlyOpeningBalances({
+  Future<List<NetWorthMonthPoint>> fetchNetWorthOpeningBalances({
     bool includeHiddenAccounts = false,
+    NetWorthAggregation aggregation = NetWorthAggregation.monthly,
   });
 }
 
@@ -139,8 +142,9 @@ class ChartRepositoryDrift extends ChartRepository {
   }
 
   @override
-  Future<List<NetWorthMonthPoint>> fetchNetWorthMonthlyOpeningBalances({
+  Future<List<NetWorthMonthPoint>> fetchNetWorthOpeningBalances({
     bool includeHiddenAccounts = false,
+    NetWorthAggregation aggregation = NetWorthAggregation.monthly,
   }) async {
     final accounts = await _database.select(_database.accounts).get();
     final balances = <int, double>{
@@ -155,13 +159,9 @@ class ChartRepositoryDrift extends ChartRepository {
         .get();
 
     final now = DateTime.now();
-    final currentStart = _monthStart(now);
-    final firstCutoff = _addMonths(currentStart, -11);
-
-    final cutoffs = List<DateTime>.generate(
-      12,
-      (i) => _addMonths(firstCutoff, i),
-    );
+    final cutoffs = aggregation == NetWorthAggregation.monthly
+        ? _monthlyCutoffs(now)
+        : _yearlyCutoffs(now);
 
     final includedIds = includeHiddenAccounts
         ? accounts.map((a) => a.id).toSet()
@@ -209,5 +209,22 @@ class ChartRepositoryDrift extends ChartRepository {
     }
 
     return resultDesc.reversed.toList();
+  }
+
+  List<DateTime> _monthlyCutoffs(DateTime now) {
+    final currentStart = _monthStart(now);
+    final firstCutoff = _addMonths(currentStart, -11);
+    return List<DateTime>.generate(
+      12,
+      (i) => _addMonths(firstCutoff, i),
+    );
+  }
+
+  List<DateTime> _yearlyCutoffs(DateTime now) {
+    final currentYearStart = DateTime(now.year, 1, 1, 0, 0, 0);
+    return List<DateTime>.generate(
+      12,
+      (i) => DateTime(currentYearStart.year - 11 + i, 1, 1, 0, 0, 0),
+    );
   }
 }

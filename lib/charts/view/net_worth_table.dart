@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
 
 import '../cubit/net_worth_cubit.dart';
 
 /// Month column plus opening net worth balance (newest months first).
 class NetWorthTable extends StatelessWidget {
-  const NetWorthTable({super.key});
+  const NetWorthTable({
+    super.key,
+    required this.aggregation,
+  });
+
+  final NetWorthAggregation aggregation;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NetWorthCubit, NetWorthState>(
       builder: (context, state) {
         final rows = state.points.reversed.toList();
-        final fmt = DateFormat('yyyy - MM');
+        final fmt = aggregation == NetWorthAggregation.yearly
+            ? DateFormat('yyyy')
+            : DateFormat('yyyy - MM');
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 9),
@@ -37,7 +45,9 @@ class NetWorthTable extends StatelessWidget {
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),
-                          'Month',
+                          aggregation == NetWorthAggregation.yearly
+                              ? 'Year'
+                              : 'Month',
                         ),
                       ),
                       Align(

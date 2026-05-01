@@ -8,6 +8,7 @@ class NetWorthState extends Equatable {
     this.points = const [],
     this.errorMessage,
     this.includeHiddenAccounts = false,
+    this.aggregation = NetWorthAggregation.monthly,
   });
 
   final NetWorthStatus status;
@@ -16,6 +17,7 @@ class NetWorthState extends Equatable {
 
   /// When true, accounts excluded from totals ([Account.includeInTotal] false) are included in net worth.
   final bool includeHiddenAccounts;
+  final NetWorthAggregation aggregation;
 
   NetWorthState copyWith({
     NetWorthStatus? status,
@@ -23,6 +25,7 @@ class NetWorthState extends Equatable {
     String? errorMessage,
     bool clearError = false,
     bool? includeHiddenAccounts,
+    NetWorthAggregation? aggregation,
   }) {
     return NetWorthState(
       status: status ?? this.status,
@@ -30,10 +33,11 @@ class NetWorthState extends Equatable {
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       includeHiddenAccounts:
           includeHiddenAccounts ?? this.includeHiddenAccounts,
+      aggregation: aggregation ?? this.aggregation,
     );
   }
 
   @override
   List<Object?> get props =>
-      [status, points, errorMessage, includeHiddenAccounts];
+      [status, points, errorMessage, includeHiddenAccounts, aggregation];
 }

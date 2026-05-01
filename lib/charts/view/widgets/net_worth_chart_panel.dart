@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qruto_budget/charts/models/net_worth_month_point.dart';
+import 'package:qruto_budget/charts/repository/chart_repository.dart';
 
 double _niceMaxYAxis(double raw) {
   if (raw <= 0) return 100;
@@ -34,9 +35,11 @@ class NetWorthChartPanel extends StatefulWidget {
   const NetWorthChartPanel({
     super.key,
     required this.points,
+    required this.aggregation,
   });
 
   final List<NetWorthMonthPoint> points;
+  final NetWorthAggregation aggregation;
 
   @override
   State<NetWorthChartPanel> createState() => _NetWorthChartPanelState();
@@ -85,7 +88,9 @@ class _NetWorthChartPanelState extends State<NetWorthChartPanel> {
             children: [
               Expanded(
                 child: Text(
-                  'Net worth (month open)',
+                  widget.aggregation == NetWorthAggregation.yearly
+                      ? 'Net worth (year open)'
+                      : 'Net worth (month open)',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.2,
@@ -143,6 +148,7 @@ class _NetWorthChartPanelState extends State<NetWorthChartPanel> {
             child: _mode == _NetWorthViz.line
                 ? _NetWorthLineChart(
                     data: data,
+                    aggregation: widget.aggregation,
                     lineColor: lineColor,
                     gridColor: gridColor,
                     labelColor: muted,
@@ -150,6 +156,7 @@ class _NetWorthChartPanelState extends State<NetWorthChartPanel> {
                   )
                 : _NetWorthBarChart(
                     data: data,
+                    aggregation: widget.aggregation,
                     barColor: lineColor,
                     gridColor: gridColor,
                     labelColor: muted,
@@ -242,6 +249,7 @@ class _LegendDot extends StatelessWidget {
 class _NetWorthLineChart extends StatelessWidget {
   const _NetWorthLineChart({
     required this.data,
+    required this.aggregation,
     required this.lineColor,
     required this.gridColor,
     required this.labelColor,
@@ -249,6 +257,7 @@ class _NetWorthLineChart extends StatelessWidget {
   });
 
   final List<NetWorthMonthPoint> data;
+  final NetWorthAggregation aggregation;
   final Color lineColor;
   final Color gridColor;
   final Color labelColor;
@@ -266,7 +275,9 @@ class _NetWorthLineChart extends StatelessWidget {
     final minY = bounds.minY;
     final maxY = bounds.maxY;
     final yInterval = bounds.interval;
-    final dateFmt = DateFormat('dd.MM');
+    final dateFmt = aggregation == NetWorthAggregation.yearly
+        ? DateFormat('yyyy')
+        : DateFormat('MM.yy');
 
     final line = LineChartBarData(
       spots: spots,
@@ -429,6 +440,7 @@ class _NetWorthLineChart extends StatelessWidget {
 class _NetWorthBarChart extends StatelessWidget {
   const _NetWorthBarChart({
     required this.data,
+    required this.aggregation,
     required this.barColor,
     required this.gridColor,
     required this.labelColor,
@@ -436,6 +448,7 @@ class _NetWorthBarChart extends StatelessWidget {
   });
 
   final List<NetWorthMonthPoint> data;
+  final NetWorthAggregation aggregation;
   final Color barColor;
   final Color gridColor;
   final Color labelColor;
@@ -449,7 +462,9 @@ class _NetWorthBarChart extends StatelessWidget {
     final minY = bounds.minY;
     final maxY = bounds.maxY;
     final yInterval = bounds.interval;
-    final dateFmt = DateFormat('dd.MM');
+    final dateFmt = aggregation == NetWorthAggregation.yearly
+        ? DateFormat('yyyy')
+        : DateFormat('MM.yy');
 
     return BarChart(
       BarChartData(

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../cubit/net_worth_cubit.dart';
 import 'net_worth_table.dart';
+import 'widgets/net_worth_aggregation_switch.dart';
 import 'widgets/include_hidden_accounts_switch.dart';
 import 'widgets/net_worth_chart_panel.dart';
 
@@ -70,16 +71,21 @@ class NetWorthPage extends StatelessWidget {
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : NetWorthChartPanel(points: state.points),
+                        : NetWorthChartPanel(
+                            points: state.points,
+                            aggregation: state.aggregation,
+                          ),
                   ),
                 ),
+                const SizedBox(height: 4),
+                const NetWorthAggregationSwitch(),
                 const IncludeHiddenAccountsSwitch(),
                 Expanded(
                   child: refreshing
                       ? const Center(
                           child: CircularProgressIndicator(),
                         )
-                      : const NetWorthTable(),
+                      : NetWorthTable(aggregation: state.aggregation),
                 ),
               ],
             );

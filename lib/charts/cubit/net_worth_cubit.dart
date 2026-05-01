@@ -16,8 +16,9 @@ class NetWorthCubit extends Cubit<NetWorthState> {
     emit(state.copyWith(status: NetWorthStatus.loading, clearError: true));
     try {
       final points =
-          await _chartRepository.fetchNetWorthMonthlyOpeningBalances(
+          await _chartRepository.fetchNetWorthOpeningBalances(
         includeHiddenAccounts: state.includeHiddenAccounts,
+        aggregation: state.aggregation,
       );
       emit(state.copyWith(
         status: NetWorthStatus.success,
@@ -35,6 +36,12 @@ class NetWorthCubit extends Cubit<NetWorthState> {
   Future<void> setIncludeHiddenAccounts(bool includeHidden) async {
     if (state.includeHiddenAccounts == includeHidden) return;
     emit(state.copyWith(includeHiddenAccounts: includeHidden));
+    await load();
+  }
+
+  Future<void> setAggregation(NetWorthAggregation aggregation) async {
+    if (state.aggregation == aggregation) return;
+    emit(state.copyWith(aggregation: aggregation));
     await load();
   }
 }
