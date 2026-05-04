@@ -121,6 +121,13 @@ class _MainDrawerState extends State<MainDrawer> {
                                 title: 'Sum by Category',
                                 icon: null,
                                 routeName: 'category-trend')),
+                        Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: _buildMenuItem(
+                                menuIndex: 2,
+                                title: 'Net Worth',
+                                icon: null,
+                                routeName: 'net-worth')),
                       ],
                     ),
                     Divider(color: themeState.primaryColor[200]),

@@ -214,6 +214,12 @@ final List<RouteBase> _individualRoutes = [
     },
   ),
   GoRoute(
+    path: '/net-worth',
+    builder: (BuildContext context, GoRouterState state) {
+      return const NetWorthPage();
+    },
+  ),
+  GoRoute(
     path: '/category-trend',
     builder: (BuildContext context, GoRouterState state) {
       return CategoryChartPage();
