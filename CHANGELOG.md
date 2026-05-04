@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.10.0] - 05-03-2026
+### Added
+- New chart of net worth
+- New style of drawer
+### Fixed
+
 ## [4.9.0] - 04-23-2026
 ### Added
 - New style to charts
