@@ -61,16 +61,19 @@ class _Body extends StatelessWidget {
         ],
       ),
       //bottomNavigationBar: DebtController(),
-      body: SingleChildScrollView(
-          child: Column(
-            children: [
-              DebtController(),
-              DebtCarousel(
-                  onEdit: (debt) =>
-                      _openDialog(debt: debt, context: context)),
-              DebtStrategy(),
-            ],
-          )),
+      body: SafeArea(
+        bottom: true,
+        child: SingleChildScrollView(
+            child: Column(
+              children: [
+                DebtController(),
+                DebtCarousel(
+                    onEdit: (debt) =>
+                        _openDialog(debt: debt, context: context)),
+                DebtStrategy(),
+              ],
+            )),
+      ),
     );
   }
 }

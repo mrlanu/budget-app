@@ -56,75 +56,78 @@ class AccountsListView extends StatelessWidget {
                   },
                 ),
               ),
-              body: Column(
-                children: [
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: state.accountList.length,
-                      itemBuilder: (context, index) {
-                        final account = state.accountList[index];
-                        return Card(
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.highlight_remove,
-                                    color: Theme.of(context).colorScheme.error),
-                                onPressed: () {
-                                  context
-                                      .read<AccountsCubit>()
-                                      .onAccountDeleted(account);
-                                },
-                              ),
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                account.extendName(),
-                                style: TextStyle(
+              body: SafeArea(
+                bottom: true,
+                child: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: state.accountList.length,
+                        itemBuilder: (context, index) {
+                          final account = state.accountList[index];
+                          return Card(
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.highlight_remove,
+                                      color: Theme.of(context).colorScheme.error),
+                                  onPressed: () {
+                                    context
+                                        .read<AccountsCubit>()
+                                        .onAccountDeleted(account);
+                                  },
+                                ),
+                                Text(
+                                  overflow: TextOverflow.ellipsis,
+                                  account.extendName(),
+                                  style: TextStyle(
+                                      color: BudgetTheme.isDarkMode(context)
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 22.sp,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Spacer(),
+                                FaIcon(
                                     color: BudgetTheme.isDarkMode(context)
                                         ? Colors.white
-                                        : Colors.black,
-                                    fontSize: 22.sp,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Spacer(),
-                              FaIcon(
-                                  color: BudgetTheme.isDarkMode(context)
-                                      ? Colors.white
-                                      : themeState.primaryColor[700],
-                                  IconData(account.category.iconCode,
-                                      fontFamily: 'FontAwesomeSolid')),
-                              IconButton(
-                                onPressed: () => context
-                                    .push('/accounts-list/edit/${account.id}'),
-                                icon: Icon(Icons.chevron_right),
-                              )
-                            ],
-                          ),
-                        );
+                                        : themeState.primaryColor[700],
+                                    IconData(account.category.iconCode,
+                                        fontFamily: 'FontAwesomeSolid')),
+                                IconButton(
+                                  onPressed: () => context
+                                      .push('/accounts-list/edit/${account.id}'),
+                                  icon: Icon(Icons.chevron_right),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      tileColor: BudgetTheme.isDarkMode(context)
+                          ? themeState.secondaryColor
+                          : themeState.secondaryColor,
+                      title: Text(
+                        'Add Account',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onTap: () {
+                        //context.read<AccountsListCubit>().onNewAccount();
+                        context.push('/accounts-list/new');
                       },
                     ),
-                  ),
-                  ListTile(
-                    tileColor: BudgetTheme.isDarkMode(context)
-                        ? themeState.secondaryColor
-                        : themeState.secondaryColor,
-                    title: Text(
-                      'Add Account',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onTap: () {
-                      //context.read<AccountsListCubit>().onNewAccount();
-                      context.push('/accounts-list/new');
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

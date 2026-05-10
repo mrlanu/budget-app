@@ -61,20 +61,18 @@ class AppView extends StatelessWidget {
             designSize: const Size(500, 1085),
             minTextAdapt: true,
             splitScreenMode: true,
-            child: SafeArea(
-              child: MaterialApp.router(
-                routerConfig: router,
-                debugShowCheckedModeBanner: false,
-                themeMode: ThemeMode.values[state.mode],
-                theme: BudgetTheme(seedColors: (
-                  primaryColor: state.primaryColor,
-                  secondaryColor: state.secondaryColor
-                )).lightTheme,
-                darkTheme: BudgetTheme(seedColors: (
-                  primaryColor: state.primaryColor,
-                  secondaryColor: state.secondaryColor
-                )).darkTheme,
-              ),
+            child: MaterialApp.router(
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              themeMode: ThemeMode.values[state.mode],
+              theme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).lightTheme,
+              darkTheme: BudgetTheme(seedColors: (
+                primaryColor: state.primaryColor,
+                secondaryColor: state.secondaryColor
+              )).darkTheme,
             ),
           );
         },

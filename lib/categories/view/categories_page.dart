@@ -64,74 +64,77 @@ class CategoriesView extends StatelessWidget {
                   icon: Icon(Icons.download))
             ],
           ),
-          body: Column(
-            children: [
-              SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: state.filteredCategories.length,
-                  itemBuilder: (context, index) {
-                    final category = state.filteredCategories[index];
-                    return Card(
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.highlight_remove,
-                                color: Theme.of(context).colorScheme.error),
-                            onPressed: () {
-                              context
-                                  .read<CategoriesCubit>()
-                                  .onCategoryDeleted(category);
-                            },
-                          ),
-                          Text(
-                            category.name,
-                            style: TextStyle(
+          body: SafeArea(
+            bottom: true,
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.filteredCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = state.filteredCategories[index];
+                      return Card(
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.highlight_remove,
+                                  color: Theme.of(context).colorScheme.error),
+                              onPressed: () {
+                                context
+                                    .read<CategoriesCubit>()
+                                    .onCategoryDeleted(category);
+                              },
+                            ),
+                            Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: BudgetTheme.isDarkMode(context)
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 22.sp,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Spacer(),
+                            FaIcon(
                                 color: BudgetTheme.isDarkMode(context)
                                     ? Colors.white
-                                    : Colors.black,
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Spacer(),
-                          FaIcon(
-                              color: BudgetTheme.isDarkMode(context)
-                                  ? Colors.white
-                                  : themeState.primaryColor[700],
-                              IconData(category.iconCode,
-                                  fontFamily: 'FontAwesomeSolid')),
-                          IconButton(
-                              onPressed: () => context.push(
-                                  '/categories/edit/${category.id}?'
-                                  'typeIndex=${state.transactionType.index}'),
-                              icon: Icon(Icons.chevron_right))
-                        ],
-                      ),
-                    );
+                                    : themeState.primaryColor[700],
+                                IconData(category.iconCode,
+                                    fontFamily: 'FontAwesomeSolid')),
+                            IconButton(
+                                onPressed: () => context.push(
+                                    '/categories/edit/${category.id}?'
+                                    'typeIndex=${state.transactionType.index}'),
+                                icon: Icon(Icons.chevron_right))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                ListTile(
+                  tileColor: BudgetTheme.isDarkMode(context)
+                      ? themeState.secondaryColor
+                      : themeState.secondaryColor,
+                  title: Text(
+                    'Add Category',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  trailing: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  onTap: () {
+                    context.push(
+                        '/categories/new?typeIndex=${state.transactionType.index}');
                   },
                 ),
-              ),
-              ListTile(
-                tileColor: BudgetTheme.isDarkMode(context)
-                    ? themeState.secondaryColor
-                    : themeState.secondaryColor,
-                title: Text(
-                  'Add Category',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.bold),
-                ),
-                trailing: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                onTap: () {
-                  context.push(
-                      '/categories/new?typeIndex=${state.transactionType.index}');
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

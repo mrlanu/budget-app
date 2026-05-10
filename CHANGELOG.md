@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.10.1] - 05-10-2026
+### Added
+### Fixed
+- Edge-to-edge
+
 ## [4.10.0] - 05-03-2026
 ### Added
 - New chart of net worth

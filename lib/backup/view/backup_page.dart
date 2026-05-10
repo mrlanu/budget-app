@@ -43,25 +43,28 @@ class BackupPageView extends StatelessWidget {
             },
           ),
         ),
-        body: BlocBuilder<BackupCubit, BackupState>(
-          builder: (context, state) {
-            return state.isAuthCheckingStatus
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : state.isAuthenticated
-                    ? Padding(
-                        padding: const EdgeInsets.only(bottom: 25.0),
-                        child: Column(
-                          children: [
-                            GoogleProfile(state: state),
-                            Expanded(child: BackupsList(state: state)),
-                            BackupButton(state: state)
-                          ],
-                        ),
-                      )
-                    : SignInButton();
-          },
+        body: SafeArea(
+          bottom: true,
+          child: BlocBuilder<BackupCubit, BackupState>(
+            builder: (context, state) {
+              return state.isAuthCheckingStatus
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : state.isAuthenticated
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 25.0),
+                          child: Column(
+                            children: [
+                              GoogleProfile(state: state),
+                              Expanded(child: BackupsList(state: state)),
+                              BackupButton(state: state)
+                            ],
+                          ),
+                        )
+                      : SignInButton();
+            },
+          ),
         ));
   }
 }
