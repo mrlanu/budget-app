@@ -51,13 +51,16 @@ class SettingsPage extends StatelessWidget {
       },
     ),
           ),
-          body: SingleChildScrollView(
-    child: Column(
-      children: [
-        ThemeSection(),
-        AboutSection(),
-      ],
-    ),
+          body: SafeArea(
+            bottom: true,
+            child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ThemeSection(),
+                    AboutSection(),
+                  ],
+                ),
+            ),
           ),
         );
   }

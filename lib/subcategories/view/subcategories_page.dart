@@ -49,63 +49,66 @@ class SubcategoriesView extends StatelessWidget {
           appBar: AppBar(
             title: _buildTitle(state.category),
           ),
-          body: Column(
-            children: [
-              SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: state.subcategoriesByCategory.length,
-                  itemBuilder: (context, index) {
-                    final subcategory = state.subcategoriesByCategory[index];
-                    return Card(
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.highlight_remove,
-                                color: Theme.of(context).colorScheme.error),
-                            onPressed: () {
-                              context
-                                  .read<SubcategoriesCubit>()
-                                  .onSubcategoryDeleted(subcategory.id);
-                            },
-                          ),
-                          Text(
-                            subcategory.name,
-                            style: TextStyle(
-                                color: BudgetTheme.isDarkMode(context)
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Spacer(),
-                          IconButton(
-                              onPressed: () => context
-                                  .push('/subcategories/edit/${subcategory.id}'
-                                      '?categoryId=${state.category!.id}'),
-                              icon: Icon(Icons.chevron_right))
-                        ],
-                      ),
-                    );
-                  },
+          body: SafeArea(
+            bottom: true,
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.subcategoriesByCategory.length,
+                    itemBuilder: (context, index) {
+                      final subcategory = state.subcategoriesByCategory[index];
+                      return Card(
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.highlight_remove,
+                                  color: Theme.of(context).colorScheme.error),
+                              onPressed: () {
+                                context
+                                    .read<SubcategoriesCubit>()
+                                    .onSubcategoryDeleted(subcategory.id);
+                              },
+                            ),
+                            Text(
+                              subcategory.name,
+                              style: TextStyle(
+                                  color: BudgetTheme.isDarkMode(context)
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 22.sp,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Spacer(),
+                            IconButton(
+                                onPressed: () => context
+                                    .push('/subcategories/edit/${subcategory.id}'
+                                        '?categoryId=${state.category!.id}'),
+                                icon: Icon(Icons.chevron_right))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              ListTile(
-                tileColor: BudgetTheme.isDarkMode(context)
-                    ? BudgetColors.accentDark
-                    : themeState.secondaryColor,
-                title: Text(
-                  'Add Subcategory',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.bold),
+                ListTile(
+                  tileColor: BudgetTheme.isDarkMode(context)
+                      ? BudgetColors.accentDark
+                      : themeState.secondaryColor,
+                  title: Text(
+                    'Add Subcategory',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  trailing: Icon(Icons.add, color: Colors.white),
+                  onTap: () => context.push(
+                      '/subcategories/new?categoryId=${state.category!.id}'),
                 ),
-                trailing: Icon(Icons.add, color: Colors.white),
-                onTap: () => context.push(
-                    '/subcategories/new?categoryId=${state.category!.id}'),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

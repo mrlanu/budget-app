@@ -26,39 +26,42 @@ class CategoryChartPage extends StatelessWidget {
                     title: Text(state.category?.name ?? '',
                         style: TextStyle(fontSize: 30.sp)),
                     actions: [CategoryTypeSelectButton()]),
-                body: Center(
-                    child: state.status == ChartStatus.loading
-                        ? CircularProgressIndicator()
-                        : Column(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 1.3 / 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 20, horizontal: 12),
-                                  child: ChartPanel(
-                                    child: BarChart(
-                                      dataPoints: state.dataPoints,
-                                      labels: state.titles,
-                                      isGrouped: false,
-                                      firstColor: state.categoryType ==
-                                              'Expenses'
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .error
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
+                body: SafeArea(
+                  bottom: true,
+                  child: Center(
+                      child: state.status == ChartStatus.loading
+                          ? CircularProgressIndicator()
+                          : Column(
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 1.3 / 1,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 12),
+                                    child: ChartPanel(
+                                      child: BarChart(
+                                        dataPoints: state.dataPoints,
+                                        labels: state.titles,
+                                        isGrouped: false,
+                                        firstColor: state.categoryType ==
+                                                'Expenses'
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .error
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .tertiary,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              CategoryInput(),
-                              SubcategoryInput(),
-                              IncludeCurrentMonthSwitch(),
-                              Expanded(child: CategoryTable())
-                            ],
-                          )))));
+                                CategoryInput(),
+                                SubcategoryInput(),
+                                IncludeCurrentMonthSwitch(),
+                                Expanded(child: CategoryTable())
+                              ],
+                            )),
+                ))));
   }
 }
 

@@ -25,71 +25,74 @@ class NetWorthPage extends StatelessWidget {
             style: TextStyle(fontSize: 30.sp),
           ),
         ),
-        body: BlocBuilder<NetWorthCubit, NetWorthState>(
-          builder: (context, state) {
-            if (state.status == NetWorthStatus.failure) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        state.errorMessage ?? 'Something went wrong',
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () => context.read<NetWorthCubit>().load(),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            final loading = state.status == NetWorthStatus.loading ||
-                state.status == NetWorthStatus.initial;
-            final bootLoading = loading && state.points.isEmpty;
-            if (bootLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final refreshing = loading && state.points.isNotEmpty;
-
-            return Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: 1.25 / 1,
+        body: SafeArea(
+          bottom: true,
+          child: BlocBuilder<NetWorthCubit, NetWorthState>(
+            builder: (context, state) {
+              if (state.status == NetWorthStatus.failure) {
+                return Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 12,
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          state.errorMessage ?? 'Something went wrong',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: () => context.read<NetWorthCubit>().load(),
+                          child: const Text('Retry'),
+                        ),
+                      ],
                     ),
+                  ),
+                );
+              }
+
+              final loading = state.status == NetWorthStatus.loading ||
+                  state.status == NetWorthStatus.initial;
+              final bootLoading = loading && state.points.isEmpty;
+              if (bootLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final refreshing = loading && state.points.isNotEmpty;
+
+              return Column(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.25 / 1,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
+                      ),
+                      child: refreshing
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : NetWorthChartPanel(
+                              points: state.points,
+                              aggregation: state.aggregation,
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const NetWorthAggregationSwitch(),
+                  const IncludeHiddenAccountsSwitch(),
+                  Expanded(
                     child: refreshing
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : NetWorthChartPanel(
-                            points: state.points,
-                            aggregation: state.aggregation,
-                          ),
+                        : NetWorthTable(aggregation: state.aggregation),
                   ),
-                ),
-                const SizedBox(height: 4),
-                const NetWorthAggregationSwitch(),
-                const IncludeHiddenAccountsSwitch(),
-                Expanded(
-                  child: refreshing
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : NetWorthTable(aggregation: state.aggregation),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
