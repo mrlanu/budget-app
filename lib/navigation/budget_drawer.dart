@@ -16,7 +16,7 @@ class _DrawerItem {
   });
 
   final String title;
-  final IconData icon;
+  final FaIconData icon;
   final String routeName;
 }
 

@@ -1,9 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class IconTile extends Equatable {
-  final IconData iconData;
+  final FaIconData iconData;
   final String title;
 
   IconTile({required this.iconData, required this.title});

@@ -100,8 +100,8 @@ class CategoriesView extends StatelessWidget {
                                 color: BudgetTheme.isDarkMode(context)
                                     ? Colors.white
                                     : themeState.primaryColor[700],
-                                IconData(category.iconCode,
-                                    fontFamily: 'FontAwesomeSolid')),
+                                FaIconData(IconData(category.iconCode,
+                                    fontFamily: 'FontAwesomeSolid'))),
                             IconButton(
                                 onPressed: () => context.push(
                                     '/categories/edit/${category.id}?'

@@ -93,8 +93,8 @@ class AccountsListView extends StatelessWidget {
                                     color: BudgetTheme.isDarkMode(context)
                                         ? Colors.white
                                         : themeState.primaryColor[700],
-                                    IconData(account.category.iconCode,
-                                        fontFamily: 'FontAwesomeSolid')),
+                                    FaIconData(IconData(account.category.iconCode,
+                                        fontFamily: 'FontAwesomeSolid'))),
                                 IconButton(
                                   onPressed: () => context
                                       .push('/accounts-list/edit/${account.id}'),
