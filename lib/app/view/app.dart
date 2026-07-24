@@ -56,7 +56,7 @@ class AppView extends StatelessWidget {
     return Responsive(
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
-          _setSystemUIOverlayStyle(state.primaryColor);
+          _setSystemUIOverlayStyle();
           return ScreenUtilInit(
             designSize: const Size(500, 1085),
             minTextAdapt: true,
@@ -81,12 +81,14 @@ class AppView extends StatelessWidget {
   }
 }
 
-void _setSystemUIOverlayStyle(MaterialColor color) =>
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: color.shade700,
-      systemNavigationBarIconBrightness: Brightness.light,
-      systemNavigationBarDividerColor: null,
-      statusBarColor: color.shade700,
+/// Edge-to-edge on Android 15+: status/nav bar *colors* are ignored by the OS.
+/// Draw color via AppBar / NavigationBar instead; only control icon appearance.
+void _setSystemUIOverlayStyle() =>
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Color(0x00000000),
       statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Color(0x00000000),
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarContrastEnforced: false,
     ));

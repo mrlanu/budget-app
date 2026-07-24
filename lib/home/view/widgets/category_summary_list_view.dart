@@ -103,8 +103,8 @@ class _CategorySummaryListViewState extends State<CategorySummaryListView> {
                         return ListTile(
                           leading: FaIcon(
                               color: seedColor.primaryColor[900],
-                              IconData(summary.iconCodePoint,
-                                  fontFamily: 'FontAwesomeSolid')),
+                              FaIconData(IconData(summary.iconCodePoint,
+                                  fontFamily: 'FontAwesomeSolid'))),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

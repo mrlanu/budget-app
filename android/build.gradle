@@ -6,9 +6,24 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Force compileSdk before evaluationDependsOn locks project state.
+// Needed for AGP 9 AAR metadata checks on Flutter plugin modules.
+subprojects { subproject ->
+    subproject.pluginManager.withPlugin('com.android.library') {
+        def androidComponents = subproject.extensions.findByName('androidComponents')
+        if (androidComponents != null) {
+            androidComponents.finalizeDsl { ext ->
+                ext.compileSdk = 36
+            }
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
@@ -16,5 +31,3 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-
-

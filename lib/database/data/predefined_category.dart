@@ -4,7 +4,7 @@ import '../../transaction/models/transaction_type.dart';
 
 class PredefinedCategory {
   final String name;
-  final IconData icon;
+  final FaIconData icon;
   final TransactionType type;
   final List<String> subcategories;
 

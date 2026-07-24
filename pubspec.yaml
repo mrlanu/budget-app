@@ -1,6 +1,6 @@
 name: qruto_budget
 description: A Budget app.
-version: 4.10.2+23
+version: 4.10.3+24
 publish_to: none
 
 
@@ -26,8 +26,8 @@ dependencies:
     path: packages/form_inputs
   bloc_concurrency: ^0.3.0
   carousel_slider: ^5.0.0
-  font_awesome_flutter: ^10.5.0
-  flutter_native_splash: ^2.4.5
+  font_awesome_flutter: ^11.0.0
+  flutter_native_splash: ^2.4.7
   go_router: ^14.8.1
   hydrated_bloc: ^10.0.0
   path_provider: ^2.0.8
