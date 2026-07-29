@@ -31,7 +31,9 @@ if (flutterVersionName == null) {
 
 android {
     namespace "xyz.qruto.qruto_budget"
-    compileSdkVersion flutter.compileSdkVersion
+    // Pin to API 36 for Play's target API requirement (Android 16).
+    // flutter.compileSdkVersion / flutter.targetSdkVersion are also 36 on current Flutter.
+    compileSdk 36
     ndkVersion flutter.ndkVersion
 
     signingConfigs {
@@ -76,10 +78,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        minSdkVersion flutter.minSdkVersion
     }
 }
 
