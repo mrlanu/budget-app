@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.11.0',
+    'date': 'Sep 19, 2026',
+    'titles': [],
+    'added': ['Sort category summary panels',],
+    'fixed': ['Migrate Android app off Kotlin Gradle Plugin'],
+  },
+  {
     'version': 'v4.10.5',
     'date': 'Aug 31, 2026',
     'titles': [],
