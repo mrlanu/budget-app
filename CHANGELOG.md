@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.11.0] - 09-19-2026
+### Added
+- Sort category summary panels
+### Fixed
+- Migrate Android app off Kotlin Gradle Plugin
+
 ## [4.10.5] - 08-31-2026
 ### Added
 ### Fixed
