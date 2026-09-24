@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qruto_budget/backup/cubit/backup_cubit.dart';
+import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
+import 'package:qruto_budget/shared/notification_service.dart';
 import 'package:qruto_budget/shared/shared_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,6 +53,18 @@ class BackgroundWorker {
         SharedFunctions.showSnackbar(
             context, true, 'Auto Backup !', 'Auto Backup has been uploaded.');
       }
+    }
+  }
+
+  static Future<void> materializeRecurring(BuildContext context) async {
+    try {
+      final created =
+          await context.read<RecurringRepository>().materializeDue();
+      if (created > 0) {
+        await NotificationService.instance.showRecurringAdded(created);
+      }
+    } catch (e) {
+      print('Error materializing recurring transactions: $e');
     }
   }
 

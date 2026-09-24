@@ -6,12 +6,15 @@ import 'package:qruto_budget/accounts_list/account_edit/model/account_with_detai
 import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
 import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/database/transaction_with_detail.dart';
+import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:form_inputs/form_inputs.dart';
 import 'package:formz/formz.dart';
 
+import '../models/transaction_repeat.dart';
 import '../models/transaction_type.dart';
 import '../repository/transaction_repository.dart';
 
@@ -25,14 +28,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final AccountRepository _accountsRepository;
   late final StreamSubscription<List<AccountWithDetails>> _accountsSubscription;
   late final StreamSubscription<List<Subcategory>> _subcategoriesSubscription;
+  final RecurringRepository? _recurringRepository;
 
   TransactionBloc(
       {required TransactionRepository transactionsRepository,
       required CategoryRepository categoryRepository,
-      required AccountRepository accountRepository})
+      required AccountRepository accountRepository,
+      RecurringRepository? recurringRepository})
       : _transactionsRepository = transactionsRepository,
         _categoryRepository = categoryRepository,
         _accountsRepository = accountRepository,
+        _recurringRepository = recurringRepository,
         super(TransactionState(date: DateTime.now())) {
     _categoriesSubscription =
         _categoryRepository.categories.listen((categories) {
@@ -61,6 +67,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final TransactionSubcategoryChanged e => _onSubcategoryChanged(e, emit),
       final TransactionAccountChanged e => _onAccountChanged(e, emit),
       final TransactionNotesChanged e => _onNotesChanged(e, emit),
+      final TransactionRepeatChanged e => _onRepeatChanged(e, emit),
       final TransactionFormSubmitted e => _onFormSubmitted(e, emit),
     };
   }
@@ -159,6 +166,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(description: event.description));
   }
 
+  void _onRepeatChanged(
+      TransactionRepeatChanged event, Emitter<TransactionState> emit) {
+    emit(state.copyWith(repeat: event.repeat));
+  }
+
   Future<void> _onFormSubmitted(
       TransactionFormSubmitted event, Emitter<TransactionState> emit) async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
@@ -191,6 +203,27 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       _updateAccountOnAddOrEditTransaction(
           editedTransaction: state.editedTransaction,
           newTransaction: newTransaction);
+
+      if (state.repeat != TransactionRepeat.off &&
+          _recurringRepository != null) {
+        final frequency = state.repeat == TransactionRepeat.weekly
+            ? RecurringFrequency.weekly
+            : RecurringFrequency.monthly;
+        await _recurringRepository.insertRecurring(
+          amount: double.parse(state.amount.value),
+          categoryId: state.category!.id,
+          subcategoryId: state.subcategory?.id,
+          fromAccountId: state.account!.id!,
+          description: state.description ?? '',
+          type: state.transactionType,
+          frequency: frequency,
+          nextDate: RecurringRepositoryDrift.nextOccurrenceAfter(
+            state.date!,
+            frequency,
+          ),
+        );
+      }
+
       emit(state.copyWith(status: FormzSubmissionStatus.success));
       Navigator.of(event.context!).pop();
     } catch (e) {

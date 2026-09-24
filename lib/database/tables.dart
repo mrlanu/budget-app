@@ -78,3 +78,34 @@ class Payments extends Table {
   DateTimeColumn get date => dateTime()();
 }
 
+enum RecurringFrequency { weekly, monthly }
+
+class RecurringFrequencyConverter
+    extends TypeConverter<RecurringFrequency, String> {
+  const RecurringFrequencyConverter();
+
+  @override
+  RecurringFrequency fromSql(String fromDb) {
+    return RecurringFrequency.values.firstWhere((e) => e.name == fromDb);
+  }
+
+  @override
+  String toSql(RecurringFrequency value) {
+    return value.name;
+  }
+}
+
+class RecurringTransactions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  RealColumn get amount => real()();
+  IntColumn get categoryId => integer().references(Categories, #id)();
+  IntColumn get subcategoryId =>
+      integer().nullable().references(Subcategories, #id)();
+  IntColumn get fromAccountId => integer().references(Accounts, #id)();
+  TextColumn get description => text()();
+  TextColumn get type => text().map(const TransactionTypeConverter())();
+  TextColumn get frequency => text().map(const RecurringFrequencyConverter())();
+  DateTimeColumn get nextDate => dateTime()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+}
+

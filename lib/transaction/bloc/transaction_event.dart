@@ -98,6 +98,15 @@ final class TransactionNotesChanged extends TransactionEvent {
   List<Object?> get props => [description];
 }
 
+final class TransactionRepeatChanged extends TransactionEvent {
+  final TransactionRepeat repeat;
+
+  const TransactionRepeatChanged({required this.repeat});
+
+  @override
+  List<Object?> get props => [repeat];
+}
+
 final class TransactionFormSubmitted extends TransactionEvent {
   final BuildContext? context;
 

@@ -42,6 +42,10 @@ class TransactionForm extends StatelessWidget {
                 ),
                 _NotesInput(),
                 SizedBox(
+                  height: 20,
+                ),
+                _RepeatInput(),
+                SizedBox(
                   height: 50,
                 ),
                 _SubmitButton(),
@@ -75,6 +79,55 @@ class _NotesInput extends StatelessWidget {
         onChanged: (description) => context.read<TransactionBloc>().add(
               TransactionNotesChanged(description: description),
             ));
+  }
+}
+
+class _RepeatInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final repeat =
+        context.select((TransactionBloc bloc) => bloc.state.repeat);
+    final colors = context.read<ThemeCubit>().state;
+    final iconColor = BudgetTheme.isDarkMode(context)
+        ? Colors.white
+        : colors.primaryColor[900];
+
+    return Row(
+      children: [
+        Icon(Icons.repeat, color: iconColor),
+        const SizedBox(width: 16),
+        Expanded(
+          child: SegmentedButton<TransactionRepeat>(
+            showSelectedIcon: true,
+            segments: const [
+              ButtonSegment(
+                value: TransactionRepeat.off,
+                label: Text('Off'),
+              ),
+              ButtonSegment(
+                value: TransactionRepeat.weekly,
+                label: Text('Week'),
+              ),
+              ButtonSegment(
+                value: TransactionRepeat.monthly,
+                label: Text('Month'),
+              ),
+            ],
+            selected: {repeat},
+            onSelectionChanged: (selection) {
+              if (selection.isEmpty) return;
+              context
+                  .read<TransactionBloc>()
+                  .add(TransactionRepeatChanged(repeat: selection.first));
+            },
+            style: ButtonStyle(
+              visualDensity: VisualDensity.compact,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

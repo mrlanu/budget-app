@@ -9,6 +9,7 @@ import 'package:qruto_budget/charts/view/category_chart_page.dart';
 import 'package:qruto_budget/database/database.dart';
 import 'package:qruto_budget/debt_payoff_planner/view/payoff_page.dart';
 import 'package:qruto_budget/home/home.dart';
+import 'package:qruto_budget/recurring/view/recurring_page.dart';
 import 'package:qruto_budget/subcategories/subcategory_edit/subcategory_edit.dart';
 import 'package:qruto_budget/subcategories/view/subcategories_page.dart';
 import 'package:qruto_budget/summary/view/summary_page.dart';
@@ -205,6 +206,12 @@ final List<RouteBase> _individualRoutes = [
     path: '/summary',
     builder: (BuildContext context, GoRouterState state) {
       return SummaryPage(database: context.read<AppDatabase>(),);
+    },
+  ),
+  GoRoute(
+    path: '/recurring',
+    builder: (BuildContext context, GoRouterState state) {
+      return const RecurringPage();
     },
   ),
   GoRoute(

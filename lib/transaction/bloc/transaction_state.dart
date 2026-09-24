@@ -15,6 +15,7 @@ class TransactionState extends Equatable {
   final List<AccountWithDetails> accounts;
   final List<Category> categories;
   final List<Subcategory> subcategories;
+  final TransactionRepeat repeat;
 
   final TransactionStatus trStatus;
   final FormzSubmissionStatus status;
@@ -34,6 +35,7 @@ class TransactionState extends Equatable {
       this.subcategory,
       this.account,
       this.description = '',
+      this.repeat = TransactionRepeat.off,
       this.trStatus = TransactionStatus.loading,
       this.status = FormzSubmissionStatus.initial,
       this.isValid = false,
@@ -52,6 +54,7 @@ class TransactionState extends Equatable {
     Subcategory? Function()? subcategory,
     AccountWithDetails? account,
     String? description,
+    TransactionRepeat? repeat,
     TransactionStatus? trStatus,
     FormzSubmissionStatus? status,
     bool? isValid,
@@ -70,6 +73,7 @@ class TransactionState extends Equatable {
       subcategory: subcategory != null ? subcategory() : this.subcategory,
       account: account ?? this.account,
       description: description ?? this.description,
+      repeat: repeat ?? this.repeat,
       trStatus: trStatus ?? this.trStatus,
       status: status ?? this.status,
       isValid: isValid ?? this.isValid,
@@ -90,6 +94,7 @@ class TransactionState extends Equatable {
         subcategory,
         account,
         description,
+        repeat,
         status,
         isValid,
         errorMessage

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qruto_budget/accounts_list/repository/account_repository.dart';
 import 'package:qruto_budget/categories/repository/category_repository.dart';
+import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
 
 import '../transaction.dart';
 
@@ -23,7 +24,8 @@ class TransactionPage extends StatelessWidget {
       create: (context) => TransactionBloc(
           transactionsRepository: context.read<TransactionRepository>(),
           categoryRepository: context.read<CategoryRepository>(),
-          accountRepository: context.read<AccountRepository>())
+          accountRepository: context.read<AccountRepository>(),
+          recurringRepository: context.read<RecurringRepository>())
         ..add(TransactionFormLoaded(
             transactionId: transactionId, transactionType: transactionType)),
       child: TransactionView(),

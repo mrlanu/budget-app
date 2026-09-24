@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:qruto_budget/accounts_list/account_edit/model/account_with_details.dart';
 import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/database/transaction_with_detail.dart';
+import 'package:qruto_budget/database/recurring_transaction_with_detail.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,13 +19,14 @@ part 'database.g.dart';
   Subcategories,
   Transactions,
   Debts,
-  Payments
+  Payments,
+  RecurringTransactions,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   Future<int> getSchemaVersion() async {
     final versionRow = await customSelect('PRAGMA user_version').getSingle();
@@ -82,6 +84,9 @@ class AppDatabase extends _$AppDatabase {
 
           //Drop old table
           await customStatement('DROP TABLE old_categories;');
+        }
+        if (from < 4) {
+          await m.createTable(recurringTransactions);
         }
       },
     );
@@ -362,6 +367,58 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteDebt(int debtId) =>
       (delete(debts)..where((d) => d.id.equals(debtId))).go();
 
+  //RECURRING TRANSACTIONS
+
+  Stream<List<RecurringTransactionWithDetails>> watchRecurringWithDetails() {
+    final query = select(recurringTransactions).join([
+      innerJoin(
+          categories, recurringTransactions.categoryId.equalsExp(categories.id)),
+      leftOuterJoin(subcategories,
+          recurringTransactions.subcategoryId.equalsExp(subcategories.id)),
+      innerJoin(
+          accounts, recurringTransactions.fromAccountId.equalsExp(accounts.id)),
+    ])
+      ..orderBy([
+        OrderingTerm.desc(recurringTransactions.isActive),
+        OrderingTerm.asc(recurringTransactions.nextDate),
+      ]);
+
+    return query.map((row) {
+      final r = row.readTable(recurringTransactions);
+      return RecurringTransactionWithDetails(
+        id: r.id,
+        amount: r.amount,
+        description: r.description,
+        type: r.type,
+        frequency: r.frequency,
+        nextDate: r.nextDate,
+        isActive: r.isActive,
+        category: row.readTable(categories),
+        subcategory: row.readTableOrNull(subcategories),
+        fromAccount: row.readTable(accounts),
+      );
+    }).watch();
+  }
+
+  Future<List<RecurringTransaction>> getActiveRecurringTransactions() {
+    return (select(recurringTransactions)
+          ..where((r) => r.isActive.equals(true)))
+        .get();
+  }
+
+  Future<int> insertRecurringTransaction(
+          RecurringTransactionsCompanion companion) =>
+      into(recurringTransactions).insert(companion);
+
+  Future<bool> updateRecurringTransaction(RecurringTransaction recurring) =>
+      update(recurringTransactions).replace(recurring);
+
+  Future<int> deleteRecurringTransaction(int id) =>
+      (delete(recurringTransactions)..where((r) => r.id.equals(id))).go();
+
+  Future<RecurringTransaction> getRecurringTransactionById(int id) =>
+      (select(recurringTransactions)..where((r) => r.id.equals(id))).getSingle();
+
   Future<void> truncateTables() async {
     await customStatement('DELETE FROM categories');
     await customStatement('DELETE FROM subcategories');
@@ -369,6 +426,7 @@ class AppDatabase extends _$AppDatabase {
     await customStatement('DELETE FROM transactions');
     await customStatement('DELETE FROM debts');
     await customStatement('DELETE FROM payments');
+    await customStatement('DELETE FROM recurring_transactions');
   }
 
   static QueryExecutor _openConnection() {
