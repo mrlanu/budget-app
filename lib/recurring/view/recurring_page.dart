@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:qruto_budget/database/recurring_transaction_with_detail.dart';
 import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/recurring/cubit/recurring_cubit.dart';
 import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
 import 'package:qruto_budget/transaction/models/transaction_type.dart';
+import 'package:qruto_budget/utils/theme/budget_theme.dart';
+import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
 
-import '../../../utils/theme/budget_theme.dart';
-import '../../../utils/theme/cubit/theme_cubit.dart';
-
-class RecurringSection extends StatelessWidget {
-  const RecurringSection({super.key});
+class RecurringPage extends StatelessWidget {
+  const RecurringPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,71 +21,85 @@ class RecurringSection extends StatelessWidget {
       create: (context) => RecurringCubit(
         recurringRepository: context.read<RecurringRepository>(),
       ),
-      child: const _RecurringSectionBody(),
+      child: const RecurringPageView(),
     );
   }
 }
 
-class _RecurringSectionBody extends StatelessWidget {
-  const _RecurringSectionBody();
+class RecurringPageView extends StatelessWidget {
+  const RecurringPageView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recurring', style: TextStyle(fontSize: 30.sp)),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: SafeArea(
+        bottom: true,
+        child: BlocBuilder<RecurringCubit, RecurringState>(
+          builder: (context, state) {
+            if (state.status == RecurringStatus.initial) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state.items.isEmpty) {
+              return const _EmptyRecurring();
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: state.items.length,
+              itemBuilder: (context, index) {
+                return _RecurringTile(item: state.items[index]);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyRecurring extends StatelessWidget {
+  const _EmptyRecurring();
 
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
-    final headerColor = BudgetTheme.isDarkMode(context)
+    final iconColor = BudgetTheme.isDarkMode(context)
         ? Colors.white
         : themeState.primaryColor[900];
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 15.0, left: 15.0, bottom: 4.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Active recurring',
-              style: TextStyle(fontSize: 44.sp, color: headerColor),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(
+              FontAwesomeIcons.arrowsRotate,
+              color: iconColor,
+              size: 48,
             ),
-          ),
+            const SizedBox(height: 16),
+            Text(
+              'No recurring transactions',
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Set Repeat to Week or Month when adding a transaction',
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        BlocBuilder<RecurringCubit, RecurringState>(
-          builder: (context, state) {
-            if (state.status == RecurringStatus.initial) {
-              return const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (state.items.isEmpty) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Card(
-                  child: ListTile(
-                    leading: FaIcon(
-                      FontAwesomeIcons.arrowsRotate,
-                      color: headerColor,
-                      size: 28,
-                    ),
-                    title: Text(
-                      'No recurring transactions',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    subtitle: const Text(
-                      'Set Repeat to Weekly or Monthly when adding a transaction',
-                    ),
-                  ),
-                ),
-              );
-            }
-            return Column(
-              children: state.items
-                  .map((item) => _RecurringTile(item: item))
-                  .toList(),
-            );
-          },
-        ),
-      ],
+      ),
     );
   }
 }
@@ -102,9 +116,8 @@ class _RecurringTile extends StatelessWidget {
         ? Colors.white
         : themeState.primaryColor[900];
     final dateFormat = DateFormat.yMMMd();
-    final frequencyLabel = item.frequency == RecurringFrequency.weekly
-        ? 'Weekly'
-        : 'Monthly';
+    final frequencyLabel =
+        item.frequency == RecurringFrequency.weekly ? 'Weekly' : 'Monthly';
     final typeLabel =
         item.type == TransactionType.INCOME ? 'Income' : 'Expense';
 
@@ -137,7 +150,9 @@ class _RecurringTile extends StatelessWidget {
                 IconButton(
                   tooltip: item.isActive ? 'Pause' : 'Resume',
                   icon: Icon(
-                    item.isActive ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                    item.isActive
+                        ? Icons.pause_circle_outline
+                        : Icons.play_circle_outline,
                   ),
                   onPressed: () => context
                       .read<RecurringCubit>()

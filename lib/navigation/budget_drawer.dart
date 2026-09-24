@@ -48,6 +48,11 @@ const List<_DrawerItem> _kChartItems = [
 
 const List<_DrawerItem> _kTailItems = [
   _DrawerItem(
+    title: 'Recurring',
+    icon: FontAwesomeIcons.arrowsRotate,
+    routeName: 'recurring',
+  ),
+  _DrawerItem(
     title: 'Debt payoff planner',
     icon: FontAwesomeIcons.moneyCheckDollar,
     routeName: 'debt-payoff',
