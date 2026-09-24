@@ -152,6 +152,7 @@ class HomeState extends Equatable {
           transactionTiles: transactionTiles,
           iconCodePoint: acc.category.iconCode));
     });
+    summaries.sort((a, b) => b.total.compareTo(a.total));
     return summaries;
   }
 
