@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.12.0] - 09-24-2026
+### Added
+- Reccuring income & expense
+- Sort accounts summary panels
+### Fixed
+
 ## [4.11.0] - 09-19-2026
 ### Added
 - Sort category summary panels
