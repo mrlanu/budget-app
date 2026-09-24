@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage>
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      BackgroundWorker.materializeRecurring(context);
       BackgroundWorker.checkIfUpdated(context);
       if (kReleaseMode) {
         BackgroundWorker.checkForUpdate(context);

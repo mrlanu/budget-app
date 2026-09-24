@@ -5,6 +5,7 @@ import 'package:qruto_budget/categories/repository/category_repository.dart';
 import 'package:qruto_budget/categories/repository/category_repository_drift.dart';
 import 'package:qruto_budget/charts/repository/chart_repository.dart';
 import 'package:qruto_budget/database/database.dart';
+import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
 import 'package:qruto_budget/transaction/repository/transaction_repository.dart';
 import 'package:qruto_budget/transaction/repository/transaction_repository_drift.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
@@ -31,13 +32,19 @@ class App extends StatelessWidget {
         CategoryRepositoryDrift(database: _database);
     final ChartRepository chartRepository =
         ChartRepositoryDrift(database: _database);
+    final RecurringRepository recurringRepository = RecurringRepositoryDrift(
+      database: _database,
+      transactionRepository: transactionRepository,
+      accountRepository: accountRepository,
+    );
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => _database),
         RepositoryProvider(create: (context) => categoryRepository),
         RepositoryProvider(create: (context) => accountRepository),
         RepositoryProvider(create: (context) => transactionRepository),
-        RepositoryProvider(create: (context) => chartRepository)
+        RepositoryProvider(create: (context) => chartRepository),
+        RepositoryProvider(create: (context) => recurringRepository),
       ],
       child: MultiBlocProvider(providers: [
         BlocProvider(create: (context) => ThemeCubit()),

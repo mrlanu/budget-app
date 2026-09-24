@@ -57,6 +57,7 @@ class SettingsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     ThemeSection(),
+                    RecurringSection(),
                     AboutSection(),
                   ],
                 ),

@@ -32,6 +32,7 @@ class BackupImporterService {
     await db.delete(db.transactions).go();
     await db.delete(db.debts).go();
     await db.delete(db.payments).go();
+    await db.delete(db.recurringTransactions).go();
   }
 
   /// Copies all data from temp DB into live DB
@@ -67,6 +68,11 @@ class BackupImporterService {
     final payments = await from.select(from.payments).get();
     for (final row in payments) {
       await to.into(to.payments).insertOnConflictUpdate(row);
+    }
+
+    final recurring = await from.select(from.recurringTransactions).get();
+    for (final row in recurring) {
+      await to.into(to.recurringTransactions).insertOnConflictUpdate(row);
     }
   }
 }
