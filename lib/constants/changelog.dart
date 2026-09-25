@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.13.0',
+    'date': 'Sep 25, 2026',
+    'titles': [],
+    'added': ['Turn debt payoff planner into a live debt tracker',],
+    'fixed': [],
+  },
+  {
     'version': 'v4.12.0',
     'date': 'Sep 24, 2026',
     'titles': [],
