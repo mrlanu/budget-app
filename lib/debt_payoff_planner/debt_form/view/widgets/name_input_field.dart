@@ -12,17 +12,21 @@ class NameInputField extends StatelessWidget {
       buildWhen: (previous, current) => previous.name != current.name,
       builder: (context, state) {
         return TextFormField(
-            initialValue: state.name,
-            decoration: InputDecoration(
-              icon: Icon(
-                Icons.notes,
-                color: themeState.secondaryColor,
-              ),
-              border: OutlineInputBorder(),
-              labelText: 'Name',
+          initialValue: state.name,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+            icon: Icon(
+              Icons.notes,
+              color: themeState.secondaryColor,
             ),
-            onChanged: (name) =>
-                context.read<DebtBloc>().add(NameChanged(name: name)));
+            border: const OutlineInputBorder(),
+            labelText: 'Name',
+          ),
+          validator: (value) =>
+              (value == null || value.trim().isEmpty) ? 'Name is required' : null,
+          onChanged: (name) =>
+              context.read<DebtBloc>().add(NameChanged(name: name)),
+        );
       },
     );
   }

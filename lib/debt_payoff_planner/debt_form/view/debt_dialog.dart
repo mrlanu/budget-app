@@ -3,6 +3,7 @@ import 'package:qruto_budget/debt_payoff_planner/debt_form/debt_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:intl/intl.dart';
 
 import '../../../utils/theme/cubit/theme_cubit.dart';
 
@@ -18,59 +19,94 @@ class DebtDialog extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Add Failure'),
+                content: Text(state.errorMessage ?? 'Save failed'),
               ),
             );
         }
         if (state.submissionStatus.isSuccess) {
           context.read<DebtsCubit>().updateDebts();
+          Navigator.of(context).pop();
         }
       },
       builder: (context, state) {
-        final themeState = context.read<ThemeCubit>().state;
         return state.status == DebtStateStatus.loading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Dialog(
-                insetPadding: EdgeInsets.all(10),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 500,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),),
-                      padding: EdgeInsets.fromLTRB(20, 25, 20, 20),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Text(state.id == null ? 'Add Debt' : 'Edit Debt',
-                                style: TextStyle(
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.fontSize)),
-                            SizedBox(height: 15),
-                            NameInputField(),
-                            SizedBox(height: 20),
-                            BalanceInput(),
-                            SizedBox(height: 20),
-                            MinInputField(),
-                            SizedBox(height: 20),
-                            AprInputField(),
-                            SizedBox(height: 20),
-                            _SubmitButton(),
-                          ],
+                insetPadding: const EdgeInsets.all(10),
+                child: Container(
+                  height: 560,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 20),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                          state.id == null ? 'Add Debt' : 'Edit Debt',
+                          style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.fontSize,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 15),
+                        NameInputField(),
+                        const SizedBox(height: 20),
+                        BalanceInput(),
+                        const SizedBox(height: 20),
+                        MinInputField(),
+                        const SizedBox(height: 20),
+                        AprInputField(),
+                        const SizedBox(height: 20),
+                        const _DueDateField(),
+                        const SizedBox(height: 20),
+                        _SubmitButton(),
+                      ],
                     ),
-                    /*Positioned(
-                    top: -100,
-                    child: Image.network("https://i.imgur.com/2yaf2wb.png",
-                        width: 150, height: 150))*/
-                  ],
-                ));
+                  ),
+                ),
+              );
+      },
+    );
+  }
+}
+
+class _DueDateField extends StatelessWidget {
+  const _DueDateField();
+
+  @override
+  Widget build(BuildContext context) {
+    final themeState = context.read<ThemeCubit>().state;
+    return BlocBuilder<DebtBloc, DebtState>(
+      buildWhen: (previous, current) =>
+          previous.nextPaymentDue != current.nextPaymentDue,
+      builder: (context, state) {
+        return InkWell(
+          onTap: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: state.nextPaymentDue,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+            );
+            if (picked != null && context.mounted) {
+              context.read<DebtBloc>().add(DueDateChanged(dueDate: picked));
+            }
+          },
+          child: InputDecorator(
+            decoration: InputDecoration(
+              icon: Icon(Icons.calendar_today, color: themeState.secondaryColor),
+              border: const OutlineInputBorder(),
+              labelText: 'Next payment due',
+            ),
+            child: Text(
+              DateFormat('MM-dd-yyyy').format(state.nextPaymentDue),
+            ),
+          ),
+        );
       },
     );
   }
@@ -80,7 +116,6 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DebtBloc, DebtState>(
-      //buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         final themeState = context.read<ThemeCubit>().state;
         return state.submissionStatus.isInProgress
@@ -90,16 +125,14 @@ class _SubmitButton extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  backgroundColor:
-                      themeState.secondaryColor,
-                  foregroundColor: Colors.white
+                  backgroundColor: themeState.secondaryColor,
+                  foregroundColor: Colors.white,
                 ),
                 onPressed: state.isValid
-                    ? () => context
-                        .read<DebtBloc>()
-                        .add(DebtFormSubmitted(context: context))
+                    ? () =>
+                        context.read<DebtBloc>().add(const DebtFormSubmitted())
                     : null,
-                child: Text(state.id == null ? 'ADD' : 'SAVE')
+                child: Text(state.id == null ? 'ADD' : 'SAVE'),
               );
       },
     );

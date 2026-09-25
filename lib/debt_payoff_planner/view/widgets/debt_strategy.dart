@@ -14,21 +14,58 @@ class DebtStrategy extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<DebtsCubit, DebtsState>(
       listener: (context, state) {
-        context.read<StrategyCubit>().fetchStrategy();
+        if (state.status == DebtsStatus.success) {
+          context.read<StrategyCubit>().fetchStrategy();
+        }
       },
-      child: BlocBuilder<StrategyCubit, StrategyState>(
-        builder: (context, state) {
-          return state.status == StrategyStateStatus.success
-              ? Column(
-                  children: [
-                    PayoffSummary(debtPayoffStrategy: state.debtPayoffStrategy!),
-                    for (DebtStrategyReport report
-                        in state.debtPayoffStrategy!.reports)
+      child: BlocBuilder<DebtsCubit, DebtsState>(
+        builder: (context, debtsState) {
+          if (debtsState.debtList.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return BlocBuilder<StrategyCubit, StrategyState>(
+            builder: (context, state) {
+              if (state.status == StrategyStateStatus.loading) {
+                return const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (state.status == StrategyStateStatus.failure) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        state.errorMessage ?? 'Could not calculate strategy',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              if (state.status != StrategyStateStatus.success ||
+                  state.debtPayoffStrategy == null) {
+                return const SizedBox.shrink();
+              }
+
+              final strategy = state.debtPayoffStrategy!;
+              return Column(
+                children: [
+                  if (!debtsState.isDebtFree) ...[
+                    PayoffSummary(debtPayoffStrategy: strategy),
+                    for (final report in strategy.reports)
                       ReportTile(report: report),
-                    DebtFreeCongrats(),
                   ],
-                )
-              : Center(child: CircularProgressIndicator());
+                  if (debtsState.isDebtFree) const DebtFreeCongrats(),
+                ],
+              );
+            },
+          );
         },
       ),
     );

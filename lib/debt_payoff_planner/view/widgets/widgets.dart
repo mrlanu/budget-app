@@ -6,3 +6,5 @@ export 'report_tile.dart';
 export 'debt_free_congrats.dart';
 export 'debt_strategy.dart';
 export 'strategy_select_button.dart';
+export 'payment_dialog.dart';
+export 'payment_history_sheet.dart';

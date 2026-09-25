@@ -10,26 +10,29 @@ import '../cubits/debt_cubit/debts_cubit.dart';
 import '../debt_form/debt_form.dart';
 
 class DebtPayoffPage extends StatelessWidget {
-
   DebtPayoffPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-  create: (context) => DebtRepositoryDrift(database: context.read<AppDatabase>()),
-    child: MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-          DebtsCubit(debtsRepository: context.read<DebtRepositoryDrift>())..updateDebts(),
-        ),
-        BlocProvider(
-          create: (context) => StrategyCubit(database: context.read<AppDatabase>()),
-        ),
-      ],
-      child: DebtPayoffViewMobile(),
-    ),
-);
+      create: (context) =>
+          DebtRepositoryDrift(database: context.read<AppDatabase>()),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => DebtsCubit(
+              debtsRepository: context.read<DebtRepositoryDrift>(),
+            )..updateDebts(),
+          ),
+          BlocProvider(
+            create: (context) => StrategyCubit(
+              debtsRepository: context.read<DebtRepositoryDrift>(),
+            ),
+          ),
+        ],
+        child: const DebtPayoffViewMobile(),
+      ),
+    );
   }
 }
 
@@ -38,7 +41,7 @@ class DebtPayoffViewMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Body();
+    return const _Body();
   }
 }
 
@@ -53,47 +56,68 @@ class _Body extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () async {
-                _openDialog(context: context);
-              },
-              icon: Icon(Icons.add)),
-          StrategySelectButton()
+            onPressed: () => _openDebtDialog(context: context),
+            icon: const Icon(Icons.add),
+          ),
+          const StrategySelectButton(),
         ],
       ),
-      //bottomNavigationBar: DebtController(),
       body: SafeArea(
         bottom: true,
         child: SingleChildScrollView(
-            child: Column(
-              children: [
-                DebtController(),
-                DebtCarousel(
-                    onEdit: (debt) =>
-                        _openDialog(debt: debt, context: context)),
-                DebtStrategy(),
-              ],
-            )),
+          child: Column(
+            children: [
+              const DebtController(),
+              DebtCarousel(
+                onEdit: (debt) =>
+                    _openDebtDialog(debt: debt, context: context),
+                onRecordPayment: (debt) =>
+                    _openPaymentDialog(debt: debt, context: context),
+                onViewHistory: (debt) =>
+                    _openPaymentHistory(debt: debt, context: context),
+              ),
+              const DebtStrategy(),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-void _openDialog({required BuildContext context, Debt? debt}) {
+void _openDebtDialog({required BuildContext context, Debt? debt}) {
   showDialog<String>(
     context: context,
     builder: (_) => MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) =>
-          DebtBloc(debtsRepository: context.read<DebtRepositoryDrift>())
-            ..add(FormInitEvent(debt: debt)),
+          create: (_) => DebtBloc(
+            debtsRepository: context.read<DebtRepositoryDrift>(),
+          )..add(FormInitEvent(debt: debt)),
         ),
-        BlocProvider.value(
-          value: context.read<DebtsCubit>(),
-        ),
+        BlocProvider.value(value: context.read<DebtsCubit>()),
       ],
-      child: DebtDialog(),
+      child: const DebtDialog(),
     ),
   );
 }
 
+void _openPaymentDialog({required BuildContext context, required Debt debt}) {
+  showDialog<void>(
+    context: context,
+    builder: (_) => BlocProvider.value(
+      value: context.read<DebtsCubit>(),
+      child: PaymentDialog(debt: debt),
+    ),
+  );
+}
+
+void _openPaymentHistory({required BuildContext context, required Debt debt}) {
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (_) => BlocProvider.value(
+      value: context.read<DebtsCubit>(),
+      child: PaymentHistorySheet(debt: debt),
+    ),
+  );
+}

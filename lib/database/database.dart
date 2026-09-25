@@ -360,12 +360,52 @@ class AppDatabase extends _$AppDatabase {
 
   Future<List<Debt>> getAllDebts() => select(debts).get();
 
+  Future<Debt?> getDebtById(int debtId) =>
+      (select(debts)..where((d) => d.id.equals(debtId))).getSingleOrNull();
+
   Future<int> insertDebt(DebtsCompanion debt) => into(debts).insert(debt);
 
   Future<void> updateDebt(Debt debt) => update(debts).replace(debt);
 
-  Future<void> deleteDebt(int debtId) =>
-      (delete(debts)..where((d) => d.id.equals(debtId))).go();
+  Future<void> deleteDebt(int debtId) async {
+    await (delete(payments)..where((p) => p.debtId.equals(debtId))).go();
+    await (delete(debts)..where((d) => d.id.equals(debtId))).go();
+  }
+
+  //PAYMENTS
+
+  Future<int> insertPayment(PaymentsCompanion payment) =>
+      into(payments).insert(payment);
+
+  Future<Payment?> getPaymentById(int paymentId) =>
+      (select(payments)..where((p) => p.id.equals(paymentId))).getSingleOrNull();
+
+  Future<void> updatePayment(Payment payment) =>
+      update(payments).replace(payment);
+
+  Future<void> deletePayment(int paymentId) =>
+      (delete(payments)..where((p) => p.id.equals(paymentId))).go();
+
+  Future<List<Payment>> getPaymentsForDebt(int debtId) =>
+      (select(payments)
+            ..where((p) => p.debtId.equals(debtId))
+            ..orderBy([(p) => OrderingTerm.desc(p.date)]))
+          .get();
+
+  Future<Payment?> getLastPaymentForDebt(int debtId) =>
+      (select(payments)
+            ..where((p) => p.debtId.equals(debtId))
+            ..orderBy([(p) => OrderingTerm.desc(p.date)])
+            ..limit(1))
+          .getSingleOrNull();
+
+  Future<Map<int, Payment?>> getLastPaymentsForDebts(List<int> debtIds) async {
+    final result = <int, Payment?>{};
+    for (final id in debtIds) {
+      result[id] = await getLastPaymentForDebt(id);
+    }
+    return result;
+  }
 
   //RECURRING TRANSACTIONS
 
