@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.12.0',
+    'date': 'Sep 24, 2026',
+    'titles': [],
+    'added': ['Reccuring income & expense', 'Sort accounts summary panels',],
+    'fixed': [],
+  },
+  {
     'version': 'v4.11.0',
     'date': 'Sep 19, 2026',
     'titles': [],
