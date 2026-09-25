@@ -7,30 +7,47 @@ class StrategySelectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      shape: const ContinuousRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      initialValue: 'Snowball',
-      tooltip: 'Choose strategy',
-      onSelected: (strategy) {
-        context.read<StrategyCubit>()
-          ..changeStrategy(strategy)
-          ..fetchStrategy();
-      },
-      itemBuilder: (context) {
-        return [
-          PopupMenuItem(
-            value: 'Snowball',
-            child: Text('Snowball'),
+    return BlocBuilder<StrategyCubit, StrategyState>(
+      buildWhen: (previous, current) => previous.strategy != current.strategy,
+      builder: (context, state) {
+        return PopupMenuButton<String>(
+          shape: const ContinuousRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
-          PopupMenuItem(
-            value: 'Avalanche',
-            child: Text('Avalanche'),
+          initialValue: state.strategy,
+          tooltip: 'Strategy: ${state.strategy}',
+          onSelected: (strategy) {
+            context.read<StrategyCubit>()
+              ..changeStrategy(strategy)
+              ..fetchStrategy();
+          },
+          itemBuilder: (context) {
+            return const [
+              PopupMenuItem(
+                value: StrategyState.snowball,
+                child: Text('Snowball'),
+              ),
+              PopupMenuItem(
+                value: StrategyState.avalanche,
+                child: Text('Avalanche'),
+              ),
+            ];
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  state.strategy,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const Icon(Icons.arrow_drop_down),
+              ],
+            ),
           ),
-        ];
+        );
       },
-      icon: const Icon(Icons.filter_2),
     );
   }
 }

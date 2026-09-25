@@ -15,13 +15,59 @@ class DebtsCubit extends Cubit<DebtsState> {
 
   Future<void> updateDebts() async {
     emit(state.copyWith(status: DebtsStatus.loading));
-    final debtList = await _debtsRepository.fetchAllDebts();
-    emit(state.copyWith(debtList: debtList, status: DebtsStatus.success));
+    try {
+      final debtList = await _debtsRepository.fetchAllDebts();
+      final lastPayments = await _debtsRepository
+          .getLastPaymentsForDebts(debtList.map((d) => d.id).toList());
+      emit(state.copyWith(
+        debtList: debtList,
+        lastPayments: lastPayments,
+        status: DebtsStatus.success,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        status: DebtsStatus.failure,
+        errorMessage: 'Failed to load debts',
+      ));
+    }
   }
 
-  Future<void> deleteDebt(int debtId)async {
+  Future<void> deleteDebt(int debtId) async {
     await _debtsRepository.deleteDebt(debtId: debtId);
-    final debtList = await _debtsRepository.fetchAllDebts();
-    emit(state.copyWith(debtList: debtList, status: DebtsStatus.success));
+    await updateDebts();
   }
+
+  Future<void> recordPayment({
+    required int debtId,
+    required double amount,
+    required DateTime date,
+  }) async {
+    await _debtsRepository.recordPayment(
+      debtId: debtId,
+      amount: amount,
+      date: date,
+    );
+    await updateDebts();
+  }
+
+  Future<void> updatePayment({
+    required int paymentId,
+    required double amount,
+    required DateTime date,
+  }) async {
+    await _debtsRepository.updatePayment(
+      paymentId: paymentId,
+      amount: amount,
+      date: date,
+    );
+    await updateDebts();
+  }
+
+  Future<void> deletePayment({required int paymentId}) async {
+    await _debtsRepository.deletePayment(paymentId: paymentId);
+    await updateDebts();
+  }
+
+  Future<List<Payment>> paymentsForDebt(int debtId) =>
+      _debtsRepository.getPaymentsForDebt(debtId);
 }

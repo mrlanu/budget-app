@@ -49,16 +49,18 @@ final class AprChanged extends DebtEvent {
   List<Object> get props => [apr];
 }
 
-final class DebtFormSubmitted extends DebtEvent {
-  final BuildContext context;
+final class DueDateChanged extends DebtEvent {
+  const DueDateChanged({required this.dueDate});
 
-  DebtFormSubmitted({required this.context});
+  final DateTime dueDate;
 
   @override
-  List<Object> get props => [context];
+  List<Object> get props => [dueDate];
 }
 
+final class DebtFormSubmitted extends DebtEvent {
+  const DebtFormSubmitted();
 
-
-
-
+  @override
+  List<Object> get props => [];
+}

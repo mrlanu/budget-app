@@ -76,7 +76,9 @@ class ReportTile extends StatelessWidget {
                         bottomRight: Radius.circular(10.0),
                         topLeft: Radius.zero,
                         bottomLeft: Radius.circular(10.0)),
-                    color: Color.fromRGBO(231, 231, 231, 1.0),
+                    color: BudgetTheme.isDarkMode(context)
+                        ? themeState.primaryColor[700]
+                        : const Color.fromRGBO(231, 231, 231, 1.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,26 +1,39 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../repository/debts_repository.dart';
 import '../../../database/database.dart';
 
 part 'strategy_state.dart';
 
+const _maxSimulationMonths = 600;
+
 class StrategyCubit extends Cubit<StrategyState> {
-  StrategyCubit({required AppDatabase database})
-      : _database = database,
+  StrategyCubit({required DebtsRepository debtsRepository})
+      : _debtsRepository = debtsRepository,
         super(StrategyState());
 
-  final AppDatabase _database;
+  final DebtsRepository _debtsRepository;
 
   Future<void> fetchStrategy() async {
     emit(state.copyWith(status: StrategyStateStatus.loading));
     try {
       final strategy = await _countDebtsPayOffStrategy();
       emit(state.copyWith(
-          debtPayoffStrategy: strategy,
-          status: StrategyStateStatus.success));
-    } catch (e) {
-      throw Exception(e);
+        debtPayoffStrategy: strategy,
+        status: StrategyStateStatus.success,
+        clearError: true,
+      ));
+    } on StrategyException catch (e) {
+      emit(state.copyWith(
+        status: StrategyStateStatus.failure,
+        errorMessage: e.message,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        status: StrategyStateStatus.failure,
+        errorMessage: 'Failed to calculate payoff strategy',
+      ));
     }
   }
 
@@ -32,25 +45,60 @@ class StrategyCubit extends Cubit<StrategyState> {
     emit(state.copyWith(strategy: strategy));
   }
 
+  double _parseExtraPayment(String value) {
+    if (value.trim().isEmpty) return 0;
+    return double.tryParse(value) ?? 0;
+  }
+
   Future<DebtPayoffStrategy> _countDebtsPayOffStrategy() async {
     int duration = 0;
     double totalInterest = 0.0;
     final debtStrategyReports = <DebtStrategyReport>[];
     var report = DebtStrategyReport();
-    final debts = await _database.getAllDebts();
-    _sortDebts(debts, state.strategy);
+    final debts = List<Debt>.from(await _debtsRepository.fetchAllDebts());
 
-    // 1. Check if there is any balance to pay
+    if (debts.isEmpty || debts.every((d) => d.currentBalance <= 0)) {
+      return _createReport([], 0);
+    }
+
+    for (final debt in debts) {
+      if (debt.currentBalance > 0 &&
+          debt.minimumPayment <= 0) {
+        throw StrategyException(
+          'Minimum payment for "${debt.name}" must be greater than zero',
+        );
+      }
+      if (debt.currentBalance > 0) {
+        final monthlyInterest = (debt.currentBalance * debt.apr / 12) / 100;
+        if (monthlyInterest >= debt.minimumPayment) {
+          throw StrategyException(
+            'Interest on "${debt.name}" exceeds its minimum payment. '
+            'Increase the minimum payment or lower the APR.',
+          );
+        }
+      }
+    }
+
+    sortDebts(debts, state.strategy);
+
+    var monthsSimulated = 0;
+
     while (debts.any((d) => d.currentBalance > 0)) {
-      double extraPayment = double.parse(state.extraPayment);
+      monthsSimulated++;
+      if (monthsSimulated > _maxSimulationMonths) {
+        throw StrategyException(
+          'Payoff would take more than $_maxSimulationMonths months. '
+          'Increase extra payment or check debt details.',
+        );
+      }
+
+      double extraPayment = _parseExtraPayment(state.extraPayment);
       final isFullPayedDebt = _isCompletedDebt(debts, extraPayment);
       double tempCurrentBalance;
 
-      // Check whether there is a fully paid balance or not
       if (isFullPayedDebt) {
         if (duration > 0) {
           report.duration = duration;
-          // Add all minPayments to the report except the first one (which is extra payment)
           for (var i = 1; i < debts.length; i++) {
             final d = debts[i];
             if (d.currentBalance > 0) {
@@ -64,36 +112,26 @@ class StrategyCubit extends Cubit<StrategyState> {
           debtStrategyReports.add(report);
         }
 
-        // Reset the report
         report = DebtStrategyReport();
         report.duration = 1;
       }
 
-      // 2. Make minimum payment to all debts
-      for (var debt in debts) {
-        // If there is any paid debt in the list, add its minimum payment to extraPayment
+      for (var i = 0; i < debts.length; i++) {
+        var debt = debts[i];
         if (debt.currentBalance <= 0) {
           extraPayment += debt.minimumPayment;
           continue;
         }
 
-        // Count total interest that is going to be paid
         final interest = (debt.currentBalance * debt.apr / 12) / 100;
         final principal = debt.minimumPayment - interest;
         totalInterest += interest;
 
-        // Temporary variable in case the balance is paid
         tempCurrentBalance = debt.currentBalance;
-
-        final index = debts.indexWhere(
-          (element) => element.id == debt.id,
-        );
         debt = debt.copyWith(currentBalance: debt.currentBalance - principal);
-        debts[index] = debt;
+        debts[i] = debt;
 
-        // Check if the balance is paid
         if (debt.currentBalance <= 0) {
-          // If yes, add leftover to extraPayment
           report.addExtraPayment(DebtReportItem(
             name: debt.name,
             amount: tempCurrentBalance,
@@ -101,50 +139,30 @@ class StrategyCubit extends Cubit<StrategyState> {
           ));
           extraPayment = -debt.currentBalance + extraPayment;
           debt = debt.copyWith(currentBalance: 0);
-          debts[index] = debt;
+          debts[i] = debt;
         }
       }
 
-      // 3. Make extra payment
       do {
-        // Find the first debt with currentBalance > 0
-        var debt = debts.firstWhere(
-          (d) => d.currentBalance > 0,
-          orElse: () => Debt(
-            name: '',
-            startBalance: 0,
-            currentBalance: 0,
-            apr: 0,
-            minimumPayment: 0,
-            nextPaymentDue: DateTime.now(),
-            id: -1,
-          ),
-        );
+        final unpaidIndex = debts.indexWhere((d) => d.currentBalance > 0);
+        if (unpaidIndex < 0) break;
 
-        // For the last debt in the list of Debts
-        if (debt.minimumPayment == 0) break;
+        var debt = debts[unpaidIndex];
+        if (debt.minimumPayment == 0 && extraPayment <= 0) break;
 
         tempCurrentBalance = debt.currentBalance;
+        debt = debt.copyWith(currentBalance: debt.currentBalance - extraPayment);
+        debts[unpaidIndex] = debt;
 
-        final index = debts.indexWhere(
-          (element) => element.id == debt.id,
-        );
-        debt =
-            debt.copyWith(currentBalance: debt.currentBalance - extraPayment);
-        debts[index] = debt;
-
-        // Check if the balance is paid
         if (debt.currentBalance <= 0) {
           report.addExtraPayment(DebtReportItem(
             name: debt.name,
             amount: tempCurrentBalance + debt.minimumPayment,
             paid: true,
           ));
-          extraPayment = 0;
-          // If yes, add leftover to extraPayment
-          extraPayment = -debt.currentBalance + extraPayment;
+          extraPayment = -debt.currentBalance;
           debt = debt.copyWith(currentBalance: 0);
-          debts[index] = debt;
+          debts[unpaidIndex] = debt;
           continue;
         }
         report.addExtraPayment(DebtReportItem(
@@ -188,32 +206,21 @@ class StrategyCubit extends Cubit<StrategyState> {
     );
   }
 
-  void _sortDebts(List<Debt> debtsList, String strategy) {
-    strategy == "Avalanche"
-        ? debtsList.sort((debt1, debt2) {
-            if (debt1.apr > debt2.apr) return -1;
-            if (debt1.apr < debt2.apr) return 1;
-            if (debt1.apr == debt2.apr) {
-              if (debt1.currentBalance > debt2.currentBalance) {
-                return 1;
-              } else {
-                return -1;
-              }
-            }
-            return 0;
-          })
-        : debtsList.sort((debt1, debt2) {
-            if (debt1.currentBalance > debt2.currentBalance) return 1;
-            if (debt1.currentBalance < debt2.currentBalance) return -1;
-            if (debt1.currentBalance == debt2.currentBalance) {
-              if (debt1.apr > debt2.apr) {
-                return -1;
-              } else {
-                return 1;
-              }
-            }
-            return 0;
-          });
+  /// Sorts debts for snowball (lowest balance) or avalanche (highest APR).
+  static void sortDebts(List<Debt> debtsList, String strategy) {
+    if (strategy == StrategyState.avalanche) {
+      debtsList.sort((debt1, debt2) {
+        final aprCmp = debt2.apr.compareTo(debt1.apr);
+        if (aprCmp != 0) return aprCmp;
+        return debt1.currentBalance.compareTo(debt2.currentBalance);
+      });
+    } else {
+      debtsList.sort((debt1, debt2) {
+        final balCmp = debt1.currentBalance.compareTo(debt2.currentBalance);
+        if (balCmp != 0) return balCmp;
+        return debt2.apr.compareTo(debt1.apr);
+      });
+    }
   }
 
   bool _isCompletedDebt(List<Debt> debtsList, double extraPayment) {
@@ -223,31 +230,41 @@ class StrategyCubit extends Cubit<StrategyState> {
             .map((debt) => debt.minimumPayment)
             .fold(0.0, (a, b) => a + b);
 
-    final debtForExtra = debtsList.firstWhere(
-      (d) => d.currentBalance > 0,
-      orElse: () => Debt(
-        name: '',
-        startBalance: 0,
-        currentBalance: 0,
-        apr: 0,
-        minimumPayment: 0,
-        nextPaymentDue: DateTime.now(),
-        id: -1,
-      ),
-    );
+    Debt? debtForExtra;
+    for (final d in debtsList) {
+      if (d.currentBalance > 0) {
+        debtForExtra = d;
+        break;
+      }
+    }
 
-    if (debtForExtra.currentBalance <= allExtra + debtForExtra.minimumPayment) {
+    if (debtForExtra == null) return false;
+
+    final interest = (debtForExtra.currentBalance * debtForExtra.apr / 12) / 100;
+    final availableToPrincipal =
+        allExtra + debtForExtra.minimumPayment - interest;
+
+    if (debtForExtra.currentBalance <= availableToPrincipal) {
       return true;
     }
 
     for (final debt in debtsList) {
-      if (debt.currentBalance > 0 &&
-          debt.currentBalance <= debt.minimumPayment) {
+      if (debt.currentBalance <= 0) continue;
+      final debtInterest = (debt.currentBalance * debt.apr / 12) / 100;
+      if (debt.currentBalance <= debt.minimumPayment - debtInterest) {
         return true;
       }
     }
     return false;
   }
+}
+
+class StrategyException implements Exception {
+  final String message;
+  StrategyException(this.message);
+
+  @override
+  String toString() => message;
 }
 
 class DebtPayoffStrategy {

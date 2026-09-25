@@ -10,20 +10,21 @@ class DebtFreeCongrats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.read<ThemeCubit>().state;
+    final isDark = BudgetTheme.isDarkMode(context);
     return Card(
-        margin: EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 15),
-        color: BudgetTheme.isDarkMode(context)
-            ? themeState.primaryColor[400]
-            : themeState.primaryColor[100],
-        child: Container(
-            alignment: Alignment.center,
-            width: double.infinity,
-            height: 40,
-            child: Text(
-              'Congratulation ! You are debt free.',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.black,
-                  ),
-            )));
+      margin: const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 15),
+      color: isDark ? themeState.primaryColor[400] : themeState.primaryColor[100],
+      child: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: 40,
+        child: Text(
+          'Congratulations! You are debt free.',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: isDark ? Colors.white : themeState.primaryColor[900],
+              ),
+        ),
+      ),
+    );
   }
 }
