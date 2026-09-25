@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.13.0] - 09-25-2026
+### Added
+- Turn debt payoff planner into a live debt tracker
+### Fixed
+
 ## [4.12.0] - 09-24-2026
 ### Added
 - Reccuring income & expense
