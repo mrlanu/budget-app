@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.13.1] - 09-28-2026
+### Added
+- Persist debt payoff extra payment and strategy across sessions
+- Show debt totals card above payoff summary
+### Fixed
+
 ## [4.13.0] - 09-25-2026
 ### Added
 - Turn debt payoff planner into a live debt tracker
