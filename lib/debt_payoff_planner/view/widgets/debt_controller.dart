@@ -14,12 +14,22 @@ class DebtController extends StatefulWidget {
 }
 
 class _DebtControllerState extends State<DebtController> {
-  late TextEditingController _textEditingController;
+  late final TextEditingController _textEditingController;
+  var _seeded = false;
 
   @override
   void initState() {
-    _textEditingController = TextEditingController();
     super.initState();
+    _textEditingController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seeded) return;
+    _seeded = true;
+    final extra = context.read<StrategyCubit>().state.extraPayment;
+    _textEditingController.text = extra;
   }
 
   @override
@@ -36,13 +46,7 @@ class _DebtControllerState extends State<DebtController> {
   }
 
   double _parseString(String text) {
-    double result;
-    try {
-      result = double.parse(text);
-    } catch (e) {
-      result = 0;
-    }
-    return result;
+    return double.tryParse(text) ?? 0;
   }
 
   @override
@@ -55,42 +59,49 @@ class _DebtControllerState extends State<DebtController> {
         final total =
             sumMinPayments + _parseString(_textEditingController.text);
         return Container(
-            color: BudgetTheme.isDarkMode(context)
-                ? themeState.primaryColor
-                : themeState.primaryColor[200],
-            padding: EdgeInsets.all(15),
-            width: double.infinity,
-            height: 80,
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Text('min'),
-                    Text('\$ ${sumMinPayments} +',
-                        style: Theme.of(context).textTheme.titleLarge)
-                  ],
-                ),
-                SizedBox(width: 15),
-                Expanded(
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
+          color: BudgetTheme.isDarkMode(context)
+              ? themeState.primaryColor
+              : themeState.primaryColor[200],
+          padding: const EdgeInsets.all(15),
+          width: double.infinity,
+          height: 80,
+          child: Row(
+            children: [
+              Column(
+                children: [
+                  const Text('min'),
+                  Text(
+                    '\$ $sumMinPayments +',
                     style: Theme.of(context).textTheme.titleLarge,
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(), labelText: 'extra'),
-                    onChanged: (_) => _onChanged(context),
                   ),
+                ],
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  controller: _textEditingController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'extra',
+                  ),
+                  onChanged: (_) => _onChanged(context),
                 ),
-                SizedBox(width: 15),
-                Column(
-                  children: [
-                    Text('total'),
-                    Text('= \$ $total',
-                        style: Theme.of(context).textTheme.titleLarge),
-                  ],
-                ),
-              ],
-            ));
+              ),
+              const SizedBox(width: 15),
+              Column(
+                children: [
+                  const Text('total'),
+                  Text(
+                    '= \$ $total',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
       },
     );
   }
