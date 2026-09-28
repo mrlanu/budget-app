@@ -40,9 +40,11 @@ class StrategySelectButton extends StatelessWidget {
               children: [
                 Text(
                   state.strategy,
-                  style: Theme.of(context).textTheme.labelLarge,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                      ),
                 ),
-                const Icon(Icons.arrow_drop_down),
+                const Icon(Icons.arrow_drop_down, color: Colors.white),
               ],
             ),
           ),

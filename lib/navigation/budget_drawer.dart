@@ -53,7 +53,7 @@ const List<_DrawerItem> _kTailItems = [
     routeName: 'recurring',
   ),
   _DrawerItem(
-    title: 'Debt payoff planner',
+    title: 'Debt tracker',
     icon: FontAwesomeIcons.moneyCheckDollar,
     routeName: 'debt-payoff',
   ),
