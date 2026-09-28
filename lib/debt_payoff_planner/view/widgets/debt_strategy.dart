@@ -1,3 +1,4 @@
+import 'package:qruto_budget/debt_payoff_planner/view/widgets/debt_totals_card.dart';
 import 'package:qruto_budget/debt_payoff_planner/view/widgets/payoff_summary.dart';
 import 'package:qruto_budget/debt_payoff_planner/view/widgets/report_tile.dart';
 import 'package:flutter/material.dart';
@@ -24,38 +25,52 @@ class DebtStrategy extends StatelessWidget {
             return const SizedBox.shrink();
           }
 
+          final totalsCard = DebtTotalsCard(debts: debtsState.debtList);
+
           return BlocBuilder<StrategyCubit, StrategyState>(
             builder: (context, state) {
               if (state.status == StrategyStateStatus.loading) {
-                return const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator()),
+                return Column(
+                  children: [
+                    totalsCard,
+                    const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ],
                 );
               }
 
               if (state.status == StrategyStateStatus.failure) {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Card(
-                    child: Padding(
+                return Column(
+                  children: [
+                    totalsCard,
+                    Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Text(
-                        state.errorMessage ?? 'Could not calculate strategy',
-                        textAlign: TextAlign.center,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            state.errorMessage ??
+                                'Could not calculate strategy',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 );
               }
 
               if (state.status != StrategyStateStatus.success ||
                   state.debtPayoffStrategy == null) {
-                return const SizedBox.shrink();
+                return totalsCard;
               }
 
               final strategy = state.debtPayoffStrategy!;
               return Column(
                 children: [
+                  totalsCard,
                   if (!debtsState.isDebtFree) ...[
                     PayoffSummary(debtPayoffStrategy: strategy),
                     for (final report in strategy.reports)

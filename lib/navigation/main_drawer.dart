@@ -133,7 +133,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     Divider(color: themeState.primaryColor[200]),
                     _buildMenuItem(
                         menuIndex: 3,
-                        title: 'Debt payoff planner',
+                        title: 'Debt tracker',
                         icon: FaIcon(FontAwesomeIcons.moneyCheckDollar,
                             color: _getColor()),
                         routeName: 'debt-payoff'),

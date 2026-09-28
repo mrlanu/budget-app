@@ -13,7 +13,7 @@ Key features include:
 
 ✅ Intuitive interface that makes tracking your income and expenses effortless
 
-💡 Debt Payoff Planner to calculate optimal strategies for eliminating debt using the Snowball or Avalanche method
+💡 Debt Tracker to track balances, record payments, and plan payoff with Snowball or Avalanche
 
 📂 Transactions organized by categories and accounts for better clarity and structure
 

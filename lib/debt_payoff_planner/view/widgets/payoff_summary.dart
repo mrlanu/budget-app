@@ -30,7 +30,7 @@ class PayoffSummary extends StatelessWidget {
       color: BudgetTheme.isDarkMode(context)
           ? themeState.primaryColor[400]
           : themeState.primaryColor[100],
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      margin: const EdgeInsets.fromLTRB(10, 4, 10, 10),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Row(

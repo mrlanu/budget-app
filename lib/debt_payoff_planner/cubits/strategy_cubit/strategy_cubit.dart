@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import '../../repository/debts_repository.dart';
 import '../../../database/database.dart';
@@ -8,7 +8,7 @@ part 'strategy_state.dart';
 
 const _maxSimulationMonths = 600;
 
-class StrategyCubit extends Cubit<StrategyState> {
+class StrategyCubit extends HydratedCubit<StrategyState> {
   StrategyCubit({required DebtsRepository debtsRepository})
       : _debtsRepository = debtsRepository,
         super(StrategyState());
@@ -43,6 +43,26 @@ class StrategyCubit extends Cubit<StrategyState> {
 
   Future<void> changeStrategy(String strategy) async {
     emit(state.copyWith(strategy: strategy));
+  }
+
+  @override
+  StrategyState? fromJson(Map<String, dynamic> json) {
+    final strategy = json['strategy'] as String?;
+    final extraPayment = json['extraPayment'] as String?;
+    return StrategyState(
+      strategy: strategy == StrategyState.avalanche
+          ? StrategyState.avalanche
+          : StrategyState.snowball,
+      extraPayment: extraPayment ?? '0',
+    );
+  }
+
+  @override
+  Map<String, dynamic>? toJson(StrategyState state) {
+    return {
+      'strategy': state.strategy,
+      'extraPayment': state.extraPayment,
+    };
   }
 
   double _parseExtraPayment(String value) {

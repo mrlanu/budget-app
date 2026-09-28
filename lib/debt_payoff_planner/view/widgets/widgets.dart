@@ -8,3 +8,4 @@ export 'debt_strategy.dart';
 export 'strategy_select_button.dart';
 export 'payment_dialog.dart';
 export 'payment_history_sheet.dart';
+export 'debt_totals_card.dart';

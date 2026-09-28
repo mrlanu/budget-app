@@ -1,5 +1,13 @@
 const changelog = [
   {
+    'version': 'v4.13.1',
+    'date': 'Sep 28, 2026',
+    'titles': [],
+    'added': ['Persist debt payoff extra payment and strategy across sessions', 
+    'Show debt totals card above payoff summary'],
+    'fixed': [],
+  },
+  {
     'version': 'v4.13.0',
     'date': 'Sep 25, 2026',
     'titles': [],

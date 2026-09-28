@@ -83,6 +83,7 @@ class _DebtCarouselState extends State<DebtCarousel> {
               options: CarouselOptions(
                 height: 270,
                 autoPlay: false,
+                enableInfiniteScroll: false,
                 enlargeCenterPage: true,
                 enlargeFactor: 0.2,
                 onPageChanged: (index, reason) {

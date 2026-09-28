@@ -1,7 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:qruto_budget/database/database.dart';
 import 'package:qruto_budget/debt_payoff_planner/cubits/strategy_cubit/strategy_cubit.dart';
 import 'package:qruto_budget/debt_payoff_planner/repository/debts_repository.dart';
+
+class _MockStorage extends Mock implements Storage {}
 
 Debt _debt({
   required int id,
@@ -200,6 +204,17 @@ class FakeDebtsRepository implements DebtsRepository {
 }
 
 void main() {
+  late Storage storage;
+
+  setUp(() {
+    storage = _MockStorage();
+    when(() => storage.write(any(), any<dynamic>())).thenAnswer((_) async {});
+    when(() => storage.read(any())).thenReturn(null);
+    when(() => storage.delete(any())).thenAnswer((_) async {});
+    when(() => storage.clear()).thenAnswer((_) async {});
+    HydratedBloc.storage = storage;
+  });
+
   group('StrategyCubit.sortDebts', () {
     test('snowball orders by lowest balance first', () {
       final debts = [
@@ -420,6 +435,27 @@ void main() {
 
       expect(cubit.state.status, StrategyStateStatus.success);
       expect(cubit.state.debtPayoffStrategy!.totalDuration, greaterThan(0));
+    });
+  });
+
+  group('StrategyCubit persistence', () {
+    test('toJson and fromJson round-trip extra payment and strategy', () {
+      final repo = FakeDebtsRepository();
+      final cubit = StrategyCubit(debtsRepository: repo);
+
+      final json = cubit.toJson(StrategyState(
+        strategy: StrategyState.avalanche,
+        extraPayment: '250',
+      ));
+      expect(json, {
+        'strategy': 'Avalanche',
+        'extraPayment': '250',
+      });
+
+      final restored = cubit.fromJson(json!);
+      expect(restored!.strategy, StrategyState.avalanche);
+      expect(restored.extraPayment, '250');
+      cubit.close();
     });
   });
 }

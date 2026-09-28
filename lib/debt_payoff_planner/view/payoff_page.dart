@@ -52,7 +52,7 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debt payoff planner', style: TextStyle(fontSize: 30.sp)),
+        title: Text('Debt tracker', style: TextStyle(fontSize: 30.sp)),
         centerTitle: true,
         actions: [
           IconButton(
