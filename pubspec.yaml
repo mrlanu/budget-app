@@ -44,8 +44,6 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
   awesome_snackbar_content: ^0.1.5
   fl_chart: ^1.2.0
-  flutter_local_notifications: ^19.4.0
-
 dev_dependencies:
   bloc_test: ^10.0.0
   flutter_test:
