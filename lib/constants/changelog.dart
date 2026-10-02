@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.13.?',
+    'date': '??? ??, 2026',
+    'titles': [],
+    'added': ['show recently added recurring txs in a bottom sheet'],
+    'fixed': [],
+  },
+  {
     'version': 'v4.13.1',
     'date': 'Sep 28, 2026',
     'titles': [],

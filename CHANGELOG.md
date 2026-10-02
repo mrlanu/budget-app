@@ -17,6 +17,11 @@
 - Sort accounts summary panels
 ### Fixed
 
+## [4.11.?] - ??-??-2026
+### Added
+- show recently added recurring txs in a bottom sheet
+### Fixed
+
 ## [4.11.0] - 09-19-2026
 ### Added
 - Sort category summary panels
