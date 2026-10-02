@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:qruto_budget/database/recurring_transaction_with_detail.dart';
+import 'package:qruto_budget/database/transaction_with_detail.dart';
 import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
 
 part 'recurring_state.dart';
@@ -24,6 +25,9 @@ class RecurringCubit extends Cubit<RecurringState> {
       _recurringRepository.setActive(id: id, isActive: isActive);
 
   Future<void> delete(int id) => _recurringRepository.deleteRecurring(id);
+
+  Future<List<TransactionWithDetails>> fetchAddedSinceLastOpen() =>
+      _recurringRepository.getAddedSinceLastOpen();
 
   @override
   Future<void> close() {

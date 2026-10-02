@@ -1,5 +1,12 @@
 const changelog = [
   {
+    'version': 'v4.13.2',
+    'date': 'Oct 2, 2026',
+    'titles': [],
+    'added': ['show recently added recurring txs in a bottom sheet'],
+    'fixed': ['FAB & leading button aligned with the selected tab'],
+  },
+  {
     'version': 'v4.13.1',
     'date': 'Sep 28, 2026',
     'titles': [],

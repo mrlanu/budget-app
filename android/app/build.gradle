@@ -59,8 +59,6 @@ android {
     }
 
     compileOptions {
-        // Required by flutter_local_notifications
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -74,7 +72,6 @@ android {
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        multiDexEnabled true
     }
 }
 
@@ -90,5 +87,4 @@ flutter {
 
 dependencies {
     implementation "androidx.activity:activity-ktx:1.9.3"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"
 }

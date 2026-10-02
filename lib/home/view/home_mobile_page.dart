@@ -37,7 +37,12 @@ class HomeMobilePage extends StatelessWidget {
               onLeft: (date) => context.read<HomeCubit>().changeDate(date),
               onRight: (date) => context.read<HomeCubit>().changeDate(date)),
           centerTitle: true,
-          leading: _buildActionButton(),
+          leading: Builder(
+            builder: (context) {
+              final tab = context.select((HomeCubit cubit) => cubit.state.tab);
+              return _buildActionButton(tab);
+            },
+          ),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.menu),
@@ -53,11 +58,7 @@ class HomeMobilePage extends StatelessWidget {
         floatingActionButton: Builder(
           builder: (context) {
             final tab = context.select((HomeCubit cubit) => cubit.state.tab);
-            return _buildFab(
-                context,
-                tab.index == HomeTab.expenses.index
-                    ? TransactionType.EXPENSE
-                    : TransactionType.INCOME);
+            return _buildFab(context, tab);
           },
         ),
         bottomNavigationBar: HomeNavBar(navigationShell: navigationShell));
@@ -173,16 +174,17 @@ class HomeMobilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(HomeTab tab) {
     return OpenContainer(
       transitionType: _transitionType,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return navigationShell.currentIndex == 2
-            ? AccountsListPage()
-            : CategoriesPage(
-                transactionType: navigationShell.currentIndex == 1
-                    ? TransactionType.EXPENSE
-                    : TransactionType.INCOME);
+        return switch (tab) {
+          HomeTab.accounts => AccountsListPage(),
+          HomeTab.expenses =>
+            CategoriesPage(transactionType: TransactionType.EXPENSE),
+          HomeTab.income =>
+            CategoriesPage(transactionType: TransactionType.INCOME),
+        };
       },
       closedElevation: 0,
       closedShape: const RoundedRectangleBorder(
@@ -203,15 +205,17 @@ class HomeMobilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFab(BuildContext context, TransactionType transactionType) {
+  Widget _buildFab(BuildContext context, HomeTab tab) {
     return OpenContainer(
       transitionType: _transitionType,
       openBuilder: (BuildContext _, VoidCallback openContainer) {
-        return navigationShell.currentIndex == 2
-            ? TransferPage()
-            : TransactionPage(
-                transactionType: transactionType,
-              );
+        return switch (tab) {
+          HomeTab.accounts => TransferPage(),
+          HomeTab.expenses =>
+            TransactionPage(transactionType: TransactionType.EXPENSE),
+          HomeTab.income =>
+            TransactionPage(transactionType: TransactionType.INCOME),
+        };
       },
       closedElevation: 6.0,
       closedShape: RoundedRectangleBorder(

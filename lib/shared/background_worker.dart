@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qruto_budget/backup/cubit/backup_cubit.dart';
+import 'package:qruto_budget/recurring/recurring_added_store.dart';
 import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
-import 'package:qruto_budget/shared/notification_service.dart';
 import 'package:qruto_budget/shared/shared_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,9 +60,13 @@ class BackgroundWorker {
     try {
       final created =
           await context.read<RecurringRepository>().materializeDue();
-      if (created > 0) {
-        await NotificationService.instance.showRecurringAdded(created);
-      }
+      if (created.isEmpty || !context.mounted) return;
+      await RecurringAddedStore.saveIds(created.map((tx) => tx.id).toList());
+      if (!context.mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        SharedFunctions.showRecurringAddedSheet(context, created);
+      });
     } catch (e) {
       print('Error materializing recurring transactions: $e');
     }

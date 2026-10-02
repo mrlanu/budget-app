@@ -3,6 +3,7 @@ import 'package:qruto_budget/database/database.dart';
 import 'package:qruto_budget/database/recurring_transaction_with_detail.dart';
 import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/database/transaction_with_detail.dart';
+import 'package:qruto_budget/recurring/recurring_added_store.dart';
 import 'package:qruto_budget/transaction/models/transaction_type.dart';
 import 'package:qruto_budget/transaction/repository/transaction_repository.dart';
 import 'package:drift/drift.dart';
@@ -26,8 +27,12 @@ abstract class RecurringRepository {
 
   Future<void> deleteRecurring(int id);
 
-  /// Creates due transactions and advances nextDate. Returns how many were created.
-  Future<int> materializeDue({DateTime? asOf});
+  /// Creates due transactions and advances nextDate.
+  /// Returns the transactions that were created.
+  Future<List<TransactionWithDetails>> materializeDue({DateTime? asOf});
+
+  /// Transactions created on the last app open that ran materialization.
+  Future<List<TransactionWithDetails>> getAddedSinceLastOpen();
 }
 
 class RecurringRepositoryDrift extends RecurringRepository {
@@ -84,10 +89,10 @@ class RecurringRepositoryDrift extends RecurringRepository {
       _database.deleteRecurringTransaction(id);
 
   @override
-  Future<int> materializeDue({DateTime? asOf}) async {
+  Future<List<TransactionWithDetails>> materializeDue({DateTime? asOf}) async {
     final today = _dateOnly(asOf ?? DateTime.now());
     final templates = await _database.getActiveRecurringTransactions();
-    var created = 0;
+    final created = <TransactionWithDetails>[];
 
     for (final template in templates) {
       var nextDate = _dateOnly(template.nextDate);
@@ -106,7 +111,7 @@ class RecurringRepositoryDrift extends RecurringRepository {
         final newTransaction =
             await _transactionRepository.getTransactionById(transactionId);
         await _applyBalanceForNewTransaction(newTransaction);
-        created++;
+        created.add(newTransaction);
 
         nextDate = _advanceDate(nextDate, current.frequency);
         current = current.copyWith(nextDate: nextDate);
@@ -115,6 +120,22 @@ class RecurringRepositoryDrift extends RecurringRepository {
     }
 
     return created;
+  }
+
+  @override
+  Future<List<TransactionWithDetails>> getAddedSinceLastOpen() async {
+    final ids = await RecurringAddedStore.loadIds();
+    if (ids.isEmpty) return [];
+
+    final results = <TransactionWithDetails>[];
+    for (final id in ids) {
+      try {
+        results.add(await _transactionRepository.getTransactionById(id));
+      } catch (_) {
+        // Transaction may have been deleted after materialization.
+      }
+    }
+    return results;
   }
 
   Future<void> _applyBalanceForNewTransaction(

@@ -8,6 +8,7 @@ import 'package:qruto_budget/database/recurring_transaction_with_detail.dart';
 import 'package:qruto_budget/database/tables.dart';
 import 'package:qruto_budget/recurring/cubit/recurring_cubit.dart';
 import 'package:qruto_budget/recurring/repository/recurring_repository.dart';
+import 'package:qruto_budget/shared/shared_functions.dart';
 import 'package:qruto_budget/transaction/models/transaction_type.dart';
 import 'package:qruto_budget/utils/theme/budget_theme.dart';
 import 'package:qruto_budget/utils/theme/cubit/theme_cubit.dart';
@@ -42,22 +43,64 @@ class RecurringPageView extends StatelessWidget {
       ),
       body: SafeArea(
         bottom: true,
-        child: BlocBuilder<RecurringCubit, RecurringState>(
-          builder: (context, state) {
-            if (state.status == RecurringStatus.initial) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (state.items.isEmpty) {
-              return const _EmptyRecurring();
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: state.items.length,
-              itemBuilder: (context, index) {
-                return _RecurringTile(item: state.items[index]);
-              },
-            );
+        child: Column(
+          children: [
+            const _AddedTodayButton(),
+            Expanded(
+              child: BlocBuilder<RecurringCubit, RecurringState>(
+                builder: (context, state) {
+                  if (state.status == RecurringStatus.initial) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.items.isEmpty) {
+                    return const _EmptyRecurring();
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: state.items.length,
+                    itemBuilder: (context, index) {
+                      return _RecurringTile(item: state.items[index]);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AddedTodayButton extends StatelessWidget {
+  const _AddedTodayButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final themeState = context.watch<ThemeCubit>().state;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () async {
+            final transactions =
+                await context.read<RecurringCubit>().fetchAddedSinceLastOpen();
+            if (!context.mounted) return;
+            SharedFunctions.showRecurringAddedSheet(context, transactions);
           },
+          icon: const Icon(Icons.history),
+          label: const Text('Added recently'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: BudgetTheme.isDarkMode(context)
+                ? Colors.white
+                : themeState.primaryColor[900],
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );
@@ -120,6 +163,9 @@ class _RecurringTile extends StatelessWidget {
         item.frequency == RecurringFrequency.weekly ? 'Weekly' : 'Monthly';
     final typeLabel =
         item.type == TransactionType.INCOME ? 'Income' : 'Expense';
+    final categoryLine = item.subcategory == null
+        ? item.category.name
+        : '${item.category.name} · ${item.subcategory!.name}';
 
     return Opacity(
       opacity: item.isActive ? 1 : 0.5,
@@ -139,7 +185,7 @@ class _RecurringTile extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             subtitle: Text(
-              '${item.category.name} · ${item.fromAccount.name}\n'
+              '$categoryLine · ${item.fromAccount.name}\n'
               '$typeLabel · Next ${dateFormat.format(item.nextDate)}'
               '${item.isActive ? '' : ' · Paused'}',
             ),
