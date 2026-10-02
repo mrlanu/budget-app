@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.13.2] - 10-02-2026
+### Added
+- show recently added recurring txs in a bottom sheet
+### Fixed
+-  FAB & leading button aligned with the selected tab
+
 ## [4.13.1] - 09-28-2026
 ### Added
 - Persist debt payoff extra payment and strategy across sessions
@@ -16,12 +22,6 @@
 - Reccuring income & expense
 - Sort accounts summary panels
 ### Fixed
-
-## [4.11.?] - ??-??-2026
-### Added
-- show recently added recurring txs in a bottom sheet
-### Fixed
--  FAB & leading button aligned with the selected tab
 
 ## [4.11.0] - 09-19-2026
 ### Added
