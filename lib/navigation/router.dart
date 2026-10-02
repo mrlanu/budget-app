@@ -58,7 +58,7 @@ Future<String?> _guard(BuildContext context, GoRouterState state) async {
 final List<RouteBase> _authRoutes = [
   GoRoute(
     path: '/',
-    redirect: (_, __) => '/expenses',
+    redirect: (_, __) => '/accounts',
   ),
   GoRoute(
     path: '/splash',

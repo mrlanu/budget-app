@@ -21,6 +21,7 @@
 ### Added
 - show recently added recurring txs in a bottom sheet
 ### Fixed
+-  FAB & leading button aligned with the selected tab
 
 ## [4.11.0] - 09-19-2026
 ### Added

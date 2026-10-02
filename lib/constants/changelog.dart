@@ -4,7 +4,7 @@ const changelog = [
     'date': '??? ??, 2026',
     'titles': [],
     'added': ['show recently added recurring txs in a bottom sheet'],
-    'fixed': [],
+    'fixed': ['FAB & leading button aligned with the selected tab'],
   },
   {
     'version': 'v4.13.1',
