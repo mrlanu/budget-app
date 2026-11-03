@@ -27,7 +27,7 @@ class TransactionsList extends StatelessWidget {
       child: ListView.separated(
           itemCount: transactionTiles.length,
           itemBuilder: (context, index) {
-            final tr = transactionTiles[transactionTiles.length - index - 1];
+            final tr = transactionTiles[index];
             return OpenContainer<bool>(
               useRootNavigator: true,
               closedColor: themeState.primaryColor[100]!,

@@ -121,7 +121,7 @@ class HomeState extends Equatable {
     groupedTrByCat.forEach((key, value) {
       final double sum = value.fold<double>(
           0.0, (previousValue, element) => previousValue + element.amount);
-      value.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      value.sort((a, b) => b.amount.compareTo(a.amount));
       summaries.add(SummaryTile(
           name: key!.name,
           total: sum,
@@ -145,7 +145,7 @@ class HomeState extends Equatable {
           (tr.toAccount == acc.name && tr.title == 'Transfer in') ||
           (tr.fromAccount == acc.name && tr.title == 'Transfer out'))
           .toList();
-      transactionTiles.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      transactionTiles.sort((a, b) => b.dateTime.compareTo(a.dateTime));
       summaries.add(SummaryTile(
           name: acc.name,
           total: acc.balance,
