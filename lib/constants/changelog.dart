@@ -1,4 +1,11 @@
 const changelog = [
+    {
+    'version': 'v4.14.0',
+    'date': 'Nov 11, 2026',
+    'titles': [],
+    'added': ['Sort panel transactions by amount', 'Confirm before saving when a similar recurring exists'],
+    'fixed': ['Keep weekly recurring on the same weekday across DST'],
+  },
   {
     'version': 'v4.13.2',
     'date': 'Oct 2, 2026',

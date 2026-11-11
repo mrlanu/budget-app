@@ -33,6 +33,13 @@ abstract class RecurringRepository {
 
   /// Transactions created on the last app open that ran materialization.
   Future<List<TransactionWithDetails>> getAddedSinceLastOpen();
+
+  /// Active templates with the same type, category, and account.
+  Future<List<RecurringTransactionWithDetails>> findSimilarActive({
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  });
 }
 
 class RecurringRepositoryDrift extends RecurringRepository {
@@ -138,6 +145,37 @@ class RecurringRepositoryDrift extends RecurringRepository {
     return results;
   }
 
+  @override
+  Future<List<RecurringTransactionWithDetails>> findSimilarActive({
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  }) async {
+    final all = await _database.watchRecurringWithDetails().first;
+    return filterSimilarActive(
+      all,
+      type: type,
+      categoryId: categoryId,
+      fromAccountId: fromAccountId,
+    );
+  }
+
+  /// Pure filter used by [findSimilarActive] and unit tests.
+  static List<RecurringTransactionWithDetails> filterSimilarActive(
+    List<RecurringTransactionWithDetails> items, {
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  }) {
+    return items
+        .where((r) =>
+            r.isActive &&
+            r.type == type &&
+            r.category.id == categoryId &&
+            r.fromAccount.id == fromAccountId)
+        .toList();
+  }
+
   Future<void> _applyBalanceForNewTransaction(
       TransactionWithDetails newTransaction) async {
     final accounts = await _accountRepository.getAllAccounts();
@@ -163,10 +201,15 @@ class RecurringRepositoryDrift extends RecurringRepository {
       DateTime(date.year, date.month, date.day);
 
   static DateTime _advanceDate(DateTime date, RecurringFrequency frequency) {
-    return switch (frequency) {
-      RecurringFrequency.weekly => date.add(const Duration(days: 7)),
-      RecurringFrequency.monthly => DateTime(date.year, date.month + 1, date.day),
+    // Use calendar arithmetic (not Duration) so DST transitions do not
+    // shift the local calendar day — e.g. Friday must stay Friday.
+    final advanced = switch (frequency) {
+      RecurringFrequency.weekly =>
+        DateTime(date.year, date.month, date.day + 7),
+      RecurringFrequency.monthly =>
+        DateTime(date.year, date.month + 1, date.day),
     };
+    return _dateOnly(advanced);
   }
 
   /// First occurrence after [fromDate] for the given frequency.
