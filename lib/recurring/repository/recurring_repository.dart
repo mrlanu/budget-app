@@ -33,6 +33,13 @@ abstract class RecurringRepository {
 
   /// Transactions created on the last app open that ran materialization.
   Future<List<TransactionWithDetails>> getAddedSinceLastOpen();
+
+  /// Active templates with the same type, category, and account.
+  Future<List<RecurringTransactionWithDetails>> findSimilarActive({
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  });
 }
 
 class RecurringRepositoryDrift extends RecurringRepository {
@@ -136,6 +143,37 @@ class RecurringRepositoryDrift extends RecurringRepository {
       }
     }
     return results;
+  }
+
+  @override
+  Future<List<RecurringTransactionWithDetails>> findSimilarActive({
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  }) async {
+    final all = await _database.watchRecurringWithDetails().first;
+    return filterSimilarActive(
+      all,
+      type: type,
+      categoryId: categoryId,
+      fromAccountId: fromAccountId,
+    );
+  }
+
+  /// Pure filter used by [findSimilarActive] and unit tests.
+  static List<RecurringTransactionWithDetails> filterSimilarActive(
+    List<RecurringTransactionWithDetails> items, {
+    required TransactionType type,
+    required int categoryId,
+    required int fromAccountId,
+  }) {
+    return items
+        .where((r) =>
+            r.isActive &&
+            r.type == type &&
+            r.category.id == categoryId &&
+            r.fromAccount.id == fromAccountId)
+        .toList();
   }
 
   Future<void> _applyBalanceForNewTransaction(

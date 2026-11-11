@@ -176,6 +176,51 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       final isIdExist = state.id != null;
+
+      if (!isIdExist &&
+          _recurringRepository != null &&
+          state.category != null &&
+          state.account?.id != null) {
+        final similar = await _recurringRepository.findSimilarActive(
+          type: state.transactionType,
+          categoryId: state.category!.id,
+          fromAccountId: state.account!.id!,
+        );
+        if (similar.isNotEmpty) {
+          final context = event.context;
+          if (context == null || !context.mounted) {
+            emit(state.copyWith(status: FormzSubmissionStatus.initial));
+            return;
+          }
+          final match = similar.first;
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: const Text('Similar recurring found'),
+              content: Text(
+                'An active ${match.frequency.name} recurring already exists for '
+                '${match.category.name} on ${match.fromAccount.name}.\n\n'
+                'Save this transaction anyway?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('Save anyway'),
+                ),
+              ],
+            ),
+          );
+          if (confirmed != true) {
+            emit(state.copyWith(status: FormzSubmissionStatus.initial));
+            return;
+          }
+        }
+      }
+
       int transactionId;
       if (isIdExist) {
         await _transactionsRepository.updateTransaction(
