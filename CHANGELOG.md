@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.0] - 11-11-2026
+### Added
+- sort panel transactions by amount
+- confirm before saving when a similar recurring exists
+### Fixed
+-  keep weekly recurring on the same weekday across DST
+
 ## [4.13.2] - 10-02-2026
 ### Added
 - show recently added recurring txs in a bottom sheet
