@@ -163,10 +163,15 @@ class RecurringRepositoryDrift extends RecurringRepository {
       DateTime(date.year, date.month, date.day);
 
   static DateTime _advanceDate(DateTime date, RecurringFrequency frequency) {
-    return switch (frequency) {
-      RecurringFrequency.weekly => date.add(const Duration(days: 7)),
-      RecurringFrequency.monthly => DateTime(date.year, date.month + 1, date.day),
+    // Use calendar arithmetic (not Duration) so DST transitions do not
+    // shift the local calendar day — e.g. Friday must stay Friday.
+    final advanced = switch (frequency) {
+      RecurringFrequency.weekly =>
+        DateTime(date.year, date.month, date.day + 7),
+      RecurringFrequency.monthly =>
+        DateTime(date.year, date.month + 1, date.day),
     };
+    return _dateOnly(advanced);
   }
 
   /// First occurrence after [fromDate] for the given frequency.
