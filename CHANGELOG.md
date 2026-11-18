@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.14.1] - 11-17-2026
+### Added
+### Fixed
+-  require subcategory when matching similar recurring
+-  keep repeat segmented labels on one line
+
 ## [4.14.0] - 11-11-2026
 ### Added
 - sort panel transactions by amount
