@@ -34,10 +34,11 @@ abstract class RecurringRepository {
   /// Transactions created on the last app open that ran materialization.
   Future<List<TransactionWithDetails>> getAddedSinceLastOpen();
 
-  /// Active templates with the same type, category, and account.
+  /// Active templates with the same type, category, subcategory, and account.
   Future<List<RecurringTransactionWithDetails>> findSimilarActive({
     required TransactionType type,
     required int categoryId,
+    int? subcategoryId,
     required int fromAccountId,
   });
 }
@@ -149,6 +150,7 @@ class RecurringRepositoryDrift extends RecurringRepository {
   Future<List<RecurringTransactionWithDetails>> findSimilarActive({
     required TransactionType type,
     required int categoryId,
+    int? subcategoryId,
     required int fromAccountId,
   }) async {
     final all = await _database.watchRecurringWithDetails().first;
@@ -156,6 +158,7 @@ class RecurringRepositoryDrift extends RecurringRepository {
       all,
       type: type,
       categoryId: categoryId,
+      subcategoryId: subcategoryId,
       fromAccountId: fromAccountId,
     );
   }
@@ -165,6 +168,7 @@ class RecurringRepositoryDrift extends RecurringRepository {
     List<RecurringTransactionWithDetails> items, {
     required TransactionType type,
     required int categoryId,
+    int? subcategoryId,
     required int fromAccountId,
   }) {
     return items
@@ -172,6 +176,7 @@ class RecurringRepositoryDrift extends RecurringRepository {
             r.isActive &&
             r.type == type &&
             r.category.id == categoryId &&
+            r.subcategory?.id == subcategoryId &&
             r.fromAccount.id == fromAccountId)
         .toList();
   }

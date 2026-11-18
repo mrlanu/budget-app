@@ -184,6 +184,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         final similar = await _recurringRepository.findSimilarActive(
           type: state.transactionType,
           categoryId: state.category!.id,
+          subcategoryId: state.subcategory?.id,
           fromAccountId: state.account!.id!,
         );
         if (similar.isNotEmpty) {
@@ -193,13 +194,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             return;
           }
           final match = similar.first;
+          final categoryLabel = match.subcategory != null
+              ? '${match.category.name} › ${match.subcategory!.name}'
+              : match.category.name;
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (dialogContext) => AlertDialog(
               title: const Text('Similar recurring found'),
               content: Text(
                 'An active ${match.frequency.name} recurring already exists for '
-                '${match.category.name} on ${match.fromAccount.name}.\n\n'
+                '$categoryLabel on ${match.fromAccount.name}.\n\n'
                 'Save this transaction anyway?',
               ),
               actions: [
