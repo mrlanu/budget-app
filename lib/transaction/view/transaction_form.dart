@@ -98,7 +98,7 @@ class _RepeatInput extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: SegmentedButton<TransactionRepeat>(
-            showSelectedIcon: true,
+            showSelectedIcon: false,
             segments: const [
               ButtonSegment(
                 value: TransactionRepeat.off,
