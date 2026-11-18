@@ -1,4 +1,12 @@
 const changelog = [
+  {
+    'version': 'v4.14.1',
+    'date': 'Nov 17, 2026',
+    'titles': [],
+    'added': [],
+    'fixed': ['require subcategory when matching similar recurring', 
+    'keep repeat segmented labels on one line'],
+  },
     {
     'version': 'v4.14.0',
     'date': 'Nov 11, 2026',
